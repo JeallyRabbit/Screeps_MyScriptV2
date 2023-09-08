@@ -24,7 +24,7 @@ const req_haulers=2;// role num 3
 const req_upgraders=3;// role num 4
 const req_repairers=1;// role num 5
 const req_soldiers=2;//role num 6
-const req_farmers=8;//role num 7
+const req_farmers=0;//role num 7
 const req_berserk=0;//role num 8
 const roles_num=7;// 0 1 2 3 4 5 6 7 // skipping berserks
 var roles_counter=0;
@@ -191,7 +191,7 @@ module.exports.loop = function () {
     }
     else if(pop_farmers<req_farmers && roles_counter==7)
     {
-        console.log("ASD");
+        //console.log("ASD");
         if(Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE,MOVE],'Farmer'+Game.time,{memory: {role: 'farmer', base_room: Game.spawns['Spawn1'].room}})==0)
         {
             console.log("Spawning Farmer");
