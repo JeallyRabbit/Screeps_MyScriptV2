@@ -18,8 +18,8 @@ const maxUpgrader=require('maxUpgrader');
 const maxCarrier=require('maxCarrier');
 
 const req_harvesters=4;// role num 0
-const req_carriers=2;//role num 1
-const req_builders=3;// role num 2
+const req_carriers=4;//role num 1
+const req_builders=4;// role num 2
 const req_haulers=2;// role num 3
 const req_upgraders=3;// role num 4
 const req_repairers=1;// role num 5
@@ -145,7 +145,7 @@ module.exports.loop = function () {
         if(Game.spawns['Spawn1'].spawnCreep(maxCarrier(energyCap),'Carrier'+Game.time, {memory: {role: 'carrier'}})==0)
         {
             console.log('Spawning Carrier');
-            roles_counter++;// console.log("roles counter: ", roles_counter);
+            roles_counter++;
         }
     }
     else if(pop_builders<req_builders && roles_counter==2) // spawning new builder

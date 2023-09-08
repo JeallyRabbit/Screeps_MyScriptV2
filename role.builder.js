@@ -26,7 +26,7 @@ var roleBuilder = {
                 }
             }
 	    }
-        else if(!creep.memory.building && getMaxEnergyDeposit(creep)!=-1)
+        else if(!creep.memory.building && getMaxEnergyDeposit(creep)!=-1)// not building and there are deposits
         {
             var deposit=getMaxEnergyDeposit(creep);
             var withdraw_amount=0;
@@ -39,7 +39,8 @@ var roleBuilder = {
                 }
             }
         }
-	    else {
+	    else 
+        {// else collect dropped energy
 	         const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
                 filter: resource => resource.resourceType == RESOURCE_ENERGY
             })

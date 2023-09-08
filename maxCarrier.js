@@ -1,8 +1,8 @@
 function maxCarrier(cap)// return array with max possible work parts for hauler
 {
-    if(cap>400)
+    if(cap>800)
     {
-        cap=400;
+        cap=800;
     }
     var parts=[];
     parts.push(MOVE);
