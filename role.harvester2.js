@@ -1,11 +1,12 @@
 
-var roleFarmer = {
+var roleHarvester2 = {
     run: function(creep) {
         //creep.say(creep.room);
-        //console.log(creep.room);
+        console.log(creep.room);
         var target_room='W8N2';
+        
         //8 0 (x,y)
-        //creep.moveTO
+        creep.moveTO
         creep.moveTo(new RoomPosition(8,1, target_room));
         if(creep.room=='[room '+target_room+']' && creep.store.getFreeCapacity() > 0)
         {// if have some free space and at destination room go harvest
@@ -97,4 +98,4 @@ var roleFarmer = {
 
 	}
 };
-module.exports = roleFarmer;
+module.exports = roleHarvester2;
