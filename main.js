@@ -7,6 +7,7 @@ var roleRepairer=require('role.repairer')
 var roleSoldier=require('role.soldier');
 var roleFarmer=require('role.farmer');
 var roleBerserk=require('role.berserk');
+var roleTransporter=require('role.transporter');
 var _ = require('lodash');
 
 
@@ -26,12 +27,13 @@ const req_repairers=1;// role num 5
 const req_soldiers=2;//role num 6
 const req_farmers=0;//role num 7
 const req_berserk=0;//role num 8
-const roles_num=7;// 0 1 2 3 4 5 6 7 // skipping berserks
+const req_transporters=1;//role numm 9
+const roles_num=9;// 0 1 2 3 4 5 6 7 8 9// skipping berserks
 var roles_counter=0;
 module.exports.loop = function () {
     
     
-
+    
     for(var i in Memory.creeps) {  //clearing data about dead creeps
         if(!Game.creeps[i]) {
             delete Memory.creeps[i];
@@ -46,6 +48,7 @@ module.exports.loop = function () {
     var pop_soldiers=2;
     var pop_farmers=0;
     var pop_berserkers=0;
+    var pop_transporters=0;
     if(roles_counter>roles_num){roles_counter=0;}
 
     for(var name in Game.creeps) {
@@ -101,6 +104,11 @@ module.exports.loop = function () {
             roleBerserk.run(creep);
             pop_berserkers++;
         }
+        else if(creep.memory.role=='transporter')
+        {
+            roleTransporter.run(creep);
+            pop_transporters++;
+        }
         
     }
     console.log("-----------------------------------------------------------------------");
@@ -115,6 +123,7 @@ module.exports.loop = function () {
     console.log('Berskerkers: ', pop_berserkers);
     console.log("roles_counter: ", roles_counter);
     
+
     var energyCap=Game.spawns['Spawn1'].energy;
     var num_extensions=0;
     const numCreeps = _.filter(Game.creeps, (creep) => creep.my).length;
@@ -205,6 +214,15 @@ module.exports.loop = function () {
             console.log("Spawning Berserker");
             roles_counter++;
         }
+    }
+    else if(pop_transporters<req_transporters && roles_counter==9)
+    {
+        if(Game.spawns['Spawn1'].spawnCreep(maxHauler(energyCap),'Transporter'+Game.time,{memory: {role: 'transporter'}})==0)
+        {
+            console.log('Spawning Transporter')
+            roles_counter++;
+        }
+        
     }
     roles_counter++;
 }
