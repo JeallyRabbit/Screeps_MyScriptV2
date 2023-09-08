@@ -17,6 +17,7 @@ const maxBuilder=require('maxBuilder');
 const maxHauler=require('maxHauler');
 const maxUpgrader=require('maxUpgrader');
 const maxCarrier=require('maxCarrier');
+const maxTransporter=require('maxTransporter');
 
 const req_harvesters=4;// role num 0
 const req_carriers=4;//role num 1
@@ -217,7 +218,7 @@ module.exports.loop = function () {
     }
     else if(pop_transporters<req_transporters && roles_counter==9)
     {
-        if(Game.spawns['Spawn1'].spawnCreep(maxHauler(energyCap),'Transporter'+Game.time,{memory: {role: 'transporter'}})==0)
+        if(Game.spawns['Spawn1'].spawnCreep(maxTransporter(energyCap),'Transporter'+Game.time,{memory: {role: 'transporter'}})==0)
         {
             console.log('Spawning Transporter')
             roles_counter++;

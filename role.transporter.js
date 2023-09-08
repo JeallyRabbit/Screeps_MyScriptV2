@@ -6,6 +6,7 @@ var roleTransporter = {//transfer energy grom containers to extensions and spawn
     run: function(creep) 
     {
         var deposit=getClosestEnergyDeposit(creep);
+        //creep.say(creep.store.getFreeCapacity());
         if(creep.store.getFreeCapacity()>0)
         {
             withdraw_amount=Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, deposit.store[RESOURCE_ENERGY]);
@@ -16,17 +17,20 @@ var roleTransporter = {//transfer energy grom containers to extensions and spawn
         }
         else
         {
+            creep.say("T");
             var storage=creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return structure.structureType === STRUCTURE_STORAGE
+                    return structure.structureType == STRUCTURE_STORAGE
                     && structure.store[RESOURCE_ENERGY]<20000;
                 }
             });
-            if(storage)
+            
+            if(storage.length>0)
             {
-                if(creep.transfer(storage,RESOURCE_ENERGY)==ERR_NOT_IN_RANGE )
+                //creep.say(storage[0].store[RESOURCE_ENERGY]);
+                if(creep.transfer(storage[0],RESOURCE_ENERGY)==ERR_NOT_IN_RANGE )
                 {// if creep have no energy go to container and withdraw energy
-                    creep.moveTo(storage);
+                    creep.moveTo(storage[0]);
                 }
             }
         }

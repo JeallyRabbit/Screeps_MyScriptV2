@@ -7,11 +7,6 @@ function getClosestEnergyDeposit(creep)// return closest not empty energy deposi
                 && structure.store[RESOURCE_ENERGY]>0;
             }
         });
-        deposits=deposits.concat(creep.room.find(FIND_STRUCTURES,{
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_STORAGE;
-            }
-        }));
         return creep.pos.findClosestByRange(deposits);
 }
 module.exports = getClosestEnergyDeposit;
