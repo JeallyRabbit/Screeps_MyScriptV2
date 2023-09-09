@@ -21,7 +21,7 @@ const maxCarrier=require('maxCarrier');
 const maxTransporter=require('maxTransporter');
 
 const req_harvesters=4;// role num 0
-const req_carriers=4;//role num 1
+const req_carriers=2;//role num 1
 const req_builders=4;// role num 2
 const req_haulers=2;// role num 3
 const req_upgraders=3;// role num 4
