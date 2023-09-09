@@ -8,7 +8,8 @@ var roleSoldier=require('role.soldier');
 var roleFarmer=require('role.farmer');
 var roleBerserk=require('role.berserk');
 var roleTransporter=require('role.transporter');
-var roleClearer=require('role.clearer');
+var towers=require('towers');
+var roleTowerKeeper=require('role.TowerKeeper');
 var _ = require('lodash');
 
 
@@ -31,8 +32,8 @@ const req_repairers=1;// role num 5
 const req_soldiers=2;//role num 6
 const req_farmers=0;//role num 7
 const req_berserk=0;//role num 8
-const req_transporters=0;//role numm 9
-const req_clearers=0;//role num 10
+const req_transporters=1;//role numm 9
+const req_towerKeepers=1;//role num 10
 const roles_num=10;// 0 1 2 3 4 5 6 7 8 9// skipping berserks
 var roles_counter=0;
 
@@ -44,7 +45,7 @@ const myRooms = Object.keys(Game.rooms).filter(roomName => {
 
 module.exports.loop = function () {
     
-    
+    towers.tick();
     
     for(var i in Memory.creeps) {  //clearing data about dead creeps
         if(!Game.creeps[i]) {
@@ -71,7 +72,7 @@ module.exports.loop = function () {
     var pop_farmers=0;
     var pop_berserkers=0;
     var pop_transporters=0;
-    var pop_clearers=0;
+    var pop_towerKeepers=0;
     if(roles_counter>roles_num){roles_counter=0;}
 
     for(var name in Game.creeps) {
@@ -79,11 +80,11 @@ module.exports.loop = function () {
         if(creep.memory.role == 'harvester') {
             // here add counting harvesting power of a creep
             // and add that hp to source that harvester is assigned to
-            
+            //creep.suicide();
             const workParts = _.filter(creep.body, { type: WORK }).length;
             creep.memory.harvesting_power=workParts*2;
             sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
-            creep.say(workParts);
+            //creep.say(workParts);
             roleHarvester.run(creep);
             pop_harvesters++;
             //creep.say("");
@@ -139,10 +140,10 @@ module.exports.loop = function () {
             roleTransporter.run(creep);
             pop_transporters++;
         }
-        else if(creep.memory.role=='clearer')
+        else if(creep.memory.role=='towerKeeper')
         {
-            roleClearer.run(creep);
-            pop_clearers++;
+            roleTowerKeeper.run(creep);
+            pop_towerKeepers++;
         }
         
     }
@@ -154,6 +155,8 @@ module.exports.loop = function () {
     console.log("haulers: ", pop_haulers," | ","Soldiers: ",pop_soldiers,
     " | ","Farmers: ", pop_farmers," | ",'Berskerkers: ', pop_berserkers,
     " | ","Transporters: ",pop_transporters);
+
+    console.log("TowerKeepers: ",pop_towerKeepers);
     console.log("roles_counter: ", roles_counter);
     
     //console.log("sources_hp: ",sources_hp);
@@ -179,18 +182,21 @@ module.exports.loop = function () {
     {
         var assigned_source=-1;
         var assigned_source=minSource(sources_hp);
-        if(Game.spawns['Spawn1'].spawnCreep(maxHarvester(energyCap),'Harvester'+Game.time, {memory: {role: 'harvester', myID: Game.time, target_source: assigned_source}})==0
-        && assigned_source>=0)
+        if(assigned_source>=0)
         {
-            const workParts = _.filter(creep.body, { type: WORK }).length;
-            creep.say(workParts);
-            creep.memory.harvesting_power=workParts*2;
-            sources_hp[assigned_source]+=energyCap/150;//harvesting power approximately
-            console.log('Spawning Harvester');
-            roles_counter++;
+            if(Game.spawns['Spawn1'].spawnCreep(maxHarvester(energyCap),'Harvester'+Game.time, {memory: {role: 'harvester', target_source: assigned_source}})==0)
+            {
+                const workParts = _.filter(creep.body, { type: WORK }).length;
+                creep.say(workParts);
+                creep.memory.harvesting_power=workParts*2;
+                sources_hp[assigned_source]+=energyCap/150;//harvesting power approximately
+                console.log('Spawning Harvester');
+                roles_counter++;
+            }
         }
+        
     }
-    else if(pop_carriers<req_carriers && roles_counter==1) // spawning new Carrier
+    if(pop_carriers<req_carriers && roles_counter==1) // spawning new Carrier
     {
         if(Game.spawns['Spawn1'].spawnCreep(maxCarrier(energyCap),'Carrier'+Game.time, {memory: {role: 'carrier'}})==0)
         {
@@ -264,11 +270,11 @@ module.exports.loop = function () {
             roles_counter++;
         }
     }
-    else if(pop_clearers<req_clearers && roles_counter==10)
+    else if(pop_towerKeepers<req_towerKeepers && roles_counter==10)
     {
-        if(Game.spawns['Spawn1'].spawnCreep([RANGED_ATTACK,RANGED_ATTACK,TOUGH,TOUGH,TOUGH,TOUGH,MOVE,MOVE,MOVE,MOVE],'Clearer'+Game.time,{memory: {role: 'clearer'}})==0)
-        {//costs 400 energy
-            console.log("Spawning Clearer");
+        if(Game.spawns['Spawn1'].spawnCreep(maxTransporter(energyCap),'TowerKeeper'+Game.time,{memory: {role: 'towerKeeper'}})==0)
+        {
+            console.log('Spawning TowerKeeper')
             roles_counter++;
         }
     }
