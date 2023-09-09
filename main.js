@@ -8,6 +8,7 @@ var roleSoldier=require('role.soldier');
 var roleFarmer=require('role.farmer');
 var roleBerserk=require('role.berserk');
 var roleTransporter=require('role.transporter');
+var roleClearer=require('role.clearer');
 var _ = require('lodash');
 
 
@@ -20,7 +21,7 @@ const maxCarrier=require('maxCarrier');
 const maxTransporter=require('maxTransporter');
 
 const req_harvesters=4;// role num 0
-const req_carriers=4;//role num 1
+const req_carriers=2;//role num 1
 const req_builders=4;// role num 2
 const req_haulers=2;// role num 3
 const req_upgraders=3;// role num 4
@@ -29,7 +30,8 @@ const req_soldiers=2;//role num 6
 const req_farmers=0;//role num 7
 const req_berserk=0;//role num 8
 const req_transporters=1;//role numm 9
-const roles_num=9;// 0 1 2 3 4 5 6 7 8 9// skipping berserks
+const req_clearers=0;//role num 10
+const roles_num=10;// 0 1 2 3 4 5 6 7 8 9// skipping berserks
 var roles_counter=0;
 module.exports.loop = function () {
     
@@ -50,6 +52,7 @@ module.exports.loop = function () {
     var pop_farmers=0;
     var pop_berserkers=0;
     var pop_transporters=0;
+    var pop_clearers=0;
     if(roles_counter>roles_num){roles_counter=0;}
 
     for(var name in Game.creeps) {
@@ -110,6 +113,11 @@ module.exports.loop = function () {
             roleTransporter.run(creep);
             pop_transporters++;
         }
+        else if(creep.memory.role=='clearer')
+        {
+            roleClearer.run(creep);
+            pop_clearers++;
+        }
         
     }
     console.log("-----------------------------------------------------------------------");
@@ -122,6 +130,7 @@ module.exports.loop = function () {
     console.log("Soldiers: ",pop_soldiers);
     console.log("Farmers: ", pop_farmers);
     console.log('Berskerkers: ', pop_berserkers);
+    console.log("Transporters: ",pop_transporters);
     console.log("roles_counter: ", roles_counter);
     
 
@@ -223,7 +232,14 @@ module.exports.loop = function () {
             console.log('Spawning Transporter')
             roles_counter++;
         }
-        
+    }
+    else if(pop_clearers<req_clearers && roles_counter==10)
+    {
+        if(Game.spawns['Spawn1'].spawnCreep([RANGED_ATTACK,RANGED_ATTACK,TOUGH,TOUGH,TOUGH,TOUGH,MOVE,MOVE,MOVE,MOVE],'Clearer'+Game.time,{memory: {role: 'clearer'}})==0)
+        {//costs 400 energy
+            console.log("Spawning Clearer");
+            roles_counter++;
+        }
     }
     roles_counter++;
 }

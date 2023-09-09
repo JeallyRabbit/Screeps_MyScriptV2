@@ -7,6 +7,7 @@ const berserkRole = {
       creep.memory.targetRoom = 'W7S34';//'W7S33';
     }
     creep.memory.targetRoom = 'W7S34';//my room
+    //creep.memory.targetRoom='W7S33';//room above me
     if(creep.memory.targetRoom=='W7S34')
     {
       creep.moveTo(Game.flags['Bersker_Camp']);
@@ -30,13 +31,12 @@ const berserkRole = {
         filter: (enemyCreep) => enemyCreep.owner.username !== 'Jeally_Rabbit',
       });
 
-      //console.log("num of hostile creeps: ", hostileCreep.length);
+      console.log("num of hostile creeps: ", hostileCreep.length);
       if (hostileCreep) {
         //console.log("Attacking");
-        console.log(creep.rangedAttack(hostileCreep));
+        console.log("ranged attack: ",creep.rangedAttack(hostileCreep));
         if (creep.rangedAttack(hostileCreep) == ERR_NOT_IN_RANGE) {
           creep.moveTo(hostileCreep);
-          console.log("!!");
         }
       } else {
         // If no hostile creeps, attack player-owned structures
