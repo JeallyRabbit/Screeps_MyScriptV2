@@ -39,14 +39,18 @@ var roleUpgrader = {
             }));
             var deposit= creep.pos.findClosestByRange(deposits);
             var withdraw_amount=0;
-            withdraw_amount=Math.min(creep.store.getFreeCapacity(), deposit.store[RESOURCE_ENERGY]);
-            if(withdraw_amount>0)
+            if(deposit)
             {
-                if(creep.withdraw(deposit,RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
+                withdraw_amount=Math.min(creep.store.getFreeCapacity(), deposit.store[RESOURCE_ENERGY]);
+                if(withdraw_amount>0)
                 {
-                    creep.moveTo(deposit);
+                    if(creep.withdraw(deposit,RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
+                    {
+                        creep.moveTo(deposit);
+                    }
                 }
             }
+            
         }
         else { // collect dropped energy
             const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {

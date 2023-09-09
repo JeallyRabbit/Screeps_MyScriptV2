@@ -1,11 +1,12 @@
 
 var roleFarmer = {
     run: function(creep) {
-        //var target_room='W8N2';
-        var target_room=creep.memory.target_room;
-        var home_room=creep.memory.home_room;
-        creep.moveTo(new RoomPosition(8,1, target_room));
-        if(creep.room=='[room '+target_room+']' && creep.store.getFreeCapacity() > 0)
+        
+        var home_room=creep.memory.home_room.name;
+        //creep.say(target_room);
+        //console.log(creep.memory.home_room.name);
+        //creep.moveTo(new RoomPosition(25,25, target_room));
+        if(creep.room=='[room '+creep.memory.target_room+']' && creep.store.getFreeCapacity() > 0)
         {// if have some free space and at destination room go harvest
             //creep.say("Harvesting");
             var sources = creep.room.find(FIND_SOURCES);
@@ -19,9 +20,14 @@ var roleFarmer = {
                 }
             }
         }
+        else if(creep.store.getFreeCapacity() > 0)
+        {// not in target room and have free space
+            creep.moveTo(new RoomPosition(25,25, creep.memory.target_room));
+            creep.say(creep.memory.target_room);
+        }
         else if(creep.store.getFreeCapacity()==0)
         {
-            creep.moveTo(new RoomPosition(15,46,home_room));
+            creep.moveTo(new RoomPosition(25,25,home_room));
             creep.say("coming back");
             var containers=creep.room.find(FIND_STRUCTURES, {
                 filter: (i) => {return i.structureType == STRUCTURE_CONTAINER}});
