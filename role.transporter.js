@@ -25,13 +25,7 @@ var roleTransporter = {//transfer energy grom containers to extensions and spawn
                 }
             });
             
-            storage=+creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_TOWER;
-                }
-            });
-            
-            console.log("storages: ",storage.length);
+            //console.log("storages: ",storage.length);
             if(storage.length>0)
             {
                 //creep.say(storage[0].store[RESOURCE_ENERGY]);

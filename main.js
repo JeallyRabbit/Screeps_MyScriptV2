@@ -29,7 +29,7 @@ const req_builders=4;// role num 2
 const req_haulers=2;// role num 3
 const req_upgraders=3;// role num 4
 const req_repairers=1;// role num 5
-const req_soldiers=2;//role num 6
+const req_soldiers=4;//role num 6
 const req_farmers=0;//role num 7
 const req_berserk=0;//role num 8
 const req_transporters=1;//role numm 9
@@ -61,6 +61,35 @@ module.exports.loop = function () {
         sources_hp[i]=0;
     }
     
+    var farming_rooms=[];
+    if(Game.time%1==0)
+    {
+        const roomName = Game.rooms[myRooms[0]].name; // Replace with the name of the room you want to get coordinates for
+        //console.log(roomName);
+        const letterMatch = roomName.match(/[A-Z]+/g); // Match one or more uppercase letters
+        const numberMatch = roomName.match(/\d+/g); // Match one or more digits
+
+        var x,y;
+        var letters;
+        if (letterMatch && numberMatch) {
+            // Extract the letters and numbers from the matches
+            letters = letterMatch.join(""); // Combine multiple letter matches if present
+            const numbers = numberMatch.map(Number); // Convert digit strings to numbers
+            x=numbers[0]-1;
+            y=numbers[1]-1;
+            //console.log(`Letters: ${letters}, Numbers: ${numbers}`);
+        }
+        
+        for(let i =0;i<3;i++)
+        {
+            for(let j=0;j<3;j++)
+            {
+                //console.log(letters[0]+(x+i)+letters[1]+(y+j));
+                farming_rooms.push(letters[0]+(x+i)+letters[1]+(y+j));
+            }
+        }
+    }
+
 
     var pop_harvesters=0;
     var pop_carriers=0;
@@ -127,6 +156,9 @@ module.exports.loop = function () {
         }
         else if(creep.memory.role=='farmer')
         {
+            const workParts = _.filter(creep.body, { type: WORK }).length;
+            creep.memory.harvesting_power=workParts*2;
+            //sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
             roleFarmer.run(creep);
             pop_farmers++;
         }
@@ -187,7 +219,7 @@ module.exports.loop = function () {
             if(Game.spawns['Spawn1'].spawnCreep(maxHarvester(energyCap),'Harvester'+Game.time, {memory: {role: 'harvester', target_source: assigned_source}})==0)
             {
                 const workParts = _.filter(creep.body, { type: WORK }).length;
-                creep.say(workParts);
+                //creep.say(workParts);
                 creep.memory.harvesting_power=workParts*2;
                 sources_hp[assigned_source]+=energyCap/150;//harvesting power approximately
                 console.log('Spawning Harvester');
@@ -238,7 +270,7 @@ module.exports.loop = function () {
     }
     else if(pop_soldiers<req_soldiers && roles_counter==6)
     {
-        if(Game.spawns['Spawn1'].spawnCreep([ATTACK,ATTACK,MOVE,MOVE],'Soldier'+Game.time,{memory: {role: 'soldier', target: Game.spawns.Spawn1.room.name}})==0)
+        if(Game.spawns['Spawn1'].spawnCreep([ATTACK,ATTACK,TOUGH,MOVE,MOVE],'Soldier'+Game.time,{memory: {role: 'soldier', target: Game.spawns.Spawn1.room.name}})==0)
         {
             console.log("Spawning Soldier");
             roles_counter++;
@@ -248,7 +280,7 @@ module.exports.loop = function () {
     else if(pop_farmers<req_farmers && roles_counter==7)
     {
         //console.log("ASD");
-        if(Game.spawns['Spawn1'].spawnCreep(maxFarmer(energyCap),'Farmer'+Game.time,{memory: {role: 'farmer', home_room: Game.spawns['Spawn1'].room, target_room: 'W8N2'}})==0)
+        if(Game.spawns['Spawn1'].spawnCreep(maxFarmer(energyCap),'Farmer'+Game.time,{memory: {role: 'farmer', home_room: Game.spawns['Spawn1'].room, target_room: farming_rooms%pop_farmers}})==0)
         {
             console.log("Spawning Farmer");
             roles_counter++;
