@@ -58,11 +58,17 @@ var roleRepairer = {
         }
 	    else if(creep.store[RESOURCE_ENERGY]==0 )
         {
-            //console.log("ASDASDASDAS");
-	        var sources = creep.room.find(FIND_SOURCES); // go to source
-            
-            if(creep.harvest(sources[1]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
+            const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
+                filter: resource => resource.resourceType == RESOURCE_ENERGY
+            })
+            const closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy)
+            if(droppedEnergy.length>0)
+            {
+                if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) 
+                {
+                // Move to it
+                creep.moveTo(closestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' } });
+                }
             }
 	    }
         }
