@@ -15,6 +15,19 @@ var roleUpgrader = {
 	       //creep.say('🚧 upgrade');
 	    }
 
+        var deposits = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_CONTAINER
+                && structure.store[RESOURCE_ENERGY]>0;
+            }
+        });
+        deposits=deposits.concat(creep.room.find(FIND_STRUCTURES,{
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_STORAGE;
+            }
+        }));
+
+
 	    if(creep.memory.upgrading) // if upgrading go upgrade
         {
             
@@ -25,18 +38,8 @@ var roleUpgrader = {
         }
         else if(!creep.memory.upgrading && getClosestEnergyDeposit(creep)!=-1)// if no energy and there are deposits
         {// go to deposits
+            creep.say("depo");
             
-            var deposits = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_CONTAINER
-                    && structure.store[RESOURCE_ENERGY]>0;
-                }
-            });
-            deposits=deposits.concat(creep.room.find(FIND_STRUCTURES,{
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_STORAGE;
-                }
-            }));
             var deposit= creep.pos.findClosestByRange(deposits);
             var withdraw_amount=0;
             if(deposit)

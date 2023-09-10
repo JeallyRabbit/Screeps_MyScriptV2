@@ -1,3 +1,4 @@
+var roleBuilder = require('role.builder');
 
 var roleFarmer = {
     run: function(creep) {
@@ -23,11 +24,12 @@ var roleFarmer = {
         else if(creep.store.getFreeCapacity() > 0)
         {// not in target room and have free space
             creep.moveTo(new RoomPosition(25,25, creep.memory.target_room));
-            creep.say(creep.memory.target_room);
+            //creep.say(creep.memory.target_room);
         }
-        else if(creep.store.getFreeCapacity()==0)
+        else if(creep.store.getFreeCapacity()==0)//not in target room and no free space
         {
-            creep.moveTo(new RoomPosition(25,25,home_room));
+            
+            creep.moveTo(new RoomPosition(18,35,home_room));
             //creep.say("coming back");
             var containers=creep.room.find(FIND_STRUCTURES, {
                 filter: (i) => {return i.structureType == STRUCTURE_CONTAINER}});
@@ -53,6 +55,8 @@ var roleFarmer = {
                     if(extensions[i].store[RESOURCE_ENERGY]<50)
                     extensions_full=0;
                 }
+
+
                 if (containers.length>0 )// if is full and there are containers, go to container with minimum energy
                 {
                 var withdraw_amount=1;
@@ -63,14 +67,15 @@ var roleFarmer = {
                 }
                 
                 }
-                else if(Game.spawns['Spawn1'].store.getFreeCapacity([RESOURCE_ENERGY])>0)//containers full and spawn is not full
-                {
+                else if(Game.spawns['Spawn1'].store.getFreeCapacity([RESOURCE_ENERGY])>0)
+                { //containers full and spawn is not full
                     if(creep.transfer(Game.spawns['Spawn1'], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(Game.spawns['Spawn1']);
                     }
                 }
                 else // go to extension
                 {
+                    
                     var extensions = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
                             return structure.structureType === STRUCTURE_EXTENSION
@@ -78,7 +83,7 @@ var roleFarmer = {
                         }
                     });
                     var closestExtension=creep.pos.findClosestByRange(extensions);
-                    if(closestExtension)
+                    if(closestExtension!=null)
                     {
                         var transfered_amount=1;
                         transfered_amount=Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
@@ -88,7 +93,8 @@ var roleFarmer = {
                         }
                     }
                     else{
-                        creep.drop(RESOURCE_ENERGY);
+                        //creep.say("bu");
+                        roleBuilder.run(creep);
                     }
                 }
         }
