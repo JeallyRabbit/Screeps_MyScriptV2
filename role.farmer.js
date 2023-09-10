@@ -28,7 +28,7 @@ var roleFarmer = {
         else if(creep.store.getFreeCapacity()==0)
         {
             creep.moveTo(new RoomPosition(25,25,home_room));
-            creep.say("coming back");
+            //creep.say("coming back");
             var containers=creep.room.find(FIND_STRUCTURES, {
                 filter: (i) => {return i.structureType == STRUCTURE_CONTAINER}});
                 containers.sort((a,b)=> a.store-b.store);
@@ -86,6 +86,9 @@ var roleFarmer = {
                         {// if creep have some energy go to extension and fill with energy
                             creep.moveTo(closestExtension);
                         }
+                    }
+                    else{
+                        creep.drop(RESOURCE_ENERGY);
                     }
                 }
         }
