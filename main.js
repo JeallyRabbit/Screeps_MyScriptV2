@@ -22,6 +22,7 @@ const maxCarrier=require('maxCarrier');
 const maxTransporter=require('maxTransporter');
 const maxFarmer = require('maxFarmer');
 const minSource=require('minSource');
+var RoomPositionFunctions=require('roomPositionFunctions');
 
 const req_harvesters=2;// role num 0
 const req_carriers=2;//role num 1
@@ -62,7 +63,7 @@ module.exports.loop = function () {
     }
     
     var farming_rooms=[];
-    if(Game.time%1==0)
+    if(Game.time%10==0)
     {
         const roomName = Game.rooms[myRooms[0]].name; // Replace with the name of the room you want to get coordinates for
         //console.log(roomName);

@@ -1,20 +1,23 @@
 var roleBuilder = require('role.builder');
+var RoomPositionFunctions=require('roomPositionFunctions');
 
 var roleFarmer = {
     run: function(creep) {
         
         var home_room=creep.memory.home_room.name;
-        //creep.say(target_room);
-        //console.log(creep.memory.home_room.name);
-        //creep.moveTo(new RoomPosition(25,25, target_room));
+        var x_source=25,y_source=25;
         if(creep.room=='[room '+creep.memory.target_room+']' && creep.store.getFreeCapacity() > 0)
         {// if have some free space and at destination room go harvest
             //creep.say("Harvesting");
             var sources = creep.room.find(FIND_SOURCES);
             for(let i=0;i<sources.length;i++)
             {
-                if(sources[i].energy>0 && creep.moveTo(sources[i])!=-2)
+                //console.log("creep.moveTo: ", creep.moveTo(sources[i]));
+                //creep.say(sources[i].pos.getOpenPositions().length);
+                if(sources[i].energy>0 && sources[i].pos.getOpenPositions().length>0)
                 {
+                    //console.log("harvest: ",creep.harvest(sources[i]));
+                    
                     if(creep.harvest(sources[i]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(sources[i]);
                     }
@@ -23,6 +26,27 @@ var roleFarmer = {
         }
         else if(creep.store.getFreeCapacity() > 0)
         {// not in target room and have free space
+            /*
+            if (creep.memory.path) {
+                // Reuse cached path
+                const moveResult = creep.moveByPath(creep.memory.path);
+                if (moveResult === OK) 
+                {
+                    creep.say("mov")
+                    // The creep successfully moved along the cached path
+                } 
+                else if (moveResult === ERR_NOT_FOUND) 
+                {
+                    creep.say("del");
+                    // The cached path is no longer valid, recalculate it
+                    delete creep.memory.path;
+                }
+            } else {
+                // Calculate and store a new path
+                creep.say("calc");
+                const path = creep.room.findPath(creep.pos, new RoomPosition(25,25,creep.memory.target_room));
+                creep.memory.path = path;
+            }*/
             creep.moveTo(new RoomPosition(25,25, creep.memory.target_room));
             //creep.say(creep.memory.target_room);
         }
