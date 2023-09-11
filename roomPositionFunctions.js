@@ -6,7 +6,7 @@ RoomPosition.prototype.getNearbyPositions=function getNearbyPositions(){
 
     for (x=startX;x<=this.x+1 && x<49;x++)
     {
-        for(y=startY;y<=this.x+1 && y<49;y++)
+        for(y=startY;y<=this.y+1 && y<49;y++)
         {
             if(x!== this.x || y!== this.y)
             {
