@@ -38,7 +38,7 @@ var roleUpgrader = {
         }
         else if(!creep.memory.upgrading && getClosestEnergyDeposit(creep)!=-1)// if no energy and there are deposits
         {// go to deposits
-            creep.say("depo");
+            //creep.say("depo");
             
             var deposit= creep.pos.findClosestByRange(deposits);
             var withdraw_amount=0;

@@ -61,9 +61,9 @@ var roleFarmer = {
                 {
                 var withdraw_amount=1;
                 withdraw_amount=Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[0].store[RESOURCE_ENERGY]);
-                if(creep.transfer(containers[0],RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
+                if(creep.transfer(containers[1],RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
                 {// if creep have no energy go to container and withdraw energy
-                    creep.moveTo(containers[0]);
+                    creep.moveTo(containers[1]);
                 }
                 
                 }
