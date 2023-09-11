@@ -25,7 +25,7 @@ const minSource=require('minSource');
 
 const req_harvesters=2;// role num 0
 const req_carriers=2;//role num 1
-const req_farmers=15;//role num 2
+const req_farmers=10;//role num 2
 const req_builders=1;// role num 3
 const req_haulers=1;// role num 4
 const req_upgraders=3;// role num 5
