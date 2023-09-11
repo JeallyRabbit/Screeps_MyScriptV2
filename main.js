@@ -22,6 +22,7 @@ const maxCarrier=require('maxCarrier');
 const maxTransporter=require('maxTransporter');
 const maxFarmer = require('maxFarmer');
 const minSource=require('minSource');
+var RoomPositionFunctions=require('roomPositionFunctions');
 
 const req_harvesters=2;// role num 0
 const req_carriers=2;//role num 1
@@ -62,6 +63,7 @@ module.exports.loop = function () {
     }
     
     var farming_rooms=[];
+    /*
     if(Game.time%1==0)
     {
         const roomName = Game.rooms[myRooms[0]].name; // Replace with the name of the room you want to get coordinates for
@@ -88,10 +90,10 @@ module.exports.loop = function () {
                 farming_rooms.push(letters[0]+(x+i)+letters[1]+(y+j));
             }
         }
-        */
+        
         farming_rooms.push('E37N53');
         farming_rooms.push('E37N54');
-        /*
+        
         const room=Game.rooms['W4N8'];
         console.log("room: ",room);
         if(room && room.controller)
@@ -103,8 +105,11 @@ module.exports.loop = function () {
                 console.log(`Room ${roomName} is not owned by any player.`);
             }
         }
-        */
+        
     }
+    */
+    farming_rooms.push('E37N53');
+    farming_rooms.push('E37N54');
     //console.log(farming_rooms);
 
     var pop_harvesters=0;
@@ -175,7 +180,7 @@ module.exports.loop = function () {
             //console.log(creep.memory.target_room);
             const workParts = _.filter(creep.body, { type: WORK }).length;
             creep.memory.harvesting_power=workParts*2;
-            //sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
+            sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
             roleFarmer.run(creep);
             pop_farmers++;
         }

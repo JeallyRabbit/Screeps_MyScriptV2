@@ -1,32 +1,42 @@
 var roleBuilder = require('role.builder');
+var RoomPositionFunctions=require('roomPositionFunctions');
 
 var roleFarmer = {
     run: function(creep) {
         
         var home_room=creep.memory.home_room.name;
-        //creep.say(target_room);
-        //console.log(creep.memory.home_room.name);
-        //creep.moveTo(new RoomPosition(25,25, target_room));
+        //creep.say(creep.memory.target_room);
+        var x_source=25,y_source=25;
         if(creep.room=='[room '+creep.memory.target_room+']' && creep.store.getFreeCapacity() > 0)
         {// if have some free space and at destination room go harvest
             //creep.say("Harvesting");
             var sources = creep.room.find(FIND_SOURCES);
             for(let i=0;i<sources.length;i++)
             {
-                if(sources[i].energy>0 && creep.moveTo(sources[i])!=-2)
+                //console.log("creep.moveTo: ", creep.moveTo(sources[i]));
+                //console.log(creep.pos===sources[i].pos.getNearbyPositions());
+                var nearby_source=sources[i].pos.getNearbyPositions();
+                if(sources[i].energy>0 && sources[i].pos.getOpenPositions().length>0)
+                {
+                    //console.log("harvest: ",creep.harvest(sources[i]));
+                    creep.moveTo(sources[i]);
+                    
+                }
+                else if(nearby_source.length>0 && nearby_source.indexOf(creep.pos))
                 {
                     if(creep.harvest(sources[i]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(sources[i]);
-                    }
+                        creep.moveTo(sources[i]);
+                        }
                 }
+                
             }
         }
         else if(creep.store.getFreeCapacity() > 0)
         {// not in target room and have free space
+            
             creep.moveTo(new RoomPosition(25,25, creep.memory.target_room));
-            //creep.say(creep.memory.target_room);
         }
-        else if(creep.store.getFreeCapacity()==0)//not in target room and no free space
+        else if(creep.store.getFreeCapacity()==0)//not in target room and no free space, put energy to most empty container
         {
             
             creep.moveTo(new RoomPosition(18,35,home_room));

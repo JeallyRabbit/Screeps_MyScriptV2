@@ -4,11 +4,11 @@ const berserkRole = {
     // Check if the creep has a target room
     if (!creep.memory.targetRoom) {
       // If not, set the target room (replace 'W1N1' with the room you want to attack)
-      creep.memory.targetRoom = 'W7S34';//'W7S33';
+      creep.memory.targetRoom = 'E36N54';//'W7S33';
     }
-    creep.memory.targetRoom = 'W7S34';//my room
+    creep.memory.targetRoom = 'E36N54';//my room
     //creep.memory.targetRoom='W7S33';//room above me
-    if(creep.memory.targetRoom=='W7S34')
+    if(creep.memory.targetRoom=='E36N54')
     {
       creep.moveTo(Game.flags['Bersker_Camp']);
       console.log('CAMPING')
