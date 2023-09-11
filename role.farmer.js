@@ -5,12 +5,12 @@ var roleFarmer = {
     run: function(creep) {
         
         var home_room=creep.memory.home_room.name;
-        //creep.say(creep.memory.target_room);
         var x_source=25,y_source=25;
         if(creep.room=='[room '+creep.memory.target_room+']' && creep.store.getFreeCapacity() > 0)
         {// if have some free space and at destination room go harvest
             //creep.say("Harvesting");
             var sources = creep.room.find(FIND_SOURCES);
+            creep.say(sources.length);
             for(let i=0;i<sources.length;i++)
             {
                 //console.log("creep.moveTo: ", creep.moveTo(sources[i]));
@@ -18,12 +18,19 @@ var roleFarmer = {
                 var nearby_source=sources[i].pos.getNearbyPositions();
                 if(sources[i].energy>0 && sources[i].pos.getOpenPositions().length>0)
                 {
+                    creep.say(i);
                     //console.log("harvest: ",creep.harvest(sources[i]));
-                    creep.moveTo(sources[i]);
+                    if(creep.harvest(sources[i]) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(sources[i]);
+                        }
+                    else{
+                        break;
+                    }
                     
                 }
                 else if(nearby_source.length>0 && nearby_source.indexOf(creep.pos))
                 {
+                    //creep.say("A");
                     if(creep.harvest(sources[i]) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(sources[i]);
                         }
@@ -36,14 +43,16 @@ var roleFarmer = {
             
             creep.moveTo(new RoomPosition(25,25, creep.memory.target_room));
         }
-        else if(creep.store.getFreeCapacity()==0)//not in target room and no free space, put energy to most empty container
+        else if(creep.store.getFreeCapacity()==0 && creep.room.name==home_room)//if in home room and no free space, put energy to most empty container
         {
             
             creep.moveTo(new RoomPosition(18,35,home_room));
             //creep.say("coming back");
             var containers=creep.room.find(FIND_STRUCTURES, {
-                filter: (i) => {return i.structureType == STRUCTURE_CONTAINER}});
-                containers.sort((a,b)=> a.store-b.store);
+                filter: (i) => {return i.structureType == STRUCTURE_CONTAINER 
+                    && i.store[RESOURCE_ENERGY]<2000}});
+
+                //containers.sort((a,b)=> a.store-b.store);
                 for(let i =0;i<containers.length;i++)
                 {
                     //console.log(containers[i].store);
@@ -55,25 +64,24 @@ var roleFarmer = {
                 }
                 var extensions = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return structure.structureType === STRUCTURE_EXTENSION 
-                        
+                        return structure.structureType == STRUCTURE_EXTENSION
+                        && structure.store[RESOURCE_ENERGY]<50
                     }
                 });
                 var extensions_full=1;//1 when all are full
-                for(let i=0;i<extensions.length;i++)
+                if(extensions.length>0)
                 {
-                    if(extensions[i].store[RESOURCE_ENERGY]<50)
                     extensions_full=0;
                 }
-
 
                 if (containers.length>0 )// if is full and there are containers, go to container with minimum energy
                 {
                 var withdraw_amount=1;
                 withdraw_amount=Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[0].store[RESOURCE_ENERGY]);
-                if(creep.transfer(containers[1],RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
+                var closest_container=creep.pos.findClosestByRange(containers);
+                if(creep.transfer(closest_container,RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
                 {// if creep have no energy go to container and withdraw energy
-                    creep.moveTo(containers[1]);
+                    creep.moveTo(closest_container);
                 }
                 
                 }
