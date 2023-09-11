@@ -11,11 +11,13 @@ var roleCarrier = {//transfer energy grom containers to extensions and spawn
         const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
             filter: resource => resource.resourceType == RESOURCE_ENERGY
         })
+
         if(droppedEnergy.length>0 && creep.store.getFreeCapacity()>0)//if there is dropped energy and creep have free space, go collect it
         {
             const closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy)
+            
             var biggestDroppedEnergy=droppedEnergy[0];
-            for(var i=0;i<droppedEnergy.length;i++)
+            for(var i=1;i<droppedEnergy.length;i++)
             {
                 if(droppedEnergy[i].energy>biggestDroppedEnergy.energy)
                 {
@@ -32,7 +34,8 @@ var roleCarrier = {//transfer energy grom containers to extensions and spawn
         {// go fill containers
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return structure.structureType === STRUCTURE_CONTAINER;
+                    return structure.structureType === STRUCTURE_CONTAINER
+                    && structure.store[RESOURCE_ENERGY]<2000;
                 }
             });
             if(containers.length>0)
@@ -45,9 +48,9 @@ var roleCarrier = {//transfer energy grom containers to extensions and spawn
                     creep.moveTo(closestContainer);
                 }
             }
-            else // if there are no containers  - fill spawn or extensions
+            else // if there are no containers  -  extensions
             {
-                //go to spawn
+                
                 if(Game.spawns['Spawn1'].store[RESOURCE_ENERGY]==300)
                 {// if spawn is full, fill extensions
                     var extensions = creep.room.find(FIND_STRUCTURES, {
@@ -67,7 +70,7 @@ var roleCarrier = {//transfer energy grom containers to extensions and spawn
                         }
                     }
                 }
-                else
+                else // no extensions - fill spawn
                 {
                     if(creep.transfer(Game.spawns['Spawn1'],RESOURCE_ENERGY)==ERR_NOT_IN_RANGE )
                     {
