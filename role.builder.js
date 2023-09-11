@@ -1,5 +1,6 @@
 var roleUpgrader=require('role.upgrader');
 const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
+const getClosestEnergyDeposit=require('getClosestEnergyDeposit');
 
 var roleBuilder = {
 
@@ -18,6 +19,18 @@ var roleBuilder = {
 	        creep.memory.building = true;
 	    }
 
+        var deposits = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_CONTAINER
+                && structure.store[RESOURCE_ENERGY]>50;
+            }
+        });
+        deposits=deposits.concat(creep.room.find(FIND_STRUCTURES,{
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_STORAGE;
+            }
+        }));
+
 	    if(creep.memory.building) { // if building go to construction site and build
 	        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if(targets.length) {
@@ -26,9 +39,10 @@ var roleBuilder = {
                 }
             }
 	    }
-        else if(!creep.memory.building && getMaxEnergyDeposit(creep)!=-1)// not building and there are deposits
+        else if(!creep.memory.building && creep.pos.findClosestByRange(deposits)!=null)// not building and there are deposits
         {
-            var deposit=getMaxEnergyDeposit(creep);
+            //var deposit=getMaxEnergyDeposit(creep);
+            var deposit=creep.pos.findClosestByRange(deposits);
             var withdraw_amount=0;
             withdraw_amount=Math.min(creep.store.getFreeCapacity(), deposit.store[RESOURCE_ENERGY]);
             if(withdraw_amount>0)
