@@ -2,7 +2,7 @@
 const { drop } = require('lodash');
 var roleHauler = require('role.hauler');
 
-var roleCarrier = {//transfer energy grom containers to extensions and spawn
+var roleCarrier = {//collect dropped energy and store it into extensions and containers
 
     /** @param {Creep} creep **/
     run: function(creep) 

@@ -1,13 +1,16 @@
 var roleBuilder = require('role.builder');
 var RoomPositionFunctions=require('roomPositionFunctions');
+var routeCreep=require('routeCreep');
 
 var roleFarmer = {
     run: function(creep) {
         
+        //creep.say(creep.memory.home_room.name==creep.room.name);
         var home_room=creep.memory.home_room.name;
         //var x_source=25,y_source=25;
         if(creep.room.name==creep.memory.target_room && creep.store.getFreeCapacity() > 0)
-        {// if have some free space and at destination room go harvest
+        {// if have some free space and at destination room - go harvest
+            //creep.say("!");
             var sources = creep.room.find(FIND_SOURCES);
             //creep.say(sources.length);
             if(creep.memory.source_id==undefined)
@@ -26,23 +29,62 @@ var roleFarmer = {
             else if(sources[creep.memory.source_id].pos.getOpenPositions().length<1 && !creep.pos.isNearTo(sources[creep.memory.source_id]))
             {// if sources became unavailable ( due to creeps around it) and creep is not near this source 
                 creep.memory.source_id=undefined;
+                //creep.say("U");
             }
             else{
                 if(creep.harvest(sources[creep.memory.source_id]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(sources[creep.memory.source_id]);
+                    creep.moveTo(sources[creep.memory.source_id], {noPathFinding: false, reusePath: 8 });
                     }
             }
             
         }
         else if(creep.store.getFreeCapacity() > 0)
-        {// not in target room and have free space
+        {// not in target room and have free space - go to target room
+            const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
             
-            creep.moveTo(new RoomPosition(25,25, creep.memory.target_room));
+            
+            if (!creep.memory.path) 
+            {
+                // Calculate and cache the path if it doesn't exist in memory
+                const path = creep.pos.findPathTo(destination, { ignoreCreeps: true });
+                creep.memory.path = JSON.stringify(path);
+                //creep.say("Calc");
+            }
+
+            if (creep.memory.path) {
+                //creep.say("USE");
+                
+                const path = JSON.parse(creep.memory.path);
+                if (path.length > 0) {
+                    const moveResult = creep.moveByPath(path);
+                    if (moveResult === OK) {
+                        // Successfully moved along the path
+                    } else if (moveResult === ERR_NOT_FOUND) {
+                        // Path is no longer valid, clear the cached path
+                        delete creep.memory.path;
+                    }
+                } else {
+                    // The path is empty, meaning the creep has reached its destination
+                    // Clear the cached path
+                    delete creep.memory.path;
+                }
+            } else {
+                // If the cached path doesn't exist, recalculate it and store it
+                const path = creep.pos.findPathTo(destination, { ignoreCreeps: true });
+                creep.memory.path = JSON.stringify(path);
+            }
+            
+            //routeCreep(creep,destination);
+            //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room), {noPathFinding: true, reusePath: 5 });
         }
         else if(creep.store.getFreeCapacity()==0 /*&& creep.room.name==home_room*/)//if not in home room and no free space, put energy to most empty container
-        {
+        {// in target room and no free space - go back
             
-            creep.moveTo(new RoomPosition(18,35,home_room));
+            //creep.moveTo(new RoomPosition(18,35,home_room, {noPathFinding: true, reusePath: 5 }));
+
+            //const destination = new RoomPosition(24,22,home_room); // Replace with your destination coordinates and room name
+            
+
             //creep.say("coming back");
             var containers=creep.room.find(FIND_STRUCTURES, {
                 filter: (i) => {return i.structureType == STRUCTURE_CONTAINER 
@@ -58,7 +100,7 @@ var roleFarmer = {
                         i--;
                     }
                 }
-                var extensions = creep.room.find(FIND_STRUCTURES, {
+            var extensions = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return structure.structureType == STRUCTURE_EXTENSION
                         && structure.store[RESOURCE_ENERGY]<50
@@ -77,14 +119,14 @@ var roleFarmer = {
                 var closest_container=creep.pos.findClosestByRange(containers);
                 if(creep.transfer(closest_container,RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
                 {// if creep have no energy go to container and withdraw energy
-                    creep.moveTo(closest_container);
+                    creep.moveTo(closest_container, {noPathFinding: false, reusePath: 8 });
                 }
                 
                 }
                 else if(Game.spawns['Spawn1'].store.getFreeCapacity([RESOURCE_ENERGY])>0)
                 { //containers full and spawn is not full
                     if(creep.transfer(Game.spawns['Spawn1'], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(Game.spawns['Spawn1']);
+                        creep.moveTo(Game.spawns['Spawn1'], {noPathFinding: false, reusePath: 8 });
                     }
                 }
                 else // go to extension
@@ -103,7 +145,7 @@ var roleFarmer = {
                         transfered_amount=Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
                         if(creep.transfer(closestExtension,RESOURCE_ENERGY,transfered_amount)==ERR_NOT_IN_RANGE )
                         {// if creep have some energy go to extension and fill with energy
-                            creep.moveTo(closestExtension);
+                            creep.moveTo(closestExtension, {noPathFinding: false, reusePath: 8 });
                         }
                     }
                     else{
@@ -111,6 +153,9 @@ var roleFarmer = {
                         roleBuilder.run(creep);
                     }
                 }
+
+
+            
         }
 
 	}

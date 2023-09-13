@@ -8,7 +8,7 @@ var towers = {
         _.forEach(towers, function(tower){
             var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => structure.hits < structure.hitsMax
-                && structure.hits<200000
+                && structure.hits<20000
             });
             if(closestDamagedStructure) {
                 tower.repair(closestDamagedStructure);
