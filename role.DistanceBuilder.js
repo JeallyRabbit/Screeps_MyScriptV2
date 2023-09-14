@@ -12,7 +12,7 @@ var roleFarmer = {
         //var x_source=25,y_source=25;
         if(creep.room.name!=creep.memory.home_room && creep.store[RESOURCE_ENERGY]==0)
         {// if no energy and not at home - go back
-            const destination = new RoomPosition(25, 25, creep.memory.home_room); // Replace with your destination coordinates and room name
+            const destination = new RoomPosition(25, 25, creep.memory.home_room.name); // Replace with your destination coordinates and room name
             
             if (!creep.memory.path) 
             {
