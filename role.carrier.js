@@ -2,10 +2,10 @@
 const { drop } = require('lodash');
 var roleHauler = require('role.hauler');
 
-var roleCarrier = {//transfer energy grom containers to extensions and spawn
+var roleCarrier = {//collect dropped energy and store it into extensions and containers
 
     /** @param {Creep} creep **/
-    run: function(creep) 
+    run: function(creep,spawn) 
     {
         
         const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
@@ -51,7 +51,7 @@ var roleCarrier = {//transfer energy grom containers to extensions and spawn
             else // if there are no containers  -  extensions
             {
                 
-                if(Game.spawns['Spawn1'].store[RESOURCE_ENERGY]==300)
+                if(spawn.store[RESOURCE_ENERGY]==300)
                 {// if spawn is full, fill extensions
                     var extensions = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
@@ -72,9 +72,9 @@ var roleCarrier = {//transfer energy grom containers to extensions and spawn
                 }
                 else // no extensions - fill spawn
                 {
-                    if(creep.transfer(Game.spawns['Spawn1'],RESOURCE_ENERGY)==ERR_NOT_IN_RANGE )
+                    if(creep.transfer(spawn,RESOURCE_ENERGY)==ERR_NOT_IN_RANGE )
                     {
-                        creep.moveTo(Game.spawns['Spawn1']);
+                        creep.moveTo(spawn);
                     }
                 }
                 
