@@ -5,6 +5,7 @@ var roleClaimer = {
     /** @param {Creep} creep **/
     run: function(creep) 
     {
+        //creep.say("S");
         //creep.say(creep.memory.target_room==creep.room.name);
         //creep.say(creep.room.name==creep.memory.target_room.name);
             if(creep.memory.target_room)

@@ -6,7 +6,8 @@ function maxClaimer(cap)// return array with max possible work parts for hauler
     }
     var parts=[];
     parts.push(CLAIM);
-    cap-=600;
+    parts.push(MOVE);
+    cap-=650;
 
     //console.log("avaliable work parts: ", Math.floor(cap/100));
     for(let i=0;i<Math.floor(cap/50);i++)

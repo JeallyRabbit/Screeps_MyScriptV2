@@ -7,7 +7,6 @@ const berserkRole = {
       creep.memory.targetRoom = 'E36N54';//'W7S33';
     }
     creep.memory.targetRoom = 'E36N54';//my room
-    //creep.memory.targetRoom='W7S33';//room above me
     if(creep.memory.targetRoom=='E36N54')
     {
       creep.moveTo(Game.flags['Bersker_Camp']);
