@@ -8,12 +8,13 @@ var roleFarmer = {
         //creep.say(creep.memory.home_room.name==creep.room.name);
         var home_room=creep.memory.home_room.name;
         var target_room=creep.memory.target_room;
-
+        //console.log("target_room :",target_room);
         //var x_source=25,y_source=25;
-        if(creep.room.name!=creep.memory.home_room && creep.store[RESOURCE_ENERGY]==0)
+        if(creep.room.name!=home_room && creep.store[RESOURCE_ENERGY]==0)
         {// if no energy and not at home - go back
             const destination = new RoomPosition(25, 25, creep.memory.home_room.name); // Replace with your destination coordinates and room name
-            
+            //creep.say("1");
+            //creep.say(home_room);
             if (!creep.memory.path) 
             {
                 // Calculate and cache the path if it doesn't exist in memory
@@ -47,6 +48,7 @@ var roleFarmer = {
         }
         else if(creep.store[RESOURCE_ENERGY]>0 && creep.room.name==target_room)
         {// if have energy and at destination - go build
+           // creep.say("2");
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if(targets.length) {
                 if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
@@ -56,7 +58,9 @@ var roleFarmer = {
         }
         else if(creep.store[RESOURCE_ENERGY]>0 && creep.room.name!=target_room)
         {// if have energy and not at destination - go target_room
-            const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
+            //creep.say("3");
+            //console.log("target_room: ",target_room);
+            const destination = new RoomPosition(25, 25, target_room); // Replace with your destination coordinates and room name
             
             if (!creep.memory.path) 
             {
@@ -91,6 +95,7 @@ var roleFarmer = {
         }
         else if(creep.store[RESOURCE_ENERGY]==0 && creep.room.name==home_room)
         {// if no energy and at home
+            //creep.say("4");
             var deposits = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_CONTAINER

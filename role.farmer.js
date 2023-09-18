@@ -47,7 +47,7 @@ var roleFarmer = {
             if (!creep.memory.path) 
             {
                 // Calculate and cache the path if it doesn't exist in memory
-                const path = creep.pos.findPathTo(destination, { ignoreCreeps: true });
+                const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
                 creep.memory.path = JSON.stringify(path);
                 //creep.say("Calc");
             }
@@ -71,7 +71,7 @@ var roleFarmer = {
                 }
             } else {
                 // If the cached path doesn't exist, recalculate it and store it
-                const path = creep.pos.findPathTo(destination, { ignoreCreeps: true });
+                const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
                 creep.memory.path = JSON.stringify(path);
             }
             
@@ -86,7 +86,7 @@ var roleFarmer = {
             if (!creep.memory.path) 
             {
                 // Calculate and cache the path if it doesn't exist in memory
-                const path = creep.pos.findPathTo(destination, { ignoreCreeps: true });
+                const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
                 creep.memory.path = JSON.stringify(path);
                 //creep.say("Calc");
             }
@@ -110,7 +110,7 @@ var roleFarmer = {
                 }
             } else {
                 // If the cached path doesn't exist, recalculate it and store it
-                const path = creep.pos.findPathTo(destination, { ignoreCreeps: true });
+                const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
                 creep.memory.path = JSON.stringify(path);
             }
             
