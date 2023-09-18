@@ -1,10 +1,11 @@
 
 var roleBuilder = require('role.builder');
 
-var roleHauler = {//transfer energy grom containers to extensions and spawn
+var roleHauler = {//transfer energy grom containers to extensions and spawn (if they are full equalize energy at containers)
 
     /** @param {Creep} creep **/
     run: function(creep) {
+        creep.say("H");
         var extensions = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_EXTENSION;
@@ -26,6 +27,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn
                 return structure.structureType === STRUCTURE_STORAGE;
             }
         }));
+        //console.log("containers: ", containers.length);
         if(containers.length==0)
         {
             roleBuilder.run(creep);
@@ -49,7 +51,6 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn
                 }
 
             }
-            
 	    if(creep.store[RESOURCE_ENERGY] == 0) // if is empty go to container
         {// go to container
             var cID=-1;
@@ -74,10 +75,10 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn
         }
         else if(extensions_full==1)// if all extensions are full go to spawn
         {
-            if(Game.spawns['Spawn1'].store[RESOURCE_ENERGY]==300)//if spawn is full equalize containers
+            if(Game.spawns['Spawn1'].store[RESOURCE_ENERGY]==300 && cID_min>=0)//if spawn is full equalize containers
             {// go to container with minimum energy
-                if(creep.transfer(containers[cID_min],RESOURCE_ENERGY,transfered_amount)==ERR_NOT_IN_RANGE  && cID_min>=0)
-                {// if creep have no energy go to container and withdraw energy
+                if(creep.transfer(containers[cID_min],RESOURCE_ENERGY,transfered_amount)==ERR_NOT_IN_RANGE  )
+                {// if creep have no energy go to container and put energy there
                     creep.moveTo(containers[cID_min]);
                 }
             }

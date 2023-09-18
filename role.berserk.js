@@ -2,47 +2,45 @@ const berserkRole = {
   /** @param {Creep} creep **/
   run: function (creep) {
     // Check if the creep has a target room
-    if (!creep.memory.targetRoom) {
-      // If not, set the target room (replace 'W1N1' with the room you want to attack)
-      creep.memory.targetRoom = 'E36N54';//'W7S33';
+    if (!creep.memory.target_room) {
+      return 0;
     }
-    creep.memory.targetRoom = 'E36N54';//my room
-    if(creep.memory.targetRoom=='E36N54')
-    {
-      creep.moveTo(Game.flags['Bersker_Camp']);
-      console.log('CAMPING')
-    }
+    target_room='E38N53';
     // Check if the creep is in the target room
-    if (creep.room.name !== creep.memory.targetRoom) {
+    if (creep.room.name !== creep.memory.target_room) {
       // If not, move to the target room
-      creep.say("mov");
-      const exitDir = Game.map.findExit(creep.room, creep.memory.targetRoom);
+      //creep.say("mov");
+      const exitDir = Game.map.findExit(creep.room, creep.memory.target_room);
       //const exit = creep.pos.findClosestByPath(exitDir);
-      const exit = new RoomPosition(25, 25, creep.memory.targetRoom);
-      creep.moveTo(exit);
+      const destination = new RoomPosition(25, 25, creep.memory.target_room);
+      creep.moveTo(destination);
     } 
     else 
     {
+      //console.log("WAR");
       // If in the target room, attack hostile creeps
       //creep.say("");
       //console.log("ENTERING ENEMY ROOML ", creep.room.name);
-      const hostileCreep = creep.room.find(FIND_HOSTILE_CREEPS, {
+      const hostileCreep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
         filter: (enemyCreep) => enemyCreep.owner.username !== 'Jeally_Rabbit',
       });
 
-      console.log("num of hostile creeps: ", hostileCreep.length);
-      if (hostileCreep) {
+      //console.log("num of hostile creeps: ", hostileCreep.length);
+      if (hostileCreep!=null) 
+      {
         //console.log("Attacking");
-        console.log("ranged attack: ",creep.rangedAttack(hostileCreep));
+        //console.log("ranged attack: ",creep.rangedAttack(hostileCreep));
         if (creep.rangedAttack(hostileCreep) == ERR_NOT_IN_RANGE) {
           creep.moveTo(hostileCreep);
         }
-      } else {
+      } 
+      else {
         // If no hostile creeps, attack player-owned structures
-        const structures = creep.room.find(FIND_HOSTILE_STRUCTURES, {
+        const structures = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
           filter: (structure) => structure.owner !== 'Jeally_Rabbit',
         });
-        if (structures.length > 0) {
+        if (structures!=null) {
+          //console.log("structures attack: ",creep.rangedAttack(structures[0]));
           if (creep.rangedAttack(structures[0]) === ERR_NOT_IN_RANGE) {
             creep.moveTo(structures[0]);
           }

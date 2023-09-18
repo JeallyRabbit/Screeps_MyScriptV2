@@ -34,7 +34,7 @@ var roleFarmer = {
             }
             else{
                 if(creep.harvest(sources[creep.memory.source_id]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(sources[creep.memory.source_id], {noPathFinding: false, reusePath: 8 });
+                    creep.moveTo(sources[creep.memory.source_id], {noPathFinding: false/*, reusePath: 8*/ });
                     }
             }
             

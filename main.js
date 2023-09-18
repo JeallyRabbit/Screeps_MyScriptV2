@@ -1,6 +1,6 @@
 var roleHarvester = require('role.harvester');
 var roleCarrier=require('role.carrier');
-var rolehauler = require('role.hauler');
+var roleHauler = require('role.hauler');
 var roleBuilder = require('role.builder');
 var roleUpgrader=require('role.upgrader');
 var roleRepairer=require('role.repairer')
@@ -64,23 +64,6 @@ module.exports.loop = function () {
         var spawn=Game.spawns[spawnName];
         //console.log("spawns_num: ",Game.spawns.length);
         if(spawn==undefined){continue;}
-        let creepsOfRoom=spawn.room.find(FIND_CREEPS);
-        
-        /*
-        Game.spawns[spawnName].memory.req_harvesters=2;// role num 0
-        Game.spawns[spawnName].memory.req_carriers=3;//role num 1
-        Game.spawns[spawnName].memory.req_farmers=8;//role num 2
-        Game.spawns[spawnName].memory.req_builders=3;// role num 3
-        Game.spawns[spawnName].memory.req_haulers=2;// role num 4
-        Game.spawns[spawnName].memory.req_upgraders=1;// role num 5
-        Game.spawns[spawnName].memory.req_repairers=1;// role num 6
-        Game.spawns[spawnName].memory.req_soldiers=4;//role num 7
-        Game.spawns[spawnName].memory.req_berserk=0;//role num 8
-        Game.spawns[spawnName].memory.req_transporters=1;//role numm 9
-        Game.spawns[spawnName].memory.req_towerKeepers=1;//role num 10
-        Game.spawns[spawnName].memory.req_claimers=0;//role num 11
-        Game.spawns[spawnName].memory.req_distanceBuilders=3//role num12
-        */
         if(Game.spawns[spawnName].memory.roles_counter==undefined)
         {
             Game.spawns[spawnName].memory.roles_counter=0;
@@ -143,7 +126,7 @@ module.exports.loop = function () {
             else if(creep.memory.role=='hauler')
             {
                 pop_haulers++;
-                rolehauler.run(creep,spawn);
+                roleHauler.run(creep,spawn);
             }
             else if(creep.memory.role=='builder')
             {
@@ -154,11 +137,6 @@ module.exports.loop = function () {
             {
                 pop_repairers++;
                 roleRepairer.run(creep,spawn);
-            }
-            else if(creep.memory.role=='hauler')
-            {
-                pop_haulers++;
-                rolehauler.run(creep,spawn);
             }
             else if(creep.memory.role=='soldier')
             {
@@ -213,7 +191,7 @@ module.exports.loop = function () {
     "Builders: ", pop_builders,"/",spawn.memory.req_builders," | ",
     "Repairers: ", pop_repairers, "/",spawn.memory.req_repairers);
 
-    console.log("haulers: ", pop_haulers," | ",
+    console.log("haulers: ", pop_haulers,"/",spawn.memory.req_haulers," | ",
     "Soldiers: ",pop_soldiers,"/",spawn.memory.req_soldiers," | ",
     "Farmers: ", pop_farmers,"/",spawn.memory.req_farmers," | ",
     'Berskerkers: ', pop_berserkers,"/",spawn.memory.req_berserk," | ",
@@ -246,6 +224,7 @@ module.exports.loop = function () {
     console.log("energyCap: ", energyCap);
     if(pop_harvesters<Game.spawns[spawnName].memory.req_harvesters && Game.spawns[spawnName].memory.roles_counter==0) // spawning new harvester
     {
+        
         var assigned_source=-1;
         var assigned_source=minSource(sources_hp);
         if(assigned_source>=0)
@@ -261,7 +240,6 @@ module.exports.loop = function () {
                 Game.spawns[spawnName].memory.roles_counter++;
             }
         }
-        
     }
     else if(pop_carriers<Game.spawns[spawnName].memory.req_carriers && Game.spawns[spawnName].memory.roles_counter==1 && pop_harvesters>0) // spawning new Carrier
     {
@@ -325,7 +303,7 @@ module.exports.loop = function () {
     }
     else if(pop_berserkers<Game.spawns[spawnName].memory.req_berserk && Game.spawns[spawnName].memory.roles_counter==8 && pop_harvesters)
     {
-        if(spawn.spawnCreep([RANGED_ATTACK,RANGED_ATTACK,TOUGH,TOUGH,TOUGH,TOUGH,MOVE,MOVE,MOVE,MOVE],'Berserker'+Game.time,{memory: {role: 'berserk',home_room: spawn.room}})==0)
+        if(spawn.spawnCreep([RANGED_ATTACK,RANGED_ATTACK,TOUGH,TOUGH,TOUGH,TOUGH,MOVE,MOVE,MOVE,MOVE],'Berserker'+Game.time,{memory: {role: 'berserk',home_room: spawn.room, target_room: 'E38N53'}})==0)
         {//costs 400 energy
             console.log("Spawning Berserker");
             Game.spawns[spawnName].memory.roles_counter++;

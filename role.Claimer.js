@@ -12,8 +12,10 @@ var roleClaimer = {
             {
                 if(creep.room.name==creep.memory.target_room)
                 {// if in target room - go claim 
+                    
                     if(creep.room.controller) {
-                        if(creep.claimController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                        //console.log(creep.reserveController(creep.room.controller));
+                        if(creep.reserveController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                             creep.moveTo(creep.room.controller);
                         }
                     }
