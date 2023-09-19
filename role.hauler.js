@@ -5,7 +5,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
 
     /** @param {Creep} creep **/
     run: function(creep) {
-        creep.say("H");
+        //creep.say("H");
         var extensions = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_EXTENSION;
@@ -53,7 +53,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
             }
 	    if(creep.store[RESOURCE_ENERGY] == 0) // if is empty go to container
         {// go to container
-            var cID=-1;
+            /*
             for(let i=0;i<containers.length;i++)
             {// finding not empty container
                 if(containers[i].store[RESOURCE_ENERGY]>0)
@@ -62,6 +62,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
                     break;
                 }
             }
+            */
             var withdraw_amount=1;
             if(cID_max>=0)
             {

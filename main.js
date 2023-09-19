@@ -60,7 +60,7 @@ module.exports.loop = function () {
             const room = Game.rooms[roomName];
             return room.controller && room.controller.my;
         });
-        //console.log(Game.spawns[spawnName])
+        console.log(Game.spawns[spawnName].name)
         var spawn=Game.spawns[spawnName];
         //console.log("spawns_num: ",Game.spawns.length);
         if(spawn==undefined){continue;}
@@ -202,6 +202,8 @@ module.exports.loop = function () {
     "DistanceBuilders: ",pop_distanceBuilders,"/",spawn.memory.req_distanceBuilders);
     console.log("roles_counter: ", Game.spawns[spawnName].memory.roles_counter);
     
+    
+    
     //console.log("sources_hp: ",sources_hp);
 
     var energyCap=spawn.energy;
@@ -311,19 +313,33 @@ module.exports.loop = function () {
     }
     else if(pop_transporters<Game.spawns[spawnName].memory.req_transporters && Game.spawns[spawnName].memory.roles_counter==9 && pop_carriers>0)
     {
-        if(spawn.spawnCreep(maxTransporter(energyCap),'Transporter'+Game.time,{memory: {role: 'transporter',home_room: spawn.room}})==0)
+        storages_num = spawn.room.find(FIND_MY_STRUCTURES, {
+            filter: { structureType: STRUCTURE_STORAGE }
+        });
+        if(storages_num.length>0)
         {
-            console.log('Spawning Transporter')
-            Game.spawns[spawnName].memory.roles_counter++;
+            if(spawn.spawnCreep(maxTransporter(energyCap),'Transporter'+Game.time,{memory: {role: 'transporter',home_room: spawn.room}})==0)
+            {
+                console.log('Spawning Transporter')
+                Game.spawns[spawnName].memory.roles_counter++;
+            }
         }
+        
     }
     else if(pop_towerKeepers<Game.spawns[spawnName].memory.req_towerKeepers && Game.spawns[spawnName].memory.roles_counter==10 && pop_harvesters>0)
     {
-        if(spawn.spawnCreep(maxTransporter(energyCap),'TowerKeeper'+Game.time,{memory: {role: 'towerKeeper',home_room: spawn.room}})==0)
+        towers_num = spawn.room.find(FIND_MY_STRUCTURES, {
+            filter: { structureType: STRUCTURE_TOWER }
+        });
+        if(towers_num.length>=1)
         {
-            console.log('Spawning TowerKeeper')
+            if(spawn.spawnCreep(maxTransporter(energyCap),'TowerKeeper'+Game.time,{memory: {role: 'towerKeeper',home_room: spawn.room}})==0)
+            {
+                console.log('Spawning TowerKeeper')
             Game.spawns[spawnName].memory.roles_counter++;
+            }
         }
+        
     }
     else if(pop_claimers<Game.spawns[spawnName].memory.req_claimers && spawn.memory.claiming_rooms.length>0)
     {

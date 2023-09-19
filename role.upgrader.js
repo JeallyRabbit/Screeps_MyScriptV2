@@ -1,5 +1,4 @@
 const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
-const getClosestEnergyDeposit=require('getClosestEnergyDeposit');
 var roleUpgrader = {
 
     /** @param {Creep} creep **/
@@ -26,7 +25,8 @@ var roleUpgrader = {
                 return structure.structureType === STRUCTURE_STORAGE;
             }
         }));
-
+        
+        //creep.say("UP");
 
 	    if(creep.memory.upgrading) // if upgrading go upgrade
         {
@@ -36,7 +36,7 @@ var roleUpgrader = {
                 creep.moveTo(creep.room.controller);
             }
         }
-        else if(!creep.memory.upgrading && getClosestEnergyDeposit(creep)!=-1)// if no energy and there are deposits
+        else if(!creep.memory.upgrading && creep.pos.findClosestByRange(deposits)!=null)// if no energy and there are deposits
         {// go to deposits
             //creep.say("depo");
             
