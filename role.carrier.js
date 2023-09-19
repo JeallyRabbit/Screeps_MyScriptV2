@@ -11,7 +11,8 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
         const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
             filter: resource => resource.resourceType == RESOURCE_ENERGY
         })
-
+        //creep.say(droppedEnergy.length);
+        if(droppedEnergy.length<1){roleHauler.run(creep);}
         if(droppedEnergy.length>0 && creep.store.getFreeCapacity()>0)//if there is dropped energy and creep have free space, go collect it
         {
             const closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy)
