@@ -49,7 +49,7 @@ module.exports.loop = function () {
         }
     }
     //var mySpawns=Game.spawns;
-    if(Game.time%100==0)
+    if(Game.time%50==0)
     {
         setRequiredPopulation(Game.spawns);
     }
@@ -197,7 +197,7 @@ module.exports.loop = function () {
     'Berskerkers: ', pop_berserkers,"/",spawn.memory.req_berserk," | ",
     "Transporters: ",pop_transporters,"/",spawn.memory.req_transporters);
 
-    console.log("TowerKeepers: ",pop_towerKeepers, " | ",
+    console.log("TowerKeepers: ",pop_towerKeepers,"/",spawn.memory.req_towerKeepers, " | ",
     "Claimers: ",pop_claimers,"/",spawn.memory.req_claimers," | ",
     "DistanceBuilders: ",pop_distanceBuilders,"/",spawn.memory.req_distanceBuilders);
     console.log("roles_counter: ", Game.spawns[spawnName].memory.roles_counter);
@@ -223,7 +223,10 @@ module.exports.loop = function () {
         available_energy+=num_extensions[i].energy;
     }
     energyCap=available_energy;
+    energyCap=spawn.room.energyAvailable;
     console.log("energyCap: ", energyCap);
+    
+
     if(pop_harvesters<Game.spawns[spawnName].memory.req_harvesters && Game.spawns[spawnName].memory.roles_counter==0) // spawning new harvester
     {
         

@@ -9,7 +9,7 @@ var towers = {
             var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
             var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => structure.hits < structure.hitsMax
-                && structure.hits<20000
+                && structure.hits<30000
             });
             if(closestHostile) {
                 tower.attack(closestHostile);

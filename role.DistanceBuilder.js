@@ -52,7 +52,7 @@ var roleFarmer = {
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if(targets.length) {
                 if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                    creep.moveTo(targets[0], {noPathFinding: false, reusePath: 8 });
                 }
             }
         }
@@ -65,7 +65,7 @@ var roleFarmer = {
             if (!creep.memory.path) 
             {
                 // Calculate and cache the path if it doesn't exist in memory
-                const path = creep.pos.findPathTo(destination, { ignoreCreeps: true });
+                const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
                 creep.memory.path = JSON.stringify(path);
                 //creep.say("Calc");
             }
@@ -89,7 +89,7 @@ var roleFarmer = {
                 }
             } else {
                 // If the cached path doesn't exist, recalculate it and store it
-                const path = creep.pos.findPathTo(destination, { ignoreCreeps: true });
+                const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
                 creep.memory.path = JSON.stringify(path);
             }
         }
@@ -117,7 +117,7 @@ var roleFarmer = {
                 {
                     if(creep.withdraw(deposit,RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
                     {
-                        creep.moveTo(deposit);
+                        creep.moveTo(deposit,{noPathFinding: false, reusePath: 8 });
                     }
                 }
             }
@@ -132,7 +132,7 @@ var roleFarmer = {
                     if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) 
                     {
                     // Move to it
-                    creep.moveTo(closestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' } });
+                    creep.moveTo(closestDroppedEnergy, {noPathFinding: false, reusePath: 8 });
                     }
                 }
 	        }

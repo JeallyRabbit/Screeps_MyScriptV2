@@ -34,7 +34,7 @@ var roleFarmer = {
             }
             else{
                 if(creep.harvest(sources[creep.memory.source_id]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(sources[creep.memory.source_id], {noPathFinding: false/*, reusePath: 8*/ });
+                    creep.moveTo(sources[creep.memory.source_id], {noPathFinding: false, reusePath: 9 });
                     }
             }
             
@@ -149,7 +149,7 @@ var roleFarmer = {
                     withdraw_amount=Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[0].store[RESOURCE_ENERGY]);
                     var closest_container=creep.pos.findClosestByRange(containers);
                     if(creep.transfer(closest_container,RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
-                    {// if creep have no energy go to container and withdraw energy
+                    {// if creep have no energy go to container and store
                         creep.moveTo(closest_container, {noPathFinding: false, reusePath: 8 });
                     }
                     
