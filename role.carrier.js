@@ -11,7 +11,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
         const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
             filter: resource => resource.resourceType == RESOURCE_ENERGY
         })
-        creep.say(droppedEnergy.length);
+        //creep.say(droppedEnergy.length);
         if(droppedEnergy.length<1){
             roleHauler.run(creep);
         //creep.say("H");

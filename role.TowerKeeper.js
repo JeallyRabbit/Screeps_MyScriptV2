@@ -10,7 +10,7 @@ var roleTowerKeeper = {
         //creep.say(deposit);
         var towers=creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
-                return structure.structureType === STRUCTURE_TOWER;
+                return structure.structureType === STRUCTURE_TOWER  && structure.store[RESOURCE_ENERGY]<900 ;
             }
         });
         if(creep.store.getFreeCapacity()>0 && deposit!=undefined && deposit!=-1)

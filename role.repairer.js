@@ -7,12 +7,12 @@ var roleRepairer = {
     run: function(creep) {
         //var targets=creep.room.find(FIND_CONSTRUCTION_SITES)
         var targets=creep.room.find(FIND_STRUCTURES, {
-            filter: object => object.hits<object.hitsMax && object.hits<20000
+            filter: object => object.hits<object.hitsMax && object.hits<30000 && object.hits!=object.hitsMax
         });
-        if(targets.length<1)
+        if(targets.length<=1)
         {
             //creep.say("no repair");
-            //roleBuilder.run(creep);
+            roleBuilder.run(creep);
         }
         else{
             targets.sort((a,b)=> a.hits - b.hits);

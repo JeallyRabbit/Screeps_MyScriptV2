@@ -13,7 +13,12 @@ var roleUpgrader = {
 	        creep.memory.upgrading = true;
 	       //creep.say('🚧 upgrade');
 	    }
-
+        if(creep.room.energyAvailable<creep.room.energyCapacityAvailable)
+        {
+            creep.moveTo(creep.room.controller);
+            //creep.say("STOP");
+            return 0;
+        }
         var deposits = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_CONTAINER
@@ -30,8 +35,8 @@ var roleUpgrader = {
 
 	    if(creep.memory.upgrading) // if upgrading go upgrade
         {
-            
-            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE)
+            //creep.say(creep.pos.getRangeTo(creep.room.controller));
+            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE )
             {
                 creep.moveTo(creep.room.controller);
             }
