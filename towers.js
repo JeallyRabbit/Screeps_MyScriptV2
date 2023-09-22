@@ -1,8 +1,8 @@
 var towers = {
 
     /** @param {Game} game **/
-    tick: function() {
-        towers = Game.spawns.Spawn1.room.find(FIND_MY_STRUCTURES, {
+    tick: function(spawn) {
+        towers = spawn.room.find(FIND_MY_STRUCTURES, {
                     filter: { structureType: STRUCTURE_TOWER }
                 })
         _.forEach(towers, function(tower){

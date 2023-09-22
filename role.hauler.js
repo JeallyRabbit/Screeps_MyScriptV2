@@ -4,7 +4,7 @@ var roleBuilder = require('role.builder');
 var roleHauler = {//transfer energy grom containers to extensions and spawn (if they are full equalize energy at containers)
 
     /** @param {Creep} creep **/
-    run: function(creep) {
+    run: function(creep,spawn) {
         //creep.say("H");
         var extensions = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -22,11 +22,13 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
                 return structure.structureType === STRUCTURE_CONTAINER;
             }
         });
+        /*
         containers=containers.concat(creep.room.find(FIND_STRUCTURES,{
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_STORAGE;
             }
         }));
+        */
         //console.log("containers: ", containers.length);
         if(containers.length==0)
         {
@@ -39,7 +41,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
             var min_energy=5000000;
             for(let i=0;i<containers.length;i++)
             {
-                if(containers[i].store[RESOURCE_ENERGY]>=max_energy)
+                if(containers[i].store[RESOURCE_ENERGY]>=max_energy )
                 {
                     max_energy=containers[i].store[RESOURCE_ENERGY];
                     cID_max=i;
@@ -53,16 +55,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
             }
 	    if(creep.store[RESOURCE_ENERGY] == 0) // if is empty go to container
         {// go to container
-            /*
-            for(let i=0;i<containers.length;i++)
-            {// finding not empty container
-                if(containers[i].store[RESOURCE_ENERGY]>0)
-                {
-                    cID=i;
-                    break;
-                }
-            }
-            */
+           
             var withdraw_amount=1;
             if(cID_max>=0)
             {
@@ -76,21 +69,21 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
         }
         else if(extensions_full==1)// if all extensions are full go to spawn
         {
-            if(Game.spawns['Spawn1'].store[RESOURCE_ENERGY]==300 && cID_min>=0)//if spawn is full equalize containers
+            if(spawn.store[RESOURCE_ENERGY]==300 && cID_min>=0)//if spawn is full equalize containers
             {// go to container with minimum energy
                 if(creep.transfer(containers[cID_min],RESOURCE_ENERGY,transfered_amount)==ERR_NOT_IN_RANGE  )
                 {// if creep have no energy go to container and put energy there
                     creep.moveTo(containers[cID_min]);
                 }
             }
-            else // spawn is not full
+            else // spawn is not full go fill the spawn
             {
                 var transfered_amount=1;
-            transfered_amount=Math.min(creep.store[RESOURCE_ENERGY], Game.spawns['Spawn1'].store[RESOURCE_ENERGY].getFreeCapacity);
-            if(creep.transfer(Game.spawns['Spawn1'],RESOURCE_ENERGY,transfered_amount)==ERR_NOT_IN_RANGE )
+            transfered_amount=Math.min(creep.store[RESOURCE_ENERGY], spawn.store[RESOURCE_ENERGY].getFreeCapacity);
+            if(creep.transfer(spawn,RESOURCE_ENERGY,transfered_amount)==ERR_NOT_IN_RANGE )
                 {// if creep have some energy go to extension and fill with energy
                    ;
-                    creep.moveTo(Game.spawns['Spawn1']);
+                    creep.moveTo(spawn);
                 }
             }
         }

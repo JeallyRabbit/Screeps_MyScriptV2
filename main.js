@@ -41,7 +41,7 @@ profiler.enable();
 module.exports.loop = function () {
     profiler.wrap(function()
     {
-        towers.tick();
+        
     
     for(var i in Memory.creeps) {  //clearing data about dead creeps
         if(!Game.creeps[i]) {
@@ -91,7 +91,7 @@ module.exports.loop = function () {
     var pop_upgraders=0;
     var pop_repairers=0;
     var pop_haulers=0;
-    var pop_soldiers=2;
+    var pop_soldiers=0;
     var pop_farmers=0;
     var pop_berserkers=0;
     var pop_transporters=0;
@@ -100,6 +100,7 @@ module.exports.loop = function () {
     var pop_distanceBuilders=0;
     if(Game.spawns[spawnName].memory.roles_counter>roles_num){Game.spawns[spawnName].memory.roles_counter=0;}
 
+    towers.tick(spawn);
     for(var name in Game.creeps) {
         var creep = Game.creeps[name];
         if(creep.memory.home_room.name== spawn.room.name)

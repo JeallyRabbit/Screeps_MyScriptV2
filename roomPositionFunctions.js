@@ -17,30 +17,11 @@ RoomPosition.prototype.getNearbyPositions=function getNearbyPositions(){
     return positions;
 }
 
-RoomPosition.prototype.getOpenPositions=function getOpenPositions(){
+RoomPosition.prototype.getOpenPositions=function getOpenPositions(){ //returns open positions around 
     let nearbyPositions = this.getNearbyPositions();
 
     
     let terrain = Game.map.getRoomTerrain(this.roomName);
-    /*
-    switch(terrain.get(10,15))
-    {
-        case TERRAIN_MASK_WALL:
-            break;
-        case TARRAIN_MASK_SWAMP:
-            break;
-        case 0:
-            break;
-    }
-    */
-    /*
-    const found=Game.flags.Flag1.pos.lookFor(LOOK_CREEPS);
-
-    if(found.length && found[0].getActiveBodyparts(ATTACK)==0)
-    {
-        creep.moveTO(found[0]);
-    }
-    */
 
     let walkablePositions =_.filter(nearbyPositions, function(pos)
     {
