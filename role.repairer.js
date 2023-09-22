@@ -5,6 +5,7 @@ var roleRepairer = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
+        //creep.say("R");
         //var targets=creep.room.find(FIND_CONSTRUCTION_SITES)
         var targets=creep.room.find(FIND_STRUCTURES, {
             filter: object => object.hits<object.hitsMax && object.hits<30000 && object.hits!=object.hitsMax

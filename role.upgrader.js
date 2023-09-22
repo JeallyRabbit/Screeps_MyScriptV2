@@ -13,12 +13,14 @@ var roleUpgrader = {
 	        creep.memory.upgrading = true;
 	       //creep.say('🚧 upgrade');
 	    }
-        if(creep.room.energyAvailable<creep.room.energyCapacityAvailable)
+        /*
+        if(creep.room.energyAvailable<creep.room.energyCapacityAvailable/2)
         {
             creep.moveTo(creep.room.controller);
             //creep.say("STOP");
             return 0;
         }
+        */
         var deposits = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_CONTAINER
