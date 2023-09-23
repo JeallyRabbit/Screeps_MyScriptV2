@@ -31,7 +31,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
             if (creep.pickup(biggestDroppedEnergy) == ERR_NOT_IN_RANGE) 
             {
                 // Move to it
-                creep.moveTo(biggestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' } });
+                creep.moveTo(biggestDroppedEnergy);
             }
         }
         else

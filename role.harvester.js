@@ -20,7 +20,7 @@ var roleHarvester = {
             if(creep.memory.harvesting==true)
             {
                 creep.harvest(sources[source_index]);
-                if(Game.time%50==0 )
+                if(Game.time%100==0 )
                 {
                     var positions=sources[source_index].pos.getNearbyPositions();
                     //console.log("Creep at: ",creep.pos)

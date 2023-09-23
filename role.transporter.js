@@ -23,7 +23,7 @@ var roleTransporter = {//transfer energy grom containers to storage
             var storage=creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_STORAGE
-                    && structure.store[RESOURCE_ENERGY]<20000;
+                    && structure.store[RESOURCE_ENERGY]<100000;
                 }
             });
             
