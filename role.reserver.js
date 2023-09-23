@@ -1,11 +1,11 @@
 
 
-var roleClaimer = {
+var roleReserver = {
 
     /** @param {Creep} creep **/
     run: function(creep) 
     {
-        //creep.say("S");
+        //creep.say("R");
         //creep.say(creep.memory.target_room==creep.room.name);
         //creep.say(creep.room.name==creep.memory.target_room.name);
             if(creep.memory.target_room)
@@ -14,9 +14,9 @@ var roleClaimer = {
                 {// if in target room - go claim 
                     
                     if(creep.room.controller) {
-                        //creep.say(creep.claimController(creep.room.controller));
+                        //creep.say(creep.reserveController(creep.room.controller));
                         //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room));
-                        if(creep.claimController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                        if(creep.reserveController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                             //creep.say("QWE");
                             creep.moveTo(creep.room.controller);
                         }
@@ -33,4 +33,4 @@ var roleClaimer = {
             }
 	}
 };
-module.exports = roleClaimer;
+module.exports = roleReserver;
