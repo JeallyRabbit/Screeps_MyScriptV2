@@ -22,13 +22,13 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
                 return structure.structureType === STRUCTURE_CONTAINER;
             }
         });
-        /*
+        
         containers=containers.concat(creep.room.find(FIND_STRUCTURES,{
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_STORAGE;
             }
         }));
-        */
+        
         //console.log("containers: ", containers.length);
         if(containers.length==0)
         {
@@ -41,12 +41,12 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
             var min_energy=5000000;
             for(let i=0;i<containers.length;i++)
             {
-                if(containers[i].store[RESOURCE_ENERGY]>=max_energy )
+                if(containers[i].store[RESOURCE_ENERGY]/containers[i].store.getCapacity(RESOURCE_ENERGY)>=max_energy )
                 {
                     max_energy=containers[i].store[RESOURCE_ENERGY];
                     cID_max=i;
                 }
-                if(containers[i].store[RESOURCE_ENERGY]<min_energy)
+                if(containers[i].store[RESOURCE_ENERGY]/containers[i].store.getCapacity(RESOURCE_ENERGY)<min_energy)
                 {
                     min_energy=containers[i].store[RESOURCE_ENERGY];
                     cID_min=i;

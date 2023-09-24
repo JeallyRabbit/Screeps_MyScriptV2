@@ -10,7 +10,7 @@ function setRequiredPopulation(mySpawns)
     mySpawns['Spawn1'].memory.num_towers=mySpawns['Spawn1'].memory.num_towers.length;
     mySpawns['Spawn1'].memory.req_harvesters=2;// role num 0
     mySpawns['Spawn1'].memory.req_carriers=2;//role num 1
-    mySpawns['Spawn1'].memory.req_farmers=4;//role num 2
+    mySpawns['Spawn1'].memory.req_farmers=6;//role num 2
     mySpawns['Spawn1'].memory.req_builders=2;// role num 3
     if(mySpawns['Spawn1'].room.find(FIND_MY_CONSTRUCTION_SITES).length==0)
     {
@@ -43,9 +43,9 @@ function setRequiredPopulation(mySpawns)
         }
     });
     mySpawns['Spawn2'].memory.num_towers=mySpawns['Spawn2'].memory.num_towers.length;
-    mySpawns['Spawn2'].memory.req_harvesters=3;// role num 0
+    mySpawns['Spawn2'].memory.req_harvesters=2;// role num 0
     mySpawns['Spawn2'].memory.req_carriers=3;//role num 1
-    mySpawns['Spawn2'].memory.req_farmers=4;//role num 2
+    mySpawns['Spawn2'].memory.req_farmers=6;//role num 2
     mySpawns['Spawn2'].memory.req_builders=2;// role num 3
     if(mySpawns['Spawn2'].room.find(FIND_MY_CONSTRUCTION_SITES).length==0)
     {
