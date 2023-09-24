@@ -1,19 +1,18 @@
 function maxReserver(cap)// return array with max possible work parts for hauler
 {
-    if(cap>1500)
-    {
-        cap=1500;
+    if (cap > 1500) {
+        cap = 1500;
     }
-    var parts=[];
+    var parts = [];
     parts.push(CLAIM);
     parts.push(CLAIM)
     parts.push(MOVE);
-    cap-=1350;
+    cap -= 1350;
 
     //console.log("avaliable work parts: ", Math.floor(cap/100));
-    for(let i=0;i<Math.floor(cap/50);i++)
-    {
+    for (let i = 0; i < Math.floor(cap / 650); i++) {
         parts.push(MOVE);
+        parts.push(CLAIM);
     }
     return parts;
 }

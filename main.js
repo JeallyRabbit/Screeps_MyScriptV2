@@ -112,12 +112,13 @@ module.exports.loop = function () {
                 
                 //console.log("possible parts: ",maxHarvester(spawn.room.energyAvailable).length);
                 //console.log("current parts: ", creep.body.length);
-                if(maxHarvester(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=0)
+                if(Game.time%50==0 && maxHarvester(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=0)
                 {
-                    roles_counter=0;
-                    creep.suicide();
+                    console.log("can spawn better harvester");
+                    spawn.memory.roles_counter=0;
+                    pop_harvesters--;
+                    //creep.suicide();
                 }
-                else{
                     const workParts = _.filter(creep.body, { type: WORK }).length;
                 creep.memory.harvesting_power=workParts*2;
                 sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
@@ -125,45 +126,49 @@ module.exports.loop = function () {
                 roleHarvester.run(creep,spawn);
                 pop_harvesters++;
                 //creep.say("");
-                }
+                
                 
             }
             else if(creep.memory.role=='carrier')
             {
-                if(maxCarrier(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=1)
+                if(Game.time%50==0 && maxCarrier(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=1)
                 {
-                    roles_counter=1;
-                    creep.suicide();
+                    spawn.memory.roles_counter=1;
+                    pop_carriers--;
+                    //creep.suicide();
                 }
-                else{
-                    roleCarrier.run(creep,spawn);
-                    pop_carriers++;
-                }
+                
+                roleCarrier.run(creep,spawn);
+                pop_carriers++;
+                
             }  
             else if(creep.memory.role=='upgrader')
             {
-                if(maxUpgrader(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=5 && creep.store[RESOURCE_ENERGY]==0)
+                if(Game.time%50==0 && maxUpgrader(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=5 && creep.store[RESOURCE_ENERGY]==0)
                 {
-                    roles_counter=5;
-                    creep.suicide();
+                    spawn.memory.roles_counter=5;
+                    pop_upgraders--;
+                    //creep.suicide();
                 }
-                else{
-                    pop_upgraders++;
-                    roleUpgrader.run(creep,spawn);
-                }
+                
+                pop_upgraders++;
+                roleUpgrader.run(creep,spawn);
+                
                 
             }
             else if(creep.memory.role=='hauler')
             {
-                if(maxHauler(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=4)
+                if(Game.time%50==0 && maxHauler(spawn.room.energyAvailable).length>creep.body.length 
+                && spawn.memory.roles_counter!=4 && pop_haulers-spawn.memory.req_haulers<1)
                 {
-                    roles_counter=4;
-                    creep.suicide();
+                    spawn.memory.roles_counter=4;
+                    pop_haulers--;
+                    //creep.suicide();
                 }
-                else{
-                    pop_haulers++;
-                    roleHauler.run(creep,spawn);
-                }
+                
+                pop_haulers++;
+                roleHauler.run(creep,spawn);
+                
             }
             else if(creep.memory.role=='builder')
             {
@@ -183,18 +188,18 @@ module.exports.loop = function () {
             }
             else if(creep.memory.role=='farmer')
             {
-                if(maxFarmer(spawn.room.energyAvailable).length>creep.body.length && creep.store[RESOURCE_ENERGY]==0 && spawn.memory.roles_counter!=2)
+                if(Game.time%50==0 && maxFarmer(spawn.room.energyAvailable).length>creep.body.length && creep.store[RESOURCE_ENERGY]==0 && spawn.memory.roles_counter!=2)
                 {
-                    roles_counter=2;
-                    creep.suicide;
+                    spawn.memory.roles_counter=2;
+                    pop_farmers--;
+                    //creep.suicide;
                 }
-                else{
-                    const workParts = _.filter(creep.body, { type: WORK }).length;
+                const workParts = _.filter(creep.body, { type: WORK }).length;
                 creep.memory.harvesting_power=workParts*2;
                 sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
                 roleFarmer.run(creep,spawn);
                 pop_farmers++;
-                }
+                
                 
             }
             else if(creep.memory.role=='berserk')
@@ -232,6 +237,7 @@ module.exports.loop = function () {
         
         
     }
+
     console.log("-----------------------", Game.spawns[spawnName] ,"---------------------------------");
     console.log("Harvesters:", pop_harvesters,"/",spawn.memory.req_harvesters," | ",
     "Carriers: ", pop_carriers,"/",spawn.memory.req_carriers," | ",
@@ -360,19 +366,14 @@ module.exports.loop = function () {
         }
         
     }
-    else if(pop_towerKeepers<Game.spawns[spawnName].memory.req_towerKeepers && Game.spawns[spawnName].memory.roles_counter==10 && pop_harvesters>0)
+    else if(pop_towerKeepers<Game.spawns[spawnName].memory.req_towerKeepers && Game.spawns[spawnName].memory.roles_counter==10)
     {
-        towers_num = spawn.room.find(FIND_MY_STRUCTURES, {
-            filter: { structureType: STRUCTURE_TOWER }
-        });
-        if(towers_num.length>=1)
+        if(spawn.spawnCreep(maxTransporter(energyCap),'TowerKeeper'+Game.time,{memory: {role: 'towerKeeper',home_room: spawn.room}})==0)
         {
-            if(spawn.spawnCreep(maxTransporter(energyCap),'TowerKeeper'+Game.time,{memory: {role: 'towerKeeper',home_room: spawn.room}})==0)
-            {
-                console.log('Spawning TowerKeeper')
+            console.log('Spawning TowerKeeper')
             Game.spawns[spawnName].memory.roles_counter++;
-            }
         }
+        
         
     }
     else if(pop_claimers<Game.spawns[spawnName].memory.req_claimers && spawn.memory.claiming_rooms.length>0)
