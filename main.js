@@ -62,7 +62,7 @@ module.exports.loop = function () {
             const room = Game.rooms[roomName];
             return room.controller && room.controller.my;
         });
-        console.log(Game.spawns[spawnName].name)
+        //console.log(Game.spawns[spawnName].name)
         var spawn=Game.spawns[spawnName];
         //console.log("spawns_num: ",Game.spawns.length);
         if(spawn==undefined){continue;}
@@ -112,34 +112,58 @@ module.exports.loop = function () {
                 
                 //console.log("possible parts: ",maxHarvester(spawn.room.energyAvailable).length);
                 //console.log("current parts: ", creep.body.length);
-                if(maxHarvester(spawn.room.energyAvailable).length>creep.body.length)
+                if(maxHarvester(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=0)
                 {
                     roles_counter=0;
                     creep.suicide();
                 }
-
-                const workParts = _.filter(creep.body, { type: WORK }).length;
+                else{
+                    const workParts = _.filter(creep.body, { type: WORK }).length;
                 creep.memory.harvesting_power=workParts*2;
                 sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
                 //creep.say(workParts);
                 roleHarvester.run(creep,spawn);
                 pop_harvesters++;
                 //creep.say("");
+                }
+                
             }
             else if(creep.memory.role=='carrier')
             {
-                roleCarrier.run(creep,spawn);
-                pop_carriers++;
-            }
+                if(maxCarrier(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=1)
+                {
+                    roles_counter=1;
+                    creep.suicide();
+                }
+                else{
+                    roleCarrier.run(creep,spawn);
+                    pop_carriers++;
+                }
+            }  
             else if(creep.memory.role=='upgrader')
             {
-                pop_upgraders++;
-                roleUpgrader.run(creep,spawn);
+                if(maxUpgrader(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=5 && creep.store[RESOURCE_ENERGY]==0)
+                {
+                    roles_counter=5;
+                    creep.suicide();
+                }
+                else{
+                    pop_upgraders++;
+                    roleUpgrader.run(creep,spawn);
+                }
+                
             }
             else if(creep.memory.role=='hauler')
             {
-                pop_haulers++;
-                roleHauler.run(creep,spawn);
+                if(maxHauler(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=4)
+                {
+                    roles_counter=4;
+                    creep.suicide();
+                }
+                else{
+                    pop_haulers++;
+                    roleHauler.run(creep,spawn);
+                }
             }
             else if(creep.memory.role=='builder')
             {
@@ -159,13 +183,19 @@ module.exports.loop = function () {
             }
             else if(creep.memory.role=='farmer')
             {
-                //creep.suicide();
-                //console.log(creep.memory.target_room);
-                const workParts = _.filter(creep.body, { type: WORK }).length;
+                if(maxFarmer(spawn.room.energyAvailable).length>creep.body.length && creep.store[RESOURCE_ENERGY]==0 && spawn.memory.roles_counter!=2)
+                {
+                    roles_counter=2;
+                    creep.suicide;
+                }
+                else{
+                    const workParts = _.filter(creep.body, { type: WORK }).length;
                 creep.memory.harvesting_power=workParts*2;
                 sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
                 roleFarmer.run(creep,spawn);
                 pop_farmers++;
+                }
+                
             }
             else if(creep.memory.role=='berserk')
             {
