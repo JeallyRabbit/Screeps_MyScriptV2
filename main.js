@@ -54,6 +54,10 @@ module.exports.loop = function () {
     if(Game.time%50==0)
     {
         setRequiredPopulation(Game.spawns);
+        if(Game.cpu.bucket==10000)
+        {
+            Game.cpu.generatePixel();
+        }
     }
     
     for(let spawnName in Game.spawns)
@@ -75,8 +79,8 @@ module.exports.loop = function () {
         //var Game.spawns[spawnName].memory.roles_counter=0;
 
 
-    const room=Game.rooms[myRooms[0]];
-    const sources=room.find(FIND_SOURCES);
+    //const room=Game.rooms[myRooms[0]];
+    const sources=spawn.room.find(FIND_SOURCES);
     //console.log(sources_hp.length);
     var sources_hp=[];// harvesting power assigned to every source in my room (working only for first room)
     for(let i=0;i<sources.length;i++)
@@ -172,6 +176,12 @@ module.exports.loop = function () {
             }
             else if(creep.memory.role=='builder')
             {
+                if(Game.time%50==0 && maxBuilder(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=3)
+                {
+                    spawn.memory.roles_counter=3;
+                    pop_upgraders--;
+                    //creep.suicide();
+                }
                 pop_builders++;
                 roleBuilder.run(creep,spawn);
             }
@@ -196,7 +206,7 @@ module.exports.loop = function () {
                 }
                 const workParts = _.filter(creep.body, { type: WORK }).length;
                 creep.memory.harvesting_power=workParts*2;
-                sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
+                //sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
                 roleFarmer.run(creep,spawn);
                 pop_farmers++;
                 
@@ -204,6 +214,7 @@ module.exports.loop = function () {
             }
             else if(creep.memory.role=='berserk')
             {
+                creep.suicide();
                 roleBerserk.run(creep,spawn);
                 pop_berserkers++;
             }
@@ -310,7 +321,7 @@ module.exports.loop = function () {
             Game.spawns[spawnName].memory.roles_counter++;
         }
     }
-    else if(pop_haulers<Game.spawns[spawnName].memory.req_haulers && Game.spawns[spawnName].memory.roles_counter==4 )//spawning new hauler
+    else if(pop_haulers<Game.spawns[spawnName].memory.req_haulers && Game.spawns[spawnName].memory.roles_counter==4)//spawning new hauler
     {
         if(spawn.spawnCreep(maxHauler(energyCap),'hauler'+Game.time,{memory: {role: 'hauler',home_room: spawn.room}})==0)
         {

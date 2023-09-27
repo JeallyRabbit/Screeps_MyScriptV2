@@ -34,7 +34,7 @@ var roleFarmer = {
             }
 
         }
-        else if (creep.room.name != target_room && creep.store.getFreeCapacity() > 0) {// not in target room and have free space - go to target room
+        else if (creep.room.name != target_room && creep.store[RESOURCE_ENERGY] == 0) {// not in target room and have free space - go to target room
             const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
 
 
@@ -121,16 +121,6 @@ var roleFarmer = {
                 }
             }));
 
-            //containers.sort((a,b)=> a.store-b.store);
-            /*for(let i =0;i<containers.length;i++)
-            {
-                //console.log(containers[i].store);
-                if(containers[i].store.getFreeCapacity[RESOURCE_ENERGY]==0)
-                {
-                    containers=containers.slice(0,i).concat(array.slice(i+1));
-                    i--;
-                }
-            }*/
             var extensions = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType == STRUCTURE_EXTENSION

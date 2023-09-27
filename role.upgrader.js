@@ -73,7 +73,7 @@ var roleUpgrader = {
                if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) 
                {
                // Move to it
-               creep.moveTo(closestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' } });
+               creep.moveTo(closestDroppedEnergy);
                }
            }
        }
