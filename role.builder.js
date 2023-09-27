@@ -1,11 +1,11 @@
 var roleUpgrader=require('role.upgrader');
 const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
-const getClosestEnergyDeposit=require('getClosestEnergyDeposit');
 
 var roleBuilder = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
+        //creep.say("B");
         var targets=creep.room.find(FIND_CONSTRUCTION_SITES)
         if(targets.length==0) // if no constructuin sites go upgrade
         {
@@ -15,7 +15,7 @@ var roleBuilder = {
 	    if(creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) { // if building and no energy go harvest
             creep.memory.building = false;
 	    }
-	    if(!creep.memory.building && creep.store.getFreeCapacity() == 0) { // if have energy and construstion site go build
+	    if(!creep.memory.building && creep.store[RESOURCE_ENERGY] > 0) { // if have energy and construstion site go build
 	        creep.memory.building = true;
 	    }
 
@@ -36,7 +36,7 @@ var roleBuilder = {
 	        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if(targets.length) {
                 if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                    creep.moveTo(targets[0]);
                 }
             }
 	    }
@@ -59,13 +59,20 @@ var roleBuilder = {
 	         const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
                 filter: resource => resource.resourceType == RESOURCE_ENERGY
             })
-            const closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy)
+            var closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy)
+
+            for (var i = 1; i < droppedEnergy.length; i++) {
+                if (droppedEnergy[i].energy > closestDroppedEnergy.energy) {
+                    closestDroppedEnergy = droppedEnergy[i];
+                }
+            }
+
             if(droppedEnergy.length>0)
             {
                 if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) 
                 {
                 // Move to it
-                creep.moveTo(closestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' } });
+                creep.moveTo(closestDroppedEnergy);
                 }
             }
 	    }

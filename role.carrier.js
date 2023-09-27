@@ -33,8 +33,8 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
         {
 
 
-            var closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy)
-
+            //var closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy)
+            var closestDroppedEnergy=droppedEnergy[0];
             //var biggestDroppedEnergy=droppedEnergy[0];
             for (var i = 1; i < droppedEnergy.length; i++) {
                 if (droppedEnergy[i].energy > closestDroppedEnergy.energy) {
@@ -70,7 +70,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
             else // if there are no extensions - go spawn 
             {
 
-                if (spawn.store[RESOURCE_ENERGY] == 300) {// if spawn is full, fill containers
+                if (spawn.store[RESOURCE_ENERGY] == 300 && containers.length>0) {// if spawn is full, fill containers
 
                     var closestContainer = creep.pos.findClosestByRange(containers);
                     var transfer_amount = 1;

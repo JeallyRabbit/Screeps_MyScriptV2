@@ -1,4 +1,4 @@
-const getClosestEnergyDeposit = require("./getClosestEnergyDeposit");
+//const getClosestEnergyDeposit = require("./getClosestEnergyDeposit");
 
 var roleTransporter = {//transfer energy grom containers to storage
 
@@ -6,7 +6,20 @@ var roleTransporter = {//transfer energy grom containers to storage
     run: function(creep) 
     {
         //creep.say("!");
-        var deposit=getClosestEnergyDeposit(creep);
+        var containers = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_CONTAINER
+                && structure.store[RESOURCE_ENERGY]>0;
+            }
+        });
+
+        containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_STORAGE
+                && structure.store[RESOURCE_ENERGY]>0;
+            }
+        }));
+        var deposit=creep.pos.findClosestByRange(containers);
         //creep.say(creep.store.getFreeCapacity());
         if(creep.store.getFreeCapacity()>0 && deposit!=-1)
         {
