@@ -7,7 +7,7 @@ function setRequiredPopulation(mySpawns) {
     });
 
     mySpawns['Spawn1'].memory.num_towers = mySpawns['Spawn1'].memory.num_towers.length;
-    mySpawns['Spawn1'].memory.req_harvesters =2;// role num 0
+    mySpawns['Spawn1'].memory.req_harvesters =4;// role num 0
     mySpawns['Spawn1'].memory.req_carriers = 2;//role num 1
     mySpawns['Spawn1'].memory.req_farmers = 4;//role num 2
     mySpawns['Spawn1'].memory.req_builders = 2;// role num 3
@@ -28,17 +28,16 @@ function setRequiredPopulation(mySpawns) {
     mySpawns['Spawn1'].memory.farming_rooms = [];
     //mySpawns['Spawn1'].memory.farming_rooms.push('W57N15');
     //mySpawns['Spawn1'].memory.farming_rooms.push('W57N16');
-    mySpawns['Spawn1'].memory.farming_rooms.push('W57N15');
-    mySpawns['Spawn1'].memory.farming_rooms.push('W57N16');
-    mySpawns['Spawn1'].memory.farming_rooms.push('W58N16');
+    mySpawns['Spawn1'].memory.farming_rooms.push('E3N59');
+    //mySpawns['Spawn1'].memory.farming_rooms.push('W58N16');
 
 
     mySpawns['Spawn1'].memory.req_reservers = mySpawns['Spawn1'].memory.farming_rooms.length*2; // role num 13
-    mySpawns['Spawn1'].memory.req_farmers = mySpawns['Spawn1'].memory.farming_rooms.length*2;
+    mySpawns['Spawn1'].memory.req_farmers = mySpawns['Spawn1'].memory.farming_rooms.length*4;
     mySpawns['Spawn1'].memory.claiming_rooms = [];
     //mySpawns['Spawn1'].memory.claiming_rooms.push('E37N54');
     mySpawns['Spawn1'].memory.req_distanceBuilders = 2 * mySpawns['Spawn1'].memory.claiming_rooms.length;//role num12
-    mySpawns['Spawn1'].memory.req_DistanceCarriers=mySpawns['Spawn1'].memory.farming_rooms.length*2;//role num 14
+    mySpawns['Spawn1'].memory.req_DistanceCarriers=mySpawns['Spawn1'].memory.farming_rooms.length*4;//role num 14
 
 
 

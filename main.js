@@ -36,6 +36,7 @@ const maxDistanceBuilder=require('maxDistanceBuilder');
 var RoomPositionFunctions=require('roomPositionFunctions');
 const maxSoldier = require('./maxSoldier');
 const maxReserver = require('./maxReserver');
+const setBaseLayout = require('./setBaseLayout');
 
 
 
@@ -61,7 +62,7 @@ module.exports.loop = function () {
         }
         
     }
-    
+
     for(let spawnName in Game.spawns)
     {
         const myRooms = Object.keys(Game.rooms).filter(roomName => {
@@ -82,20 +83,7 @@ module.exports.loop = function () {
         
         if(Game.time%100==0)
         {
-            var myStructures=spawn.room.find(FIND_MY_STRUCTURES);
-            for(let i=0;i<myStructures.length;i++)
-            {
-                myStructures[i].pos.createConstructionSite(STRUCTURE_RAMPART);
-                if(myStructures[i].structureType==STRUCTURE_EXTENSION)
-                {
-                    var positions=new RoomPosition(myStructures[i].pos.x,myStructures[i].pos.y,spawn.room.name).getNearbyPositions();
-                    for(j=0;j<positions.length;j++)
-                    {
-                        positions[j].createConstructionSite(STRUCTURE_RAMPART);
-                    }
-                }
-            }
-        
+            setBaseLayout(spawn);
         }
 
     //const room=Game.rooms[myRooms[0]];
@@ -370,7 +358,8 @@ module.exports.loop = function () {
             Game.spawns[spawnName].memory.roles_counter++;
         }
     }
-    else if(pop_haulers<Game.spawns[spawnName].memory.req_haulers && Game.spawns[spawnName].memory.roles_counter==4)//spawning new hauler
+    else if(pop_haulers<Game.spawns[spawnName].memory.req_haulers && Game.spawns[spawnName].memory.roles_counter==4
+        && pop_harvesters>=spawn.memory.req_harvesters)//spawning new hauler
     {
         if(spawn.spawnCreep(maxHauler(energyCap),'hauler'+Game.time,{memory: {role: 'hauler',home_room: spawn.room}})==0)
         {
