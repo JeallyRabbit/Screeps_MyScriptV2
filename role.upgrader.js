@@ -21,18 +21,28 @@ var roleUpgrader = {
             return 0;
         }
         */
-        var deposits = creep.room.find(FIND_STRUCTURES, {
+        var deposits=creep.room.find(FIND_STRUCTURES,{
             filter: (structure) => {
-                return structure.structureType === STRUCTURE_CONTAINER
-                && structure.store[RESOURCE_ENERGY]>0;
+                return structure.structureType === STRUCTURE_STORAGE &&
+                structure.store[RESOURCE_ENERGY]>15000;
             }
         });
+        if(deposits.length==0)
+        {
+            deposits = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType === STRUCTURE_CONTAINER
+                    && structure.store[RESOURCE_ENERGY]>0;
+                }
+            });
+        }
+        /*
         deposits=deposits.concat(creep.room.find(FIND_STRUCTURES,{
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_STORAGE &&
-                structure.store[RESOURCE_ENERGY]>25000;
+                structure.store[RESOURCE_ENERGY]>15000;
             }
-        }));
+        }));*/
         
         //creep.say("UP");
 

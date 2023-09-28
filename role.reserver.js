@@ -5,9 +5,6 @@ var roleReserver = {
     /** @param {Creep} creep **/
     run: function(creep) 
     {
-        //creep.say("R");
-        //creep.say(creep.memory.target_room==creep.room.name);
-        //creep.say(creep.room.name==creep.memory.target_room.name);
             if(creep.memory.target_room)
             {
                 if(creep.room.name==creep.memory.target_room)

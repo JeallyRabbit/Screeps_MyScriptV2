@@ -12,16 +12,17 @@ var roleTransporter = {//transfer energy grom containers to storage
                 && structure.store[RESOURCE_ENERGY]>0;
             }
         });
-
+        /*
         containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_STORAGE
                 && structure.store[RESOURCE_ENERGY]>0;
             }
         }));
+        */
         var deposit=creep.pos.findClosestByRange(containers);
         //creep.say(creep.store.getFreeCapacity());
-        if(creep.store.getFreeCapacity()>0 && deposit!=-1)
+        if(creep.store.getFreeCapacity()>0 && deposit!=null)
         {
             //creep.say("QWE");
             withdraw_amount=Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, deposit.store[RESOURCE_ENERGY]);

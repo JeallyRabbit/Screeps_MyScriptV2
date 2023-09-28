@@ -6,13 +6,6 @@ var roleHarvester = {
     /** @param {Creep} creep **/
     run: function(creep) 
     {
-            /*
-            if(creep.memory.sources==undefined)
-            {
-                creep.mmeory.sources = creep.room.find(FIND_SOURCES);
-            }
-            var sources = creep.memory.sources;
-            */
             var sources=creep.room.find(FIND_SOURCES);
             //var source_index=creep.memory.myID%sources.length;
             var source_index=creep.memory.target_source;
@@ -41,16 +34,9 @@ var roleHarvester = {
                                     //creep.say("ALLIGNING");
                                     break;
                                 }
-                                //else{console.log("CREEP");}
-                                //console.log("STRUCTURES AT: ",positions[i]," ",structures_at_pos[j].structureType);
-                                //console.log("CREEPS AT: ", positions[i]," ",creeps_at_pos);
                             }
-                            
-                            
-                            
                         }
                     
-                   // if(creep.room.lookForAt(LOOK_STRUCTURES,positions[i]))
                 }
                 }
             }
@@ -63,9 +49,6 @@ var roleHarvester = {
             {
                 creep.memory.harvesting=true;
             }
-            
-            
-               
 	}
 };
 module.exports = roleHarvester;

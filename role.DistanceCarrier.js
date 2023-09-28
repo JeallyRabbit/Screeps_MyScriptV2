@@ -134,7 +134,7 @@ var roleDistanceCarrier = {
             if (!creep.memory.path) 
             {
                 // Calculate and cache the path if it doesn't exist in memory
-                console.log("DistanceCarrier calculating path");
+                //console.log("DistanceCarrier calculating path");
                 const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
                 creep.memory.path = JSON.stringify(path);
                 //creep.say("Calc");

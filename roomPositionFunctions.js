@@ -17,7 +17,7 @@ RoomPosition.prototype.getNearbyPositions=function getNearbyPositions(){
     return positions;
 }
 
-RoomPosition.prototype.getOpenPositions=function getOpenPositions(){ //returns open positions around 
+RoomPosition.prototype.getOpenPositions=function getOpenPositions(){ //returns open nearby positions around 
     let nearbyPositions = this.getNearbyPositions();
 
     

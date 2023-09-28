@@ -16,6 +16,7 @@ var roleFarmer = {
         var construction_sites=creep.room.find(FIND_CONSTRUCTION_SITES);
         if(creep.room.name==target_room && creep.store[RESOURCE_ENERGY]!=0 && (repair_sites.length>0 || construction_sites.length>0))
         {
+            //creep.say("REP");
             roleRepairer.run(creep);
         }
         else if (creep.room.name == target_room && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) 

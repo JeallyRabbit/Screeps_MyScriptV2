@@ -9,14 +9,14 @@ var roleTowerKeeper = {
         var containers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_CONTAINER
-                && structure.store[RESOURCE_ENERGY]>0;
+                && structure.store[RESOURCE_ENERGY]>50;
             }
         });
-
+        
         containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_STORAGE
-                && structure.store[RESOURCE_ENERGY]>0;
+                && structure.store[RESOURCE_ENERGY]>50;
             }
         }));
         var deposit=creep.pos.findClosestByRange(containers);
@@ -34,7 +34,7 @@ var roleTowerKeeper = {
                 minID = i;
             }
         }
-        if (creep.store.getFreeCapacity() > 0 && deposit != -1) {
+        if (creep.store.getFreeCapacity() > 0 && deposit != null) {
             //creep.say("A");
             withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, deposit.store[RESOURCE_ENERGY]);
             if (creep.withdraw(deposit, RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
