@@ -1,15 +1,25 @@
-var roleBuilder = require('role.builder');
 var RoomPositionFunctions = require('roomPositionFunctions');
 var routeCreep = require('routeCreep');
+const roleRepairer = require('./role.repairer');
 
 var roleFarmer = {
     run: function (creep, spawn) {
 
         //creep.say(creep.memory.home_room.name==creep.room.name);
-        var home_room = creep.memory.home_room.name;
         var target_room = creep.memory.target_room;
         //var x_source=25,y_source=25;
-        if (creep.room.name == target_room && creep.store.getFreeCapacity() > 0) {// if have some free space and at destination room - go harvest
+        var repair_sites=creep.room.find(FIND_STRUCTURES, {
+            filter: object => object.hits<object.hitsMax && object.hits<30000 && object.hits!=object.hitsMax
+            && object.structureType!=STRUCTURE_ROAD
+        });
+
+        var construction_sites=creep.room.find(FIND_CONSTRUCTION_SITES);
+        if(creep.room.name==target_room && creep.store[RESOURCE_ENERGY]!=0 && (repair_sites.length>0 || construction_sites.length>0))
+        {
+            roleRepairer.run(creep);
+        }
+        else if (creep.room.name == target_room && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) 
+        {// if have some free space and at destination room - go harvest
             //creep.say("!");
             var sources = creep.room.find(FIND_SOURCES);
             //creep.say(sources.length);
@@ -28,13 +38,15 @@ var roleFarmer = {
                 //creep.say("U");
             }
             else {
+                //creep.say("H");
                 if (creep.harvest(sources[creep.memory.source_id]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(sources[creep.memory.source_id], { noPathFinding: false, reusePath: 9 });
                 }
             }
 
         }
-        else if (creep.room.name != target_room && creep.store[RESOURCE_ENERGY] == 0) {// not in target room and have free space - go to target room
+        else if (creep.room.name != target_room && creep.store[RESOURCE_ENERGY] == 0) 
+        {// not in target room and have free space - go to target room
             const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
 
 
@@ -73,6 +85,35 @@ var roleFarmer = {
         }
         else if (creep.room.name == creep.memory.target_room && creep.store.getFreeCapacity() == 0 /*&& creep.room.name==home_room*/)//if not in home room and no free space, put energy to most empty container
         {// in target room and no free space - go back
+
+            var containers = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType === STRUCTURE_CONTAINER;
+                }
+            });
+            if(containers.length>0)
+            {// store in to container
+                var closestContainer = creep.pos.findClosestByRange(containers);
+                    var transfer_amount = 1;
+                    transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closestContainer.store[RESOURCE_ENERGY]);
+                    if (creep.transfer(closestContainer, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(closestContainer);
+                    }
+
+            }
+            else if(construction_sites<1)
+            {// build container next to source
+                var positions=new RoomPosition(creep.pos.x,creep.pos.y,creep.room.name).getOpenPositions();
+
+                //var positions=RoomPositionFunctions.getOpenPositions();
+                //console.log("Positions: ",positions);
+
+                if(positions.length>0)
+                {
+                    positions[0].createConstructionSite(STRUCTURE_CONTAINER);
+                }
+            }
+            /*
             const destination = new RoomPosition(25, 25, creep.memory.home_room.name); // Replace with your destination coordinates and room name
 
 
@@ -105,9 +146,10 @@ var roleFarmer = {
                 const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
                 creep.memory.path = JSON.stringify(path);
             }
-
+            */
         }
         else {//in home room and full 
+            /*
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (i) => {
                     return i.structureType == STRUCTURE_CONTAINER
@@ -159,10 +201,10 @@ var roleFarmer = {
                 }
                 else {// if no place to store energy became builder (if no construction sites, builders became upgraders)
                     //creep.say("bu");
-                    roleBuilder.run(creep);
+                   // roleBuilder.run(creep);
                 }
             }
-
+            */
         }
     }
 };
