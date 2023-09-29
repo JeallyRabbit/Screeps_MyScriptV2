@@ -7,7 +7,7 @@ function setRequiredPopulation(mySpawns) {
     });
 
     mySpawns['Spawn1'].memory.num_towers = mySpawns['Spawn1'].memory.num_towers.length;
-    mySpawns['Spawn1'].memory.req_harvesters =4;// role num 0
+    mySpawns['Spawn1'].memory.req_harvesters =2;// role num 0
     mySpawns['Spawn1'].memory.req_carriers = 2;//role num 1
     mySpawns['Spawn1'].memory.req_farmers = 4;//role num 2
     mySpawns['Spawn1'].memory.req_builders = 2;// role num 3

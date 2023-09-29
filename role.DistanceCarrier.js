@@ -115,14 +115,17 @@ var roleDistanceCarrier = {
                     return structure.structureType === STRUCTURE_STORAGE;
                 }
             }));
-
-            var closest_container = creep.pos.findClosestByRange(containers);
-            var transfer_amount = 1;
-            transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
-            if (creep.transfer(closest_container, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) 
-            {// if creep have energy go to container and store
-                    creep.moveTo(closest_container, { noPathFinding: false, reusePath: 10 });
+            if(containers.length>0)
+            {
+                var closest_container = creep.pos.findClosestByRange(containers);
+                var transfer_amount = 1;
+                transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
+                if (creep.transfer(closest_container, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) 
+                {// if creep have energy go to container and store
+                        creep.moveTo(closest_container, { noPathFinding: false, reusePath: 10 });
+                }
             }
+            
         }
         else if (creep.room.name != creep.memory.target_room && creep.store[RESOURCE_ENERGY] == 0) 
         {// not in target room and no energy - go target room

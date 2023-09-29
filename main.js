@@ -56,7 +56,7 @@ module.exports.loop = function () {
     if(Game.time%100==0)
     {
         setRequiredPopulation(Game.spawns);
-       if(Game.cpu.bucket==10000)
+        if(Game.cpu.bucket==10000)
         {
             Game.cpu.generatePixel();
         }
@@ -210,7 +210,8 @@ module.exports.loop = function () {
             else if(creep.memory.role=='farmer')
             {
                 //creep.suicide();
-                if(Game.time%50==0 && maxFarmer(spawn.room.energyAvailable).length>creep.body.length && creep.store[RESOURCE_ENERGY]==0 && spawn.memory.roles_counter!=2)
+                if(Game.time%50==0 && maxFarmer(spawn.room.energyAvailable).length>creep.body.length && creep.store[RESOURCE_ENERGY]==0 
+                && spawn.memory.roles_counter!=2 && pop_farmers-spawn.req_farmers<3)
                 {
                     if(spawn.spawnCreep(maxFarmer(spawn.room.energyAvailable),'Farmer'+Game.time,{memory: {role: 'farmer', home_room: spawn.room,
                     target_room: creep.memory.target_room, path: undefined}})==0)

@@ -9,12 +9,12 @@ function setBaseLayout(spawn)// return most full energy deposit - container
                     var positions=new RoomPosition(myStructures[i].pos.x,myStructures[i].pos.y,spawn.room.name).getNearbyPositions();
                     for(j=0;j<positions.length;j++)
                     {
-                        positions[j].createConstructionSite(STRUCTURE_RAMPART);
+                        //positions[j].createConstructionSite(STRUCTURE_RAMPART);
                     }
                 }
             }
 
-            for(let i=1;i<4;i++)
+            for(let i=1;i<4;i++) // RIGHT DOWN
             {
                 var x=spawn.pos.x+i;
                 var y=spawn.pos.y+i;
@@ -30,7 +30,8 @@ function setBaseLayout(spawn)// return most full energy deposit - container
                 }
                 
             }
-            for(let i=1;i<4;i++)
+            
+            for(let i=1;i<4;i++)//RIGHT UP
             {
                 var x=spawn.pos.x+i;
                 var y=spawn.pos.y-i;
@@ -45,7 +46,8 @@ function setBaseLayout(spawn)// return most full energy deposit - container
                 }
 
             }
-            for(let i=1;i<4;i++)
+            
+            for(let i=1;i<4;i++)// LEFT DOWN
             {
                 var x=spawn.pos.x-i;
                 var y=spawn.pos.y+i;
@@ -59,7 +61,8 @@ function setBaseLayout(spawn)// return most full energy deposit - container
                     }
                 }
             }
-            for(let i=1;i<4;i++)
+            
+            for(let i=1;i<4;i++) // LEFT UP
             {
                 var x=spawn.pos.x-i;
                 var y=spawn.pos.y-i;
@@ -73,5 +76,7 @@ function setBaseLayout(spawn)// return most full energy deposit - container
                     }
                 }
             }
+            
+            
 }
 module.exports = setBaseLayout;

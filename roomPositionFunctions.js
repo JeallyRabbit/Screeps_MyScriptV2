@@ -37,3 +37,17 @@ RoomPosition.prototype.getOpenPositions=function getOpenPositions(){ //returns o
 
     return freePositions;
 }
+
+RoomPosition.prototype.getOpenPositions2=function getOpenPositions2(){ //returns open nearby positions around (creep can be on such pos)
+
+    
+    let terrain = Game.map.getRoomTerrain(this.roomName);
+
+    let walkablePositions =_.filter(nearbyPositions, function(pos)
+    {
+        return terrain.get(pos.x,pos.y) !== TERRAIN_MASK_WALL;
+
+    });
+
+    return freePositions;
+}

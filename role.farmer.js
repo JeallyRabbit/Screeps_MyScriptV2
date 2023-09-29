@@ -85,7 +85,7 @@ var roleFarmer = {
             //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room), {noPathFinding: true, reusePath: 5 });
         }
         else if (creep.room.name == creep.memory.target_room && creep.store.getFreeCapacity() == 0 /*&& creep.room.name==home_room*/)//if not in home room and no free space, put energy to most empty container
-        {// in target room and no free space - go back
+        {// in target room and no free space - put energy to container or build one if there is no container close
 
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
@@ -104,7 +104,7 @@ var roleFarmer = {
             }
             else if(construction_sites<1)
             {// build container next to source
-                var positions=new RoomPosition(creep.pos.x,creep.pos.y,creep.room.name).getOpenPositions();
+                var positions=new RoomPosition(sources[creep.memory.source_id].pos.x,sources[creep.memory.source_id].pos.y,creep.room.name).getOpenPositions2();
 
                 //var positions=RoomPositionFunctions.getOpenPositions();
                 //console.log("Positions: ",positions);
@@ -114,98 +114,6 @@ var roleFarmer = {
                     positions[0].createConstructionSite(STRUCTURE_CONTAINER);
                 }
             }
-            /*
-            const destination = new RoomPosition(25, 25, creep.memory.home_room.name); // Replace with your destination coordinates and room name
-
-
-            if (!creep.memory.path) {
-                // Calculate and cache the path if it doesn't exist in memory
-                const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
-                creep.memory.path = JSON.stringify(path);
-                //creep.say("Calc");
-            }
-
-            if (creep.memory.path) {
-                //creep.say("USE");
-
-                const path = JSON.parse(creep.memory.path);
-                if (path.length > 0) {
-                    const moveResult = creep.moveByPath(path);
-                    if (moveResult === OK) {
-                        // Successfully moved along the path
-                    } else if (moveResult === ERR_NOT_FOUND) {
-                        // Path is no longer valid, clear the cached path
-                        delete creep.memory.path;
-                    }
-                } else {
-                    // The path is empty, meaning the creep has reached its destination
-                    // Clear the cached path
-                    delete creep.memory.path;
-                }
-            } else {
-                // If the cached path doesn't exist, recalculate it and store it
-                const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
-                creep.memory.path = JSON.stringify(path);
-            }
-            */
-        }
-        else {//in home room and full 
-            /*
-            var containers = creep.room.find(FIND_STRUCTURES, {
-                filter: (i) => {
-                    return i.structureType == STRUCTURE_CONTAINER
-                        && i.store[RESOURCE_ENERGY] < 2000
-                }
-            });
-
-            containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_STORAGE;
-                }
-            }));
-
-            var extensions = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_EXTENSION
-                        && structure.store[RESOURCE_ENERGY] < 50
-                }
-            });
-            var extensions_full = 1;//1 when all are full
-            if (extensions.length > 0) {
-                extensions_full = 0;
-            }
-
-            if (containers.length > 0)// if is full and there are containers, go to container with minimum energy
-            {
-                var withdraw_amount = 1;
-                withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[0].store[RESOURCE_ENERGY]);
-                var closest_container = creep.pos.findClosestByRange(containers);
-                if (creep.transfer(closest_container, RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and store
-                    creep.moveTo(closest_container, { noPathFinding: false, reusePath: 8 });
-                }
-
-            }
-            else if (spawn.store.getFreeCapacity([RESOURCE_ENERGY]) > 0) { //containers full and spawn is not full
-                if (creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(spawn, { noPathFinding: false, reusePath: 8 });
-                }
-            }
-            else // go to extension
-            {
-                var closestExtension = creep.pos.findClosestByRange(extensions);
-                if (closestExtension != null) {
-                    var transfered_amount = 1;
-                    transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
-                    if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                        creep.moveTo(closestExtension, { noPathFinding: false, reusePath: 8 });
-                    }
-                }
-                else {// if no place to store energy became builder (if no construction sites, builders became upgraders)
-                    //creep.say("bu");
-                   // roleBuilder.run(creep);
-                }
-            }
-            */
         }
     }
 };
