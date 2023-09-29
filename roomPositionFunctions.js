@@ -17,7 +17,7 @@ RoomPosition.prototype.getNearbyPositions=function getNearbyPositions(){
     return positions;
 }
 
-RoomPosition.prototype.getOpenPositions=function getOpenPositions(){ //returns open positions around 
+RoomPosition.prototype.getOpenPositions=function getOpenPositions(){ //returns open nearby positions around 
     let nearbyPositions = this.getNearbyPositions();
 
     
@@ -32,6 +32,20 @@ RoomPosition.prototype.getOpenPositions=function getOpenPositions(){ //returns o
     let freePositions=_.filter(walkablePositions, function(pos)
     {
         return !pos.lookFor(LOOK_CREEPS).length;
+
+    });
+
+    return freePositions;
+}
+
+RoomPosition.prototype.getOpenPositions2=function getOpenPositions2(){ //returns open nearby positions around (creep can be on such pos)
+
+    
+    let terrain = Game.map.getRoomTerrain(this.roomName);
+
+    let walkablePositions =_.filter(nearbyPositions, function(pos)
+    {
+        return terrain.get(pos.x,pos.y) !== TERRAIN_MASK_WALL;
 
     });
 
