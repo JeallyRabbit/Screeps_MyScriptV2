@@ -81,9 +81,23 @@ module.exports.loop = function () {
         var roles_num=15;// 0 1 2 3 4 5 6 7 8 9 10 11 12 13 
         //var Game.spawns[spawnName].memory.roles_counter=0;
         
-        if(Game.time%100==0)
+        if(Game.time%50==0)
         {
             setBaseLayout(spawn);
+        }
+        if(Game.time%1==0)
+        {
+            spawn.memory.progress_old=spawn.memory.progress;
+            //console.log("spawn_progress_old: ",spawn.memory.progress_old);
+            spawn.memory.progress=spawn.room.controller.progress;
+            //console.log("spawn.memory.progress: ", spawn.memory.progress);
+            if(spawn.memory.progress_old!=0)
+            {
+                spawn.memory.progress_sum+=(spawn.memory.progress-spawn.memory.progress_old);
+            }
+            //console.log("spawn.memory.progress_sum: ", spawn.memory.progress_sum);
+            spawn.memory.progress_counter+=1;
+            //console.log("spawn.memory.progress_counter: ",spawn.memory.progress_counter);
         }
 
     //const room=Game.rooms[myRooms[0]];
@@ -95,9 +109,6 @@ module.exports.loop = function () {
         sources_hp[i]=0;
     }
     
-    //var Game.spawns[spawnName].memory.farming_rooms=[];
-    //var farming_rooms=[];
-    //var claiming_rooms=[]
     var pop_harvesters=0;
     var pop_carriers=0;
     var pop_builders=0;
@@ -122,12 +133,7 @@ module.exports.loop = function () {
         {
             if(creep.memory.role == 'harvester') 
             {
-                
-                //console.log("possible parts: ",maxHarvester(spawn.room.energyAvailable).length);
-                //console.log("current parts: ", creep.body.length);
-                
-            
-                if(Game.time%50==0 && maxHarvester(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=0)
+                if(Game.time%20==0 && maxHarvester(spawn.room.energyAvailable).length>creep.body.length && spawn.memory.roles_counter!=0)
                 {
                     console.log("can spawn better harvester");
                     spawn.memory.roles_counter=0;
@@ -305,6 +311,13 @@ module.exports.loop = function () {
 
     console.log("DistanceCarriers: ",pop_distanceCarriers,"/",spawn.memory.req_DistanceCarriers);
     console.log("roles_counter: ", Game.spawns[spawnName].memory.roles_counter);
+    if(spawn.memory.progress!=0 && spawn.memory.progress_old!=0 &&
+        spawn.memory.progress_sum!=0  && spawn.memory.progress_counter>4 &&
+        spawn.memory.progress!=spawn.memory.progress_old)
+    {
+        console.log("Progress/tick: ", (spawn.memory.progress_sum/spawn.memory.progress_counter));
+        //console.log("Spawn points: ",spawn.memory.progress);
+    }
     
     
     

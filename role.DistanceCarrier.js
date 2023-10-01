@@ -115,6 +115,14 @@ var roleDistanceCarrier = {
                     return structure.structureType === STRUCTURE_STORAGE;
                 }
             }));
+
+            containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType === STRUCTURE_EXTENSION 
+                    && structure.store[RESOURCE_ENERGY]<50;
+                }
+            }));
+
             if(containers.length>0)
             {
                 var closest_container = creep.pos.findClosestByRange(containers);
