@@ -1,23 +1,35 @@
 var RoomPositionFunctions = require('roomPositionFunctions');
 var routeCreep = require('routeCreep');
-const roleRepairer = require('./role.repairer');
 
 var roleFarmer = {
     run: function (creep, spawn) {
 
-        //creep.say(creep.memory.home_room.name==creep.room.name);
+        var sources = creep.room.find(FIND_SOURCES);
         var target_room = creep.memory.target_room;
         //var x_source=25,y_source=25;
         var repair_sites=creep.room.find(FIND_STRUCTURES, {
             filter: object => object.hits<object.hitsMax && object.hits<30000 && object.hits!=object.hitsMax
-            && object.structureType!=STRUCTURE_ROAD
+            && object.structureType!=STRUCTURE_ROAD && object.pos.inRangeTo(creep.pos,3)
         });
 
-        var construction_sites=creep.room.find(FIND_CONSTRUCTION_SITES);
+        var construction_sites=creep.pos.findInRange(FIND_CONSTRUCTION_SITES,3);
         if(creep.room.name==target_room && creep.store[RESOURCE_ENERGY]!=0 && (repair_sites.length>0 || construction_sites.length>0))
         {
             //creep.say("REP");
-            roleRepairer.run(creep);
+            //roleRepairer.run(creep);
+
+            if(repair_sites.length ) {//repair close sites
+                if(creep.repair(repair_sites[0]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(repair_sites[0]);
+                }
+            }
+            else
+            {//build close sites
+                if(creep.build(construction_sites[0]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(construction_sites[0]);
+                }
+            }
+
         }
         else if (creep.room.name == target_room && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) 
         {// if have some free space and at destination room - go harvest
@@ -87,11 +99,15 @@ var roleFarmer = {
         else if (creep.room.name == creep.memory.target_room && creep.store.getFreeCapacity() == 0 /*&& creep.room.name==home_room*/)//if not in home room and no free space, put energy to most empty container
         {// in target room and no free space - put energy to container or build one if there is no container close
 
+            //creep.say("FULL");
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return structure.structureType === STRUCTURE_CONTAINER;
+                    return structure.structureType === STRUCTURE_CONTAINER
+                    && structure.pos.inRangeTo(creep.pos,3);
                 }
             });
+            
+            
             if(containers.length>0)
             {// store in to container
                 var closestContainer = creep.pos.findClosestByRange(containers);
@@ -102,14 +118,13 @@ var roleFarmer = {
                     }
 
             }
-            else if(construction_sites<1)
+            else if(construction_sites.length<1)
             {// build container next to source
+                
+                creep.say("BU");
                 var positions=new RoomPosition(sources[creep.memory.source_id].pos.x,sources[creep.memory.source_id].pos.y,creep.room.name).getOpenPositions2();
-
-                //var positions=RoomPositionFunctions.getOpenPositions();
-                //console.log("Positions: ",positions);
-
-                if(positions.length>0)
+                
+                if(positions!= undefined && positions.length>0)
                 {
                     positions[0].createConstructionSite(STRUCTURE_CONTAINER);
                 }

@@ -13,18 +13,10 @@ var roleUpgrader = {
 	        creep.memory.upgrading = true;
 	       //creep.say('🚧 upgrade');
 	    }
-        /*
-        if(creep.room.energyAvailable<creep.room.energyCapacityAvailable/2)
-        {
-            creep.moveTo(creep.room.controller);
-            //creep.say("STOP");
-            return 0;
-        }
-        */
         var deposits=creep.room.find(FIND_STRUCTURES,{
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_STORAGE &&
-                structure.store[RESOURCE_ENERGY]>15000;
+                structure.store[RESOURCE_ENERGY]>5000;
             }
         });
         if(deposits.length==0)
@@ -36,15 +28,6 @@ var roleUpgrader = {
                 }
             });
         }
-        /*
-        deposits=deposits.concat(creep.room.find(FIND_STRUCTURES,{
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_STORAGE &&
-                structure.store[RESOURCE_ENERGY]>15000;
-            }
-        }));*/
-        
-        //creep.say("UP");
 
 	    if(creep.memory.upgrading) // if upgrading go upgrade
         {
