@@ -4,8 +4,10 @@ var routeCreep = require('routeCreep');
 var roleFarmer = {
     run: function (creep, spawn) {
 
+
         var sources = creep.room.find(FIND_SOURCES);
         var target_room = creep.memory.target_room;
+        //console.log(target_room);
         //var x_source=25,y_source=25;
         var repair_sites=creep.room.find(FIND_STRUCTURES, {
             filter: object => object.hits<object.hitsMax && object.hits<30000 && object.hits!=object.hitsMax
@@ -35,11 +37,16 @@ var roleFarmer = {
         {// if have some free space and at destination room - go harvest
             //creep.say("!");
             var sources = creep.room.find(FIND_SOURCES);
-            //creep.say(sources.length);
+            
+            var min_source_farmers=10;
             if (creep.memory.source_id == undefined) {
+                //console.log("sources: ",sources.length);
+                //creep.say("#");
                 for (let i = 0; i < sources.length; i++) {
-                    if (sources[i].energy > 0 && sources[i].pos.getOpenPositions().length > 0) {
-                        //creep.say(i+100);
+                    console.log("open positions: ", sources[i].pos.getOpenPositions());
+                    if (sources[i].pos.getOpenPositions().length < min_source_farmers && sources[i].pos.getOpenPositions().length>0) {
+                        //creep.say(sources[i].pos.getOpenPositions().length);
+                        min_source_farmers=sources[i].pos.getOpenPositions().length ;
                         creep.memory.source_id = i;
                         //console.log("harvest: ",creep.harvest(sources[i]));
 

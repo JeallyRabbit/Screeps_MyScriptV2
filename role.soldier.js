@@ -11,7 +11,7 @@ var roleSoldier = {
             }
             if(target) {
                 //creep.say("Fighting");
-                result = creep.attack(target)
+                result = creep.rangedAttack(target);
                 //console.log("result: ",result);
                 if(result == OK){
                     
