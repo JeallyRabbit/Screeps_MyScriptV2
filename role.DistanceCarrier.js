@@ -116,12 +116,21 @@ var roleDistanceCarrier = {
                 }
             }));
 
+            containers = containers.concat(creep.room.find(FIND_MY_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType==STRUCTURE_LINK
+                         && structure.pos.x!=24 && structure.pos.y!=11
+                }
+            }));
+
+            /*
             containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_EXTENSION 
                     && structure.store[RESOURCE_ENERGY]<50;
                 }
             }));
+            */
 
             if(containers.length>0)
             {

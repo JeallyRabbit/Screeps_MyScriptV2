@@ -12,14 +12,13 @@ var roleTransporter = {//transfer energy grom containers to storage
                 && structure.store[RESOURCE_ENERGY]>0;
             }
         });
-        /*
+        
         containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_STORAGE
-                && structure.store[RESOURCE_ENERGY]>0;
+            filter: (structure) => { return structure.structureType==STRUCTURE_LINK &&
+                structure.pos.x==24 && structure.pos.y==11
             }
         }));
-        */
+        
         var deposit=creep.pos.findClosestByRange(containers);
         //creep.say(creep.store.getFreeCapacity());
         if(creep.store.getFreeCapacity()>0 && deposit!=null)

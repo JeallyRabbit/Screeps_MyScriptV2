@@ -6,6 +6,9 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
         //creep.say("H");
+        
+        
+        
         var extensions = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_EXTENSION;
@@ -22,7 +25,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
                 /*&& structure.store[RESOURCE_ENERGY]>creep.store.getCapacity(RESOURCE_ENERGY)/2;*/
             }
         });
-
+        
         containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_STORAGE;
@@ -45,42 +48,59 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
 
 
         //var cID=-1;
-        var cID_max = -1, cID_min = -1;
+        //var cID_max = -1, cID_min = -1;
         var max_energy = 0.001;
         var min_energy = 100;
-        for (let i = 0; i < containers.length; i++) {
+        if(creep.memory.cID_max==-1)
+        {
+            for (let i = 0; i < containers.length; i++) {
             //console.log(containers[i].store.getCapacity(RESOURCE_ENERGY));
-            if (containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY) > max_energy) {
-                max_energy = containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY);
-                cID_max = i;
+                if (containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY) > max_energy+0.1) {
+                    max_energy = containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY);
+                    creep.memory.cID_max = i;
+                }
             }
-
-            if (containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY) < min_energy) {
-                min_energy = containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY);
-                cID_min = i;
-            }
+        }
+        if(creep.memory.cID_min==-1)
+        {
+            for (let i = 0; i < containers.length; i++) 
+            {
+                if (containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY) < min_energy-0.1) {
+                    min_energy = containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY);
+                    creep.memory.cID_min = i;
+                }
             //if(cID_max==cID_min){return 0;}
             
         }
+        }
+        
         //console.log(creep, containers[cID_max].pos);
         if (creep.memory.collecting == true) // if is empty go to container
         {// go to container
 
             var withdraw_amount = 1;
-            if (cID_max >= 0) {
-                withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[cID_max].store[RESOURCE_ENERGY]);
-                if (creep.withdraw(containers[cID_max], RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
-                    creep.moveTo(containers[cID_max]);
+            if (creep.memory.cID_max >= 0) {
+                withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[creep.memory.cID_max].store[RESOURCE_ENERGY]);
+                if (creep.withdraw(containers[creep.memory.cID_max], RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
+                    creep.moveTo(containers[creep.memory.cID_max]);
+                }
+                else if(containers[creep.memory.cID_max].store[RESOURCE_ENERGY]==0)
+                {
+                    creep.memory.cID_max=-1;
+                }
+                else
+                {
+                    creep.memory.cID_max=-1;
                 }
             }
 
         }
         else if (extensions_full == 1)// if all extensions are full go to spawn
         {
-            if (spawn.store[RESOURCE_ENERGY] == 300 && cID_min >= 0)//if spawn is full equalize containers
+            if (spawn.store[RESOURCE_ENERGY] == 300 && creep.memory.cID_min >= 0)//if spawn is full equalize containers
             {// go to container with minimum energy
-                if (creep.transfer(containers[cID_min], RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and put energy there
-                    creep.moveTo(containers[cID_min]);
+                if (creep.transfer(containers[creep.memory.cID_min], RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and put energy there
+                    creep.moveTo(containers[creep.memory.cID_min]);
                 }
             }
             else // spawn is not full go fill the spawn

@@ -1,8 +1,39 @@
+const { create } = require("lodash");
+
+function create_extension_stamp(spawn,x,y)
+{
+    spawn.room.createConstructionSite(x,y,STRUCTURE_EXTENSION);//midle
+    spawn.room.createConstructionSite(x-1,y,STRUCTURE_EXTENSION);//left
+    spawn.room.createConstructionSite(x+1,y,STRUCTURE_EXTENSION);//right
+    spawn.room.createConstructionSite(x,y-1,STRUCTURE_EXTENSION);//up
+    spawn.room.createConstructionSite(x,y+1,STRUCTURE_EXTENSION);//down
+
+    if(spawn.room.controller.level>1)
+    {
+        spawn.room.createConstructionSite(x,y+2,STRUCTURE_ROAD);
+        spawn.room.createConstructionSite(x,y-2,STRUCTURE_ROAD);
+        spawn.room.createConstructionSite(x+2,y,STRUCTURE_ROAD);
+        spawn.room.createConstructionSite(x-2,y,STRUCTURE_ROAD);
+
+        spawn.room.createConstructionSite(x+1,y+1,STRUCTURE_ROAD);
+        spawn.room.createConstructionSite(x+1,y-1,STRUCTURE_ROAD);
+        spawn.room.createConstructionSite(x-1,y+1,STRUCTURE_ROAD);
+        spawn.room.createConstructionSite(x-1,y-1,STRUCTURE_ROAD); 
+    }
+    
+    return 0;
+}
+
+
+
+
 function setBaseLayout(spawn)// return most full energy deposit - container
 {
     var myStructures=spawn.room.find(FIND_MY_STRUCTURES);
+            /*
             for(let i=0;i<myStructures.length;i++)
-            {
+            {   
+                
                 myStructures[i].pos.createConstructionSite(STRUCTURE_RAMPART);
                 if(myStructures[i].structureType==STRUCTURE_EXTENSION)
                 {
@@ -13,110 +44,29 @@ function setBaseLayout(spawn)// return most full energy deposit - container
                     }
                 }
             }
+            */
+            //first layer 
+            create_extension_stamp(spawn,spawn.pos.x+3,spawn.pos.y);
+            create_extension_stamp(spawn,spawn.pos.x,spawn.pos.y+3);
+            create_extension_stamp(spawn,spawn.pos.x-3,spawn.pos.y);
+            create_extension_stamp(spawn,spawn.pos.x,spawn.pos.y-3);
 
-            for(let i=1;i<4;i++) // RIGHT DOWN
-            {
-                var x=spawn.pos.x+i;
-                var y=spawn.pos.y+i;
-                spawn.room.createConstructionSite(x,y,STRUCTURE_ROAD);
+            //second layer
 
-                if(i>1)
-                {
-                    var positions=new RoomPosition(x,y,spawn.room.name).getOpenPositions();
-                    for(let j=0;j<positions.length;j++)
-                    {
-                        var at_positions=spawn.room.lookAt(positions[j]);
-                        for(let k=0;k<at_positions.length;k++)
-                        {
-                            if(at_positions[k].structureType==STRUCTURE_ROAD)
-                            {
-                                j=positions.length;
-                                break;
-                            }
-                        }
-                        spawn.room.createConstructionSite(positions[j],STRUCTURE_EXTENSION);
-                        
-                    }
-                }
-                
-            }
-            
-            for(let i=1;i<4;i++)//RIGHT UP
-            {
-                var x=spawn.pos.x+i;
-                var y=spawn.pos.y-i;
-                spawn.room.createConstructionSite(x,y,STRUCTURE_ROAD);
-                if(i>1)
-                {
-                    var positions=new RoomPosition(x,y,spawn.room.name).getOpenPositions();
-                    for(let j=0;j<positions.length;j++)
-                    {
-                        var at_positions=spawn.room.lookAt(positions[j]);
-                        for(let k=0;k<at_positions.length;k++)
-                        {
-                            if(at_positions[k].structureType==STRUCTURE_ROAD)
-                            {
-                                j=positions.length;
-                                break;
-                            }
-                        }
-                        spawn.room.createConstructionSite(positions[j],STRUCTURE_EXTENSION);
-                        
-                    }
-                }
+            // right down
+            create_extension_stamp(spawn,spawn.pos.x+5,spawn.pos.y+2);
+            create_extension_stamp(spawn,spawn.pos.x+2,spawn.pos.y+5);
 
-            }
+            //left down
+            create_extension_stamp(spawn,spawn.pos.x-2,spawn.pos.y+5);
+            create_extension_stamp(spawn,spawn.pos.x-5,spawn.pos.y+2);   
             
-            for(let i=1;i<4;i++)// LEFT DOWN
-            {
-                var x=spawn.pos.x-i;
-                var y=spawn.pos.y+i;
-                spawn.room.createConstructionSite(x,y,STRUCTURE_ROAD);
-                if(i>1)
-                {
-                    var positions=new RoomPosition(x,y,spawn.room.name).getOpenPositions();
-                    for(let j=0;j<positions.length;j++)
-                    {
-                        var at_positions=spawn.room.lookAt(positions[j]);
-                        for(let k=0;k<at_positions.length;k++)
-                        {
-                            if(at_positions[k].structureType==STRUCTURE_ROAD)
-                            {
-                                j=positions.length;
-                                break;
-                            }
-                        }
-                        spawn.room.createConstructionSite(positions[j],STRUCTURE_EXTENSION);
-                        
-                    }
-                }
-            }
-            
-            for(let i=1;i<4;i++) // LEFT UP
-            {
-                var x=spawn.pos.x-i;
-                var y=spawn.pos.y-i;
-                spawn.room.createConstructionSite(x,y,STRUCTURE_ROAD);
-                if(i>1)
-                {
-                    var positions=new RoomPosition(x,y,spawn.room.name).getOpenPositions();
-                    for(let j=0;j<positions.length;j++)
-                    {
-                        var at_positions=spawn.room.lookAt(positions[j]);
-                        for(let k=0;k<at_positions.length;k++)
-                        {
-                            if(at_positions[k].structureType==STRUCTURE_ROAD)
-                            {
-                                j=positions.length;
-                                break;
-                            }
-                        }
-                        spawn.room.createConstructionSite(positions[j],STRUCTURE_EXTENSION);
-                        
-                    }
-                }
-            }
-            
-            
+            //left up
+            create_extension_stamp(spawn,spawn.pos.x-5,spawn.pos.y-2);
+            create_extension_stamp(spawn,spawn.pos.x-2,spawn.pos.y-5)
+
+            //right up
+            create_extension_stamp(spawn,spawn.pos.x+5,spawn.pos.y-2);
+            create_extension_stamp(spawn,spawn.pos.x+2,spawn.pos.y-5);
 }
 module.exports = setBaseLayout;

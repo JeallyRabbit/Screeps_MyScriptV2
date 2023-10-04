@@ -1,6 +1,7 @@
 const berserkRole = {
   /** @param {Creep} creep **/
   run: function (creep) {
+      creep.say("!");
     // Check if the creep has a target room
     if (!creep.memory.target_room) {
       return 0;
