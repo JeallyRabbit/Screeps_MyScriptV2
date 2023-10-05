@@ -378,7 +378,7 @@ module.exports.loop = function () {
             Game.spawns[spawnName].memory.roles_counter++;
         }
     }
-    else if(pop_upgraders<Game.spawns[spawnName].memory.req_upgraders && Game.spawns[spawnName].memory.roles_counter==5 && pop_haulers>0) // spawning new upgrader
+    else if(pop_upgraders<Game.spawns[spawnName].memory.req_upgraders && Game.spawns[spawnName].memory.roles_counter==5 ) // spawning new upgrader
     {
         if(spawn.spawnCreep(maxUpgrader(energyCap),'Upgrader'+Game.time, {memory: {role: 'upgrader',home_room: spawn.room}})==0)
         {

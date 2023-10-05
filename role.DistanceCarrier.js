@@ -1,5 +1,7 @@
 //var RoomPositionFunctions = require('roomPositionFunctions');
 
+var roleBuilder = require('role.builder');
+
 var roleDistanceCarrier = {
 
     /** @param {Creep} creep **/
@@ -109,6 +111,13 @@ var roleDistanceCarrier = {
                     /*&& structure.store[RESOURCE_ENERGY]>creep.store.getCapacity(RESOURCE_ENERGY)/2;*/
                 }
             });
+            
+            containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType === STRUCTURE_EXTENSION
+                    && structure.store.getFreeCapacity(RESOURCE_ENERGY)>0;
+                }
+            }));
 
             containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
@@ -123,15 +132,6 @@ var roleDistanceCarrier = {
                 }
             }));
 
-            /*
-            containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_EXTENSION 
-                    && structure.store[RESOURCE_ENERGY]<50;
-                }
-            }));
-            */
-
             if(containers.length>0)
             {
                 var closest_container = creep.pos.findClosestByRange(containers);
@@ -142,7 +142,10 @@ var roleDistanceCarrier = {
                         creep.moveTo(closest_container, { noPathFinding: false, reusePath: 10 });
                 }
             }
-            
+            else
+            {
+                roleBuilder.run(creep);
+            }
         }
         else if (creep.room.name != creep.memory.target_room && creep.store[RESOURCE_ENERGY] == 0) 
         {// not in target room and no energy - go target room

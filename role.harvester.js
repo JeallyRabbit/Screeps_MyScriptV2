@@ -9,6 +9,15 @@ var roleHarvester = {
             var sources=creep.room.find(FIND_SOURCES);
             //var source_index=creep.memory.myID%sources.length;
             var source_index=creep.memory.target_source;
+            var construction_sites=creep.pos.findInRange(FIND_CONSTRUCTION_SITES,3);
+
+            var containers = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType === STRUCTURE_CONTAINER
+                    && structure.pos.inRangeTo(creep.pos,3);
+                }
+            });
+
             //console.log(sources[1]);
             if(creep.memory.harvesting==true)
             {
@@ -36,8 +45,18 @@ var roleHarvester = {
                                 }
                             }
                         }
-                    
-                }
+                    }
+                    if(construction_sites.length<1 && containers.length<1)
+                        {// build container next to source
+                            
+                            creep.say("BU");
+                            var positions=new RoomPosition(sources[creep.memory.source_id].pos.x,sources[creep.memory.source_id].pos.y,creep.room.name).getOpenPositions2();
+                            
+                            if(positions!= undefined && positions.length>0)
+                            {
+                                positions[0].createConstructionSite(STRUCTURE_CONTAINER);
+                            }
+                        }
                 }
             }
             else if(creep.harvest(sources[source_index]) == ERR_NOT_IN_RANGE)
