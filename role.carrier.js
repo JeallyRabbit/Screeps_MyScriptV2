@@ -50,7 +50,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
             var extensions = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_EXTENSION
-                        && structure.energy < 50;;
+                        && structure.store[RESOURCE_ENERGY] < 50;
                 }
             });
             if (extensions.length > 0) {// if there are extensions go fill them

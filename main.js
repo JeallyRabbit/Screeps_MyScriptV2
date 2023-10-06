@@ -370,7 +370,7 @@ module.exports.loop = function () {
         }
     }
     else if(pop_haulers<Game.spawns[spawnName].memory.req_haulers && Game.spawns[spawnName].memory.roles_counter==4
-        && pop_harvesters>=spawn.memory.req_harvesters)//spawning new hauler
+        && pop_harvesters>=1)//spawning new hauler
     {
         if(spawn.spawnCreep(maxHauler(energyCap),'hauler'+Game.time,{memory: {role: 'hauler',home_room: spawn.room, cID_min: -1, cID_max:-1}})==0)
         {

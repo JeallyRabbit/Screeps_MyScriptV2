@@ -19,15 +19,11 @@ var roleUpgrader = {
                 structure.store[RESOURCE_ENERGY]>5000;
             }
         });
-        if(deposits.length==0)
-        {
-            deposits = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_CONTAINER
-                    && structure.store[RESOURCE_ENERGY]>0;
-                }
-            });
-        }
+        deposits = deposits.concat(creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_CONTAINER;
+            }
+        }));
 
 	    if(creep.memory.upgrading) // if upgrading go upgrade
         {

@@ -25,13 +25,23 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
                 /*&& structure.store[RESOURCE_ENERGY]>creep.store.getCapacity(RESOURCE_ENERGY)/2;*/
             }
         });
+        var storages=creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_STORAGE;
+            }
+        });
         
+        if(storages.length>0)
+        {
+            containers=storages;
+        }
+        /*
         containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_STORAGE;
             }
         }));
-
+        */
         //console.log("containers: ", containers.length);
         if (containers.length == 0) {
             roleBuilder.run(creep);
@@ -49,13 +59,13 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
 
         //var cID=-1;
         //var cID_max = -1, cID_min = -1;
-        var max_energy = 0.001;
+        var max_energy = 0;
         var min_energy = 100;
         if(creep.memory.cID_max==-1)
         {
             for (let i = 0; i < containers.length; i++) {
             //console.log(containers[i].store.getCapacity(RESOURCE_ENERGY));
-                if (containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY) > max_energy+0.1) {
+                if (containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY) > max_energy) {
                     max_energy = containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY);
                     creep.memory.cID_max = i;
                 }
@@ -65,7 +75,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
         {
             for (let i = 0; i < containers.length; i++) 
             {
-                if (containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY) < min_energy-0.1) {
+                if (containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY) < min_energy) {
                     min_energy = containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY);
                     creep.memory.cID_min = i;
                 }
@@ -80,6 +90,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
 
             var withdraw_amount = 1;
             if (creep.memory.cID_max >= 0) {
+                //creep.memory.cID_max=-1;
                 withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[creep.memory.cID_max].store[RESOURCE_ENERGY]);
                 if (creep.withdraw(containers[creep.memory.cID_max], RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
                     creep.moveTo(containers[creep.memory.cID_max]);
