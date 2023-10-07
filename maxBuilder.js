@@ -1,10 +1,20 @@
-function maxBuilder(cap)// return array with max possible work parts for builder
+function maxBuilder(cap,spawn)// return array with max possible work parts for builder
 {
+    var rcl=spawn.room.controller.level;
+    
+    if(cap>1200)
+    {
+        cap=1200;
+    }
     var parts=[];
-    parts.push(MOVE);
-    parts.push(CARRY);
-    parts.push(WORK);
-    cap-=200;
+    for(let i=0;i<rcl;i++)//minimum body
+    {
+        parts.push(MOVE);
+        parts.push(CARRY);
+        parts.push(WORK);
+        cap-=200;
+    }
+
     //console.log("avaliable work parts: ", Math.floor(cap/100));
     for(let i=0;i<Math.floor(cap/200);i++)
     {
