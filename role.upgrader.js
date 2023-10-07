@@ -21,7 +21,8 @@ var roleUpgrader = {
         });
         deposits = deposits.concat(creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
-                return structure.structureType === STRUCTURE_CONTAINER;
+                return structure.structureType === STRUCTURE_CONTAINER
+                && structure.store[RESOURCE_ENERGY]>0;
             }
         }));
 
@@ -39,7 +40,7 @@ var roleUpgrader = {
             
             var deposit= creep.pos.findClosestByRange(deposits);
             var withdraw_amount=0;
-            if(deposit)
+            if(deposit!=undefined)
             {
                 withdraw_amount=Math.min(creep.store.getFreeCapacity(), deposit.store[RESOURCE_ENERGY]);
                 if(withdraw_amount>0)

@@ -61,7 +61,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
         //var cID_max = -1, cID_min = -1;
         var max_energy = 0;
         var min_energy = 100;
-        if(creep.memory.cID_max==-1)
+        if(creep.memory.cID_max==-1 || creep.memory.cID_max==undefined)
         {
             for (let i = 0; i < containers.length; i++) {
             //console.log(containers[i].store.getCapacity(RESOURCE_ENERGY));
@@ -71,7 +71,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
                 }
             }
         }
-        if(creep.memory.cID_min==-1)
+        if(creep.memory.cID_min==-1 || creep.memory.cID_min==undefined)
         {
             for (let i = 0; i < containers.length; i++) 
             {
