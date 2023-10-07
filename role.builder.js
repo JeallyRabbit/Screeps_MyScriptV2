@@ -56,18 +56,11 @@ var roleBuilder = {
         }
 	    else 
         {// else collect dropped energy
-	         const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: resource => resource.resourceType == RESOURCE_ENERGY
-            })
-            var closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy)
-
-            for (var i = 1; i < droppedEnergy.length; i++) {
-                if (droppedEnergy[i].energy > closestDroppedEnergy.energy) {
-                    closestDroppedEnergy = droppedEnergy[i];
-                }
-            }
-
-            if(droppedEnergy.length>0)
+            const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
+                filter: resource => resource.resourceType == RESOURCE_ENERGY && resource.amount > 10
+            });
+            var closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy);
+            if(closestDroppedEnergy!=undefined)
             {
                 if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) 
                 {

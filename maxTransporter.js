@@ -4,7 +4,7 @@ function maxTransporter(cap,spawn)// return array with max possible work parts f
     
     cap=cap%2001;
     var parts=[];
-    for(let i=0;i<rcl;i++)//minimum body
+    for(let i=0;i<rcl-1;i++)//minimum body
     {
         parts.push(MOVE);
         parts.push(CARRY);

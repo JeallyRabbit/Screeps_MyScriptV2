@@ -15,6 +15,8 @@ var roleClaimer=require('role.Claimer');
 var roleDistanceBuilder=require('role.DistanceBuilder');
 var roleReserver=require('role.reserver');
 var roleDistanceCarrier=require('role.DistanceCarrier');
+var roleKeeperKiller=require('role.keeper_killer');
+var roleKeeperHealer=require('role.keeper_healer');
 var _ = require('lodash');
 
 const profiler = require('screeps-profiler');
@@ -131,6 +133,8 @@ module.exports.loop = function () {
     var pop_distanceBuilders=0;
     var pop_reservers=0;
     var pop_distanceCarriers=0;
+    var pop_keeperKillers=0;
+    var pop_keeperHealers=0;
     if(Game.spawns[spawnName].memory.roles_counter>roles_num){Game.spawns[spawnName].memory.roles_counter=0;}
 
     towers.tick(spawn);
@@ -262,6 +266,17 @@ module.exports.loop = function () {
                 roleSoldier.run(creep);
                 pop_soldiers++;
             }
+            else if(creep.memory.role=='keeperKiller')
+            {
+                //creep.suicide();
+                roleKeeperKiller.run(creep);
+                pop_keeperKillers++;
+            }
+            else if(creep.memory.role=='keeperHealer')
+            {
+                roleKeeperHealer.run(creep);
+                pop_keeperHealers++;
+            }
 
         }
 
@@ -287,7 +302,9 @@ module.exports.loop = function () {
     "DistanceBuilders: ",pop_distanceBuilders,"/",spawn.memory.req_distanceBuilders," | ",
     "Reservers: ", pop_reservers,"/",spawn.memory.req_reservers);
 
-    console.log("DistanceCarriers: ",pop_distanceCarriers,"/",spawn.memory.req_DistanceCarriers);
+    console.log("DistanceCarriers: ",pop_distanceCarriers,"/",spawn.memory.req_DistanceCarriers, " | ",
+    "Keeper Killers: ", pop_keeperKillers,"/",spawn.memory.req_keeperKillers," | ",
+    "Keeper Healers: ", pop_keeperHealers,"/",spawn.memory.req_keeperHealers);
     console.log("roles_counter: ", Game.spawns[spawnName].memory.roles_counter," | farmers_counter: ",spawn.memory.farmers_counter,
     " | distance_carriers_counter: ",spawn.memory.distance_carriers_counter);
     if(spawn.memory.progress!=0 && spawn.memory.progress_old!=0 &&
@@ -305,7 +322,7 @@ module.exports.loop = function () {
     console.log("energyCap: ", energyCap);
     
 
-    if(pop_harvesters<Game.spawns[spawnName].memory.req_harvesters && Game.spawns[spawnName].memory.roles_counter==0) // spawning new harvester
+    if(pop_harvesters<Game.spawns[spawnName].memory.req_harvesters && spawn.memory.roles_counter==0) // spawning new harvester
     {
         
         var assigned_source=-1;
@@ -363,6 +380,7 @@ module.exports.loop = function () {
     }
     else if(pop_builders<Game.spawns[spawnName].memory.req_builders && Game.spawns[spawnName].memory.roles_counter==3 && pop_carriers>0) // spawning new builder
     {
+        //console.log("builder body: ",maxBuilder(energyCap,spawn));
         if(spawn.spawnCreep(maxBuilder(energyCap,spawn),'Builder'+Game.time, {memory: {role: 'builder',home_room: spawn.room}})==0)
         {
             console.log('Spawning Builder');
@@ -465,7 +483,27 @@ module.exports.loop = function () {
         }
         
     }
-
+    else if(pop_keeperKillers<spawn.memory.req_keeperKillers )
+    {
+        const killer_body=[TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,
+            RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK];
+        if(spawn.spawnCreep(killer_body,'KeeperKiller'+Game.time,{memory: {role: 'keeperKiller', target: spawn.memory.keepers_rooms[0],home_room: spawn.room}})==0)
+        {
+            console.log("Spawning KeeperKiller");
+            Game.spawns[spawnName].memory.roles_counter++;
+            
+        }
+    }
+    else if(pop_keeperHealers<spawn.memory.req_keeperHealers)
+    {
+        const healer_body=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL];
+        if(spawn.spawnCreep(healer_body,'KeeperHealer'+Game.time,{memory: {role: 'keeperHealer', target: spawn.memory.keepers_rooms[0],home_room: spawn.room}})==0)
+        {
+            console.log("Spawning KeeperHealer");
+            Game.spawns[spawnName].memory.roles_counter++;
+            
+        }
+    }
     Game.spawns[spawnName].memory.roles_counter++;
     }
     });
