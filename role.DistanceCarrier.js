@@ -25,10 +25,28 @@ var roleDistanceCarrier = {
                 }
             }));
             if(containers.length==0){
-                if(creep.pos.y==49){creep.move(TOP);}
-                else if(creep.pos.y==0){creep.move(BOTTOM);}
-                else if(creep.pos.x==49){creep.move(LEFT);}
-                else if(creep.pos.x==0){creep.move(RIGHT);}
+                creep.say("STOP");
+                if(creep.pos.y==49){
+                    creep.move(TOP);
+                    creep.move(TOP_RIGHT);
+                    creep.move(TOP_LEFT);
+                }
+                else if(creep.pos.y==0){
+                    creep.move(BOTTOM);
+                    creep.move(BOTTOM_LEFT);
+                    creep.move(BOTTOM_RIGHT);
+                }
+                else if(creep.pos.x==49){
+                    creep.move(LEFT);
+                    creep.move(BOTTOM_LEFT);
+                    creep.move(TOP_LEFT);
+                }
+                else if(creep.pos.x==0){
+                    creep.move(RIGHT);
+                    creep.move(TOP_RIGHT);
+                    creep.move(BOTTOM_RIGHT);
+                }
+                return 0;
                 //else (return 0;)
                 //creep.moveTo(25,25,creep.memory.target_room)
                 
