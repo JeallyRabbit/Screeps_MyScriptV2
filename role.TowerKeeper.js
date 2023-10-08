@@ -27,6 +27,10 @@ var roleTowerKeeper = {
                 return structure.structureType === STRUCTURE_TOWER && structure.store[RESOURCE_ENERGY] < 900;
             }
         });
+        if(deposit==undefined)
+        {
+            creep.moveTo(towers[0].pos.x-1,towers[0].pos.y-1);
+        }
         var tower_min = 1000;
         var minID = 0;
         for (let i = 0; i < towers.length; i++) {

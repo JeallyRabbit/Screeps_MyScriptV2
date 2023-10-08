@@ -19,7 +19,7 @@ function setRequiredPopulation(mySpawns) {
     }
     mySpawns['Spawn1'].memory.req_carriers = 2;//role num 1
     mySpawns['Spawn1'].memory.req_farmers = 0;//role num 2
-    mySpawns['Spawn1'].memory.req_builders = 3;// role num 3
+    mySpawns['Spawn1'].memory.req_builders = 1;// role num 3
     if (mySpawns['Spawn1'].room.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
         mySpawns['Spawn1'].memory.req_builders = 0;
     }

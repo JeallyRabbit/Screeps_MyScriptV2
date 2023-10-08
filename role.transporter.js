@@ -3,7 +3,7 @@
 var roleTransporter = {//transfer energy grom containers to storage
 
     /** @param {Creep} creep **/
-    run: function(creep) 
+    run: function(creep,spawn) 
     {
         //creep.say("!");
         var containers = creep.room.find(FIND_STRUCTURES, {
@@ -15,7 +15,7 @@ var roleTransporter = {//transfer energy grom containers to storage
         
         containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => { return structure.structureType==STRUCTURE_LINK &&
-                structure.pos.x==24 && structure.pos.y==11
+                structure.pos.x == spawn.pos.x+3 && structure.pos.y == spawn.pos.y-3
             }
         }));
         

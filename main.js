@@ -367,7 +367,7 @@ module.exports.loop = function () {
             Game.spawns[spawnName].memory.roles_counter++;
         }
     }
-    else if(pop_farmers<Game.spawns[spawnName].memory.req_farmers && Game.spawns[spawnName].memory.roles_counter==2 && pop_harvesters>0)//spawning new farmer
+    else if(pop_farmers<Game.spawns[spawnName].memory.req_farmers && Game.spawns[spawnName].memory.roles_counter==2 && pop_harvesters>=spawn.memory.req_harvesters)//spawning new farmer
     {
         //console.log("ASD");
         //if(pop_farmers==0){pop_farmers=1;}
@@ -448,7 +448,7 @@ module.exports.loop = function () {
             Game.spawns[spawnName].memory.roles_counter++;
         }
     }
-    else if(pop_distanceBuilders<Game.spawns[spawnName].memory.req_distanceBuilders && spawn.memory.roles_counter==12)
+    else if(pop_distanceBuilders<Game.spawns[spawnName].memory.req_distanceBuilders && spawn.memory.roles_counter==12 && pop_farmers>=spawn.memory.req_farmers/2)
     {
         if(spawn.spawnCreep(maxDistanceBuilder(energyCap),'DistanceBuilder'+Game.time,{memory: {role: 'distanceBuilder',
         target_room: spawn.memory.claiming_rooms[pop_distanceBuilders%spawn.memory.claiming_rooms.length],
@@ -458,7 +458,7 @@ module.exports.loop = function () {
             Game.spawns[spawnName].memory.roles_counter++;
         }
     }
-    else if(pop_reservers<Game.spawns[spawnName].memory.req_reservers && spawn.memory.farming_rooms.length>0 && spawn.memory.roles_counter==13)
+    else if(pop_reservers<Game.spawns[spawnName].memory.req_reservers && spawn.memory.farming_rooms.length>0 && spawn.memory.roles_counter==13 && pop_farmers>=1)
     {
         //if(pop_reservers==0){pop_reservers=1;}
         if(spawn.spawnCreep(maxReserver(energyCap),'R'+Game.time,{memory: {role: 'reserver',
