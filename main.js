@@ -135,6 +135,7 @@ module.exports.loop = function () {
     var pop_distanceCarriers=0;
     var pop_keeperKillers=0;
     var pop_keeperHealers=0;
+    var pop_keeperCarriers=0;
     if(Game.spawns[spawnName].memory.roles_counter>roles_num){Game.spawns[spawnName].memory.roles_counter=0;}
 
     towers.tick(spawn);
@@ -500,6 +501,15 @@ module.exports.loop = function () {
         if(spawn.spawnCreep(healer_body,'KeeperHealer'+Game.time,{memory: {role: 'keeperHealer', target: spawn.memory.keepers_rooms[0],home_room: spawn.room}})==0)
         {
             console.log("Spawning KeeperHealer");
+            Game.spawns[spawnName].memory.roles_counter++;
+            
+        }
+    }
+    else if(pop_keeperCarriers<spawn.memory.req_keeperCarriers)
+    {
+        if(spawn.spawnCreep(maxHauler(energyCap,spawn),'KeeperCarrier'+Game.time,{memory: {role: 'keeperCarrier', target_room: spawn.memory.keepers_rooms[0],home_room: spawn.room}})==0)
+        {
+            console.log("Spawning KeeperCarrier");
             Game.spawns[spawnName].memory.roles_counter++;
             
         }

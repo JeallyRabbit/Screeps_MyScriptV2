@@ -1,4 +1,4 @@
-const keeper_killerHealer = {
+const keeper_Healer = {
     /** @param {Creep} creep **/
     run: function (creep) {
 
@@ -30,7 +30,10 @@ const keeper_killerHealer = {
             creep.moveTo(destination);
         }
         else {// If in the target room
-
+            if(creep.hits<creep.hitsMax*0.8)
+            {
+                creep.heal(creep);
+            }
             const healers = creep.room.find(FIND_MY_CREEPS, {
                 filter: function (creep) {
                     return creep.memory.role == 'keeperHealer';
@@ -50,7 +53,8 @@ const keeper_killerHealer = {
 
                 var friendlyDamagedCreeps = creep.room.find(FIND_MY_CREEPS, {
                     filter: function (creep) {
-                        return creep.hits < creep.hitsMax;
+                        return creep.hits < creep.hitsMax && 
+                        (creep.memory.role=='keeperKiller' || creep.memory.role=='keeperHealer') ;
                     }
                 });
                 var friendlyHealthyKillers = creep.room.find(FIND_MY_CREEPS, {
@@ -116,4 +120,4 @@ const keeper_killerHealer = {
     },
 };
 
-module.exports = keeper_killerHealer;
+module.exports = keeper_Healer;

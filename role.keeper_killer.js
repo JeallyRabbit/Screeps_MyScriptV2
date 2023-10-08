@@ -41,13 +41,13 @@ const keeper_killerRole = {
         const healers=creep.room.find(FIND_MY_CREEPS,{
             filter: function(creep){
                 return creep.memory.role=='keeperHealer'
-                && creep.hits>creep.hitsMax*0.8;
+                && creep.hits>creep.hitsMax*0.5;
             }
         });
         const killers=creep.room.find(FIND_MY_CREEPS,{
             filter: function(creep){
                 return creep.memory.role=='keeperKiller'
-                && creep.hits>creep.hitsMax*0.8;
+                && creep.hits>creep.hitsMax*0.5;
             }
         });
         if(healers.length>=1 && killers.length>=1 )
@@ -84,7 +84,7 @@ const keeper_killerRole = {
             else{
                 creep.say(4.5);
                 var target=creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                if(!creep.pos.inRangeTo(target,5) && creep.hits<creep.hitsMax*0.8)
+                if(!creep.pos.inRangeTo(target,5) && creep.hits<creep.hitsMax*0.5)
                 {
                     creep.say(4.6);
                     return 0;
