@@ -60,10 +60,10 @@ module.exports.loop = function () {
     if(Game.time%40==0)
     {
         setRequiredPopulation(Game.spawns);
-        /*if(Game.cpu.bucket==10000)
+        if(Game.cpu.bucket==10000)
         {
             Game.cpu.generatePixel();
-        }*/
+        }
         
     }
 
