@@ -159,6 +159,10 @@ var roleDistanceCarrier = {
                 {// if creep have energy go to container and store
                         creep.moveTo(closest_container, { noPathFinding: false, reusePath: 10 });
                 }
+                else
+                {
+                    creep.memory.path=undefined;
+                }
             }
             else
             {
@@ -169,6 +173,7 @@ var roleDistanceCarrier = {
         {// not in target room and no energy - go target room
             
             //if(creep.memory.target_room==undefined){creep.suicide();}
+            //creep.say("target");
             const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
 
 
@@ -189,11 +194,13 @@ var roleDistanceCarrier = {
                 if (path.length > 0) 
                 {
                     const moveResult = creep.moveByPath(path);
+                    //creep.say(moveResult);
                     if (moveResult === OK) 
                     {
                         // Successfully moved along the path
                     } 
-                    else if (moveResult === ERR_NOT_FOUND) {
+                    else /* if (moveResult === ERR_NOT_FOUND)*/
+                    {
                         // Path is no longer valid, clear the cached path
                         delete creep.memory.path;
                     }

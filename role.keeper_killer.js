@@ -37,7 +37,7 @@ const keeper_killerRole = {
       } 
       else 
       {// If in the target room
-        creep.say(3);
+        //creep.say(3);
         const healers=creep.room.find(FIND_MY_CREEPS,{
             filter: function(creep){
                 return creep.memory.role=='keeperHealer'
@@ -52,14 +52,14 @@ const keeper_killerRole = {
         });
         if(healers.length>=1 && killers.length>=1 )
         {//if enough friendly creeps to proceed attack
-            creep.say(4);
+            //creep.say(4);
             var hostileCreeps = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS /*, {
             filter: (enemyCreep) => enemyCreep.owner.username !== 'Jeally_Rabbit',
             }*/);
     
             if(hostileCreeps==undefined)
             {// there are no keepers - go to lair with smallest 
-                creep.say(6);
+                //creep.say(6);
                 const lairs = creep.room.find(FIND_STRUCTURES, {
                     filter: function(structure) {
                         return structure.structureType == STRUCTURE_KEEPER_LAIR;
@@ -67,7 +67,7 @@ const keeper_killerRole = {
                 });
                 if(creep.hits<creep.hitsMax*0.8)
                 {
-                    creep.say(6.6);
+                    //creep.say(6.6);
                     return 0;
                 }
                 //creep.say(lairs.length);
@@ -82,11 +82,31 @@ const keeper_killerRole = {
                 creep.moveTo(min_lair, {range: 2});
             }
             else{
-                creep.say(4.5);
+                //creep.say(4.5);
                 var target=creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                if(creep.pos.isNearTo(target))
+                {
+                    if(creep.pos.x-target.pos.x>0)
+                    {
+                        creep.move(RIGHT);
+
+                    }
+                    else if(creep.pos.x-target.pos.x<0)
+                    {
+                        creep.move(LEFT);
+                    }
+                    if(creep.pos.y-target.pos.y>0)
+                    {
+                        creep.move(BOTTOM)
+                    }
+                    else if(creep.pos.y-target.pos.y<0)
+                    {
+                        creep.move(TOP);
+                    }
+                }
                 if(!creep.pos.inRangeTo(target,5) && creep.hits<creep.hitsMax*0.5)
                 {
-                    creep.say(4.6);
+                    //creep.say(4.6);
                     return 0;
                 }
                 //console.log(creep.rangedAttack(target));
@@ -99,7 +119,7 @@ const keeper_killerRole = {
             }
         }
         else{// in target room but not enough creeps to proceed attack - 
-            creep.say(5);
+            //creep.say(5);
             var pos=creep.pos;
 
             var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS,{
@@ -127,23 +147,6 @@ const keeper_killerRole = {
             }
 
 
-
-            if(pos.x>48)
-            {
-                creep.move(LEFT);
-            }
-            else if(pos.x<2)
-            {
-                creep.move(RIGHT);
-            }
-            if(pos.y>48)
-            {
-                creep.move(TOP);
-            }
-            else if(pos.y<2)
-            {
-                creep.move(BOTTOM);
-            }
         }
         
       }

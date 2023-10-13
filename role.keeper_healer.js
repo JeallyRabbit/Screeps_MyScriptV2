@@ -1,3 +1,5 @@
+var RoomPositionFunctions=require('roomPositionFunctions');
+
 const keeper_Healer = {
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -30,6 +32,17 @@ const keeper_Healer = {
             creep.moveTo(destination);
         }
         else {// If in the target room
+
+            var keepers = creep.room.find(FIND_HOSTILE_CREEPS);
+            var to_avoid=[];
+            for(let i=0;i<keepers.length;i++)
+            {
+                to_avoid=to_avoid.concat(keepers[i].pos.getNearbyPositions2());
+            }
+            //var to_avoid=keepers[0].pos.getNearbyPositions2();
+           // console.log("to_avoid: ",to_avoid);
+
+
             if(creep.hits<creep.hitsMax*0.8)
             {
                 creep.heal(creep);
@@ -45,7 +58,7 @@ const keeper_Healer = {
                 }
             });
 
-            if (healers.length < 2 && killers.length < 1) {
+            if (killers.length < 1) {
                 return 0;
             }
 
@@ -74,15 +87,67 @@ const keeper_Healer = {
                         health_percentage = friendlyDamagedCreeps[i].hits / friendlyDamagedCreeps[i].hitsMax;
                     }
                     //console.log("damaged: ",friendlyDamagedCreeps);
+
+                    
+
                     if (creep.heal(friendlyDamagedCreeps[damaged_id]) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(friendlyDamagedCreeps[damaged_id]);
+                        creep.moveTo(friendlyDamagedCreeps[damaged_id],
+                            {//avoid: to_avoid
+                                costCallback: function(roomName,costmatrix)
+                                {
+                                    if(roomName==creep.room.name)
+                                    {
+                                        for(let i=0;i<to_avoid.length;i++)
+                                        {
+                                            costmatrix.set(to_avoid.x,to_avoid.y,200);
+                                        }
+                                    }
+                                }
+
+                            });
                     }
                 }
                 else if (friendlyHealthyKillers != undefined) {
                     //creep.say("PQPQPQPPQ");
                     //console.log(friendlyHealthyKillers[0]);
-                    creep.moveTo(friendlyHealthyKillers[0]);
+                    creep.moveTo(friendlyHealthyKillers[0],
+                        {//avoid: to_avoid
+                            costCallback: function(roomName,costmatrix)
+                            {
+                                if(roomName==creep.room.name)
+                                {
+                                    for(let i=0;i<to_avoid.length;i++)
+                                    {
+                                        costmatrix.set(to_avoid.x,to_avoid.y,200);
+                                    }
+                                }
+                            }
+
+                        });
                 }
+                
+                var target=creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                if(creep.pos.isNearTo(target))
+                {
+                    if(creep.pos.x-target.pos.x>0)
+                    {
+                        creep.move(RIGHT);
+
+                    }
+                    else if(creep.pos.x-target.pos.x<0)
+                    {
+                        creep.move(LEFT);
+                    }
+                    if(creep.pos.y-target.pos.y>0)
+                    {
+                        creep.move(BOTTOM)
+                    }
+                    else if(creep.pos.y-target.pos.y<0)
+                    {
+                        creep.move(TOP);
+                    }
+                }
+
 
             }
             else {// in target room but not enough creeps to proceed attack
@@ -95,7 +160,20 @@ const keeper_Healer = {
                     }
                 });
                 if (myCreeps != undefined && myCreeps.length > 1) {
-                    creep.moveTo(myCreeps[0]);
+                    creep.moveTo(myCreeps[0],
+                        {//avoid: to_avoid
+                            costCallback: function(roomName,costmatrix)
+                            {
+                                if(roomName==creep.room.name)
+                                {
+                                    for(let i=0;i<to_avoid.length;i++)
+                                    {
+                                        costmatrix.set(to_avoid.x,to_avoid.y,200);
+                                    }
+                                }
+                            }
+
+                        });
                 }
 
 

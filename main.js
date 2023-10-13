@@ -17,6 +17,7 @@ var roleReserver=require('role.reserver');
 var roleDistanceCarrier=require('role.DistanceCarrier');
 var roleKeeperKiller=require('role.keeper_killer');
 var roleKeeperHealer=require('role.keeper_healer');
+var roleKeeperCarrier=require('role.keeper_carrier');
 var _ = require('lodash');
 
 const profiler = require('screeps-profiler');
@@ -105,7 +106,7 @@ module.exports.loop = function () {
                 //spawn.memory.req_soldiers=0;
             }
             else{
-                spawn.memory.req_soldiers=3;
+                //spawn.memory.req_soldiers=3;
             }
         }
 
@@ -146,46 +147,48 @@ module.exports.loop = function () {
         {
             if(creep.memory.role == 'harvester') 
             {
-                //console.log(pop_harvesters, " ", spawn.memory.req_harvesters);
                 const workParts = _.filter(creep.body, { type: WORK }).length;
                 creep.memory.harvesting_power=workParts*2;
                 sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
                 //creep.say(workParts);
                 roleHarvester.run(creep,spawn);
-                pop_harvesters++;
-                //creep.say("");
-                
-                
+                if(creep.ticksToLive>100)
+                {
+                    pop_harvesters++;
+                }
             }
             else if(creep.memory.role=='carrier')
             {
-                
-                
                 roleCarrier.run(creep,spawn);
-                pop_carriers++;
-                
+                if(creep.ticksToLive>100)
+                {
+                    pop_carriers++;
+                }
             }  
             else if(creep.memory.role=='upgrader')
             {
-                
-                pop_upgraders++;
                 roleUpgrader.run(creep,spawn);
-                
-                
+                if(creep.ticksToLive>100)
+                {
+                    pop_upgraders++;
+                }
             }
             else if(creep.memory.role=='hauler')
             {
-                
-                
-                pop_haulers++;
                 roleHauler.run(creep,spawn);
+                if(creep.ticksToLive>100)
+                {
+                    pop_haulers++;
+                }
                 
             }
             else if(creep.memory.role=='builder')
             {
-                
-                pop_builders++;
                 roleBuilder.run(creep,spawn);
+                if(creep.ticksToLive>100)
+                {
+                    pop_builders++;
+                }
             }
             else if(creep.memory.role=='repairer')
             {
@@ -194,34 +197,23 @@ module.exports.loop = function () {
             }
             else if(creep.memory.role=='soldier')
             {
-                pop_soldiers++;
                 roleSoldier.run(creep,spawn);
+                if(creep.ticksToLive>100)
+                {
+                    pop_soldiers++;
+                }
                 
             }
             else if(creep.memory.role=='farmer')
             {
-                //creep.suicide();
-                //creep.say(creep.memory.target_room);
-                if(Game.time%50==0 && maxFarmer(spawn.room.energyAvailable).length>creep.body.length && creep.store[RESOURCE_ENERGY]==0 
-                && spawn.memory.roles_counter!=2 && pop_farmers-spawn.req_farmers<3 && pop_harvesters>0)
-                {
-                    if(spawn.spawnCreep(maxFarmer(spawn.room.energyAvailable),'Farmer'+Game.time,{memory: {role: 'farmer', home_room: spawn.room,
-                    target_room: creep.memory.target_room, path: undefined}})==0)
-                    {
-                        console.log("Spawning Farmer");
-                        Game.spawns[spawnName].memory.roles_counter++;
-                        spawn.memory.farmers_counter++;
-                    }
-
-                    spawn.memory.roles_counter=2;
-                    //pop_farmers--;
-                    //creep.suicide;
-                }
                 const workParts = _.filter(creep.body, { type: WORK }).length;
                 creep.memory.harvesting_power=workParts*2;
                 //sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
                 roleFarmer.run(creep,spawn);
-                pop_farmers++;
+                if(creep.ticksToLive>100)
+                {
+                    pop_farmers++;
+                }
                 
                 
             }
@@ -229,56 +221,94 @@ module.exports.loop = function () {
             {
                 //creep.suicide();
                 roleBerserk.run(creep,spawn);
-                pop_berserkers++;
+                if(creep.ticksToLive>100)
+                {
+                    pop_berserkers++;
+                }
             }
             else if(creep.memory.role=='transporter')
             {
                 roleTransporter.run(creep,spawn);
-                pop_transporters++;
+                if(creep.ticksToLive>100)
+                {
+                    pop_transporters++;
+                }
             }
             else if(creep.memory.role=='towerKeeper')
             {
                 roleTowerKeeper.run(creep,spawn);
-                pop_towerKeepers++;
+                if(creep.ticksToLive>100)
+                {
+                    pop_towerKeepers++;
+                }
             }
             else if(creep.memory.role=='claimer')
             {
                 //console.log("CLAIMING");
                 roleClaimer.run(creep,spawn);
-                pop_claimers++;
+                if(creep.ticksToLive>100)
+                {
+                    pop_claimers++;
+                }
             }
             else if(creep.memory.role=='distanceBuilder')
             {
                 roleDistanceBuilder.run(creep);
-                pop_distanceBuilders++;
+                if(creep.ticksToLive>100)
+                {
+                    pop_distanceBuilders++;
+                }
             }
             else if(creep.memory.role=='reserver')
             {
                 roleReserver.run(creep);
-                pop_reservers++;
+                if(creep.ticksToLive>100)
+                {
+                    pop_reservers++;
+                }
             }
             else if(creep.memory.role=='distanceCarrier')
             {
                 roleDistanceCarrier.run(creep);
-                pop_distanceCarriers++;
+                if(creep.ticksToLive>100)
+                {
+                    pop_distanceCarriers++;
+                }
             }
             else if(creep.memory.role=='soldier')
             {
                 roleSoldier.run(creep);
-                pop_soldiers++;
+                if(creep.ticksToLive>100)
+                {
+                   pop_soldiers++; 
+                }
             }
             else if(creep.memory.role=='keeperKiller')
             {
                 //creep.suicide();
                 roleKeeperKiller.run(creep);
-                pop_keeperKillers++;
+                if(creep.ticksToLive>100)
+                {
+                    pop_keeperKillers++;
+                }
             }
             else if(creep.memory.role=='keeperHealer')
             {
                 roleKeeperHealer.run(creep);
-                pop_keeperHealers++;
+                if(creep.ticksToLive>100)
+                {
+                    pop_keeperHealers++;
+                }
             }
-
+            else if(creep.memory.role=='keeperCarrier')
+            {
+                //creep.suicide();
+                roleKeeperCarrier.run(creep,spawn);
+                if(creep.ticksToLive>100)
+                {
+                    pop_keeperCarriers++;
+                }
+            }
         }
 
         
@@ -323,7 +353,7 @@ module.exports.loop = function () {
     console.log("energyCap: ", energyCap);
     
 
-    if(pop_harvesters<Game.spawns[spawnName].memory.req_harvesters && spawn.memory.roles_counter==0) // spawning new harvester
+    if(pop_harvesters<Game.spawns[spawnName].memory.req_harvesters /* && spawn.memory.roles_counter==0*/) // spawning new harvester
     {
         
         var assigned_source=-1;
@@ -342,7 +372,7 @@ module.exports.loop = function () {
             }
         }
     }
-    else if(pop_carriers<Game.spawns[spawnName].memory.req_carriers && Game.spawns[spawnName].memory.roles_counter==1 && pop_harvesters>0) // spawning new Carrier
+    else if(pop_carriers<Game.spawns[spawnName].memory.req_carriers/*  && spawn.memory.roles_counter==1 */ && pop_carriers<pop_harvesters) // spawning new Carrier
     {
         if(spawn.spawnCreep(maxCarrier(energyCap,spawn),'Carrier'+Game.time, {memory: {role: 'carrier', home_room: spawn.room}})==0)
         {
@@ -352,7 +382,7 @@ module.exports.loop = function () {
     }
     if(pop_soldiers<Game.spawns[spawnName].memory.req_soldiers )
     {
-        if(spawn.spawnCreep(maxSoldier(energyCap),'Soldier'+Game.time,{memory: {role: 'soldier', target: 'W2N8',home_room: spawn.room}})==0)
+        if(spawn.spawnCreep(maxSoldier(energyCap),'Soldier'+Game.time,{memory: {role: 'soldier', target: spawn.room.name,home_room: spawn.room}})==0)
         {
             console.log("Spawning Soldier");
             Game.spawns[spawnName].memory.roles_counter++;
@@ -367,11 +397,11 @@ module.exports.loop = function () {
             Game.spawns[spawnName].memory.roles_counter++;
         }
     }
-    else if(pop_farmers<Game.spawns[spawnName].memory.req_farmers && Game.spawns[spawnName].memory.roles_counter==2 && pop_harvesters>=spawn.memory.req_harvesters)//spawning new farmer
+    else if(pop_farmers<spawn.memory.req_farmers && Game.spawns[spawnName].memory.roles_counter==2 && pop_harvesters>0)//spawning new farmer
     {
         //console.log("ASD");
         //if(pop_farmers==0){pop_farmers=1;}
-        if(spawn.spawnCreep(maxFarmer(energyCap),'Farmer'+Game.time,{memory: {role: 'farmer', home_room: spawn.room,
+        if(spawn.spawnCreep(maxFarmer(energyCap,spawn),'Farmer'+Game.time,{memory: {role: 'farmer', home_room: spawn.room,
          target_room: spawn.memory.farming_rooms[spawn.memory.farmers_counter%spawn.memory.farming_rooms.length], path: undefined}})==0)
         {
             console.log("Spawning Farmer");
@@ -397,7 +427,7 @@ module.exports.loop = function () {
             Game.spawns[spawnName].memory.roles_counter++;
         }
     }
-    else if(pop_upgraders<Game.spawns[spawnName].memory.req_upgraders && Game.spawns[spawnName].memory.roles_counter==5 ) // spawning new upgrader
+    else if(pop_upgraders<spawn.memory.req_upgraders && pop_carriers>=spawn.memory.req_carriers ) // spawning new upgrader
     {
         if(spawn.spawnCreep(maxUpgrader(energyCap,spawn),'Upgrader'+Game.time, {memory: {role: 'upgrader',home_room: spawn.room}})==0)
         {
@@ -448,7 +478,7 @@ module.exports.loop = function () {
             Game.spawns[spawnName].memory.roles_counter++;
         }
     }
-    else if(pop_distanceBuilders<Game.spawns[spawnName].memory.req_distanceBuilders && spawn.memory.roles_counter==12 && pop_farmers>=spawn.memory.req_farmers/2)
+    else if(pop_distanceBuilders<Game.spawns[spawnName].memory.req_distanceBuilders && spawn.memory.roles_counter==12 && pop_distanceCarriers<pop_farmers)
     {
         if(spawn.spawnCreep(maxDistanceBuilder(energyCap),'DistanceBuilder'+Game.time,{memory: {role: 'distanceBuilder',
         target_room: spawn.memory.claiming_rooms[pop_distanceBuilders%spawn.memory.claiming_rooms.length],

@@ -7,12 +7,13 @@ function maxCarrier(cap,spawn)// return array with max possible work parts for h
         cap=1200;
     }
     var parts=[];
+    /*
     for(let i=0;i<rcl-1;i++)//minimum body
     {
         parts.push(MOVE);
         parts.push(CARRY);
         cap-=100;
-    }
+    }*/
     
 
     //console.log("avaliable work parts: ", Math.floor(cap/100));

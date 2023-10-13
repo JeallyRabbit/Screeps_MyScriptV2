@@ -37,7 +37,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
             var closestDroppedEnergy=droppedEnergy[0];
             //var biggestDroppedEnergy=droppedEnergy[0];
             for (var i = 1; i < droppedEnergy.length; i++) {
-                if (droppedEnergy[i].energy > closestDroppedEnergy.energy+20) {
+                if (droppedEnergy[i].energy > closestDroppedEnergy.energy+50) {
                     closestDroppedEnergy = droppedEnergy[i];
                 }
             }

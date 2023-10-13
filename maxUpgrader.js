@@ -2,7 +2,7 @@ function maxUpgrader(cap,spawn)// return array with max possible work parts for 
 {
     var rcl=spawn.room.controller.level;
     
-    cap=cap%2001;
+    cap=cap%2000+1;
     var parts=[];
     for(let i=0;i<rcl-1;i++)//minimum body
     {

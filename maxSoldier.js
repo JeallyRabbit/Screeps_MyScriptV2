@@ -2,7 +2,7 @@ function maxSoldier(cap)// return array with max possible work parts for hauler
 {
     var parts=[];
     parts.push(MOVE);
-    parts.push(ATTACK);
+    parts.push(RANGED_ATTACK);
     parts.push(TOUGH)
     parts.push(TOUGH)
     cap-=150;

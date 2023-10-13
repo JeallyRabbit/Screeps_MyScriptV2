@@ -1,7 +1,7 @@
 
-var roleBuilder = require('role.builder');
 
-var roleHauler = {//transfer energy grom containers to extensions and spawn (if they are full equalize energy at containers)
+
+var roleHauler = {//transfer energy grom containers (and storage) to extensions and spawn (if they are full equalize energy at containers)
 
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
@@ -21,13 +21,13 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
         }
         var containers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
-                return structure.structureType === STRUCTURE_CONTAINER;
+                return structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY]>0;
                 /*&& structure.store[RESOURCE_ENERGY]>creep.store.getCapacity(RESOURCE_ENERGY)/2;*/
             }
         });
         var storages=creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
-                return structure.structureType === STRUCTURE_STORAGE;
+                return structure.structureType === STRUCTURE_STORAGE && structure.store[RESOURCE_ENERGY]>0;
             }
         });
         
@@ -43,9 +43,6 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
         }));
         */
         //console.log("containers: ", containers.length);
-        if (containers.length == 0) {
-            roleBuilder.run(creep);
-        }
 
         if (creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.collecting = true; // collecting from containers
@@ -89,7 +86,7 @@ var roleHauler = {//transfer energy grom containers to extensions and spawn (if 
         {// go to container
 
             var withdraw_amount = 1;
-            if (creep.memory.cID_max >= 0) {
+            if (creep.memory.cID_max >= 0 && containers[creep.memory.cID_max]!=undefined) {
                 //creep.memory.cID_max=-1;
                 withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[creep.memory.cID_max].store[RESOURCE_ENERGY]);
                 if (creep.withdraw(containers[creep.memory.cID_max], RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy

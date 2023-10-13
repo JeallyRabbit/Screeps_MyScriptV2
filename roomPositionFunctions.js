@@ -17,6 +17,26 @@ RoomPosition.prototype.getNearbyPositions=function getNearbyPositions(){
     return positions;
 }
 
+RoomPosition.prototype.getNearbyPositions2=function getNearbyPositions2(){
+    var positions=[];
+
+    let startX=this.x-3 || 3;
+    let startY=this.y-3 || 3;
+
+    for (x=startX;x<=this.x+3 && x<49;x++)
+    {
+        for(y=startY;y<=this.y+3 && y<49;y++)
+        {
+            if(x!== this.x || y!== this.y)
+            {
+                positions.push(new RoomPosition(x,y,this.roomName));
+            }
+        }
+    }
+    return positions;
+}
+
+
 RoomPosition.prototype.getOpenPositions=function getOpenPositions(){ //returns open nearby positions around 
     let nearbyPositions = this.getNearbyPositions();
 

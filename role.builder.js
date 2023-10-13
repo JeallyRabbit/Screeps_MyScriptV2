@@ -5,7 +5,7 @@ var roleBuilder = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-        //creep.say("B");
+        creep.say("B");
         var targets=creep.room.find(FIND_CONSTRUCTION_SITES)
         if(targets.length==0) // if no constructuin sites go upgrade
         {

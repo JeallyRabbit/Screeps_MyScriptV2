@@ -39,11 +39,11 @@ var roleFarmer = {
             var sources = creep.room.find(FIND_SOURCES);
             
             var min_source_farmers=10;
-            if (creep.memory.source_id == undefined) {
+            if (creep.memory.source_id == undefined || creep.ticksToLive%256==0) {
                 //console.log("sources: ",sources.length);
                 //creep.say("#");
                 for (let i = 0; i < sources.length; i++) {
-                    console.log("open positions: ", sources[i].pos.getOpenPositions());
+                    //console.log("open positions: ", sources[i].pos.getOpenPositions());
                     if (sources[i].pos.getOpenPositions().length < min_source_farmers && sources[i].pos.getOpenPositions().length>0) {
                         //creep.say(sources[i].pos.getOpenPositions().length);
                         min_source_farmers=sources[i].pos.getOpenPositions().length ;
@@ -53,12 +53,12 @@ var roleFarmer = {
                     }
                 }
             }
-            else if (sources[creep.memory.source_id].pos.getOpenPositions().length < 1 && !creep.pos.isNearTo(sources[creep.memory.source_id])) {// if sources became unavailable ( due to creeps around it) and creep is not near this source 
+            else if (sources[creep.memory.source_id].pos.getOpenPositions().length < 1 && creep.pos.isNearTo(sources[creep.memory.source_id])==false) {// if sources became unavailable ( due to creeps around it) and creep is not near this source 
                 creep.memory.source_id = undefined;
                 //creep.say("U");
             }
             else {
-                //creep.say("H");
+                //creep.say(creep.harvest(sources[creep.memory.source_id]));
                 if (creep.harvest(sources[creep.memory.source_id]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(sources[creep.memory.source_id], { noPathFinding: false, reusePath: 9 });
                 }
