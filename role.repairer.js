@@ -1,5 +1,5 @@
 var roleBuilder=require('role.builder');
-const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
+//const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
 
 var roleRepairer = {
 

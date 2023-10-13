@@ -6,7 +6,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
 
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
-
+        //creep.memory.target_energy=undefined;
         if (creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.collecting = true;
         }
@@ -20,31 +20,50 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
 
         var containers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
-                return structure.structureType === STRUCTURE_CONTAINER;
+                return structure.structureType === STRUCTURE_CONTAINER
+                && structure.store[RESOURCE_ENERGY]<2000;
             }
         });
 
+        containers=containers.concat(creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_STORAGE;
+            }
+        }));
+
         //creep.say(droppedEnergy.length);
-        if (droppedEnergy.length < 1) {
+        if (droppedEnergy.length < 1 || containers.length<1 || containers==undefined) {
             //creep.say("Ha");
             roleHauler.run(creep, spawn);
         }
         else if (droppedEnergy.length > 0 && creep.memory.collecting == true)//if there is dropped energy and creep have free space, go collect it
         {
-
-
-            //var closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy)
-            var closestDroppedEnergy=droppedEnergy[0];
-            //var biggestDroppedEnergy=droppedEnergy[0];
-            for (var i = 1; i < droppedEnergy.length; i++) {
-                if (droppedEnergy[i].energy > closestDroppedEnergy.energy+50) {
-                    closestDroppedEnergy = droppedEnergy[i];
+            if(creep.memory.target_energy==undefined)
+            {
+                
+                 //var closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy)
+                var closestDroppedEnergy=droppedEnergy[0];
+                creep.memory.target_energy=0;
+                //var biggestDroppedEnergy=droppedEnergy[0];
+                for (var i = 1; i < droppedEnergy.length; i++) {
+                    if (droppedEnergy[i].energy > closestDroppedEnergy.energy+50) {
+                        closestDroppedEnergy = droppedEnergy[i];
+                        creep.memory.target_energy=i;
+                    }
                 }
             }
-            if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
-                // Move to it
-                creep.moveTo(closestDroppedEnergy);
+            else if(creep.memory.target_energy!=undefined)
+            {
+                if (creep.pickup(droppedEnergy[creep.memory.target_energy]) == ERR_NOT_IN_RANGE) {
+                    // Move to it
+                    creep.moveTo(droppedEnergy[creep.memory.target_energy]);
+                }
+                else// if(creep.pickup(droppedEnergy[creep.memory.target_energy])==OK)
+                {
+                    creep.memory.target_energy=undefined;
+                }
             }
+            
         }
         else if (creep.memory.collecting == false) {// go try fill extensions
             var extensions = creep.room.find(FIND_STRUCTURES, {

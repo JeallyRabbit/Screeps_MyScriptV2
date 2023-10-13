@@ -1,4 +1,4 @@
-const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
+
 var roleUpgrader = {
 
     /** @param {Creep} creep **/

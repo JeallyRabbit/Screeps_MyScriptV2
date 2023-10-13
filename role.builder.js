@@ -1,5 +1,4 @@
 var roleUpgrader=require('role.upgrader');
-const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
 
 var roleBuilder = {
 
