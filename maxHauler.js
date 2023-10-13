@@ -4,6 +4,10 @@ function maxHauler(cap,spawn)// return array with max possible work parts for ha
     
     cap=cap%2000+1;
     var parts=[];
+    parts.push(MOVE);
+    parts.push(CARRY);
+    cap-=100;
+    
     for(let i=0;i<rcl-1;i++)//minimum body
     {
         parts.push(MOVE);

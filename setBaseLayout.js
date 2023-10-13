@@ -123,8 +123,14 @@ function setBaseLayout(spawn)// return most full energy deposit - container
 
             //create terminal
             spawn.room.createConstructionSite(spawn.pos.x+1,spawn.pos.y-1,STRUCTURE_TERMINAL);// build terminal
-
-            create_ramparts(spawn);
+            
+            var towers=spawn.room.find(FIND_MY_STRUCTURES,
+                {filter: function(structure) {return structure.structureType==STRUCTURE_TOWER;}});
+            if(spawn.room.controller.level>=3 && towers!=undefined && towers.length>0)
+            {
+                create_ramparts(spawn);
+            }
+            
             
         }
 module.exports = setBaseLayout;

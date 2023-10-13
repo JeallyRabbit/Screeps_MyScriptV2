@@ -9,7 +9,7 @@ function maxFarmer(cap,spawn)// return array with max possible work parts for bu
     parts.push(CARRY);
     parts.push(WORK);
     cap-=250;
-    for(let i=0;i<rcl/2;i++)
+    for(let i=0;i<rcl-1;i++)
     {
         parts.push(WORK);
         parts.push(MOVE);

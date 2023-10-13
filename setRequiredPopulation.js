@@ -8,7 +8,7 @@ function setRequiredPopulation(mySpawns) {
     });
 
     mySpawns['Spawn1'].memory.num_towers = mySpawns['Spawn1'].memory.num_towers.length;
-    mySpawns['Spawn1'].memory.req_harvesters =3;// role num 0
+    mySpawns['Spawn1'].memory.req_harvesters =2;// role num 0
     if(mySpawns['Spawn1'].room.controller.level==1)
     {
         mySpawns['Spawn1'].memory.req_harvesters =6;

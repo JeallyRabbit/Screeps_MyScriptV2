@@ -5,7 +5,7 @@ var roleBuilder = require('role.builder');
 var roleDistanceCarrier = {
 
     /** @param {Creep} creep **/
-    run: function (creep) {
+    run: function (creep,spawn) {
         //creep.say(creep.memory.home_room);
 
         if (creep.room.name == creep.memory.target_room && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) 
@@ -146,12 +146,13 @@ var roleDistanceCarrier = {
             containers = containers.concat(creep.room.find(FIND_MY_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType==STRUCTURE_LINK
-                         && structure.pos.x!=24 && structure.pos.y!=11
+                         && structure.pos.x!=spawn.pos.x+3 && structure.pos.y!=spawn.pos.y-3
                 }
             }));
 
             if(containers.length>0)
             {
+                //console.log("containers: ", containers.length);
                 var closest_container = creep.pos.findClosestByRange(containers);
                 var transfer_amount = 1;
                 transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
@@ -163,10 +164,6 @@ var roleDistanceCarrier = {
                 {
                     creep.memory.path=undefined;
                 }
-            }
-            else
-            {
-                roleBuilder.run(creep);
             }
         }
         else if (creep.room.name != creep.memory.target_room && creep.store[RESOURCE_ENERGY] == 0) 
