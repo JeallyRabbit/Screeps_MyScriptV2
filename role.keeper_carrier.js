@@ -57,7 +57,7 @@ const keeper_carrier = {
             //creep.say(closestDroppedEnergy.pos.x+" "+closestDroppedEnergy.pos.y);
             if(closestDroppedEnergy && (droppedEnergy!=undefined || droppedEnergy.length>=1))
             {
-                //console.log(closestDroppedEnergy.pos);
+                console.log("dropped energy pos: ",closestDroppedEnergy.pos);
                var keepers = closestDroppedEnergy.pos.findInRange(FIND_HOSTILE_CREEPS, 5);
                
                 if (keepers == undefined || keepers.length < 1) {
@@ -66,55 +66,56 @@ const keeper_carrier = {
                     // Move to it
                     creep.moveTo(closestDroppedEnergy,
                         {//avoid: to_avoid
-                            costCallback: function(roomName,costmatrix)
+                            costCallback: function(roomName,costMatrix)
                             {
                                 if(roomName==creep.room.name)
                                 {
                                     for(let i=0;i<to_avoid.length;i++)
                                     {
-                                        costmatrix.set(to_avoid.x,to_avoid.y,200);
+                                        costMatrix.set(to_avoid.x,to_avoid.y,255);
                                     }
                                 }
                             }
 
                         });
-                }
-
+                    }
                 } 
-            }
-            else if(droppedEnergy!=undefined || droppedEnergy.length>=1)
-            {// find another safe energy
-                //console.log(4.51);
-                
-                //var to_avoid=keepers[0].pos.getNearbyPositions2();
-               //console.log("to_avoid: ",to_avoid);
-                for (let i = 0; i < droppedEnergy.length; i++) {
-                    closestDroppedEnergy = droppedEnergy[i];
-                    var keepers = closestDroppedEnergy.pos.findInRange(FIND_HOSTILE_CREEPS, 5);
-                    if (keepers == undefined || keepers.length < 1) {
-                        creep.say("waiting");
-                        break;
+                else if(droppedEnergy!=undefined && droppedEnergy.length>=1)
+                {// find another safe energy
+                    console.log(4.51);
+                    //console.log(droppedEnergy[0].pos);
+                    //var to_avoid=keepers[0].pos.getNearbyPositions2();
+                //console.log("to_avoid: ",to_avoid);
+                    for (let i = 0; i < droppedEnergy.length; i++) {
+                        closestDroppedEnergy = droppedEnergy[i];
+                        var keepers = closestDroppedEnergy.pos.findInRange(FIND_HOSTILE_CREEPS, 5);
+                        if (keepers != undefined || keepers.length < 1) {
+                            creep.say("waiting");
+                            return;
+                        }
+                    }
+                    console.log("dropped energy2 pos: ",closestDroppedEnergy.pos);
+                    if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
+                        // Move to it
+                        //console.log("MOVING");
+                        creep.moveTo(closestDroppedEnergy,
+                            {//avoid: to_avoid
+                                costCallback: function(roomName,costMatrix)
+                                {
+                                    if(roomName==creep.room.name)
+                                    {
+                                        for(let i=0;i<to_avoid.length;i++)
+                                        {
+                                            costMatrix.set(to_avoid.x,to_avoid.y,255);
+                                        }
+                                    }
+                                }
+
+                            });
                     }
                 }
-                if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
-                    // Move to it
-                    //console.log("MOVING");
-                    creep.moveTo(closestDroppedEnergy,
-                        {//avoid: to_avoid
-                            costCallback: function(roomName,costmatrix)
-                            {
-                                if(roomName==creep.room.name)
-                                {
-                                    for(let i=0;i<to_avoid.length;i++)
-                                    {
-                                        costmatrix.set(to_avoid.x,to_avoid.y,200);
-                                    }
-                                }
-                            }
-
-                        });
-                }
             }
+            
             else
             {// go to tombstones
                 creep.say("TOMBSTONES");
@@ -137,15 +138,16 @@ const keeper_carrier = {
                 {
                     to_avoid=to_avoid.concat(keepers[i].pos.getNearbyPositions2());
                 }
+                console.log(to_avoid);
                 creep.moveTo(nearest_tombstone,
                     {//avoid: to_avoid
-                        costCallback: function(roomName,costmatrix)
+                        costCallback: function(roomName,costMatrix)
                         {
                             if(roomName==creep.room.name)
                             {
                                 for(let i=0;i<to_avoid.length;i++)
                                 {
-                                    costmatrix.set(to_avoid.x,to_avoid.y,200);
+                                    costMatrix.set(to_avoid.x,to_avoid.y,255);
                                 }
                             }
                         }

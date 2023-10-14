@@ -27,7 +27,8 @@ var roleTowerKeeper = {
                 return structure.structureType === STRUCTURE_TOWER && structure.store[RESOURCE_ENERGY] < 900;
             }
         });
-        if(deposit==undefined)
+       // creep.say(towers);
+        if(deposit==undefined || towers.length<0)
         {
             creep.moveTo(spawn.pos.x+1,spawn.pos.y+1);
         }
