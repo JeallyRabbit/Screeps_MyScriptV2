@@ -35,14 +35,6 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
         {
             containers=storages;
         }
-        /*
-        containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_STORAGE;
-            }
-        }));
-        */
-        //console.log("containers: ", containers.length);
 
         if (creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.collecting = true; // collecting from containers

@@ -47,20 +47,20 @@ var roleFarmer = {
                     if (sources[i].pos.getOpenPositions().length < min_source_farmers && sources[i].pos.getOpenPositions().length>0) {
                         //creep.say(sources[i].pos.getOpenPositions().length);
                         min_source_farmers=sources[i].pos.getOpenPositions().length ;
-                        creep.memory.source_id = i;
+                        creep.memory.source_id = sources[i].id;
                         //console.log("harvest: ",creep.harvest(sources[i]));
 
                     }
                 }
             }
-            else if (sources[creep.memory.source_id].pos.getOpenPositions().length < 1 && creep.pos.isNearTo(sources[creep.memory.source_id])==false) {// if sources became unavailable ( due to creeps around it) and creep is not near this source 
+            else if (Game.getObjectById(creep.memory.source_id).pos.getOpenPositions().length < 1 && creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id))==false) {// if sources became unavailable ( due to creeps around it) and creep is not near this source 
                 creep.memory.source_id = undefined;
                 //creep.say("U");
             }
             else {
                 //creep.say(creep.harvest(sources[creep.memory.source_id]));
-                if (creep.harvest(sources[creep.memory.source_id]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(sources[creep.memory.source_id], { noPathFinding: false, reusePath: 9 });
+                if (creep.harvest(Game.getObjectById(creep.memory.source_id)) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(Game.getObjectById(creep.memory.source_id), { noPathFinding: false, reusePath: 9 });
                 }
             }
 
@@ -110,7 +110,8 @@ var roleFarmer = {
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_CONTAINER
-                    && structure.pos.inRangeTo(creep.pos,3);
+                    && /*structure.pos.inRangeTo(creep.pos,3)*/
+                    structure.store[RESOURCE_ENERGY]<2000;
                 }
             });
             
@@ -129,7 +130,7 @@ var roleFarmer = {
             {// build container next to source
                 
                 creep.say("BU");
-                var positions=new RoomPosition(sources[creep.memory.source_id].pos.x,sources[creep.memory.source_id].pos.y,creep.room.name).getOpenPositions2();
+                var positions=new RoomPosition(Game.getObjectById(creep.memory.source_id).pos.x,Game.getObjectById(creep.memory.source_id).pos.y,creep.room.name).getOpenPositions2();
                 
                 if(positions!= undefined && positions.length>0)
                 {

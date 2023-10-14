@@ -15,7 +15,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
         }
 
         const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-            filter: resource => resource.resourceType == RESOURCE_ENERGY && resource.amount > 10
+            filter: resource => resource.resourceType == RESOURCE_ENERGY && resource.amount > creep.store.getCapacity()*0.8
         })
 
         var containers = creep.room.find(FIND_STRUCTURES, {
@@ -32,7 +32,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
         }));
 
         //creep.say(droppedEnergy.length);
-        if (droppedEnergy.length < 1 || containers.length<1 || containers==undefined) {
+        if (droppedEnergy.length < 1 /*|| containers.length<1 || containers==undefined*/) {
             //creep.say("Ha");
             roleHauler.run(creep, spawn);
         }

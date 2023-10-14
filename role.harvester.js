@@ -6,7 +6,11 @@ var roleHarvester = {
     /** @param {Creep} creep **/
     run: function(creep) 
     {
-            var sources=creep.room.find(FIND_SOURCES);
+        if(creep.memory.sources==undefined)
+        {
+            creep.memory.sources=creep.room.find(FIND_SOURCES);
+        }
+            
             //var source_index=creep.memory.myID%sources.length;
             var source_index=creep.memory.target_source;
             var construction_sites=creep.pos.findInRange(FIND_CONSTRUCTION_SITES,3);
@@ -17,15 +21,15 @@ var roleHarvester = {
                     && structure.pos.inRangeTo(creep.pos,3);
                 }
             });
-
-            //console.log(sources[1]);
+            //creep.say(containers.length);
+            //console.log(creep.memory.sources[1]);
             if(creep.memory.harvesting==true)
             {
-                creep.harvest(sources[source_index]);
-                //console.log("source pos: ", sources[source_index]);
+                creep.harvest(Game.getObjectById(creep.memory.sources[source_index].id));
+                //console.log("source pos: ", creep.memory.sources[source_index]);
                 if(Game.time%50==0 )
                 {
-                    var positions=sources[source_index].pos.getNearbyPositions();
+                    var positions=Game.getObjectById(creep.memory.sources[source_index].id).pos.getNearbyPositions();
                     //console.log("Creep at: ",creep.pos)
                     for(let i=0;i<positions.length;i++)
                     {
@@ -39,8 +43,9 @@ var roleHarvester = {
                             {
                                 if(structures_at_pos[j].structureType==STRUCTURE_CONTAINER &&
                                 creeps_at_pos[0]==undefined)
-                                {
-                                    console.log(creep.moveTo(positions[i]));
+                                {//creep is alligning
+                                   // creep.memory.harvesting=false;
+                                    //console.log(creep.moveTo(positions[i]));
                                     //creep.say("ALLIGNING");
                                     break;
                                 }
@@ -51,7 +56,7 @@ var roleHarvester = {
                         {// build container next to source
                             
                            
-                            var positions=new RoomPosition(sources[source_index].pos.x,sources[source_index].pos.y,creep.room.name).getOpenPositions2();
+                            var positions=new RoomPosition(Game.getObjectById(creep.memory.sources[source_index].id).pos.x,Game.getObjectById(creep.memory.sources[source_index].id).pos.y,creep.room.name).getOpenPositions2();
                             
                             if(positions!= undefined && positions.length>0)
                             {
@@ -60,15 +65,22 @@ var roleHarvester = {
                         }
                 }
             }
-            else if(creep.harvest(sources[source_index]) == ERR_NOT_IN_RANGE)
+            else if(creep.harvest(Game.getObjectById(creep.memory.sources[source_index].id)) == ERR_NOT_IN_RANGE)
             {
+               // creep.say("-1");
                 creep.memory.harvesting=false;
-                creep.moveTo(sources[source_index]);
+                creep.moveTo(Game.getObjectById(creep.memory.sources[source_index].id));
             }   
-            else if(creep.harvest(sources[source_index])==OK)
+            else if(creep.harvest(Game.getObjectById(creep.memory.sources[source_index].id))==OK)
             {
                 creep.memory.harvesting=true;
             }
+            /*
+            else{
+                var a=creep.memory.sources[0];
+                creep.say(Game.getObjectById(creep.memory.sources[0].id));
+                creep.memory.harvesting=false;
+            }*/
 	}
 };
 module.exports = roleHarvester;
