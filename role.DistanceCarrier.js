@@ -158,7 +158,7 @@ var roleDistanceCarrier = {
                 transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
                 if (creep.transfer(closest_container, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) 
                 {// if creep have energy go to container and store
-                        creep.moveTo(closest_container, { noPathFinding: false, reusePath: 10 });
+                        creep.moveTo(closest_container, { noPathFinding: false, reusePath: 5 });
                 }
                 else
                 {

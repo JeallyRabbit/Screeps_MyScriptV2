@@ -84,7 +84,7 @@ const keeper_carrier = {
             }
             else if(droppedEnergy!=undefined || droppedEnergy.length>=1)
             {// find another safe energy
-                console.log(4.51);
+                //console.log(4.51);
                 
                 //var to_avoid=keepers[0].pos.getNearbyPositions2();
                //console.log("to_avoid: ",to_avoid);
@@ -98,7 +98,7 @@ const keeper_carrier = {
                 }
                 if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                     // Move to it
-                    console.log("MOVING");
+                    //console.log("MOVING");
                     creep.moveTo(closestDroppedEnergy,
                         {//avoid: to_avoid
                             costCallback: function(roomName,costmatrix)
@@ -128,7 +128,7 @@ const keeper_carrier = {
                         nearest_tombstone=tombstones[i];
                         min_decay=tombstones[i].ticksToDecay;
                     }
-                    console.log(nearest_tombstone.pos);
+                    //console.log(nearest_tombstone.pos);
                 }
 
                 var keepers = creep.room.find(FIND_HOSTILE_CREEPS);
@@ -240,7 +240,7 @@ const keeper_carrier = {
             if (containers.length > 0) {
                 //console.log(6.1);
                 var closest_container = creep.pos.findClosestByRange(containers);
-                console.log(closest_container.pos);
+                //console.log(closest_container.pos);
                 var transfer_amount = 1;
                 transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
                 if (creep.transfer(closest_container, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {// if creep have energy go to container and store
