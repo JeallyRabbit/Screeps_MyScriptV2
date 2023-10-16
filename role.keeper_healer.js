@@ -93,13 +93,13 @@ const keeper_Healer = {
                     if (creep.heal(friendlyDamagedCreeps[damaged_id]) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(friendlyDamagedCreeps[damaged_id],
                             {//avoid: to_avoid
-                                costCallback: function(roomName,costMatrix)
+                                costCallback: function(roomName,costmatrix)
                                 {
                                     if(roomName==creep.room.name)
                                     {
                                         for(let i=0;i<to_avoid.length;i++)
                                         {
-                                            costMatrix.set(to_avoid.x,to_avoid.y,200);
+                                            costmatrix.set(to_avoid.x,to_avoid.y,200);
                                         }
                                     }
                                 }
@@ -112,13 +112,13 @@ const keeper_Healer = {
                     //console.log(friendlyHealthyKillers[0]);
                     creep.moveTo(friendlyHealthyKillers[0],
                         {//avoid: to_avoid
-                            costCallback: function(roomName,costMatrix)
+                            costCallback: function(roomName,costmatrix)
                             {
                                 if(roomName==creep.room.name)
                                 {
                                     for(let i=0;i<to_avoid.length;i++)
                                     {
-                                        costMatrix.set(to_avoid.x,to_avoid.y,200);
+                                        costmatrix.set(to_avoid.x,to_avoid.y,200);
                                     }
                                 }
                             }
@@ -162,13 +162,13 @@ const keeper_Healer = {
                 if (myCreeps != undefined && myCreeps.length > 1) {
                     creep.moveTo(myCreeps[0],
                         {//avoid: to_avoid
-                            costCallback: function(roomName,costMatrix)
+                            costCallback: function(roomName,costmatrix)
                             {
                                 if(roomName==creep.room.name)
                                 {
                                     for(let i=0;i<to_avoid.length;i++)
                                     {
-                                        costMatrix.set(to_avoid.x,to_avoid.y,200);
+                                        costmatrix.set(to_avoid.x,to_avoid.y,200);
                                     }
                                 }
                             }

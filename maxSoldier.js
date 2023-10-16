@@ -1,24 +1,21 @@
 function maxSoldier(cap)// return array with max possible work parts for hauler
 {
     var parts=[];
+    if(cap>5000)
+    {
+        cap=5000;
+    }
     parts.push(MOVE);
     parts.push(RANGED_ATTACK);
-    parts.push(TOUGH)
-    parts.push(TOUGH)
-    cap-=150;
+    parts.push(HEAL);
+    //parts.push(TOUGH)
+    //parts.push(TOUGH)
+    cap-=450;
 
     //console.log("avaliable work parts: ", Math.floor(cap/100));
-    for(let i=0;i<Math.floor(cap/150);i++)
-    {
-        parts.push(TOUGH)
-        parts.push(TOUGH)
-    }
-    for(let i=0;i<Math.floor(cap/150);i++)
+    for(let i=0;i<Math.floor(cap/200);i++)
     {
         parts.push(RANGED_ATTACK);
-    }
-    for(let i=0;i<Math.floor(cap/150);i++)
-    {
         parts.push(MOVE);
     }
     

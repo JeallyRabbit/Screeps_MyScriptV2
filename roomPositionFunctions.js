@@ -20,12 +20,12 @@ RoomPosition.prototype.getNearbyPositions=function getNearbyPositions(){
 RoomPosition.prototype.getNearbyPositions2=function getNearbyPositions2(){
     var positions=[];
 
-    let startX=this.x-3 || 3;
-    let startY=this.y-3 || 3;
+    let startX=this.x-4 || 4;
+    let startY=this.y-4 || 4;
 
-    for (x=startX;x<=this.x+3 && x<49;x++)
+    for (x=startX;x<=this.x+4 && x<49;x++)
     {
-        for(y=startY;y<=this.y+3 && y<49;y++)
+        for(y=startY;y<=this.y+4 && y<49;y++)
         {
             if(x!== this.x || y!== this.y)
             {
