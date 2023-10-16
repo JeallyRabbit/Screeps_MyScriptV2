@@ -1,5 +1,9 @@
 function maxDistanceBuilder(cap)// return array with max possible work parts for builder
 {
+    if(cap>2000)
+    {
+        cap=2000;
+    }
     var parts=[];
     parts.push(MOVE);
     parts.push(CARRY);

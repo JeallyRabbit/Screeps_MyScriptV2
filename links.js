@@ -16,7 +16,7 @@ var links = {
         //links[0].transferEnergy(target_link,100);
         
         _.forEach(links, function(link){
-            if(link.cooldown==0 && link.store[RESOURCE_ENERGY]>0)
+            if(link.cooldown==0 && link.store[RESOURCE_ENERGY]>=600)
             {
                 console.log(link.transferEnergy(target_link[0]));
             }

@@ -79,7 +79,7 @@ const keeper_killerRole = {
                         min_lair=lairs[i];
                     }
                 }
-                creep.moveTo(min_lair, {range: 2});
+                creep.moveTo(min_lair, {range: 4});
             }
             else{
                 //creep.say(4.5);

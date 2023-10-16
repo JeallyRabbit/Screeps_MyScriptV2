@@ -9,13 +9,14 @@ var roleTransporter = {//transfer energy grom containers to storage
         var containers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_CONTAINER
-                && structure.store[RESOURCE_ENERGY]>0;
+                && structure.store[RESOURCE_ENERGY]>400;
             }
         });
         
         containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => { return structure.structureType==STRUCTURE_LINK &&
                 structure.pos.x == spawn.pos.x+3 && structure.pos.y == spawn.pos.y-3
+                && structure.store[RESOURCE_ENERGY]>0
             }
         }));
         

@@ -128,7 +128,7 @@ function setBaseLayout(spawn)// return most full energy deposit - container
                 {filter: function(structure) {return structure.structureType==STRUCTURE_TOWER;}});
             if(spawn.room.controller.level>=3 && towers!=undefined && towers.length>0)
             {
-               // create_ramparts(spawn);
+                create_ramparts(spawn);
             }
             
             

@@ -53,25 +53,44 @@ var roleDistanceCarrier = {
             }
             else
             {
-                var cID_max = -1;
-            var biggest_energy = 0;
-            for (let i = 0; i < containers.length; i++) 
-            {
-                if (containers[i].store[RESOURCE_ENERGY] > biggest_energy) 
+                //creep.memory.cID_max = undefined;
+                if(creep.memory.cID_max==undefined)
                 {
-                    cID_max = i;
-                    biggest_energy = containers[i].store[RESOURCE_ENERGY];
+                    var biggest_energy = 0;
+                    for (let i = 0; i < containers.length; i++) 
+                    {
+                        if (containers[i].store[RESOURCE_ENERGY] > biggest_energy) 
+                        {
+                            creep.memory.cID_max = i;
+                            biggest_energy = containers[i].store[RESOURCE_ENERGY];
+                        }
+                    }
                 }
-            }
-
-            var withdraw_amount = 1;
-            if (cID_max >= 0) {
-                withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[cID_max].store[RESOURCE_ENERGY]);
-                if (creep.withdraw(containers[cID_max], RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) 
-                {// if creep have free space go colelct energy from containers
-                    creep.moveTo(containers[cID_max]);
+                else if(containers[creep.memory.cID_max]!=undefined){
+                    if(containers[creep.memory.cID_max].store[RESOURCE_ENERGY]==0)
+                    {
+                        creep.memory.cID_max=undefined;    
+                    }
                 }
-            }
+                
+                if(creep.memory.cID_max!=undefined)
+                {
+                    //console.log("creep.memory.cID_max: ",creep.memory.cID_max);
+                    //console.log(creep.pos);
+                    var withdraw_amount = 1;
+                    if (creep.memory.cID_max >= 0 ) {
+                        withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[creep.memory.cID_max].store[RESOURCE_ENERGY]);
+                        if (creep.withdraw(containers[creep.memory.cID_max], RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) 
+                        {// if creep have free space go colelct energy from containers
+                            creep.moveTo(containers[creep.memory.cID_max]);
+                        }
+                        else if(creep.withdraw(containers[creep.memory.cID_max], RESOURCE_ENERGY, withdraw_amount)==OK)
+                        {
+                            creep.memory.cID_max=undefined;
+                        }
+                    }
+                }
+                
             }
             
 
@@ -146,7 +165,8 @@ var roleDistanceCarrier = {
             containers = containers.concat(creep.room.find(FIND_MY_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType==STRUCTURE_LINK
-                         && structure.pos.x!=spawn.pos.x+3 && structure.pos.y!=spawn.pos.y-3
+                         && (structure.pos.x!=spawn.pos.x+3 || structure.pos.y!=spawn.pos.y-3)
+                         && structure.store[RESOURCE_ENERGY]<800
                 }
             }));
 
@@ -160,10 +180,12 @@ var roleDistanceCarrier = {
                 {// if creep have energy go to container and store
                         creep.moveTo(closest_container, { noPathFinding: false, reusePath: 5 });
                 }
+                
                 else
                 {
                     creep.memory.path=undefined;
                 }
+
             }
         }
         else if (creep.room.name != creep.memory.target_room && creep.store[RESOURCE_ENERGY] == 0) 

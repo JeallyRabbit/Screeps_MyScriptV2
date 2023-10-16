@@ -21,7 +21,7 @@ var roleHarvester = {
                     && structure.pos.inRangeTo(creep.pos,3);
                 }
             });
-            //creep.say(containers.length);
+
             //console.log(creep.memory.sources[1]);
             if(creep.memory.harvesting==true)
             {
@@ -45,7 +45,7 @@ var roleHarvester = {
                                 creeps_at_pos[0]==undefined)
                                 {//creep is alligning
                                    // creep.memory.harvesting=false;
-                                    //console.log(creep.moveTo(positions[i]));
+                                    creep.moveTo(positions[i]);
                                     //creep.say("ALLIGNING");
                                     break;
                                 }
