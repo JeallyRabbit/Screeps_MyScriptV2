@@ -18,6 +18,7 @@ var roleDistanceCarrier=require('role.DistanceCarrier');
 var roleKeeperKiller=require('role.keeper_killer');
 var roleKeeperHealer=require('role.keeper_healer');
 var roleKeeperCarrier=require('role.keeper_carrier');
+var roleKeeperFarmer=require('role.keeper_farmer');
 var _ = require('lodash');
 
 const profiler = require('screeps-profiler');
@@ -49,7 +50,6 @@ profiler.enable();
 module.exports.loop = function () {
     profiler.wrap(function()
     {
-        
     
     for(var i in Memory.creeps) {  //clearing data about dead creeps
         if(!Game.creeps[i]) {
@@ -62,7 +62,7 @@ module.exports.loop = function () {
         setRequiredPopulation(Game.spawns);
         if(Game.cpu.bucket==10000)
         {
-            Game.cpu.generatePixel();
+            //Game.cpu.generatePixel();
         }
         
     }
@@ -104,7 +104,7 @@ module.exports.loop = function () {
             console.log("hostile_Creeps: ",hostile_creeps);
             if(hostile_creeps.length==0)
             {
-                spawn.memory.req_soldiers=1;
+                //spawn.memory.req_soldiers=1;
             }
             else{
                 //spawn.memory.req_soldiers=3;
@@ -138,6 +138,7 @@ module.exports.loop = function () {
     var pop_keeperKillers=0;
     var pop_keeperHealers=0;
     var pop_keeperCarriers=0;
+    var pop_keeperFarmers=0;
     var smallest_carrier=100;
     //if(spawn.memory.roles_counter>roles_num){spawn.memory.roles_counter=0;}
 
@@ -154,7 +155,7 @@ module.exports.loop = function () {
                 sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
                 //creep.say(workParts);
                 roleHarvester.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>200)
                 {
                     pop_harvesters++;
                 }
@@ -175,7 +176,7 @@ module.exports.loop = function () {
             else if(creep.memory.role=='upgrader')
             {
                 roleUpgrader.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>50)
                 {
                     pop_upgraders++;
                 }
@@ -183,7 +184,7 @@ module.exports.loop = function () {
             else if(creep.memory.role=='hauler')
             {
                 roleHauler.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>50)
                 {
                     pop_haulers++;
                 }
@@ -192,7 +193,7 @@ module.exports.loop = function () {
             else if(creep.memory.role=='builder')
             {
                 roleBuilder.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>200)
                 {
                     pop_builders++;
                 }
@@ -205,7 +206,7 @@ module.exports.loop = function () {
             else if(creep.memory.role=='soldier')
             {
                 roleSoldier.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>200)
                 {
                     pop_soldiers++;
                 }
@@ -218,7 +219,7 @@ module.exports.loop = function () {
                 creep.memory.harvesting_power=workParts*2;
                 //sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
                 roleFarmer.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>200)
                 {
                     pop_farmers++;
                 }
@@ -229,7 +230,7 @@ module.exports.loop = function () {
             {
                 //creep.suicide();
                 roleBerserk.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>200)
                 {
                     pop_berserkers++;
                 }
@@ -237,7 +238,7 @@ module.exports.loop = function () {
             else if(creep.memory.role=='transporter')
             {
                 roleTransporter.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>50)
                 {
                     pop_transporters++;
                 }
@@ -245,7 +246,7 @@ module.exports.loop = function () {
             else if(creep.memory.role=='towerKeeper')
             {
                 roleTowerKeeper.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>50)
                 {
                     pop_towerKeepers++;
                 }
@@ -254,7 +255,7 @@ module.exports.loop = function () {
             {
                 //console.log("CLAIMING");
                 roleClaimer.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>200)
                 {
                     pop_claimers++;
                 }
@@ -262,7 +263,7 @@ module.exports.loop = function () {
             else if(creep.memory.role=='distanceBuilder')
             {
                 roleDistanceBuilder.run(creep);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>200)
                 {
                     pop_distanceBuilders++;
                 }
@@ -270,7 +271,7 @@ module.exports.loop = function () {
             else if(creep.memory.role=='reserver')
             {
                 roleReserver.run(creep);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>200)
                 {
                     pop_reservers++;
                 }
@@ -279,7 +280,7 @@ module.exports.loop = function () {
             {
                 //creep.suicide();
                 roleDistanceCarrier.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>200)
                 {
                     pop_distanceCarriers++;
                 }
@@ -288,7 +289,7 @@ module.exports.loop = function () {
             {
                 //creep.suicide();
                 roleKeeperKiller.run(creep);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>250)
                 {
                     pop_keeperKillers++;
                 }
@@ -296,7 +297,7 @@ module.exports.loop = function () {
             else if(creep.memory.role=='keeperHealer')
             {
                 roleKeeperHealer.run(creep);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>250)
                 {
                     pop_keeperHealers++;
                 }
@@ -305,9 +306,17 @@ module.exports.loop = function () {
             {
                 //creep.suicide();
                 roleKeeperCarrier.run(creep,spawn);
-                if(creep.ticksToLive>100)
+                if(creep.ticksToLive>200)
                 {
                     pop_keeperCarriers++;
+                }
+            }
+            else if(creep.memory.role=='keeperFarmer')
+            {
+                roleKeeperFarmer.run(creep);
+                if(creep.ticksToLive>100)
+                {
+                    pop_keeperFarmers++;
                 }
             }
         }
@@ -337,7 +346,8 @@ module.exports.loop = function () {
     console.log("DistanceCarriers: ",pop_distanceCarriers,"/",spawn.memory.req_DistanceCarriers, " | ",
     "Keeper Killers: ", pop_keeperKillers,"/",spawn.memory.req_keeperKillers," | ",
     "Keeper Healers: ", pop_keeperHealers,"/",spawn.memory.req_keeperHealers," | ",
-    "Keeper Carriers: ", pop_keeperCarriers,"/",spawn.memory.req_keeperCarriers);
+    "Keeper Carriers: ", pop_keeperCarriers,"/",spawn.memory.req_keeperCarriers," | ",
+    "Keeper Farmers: ", pop_keeperFarmers,"/",spawn.memory.req_keeperFarmers);
     console.log("Farmers_counter: ",spawn.memory.farmers_counter,
     " | distance_carriers_counter: ",spawn.memory.distance_carriers_counter);
     if(spawn.memory.progress!=0 && spawn.memory.progress_old!=0 &&
@@ -348,7 +358,14 @@ module.exports.loop = function () {
         //console.log("Spawn points: ",spawn.memory.progress);
     }
     
-    
+    if(spawn.spawning && Game.spawns['Spawn2']!=undefined)
+    {
+        return 0;
+        console.log("passing spawning to another spawn");
+        var aux_memory=spawn.memory;
+        spawn=Game.spawns['Spawn2'];
+        spawn.memory=aux_memory;
+    }
     
     
     var energyCap=spawn.room.energyAvailable;
@@ -376,14 +393,14 @@ module.exports.loop = function () {
             }
             else
             {
-                console.log("not spawned");
-                console.log(spawn.spawnCreep(maxHarvester(energyCap),'Harvester'+Game.time, {memory: {role: 'harvester',
-                target_source: assigned_source, home_room: spawn.room}}));
+                //console.log("not spawned");
+                //console.log(spawn.spawnCreep(maxHarvester(energyCap),'Harvester'+Game.time, {memory: {role: 'harvester',
+                //target_source: assigned_source, home_room: spawn.room}}));
             }
             
         }
     }
-    if(pop_carriers<=spawn.memory.req_carriers/*  && spawn.memory.roles_counter==1 */ && pop_carriers<=pop_harvesters) // spawning new Carrier
+    if(pop_carriers<spawn.memory.req_carriers  && pop_carriers<=pop_harvesters) // spawning new Carrier
     {
         if(spawn.spawnCreep(maxCarrier(energyCap,spawn),'Carrier'+Game.time, {memory: {role: 'carrier', home_room: spawn.room}})==0)
         {
@@ -393,7 +410,7 @@ module.exports.loop = function () {
     }
     if(pop_soldiers<spawn.memory.req_soldiers )
     {
-        if(spawn.spawnCreep(maxSoldier(energyCap),'Soldier'+Game.time,{memory: {role: 'soldier', target: 'E34N53',home_room: spawn.room}})==0)
+        if(spawn.spawnCreep(maxSoldier(energyCap),'Soldier'+Game.time,{memory: {role: 'soldier', target: 'E38S4',home_room: spawn.room}})==0)
         {
             console.log("Spawning Soldier");
             return;
@@ -409,7 +426,7 @@ module.exports.loop = function () {
         if(spawn.spawnCreep([TOUGH,TOUGH,MOVE,RANGED_ATTACK,RANGED_ATTACK,MOVE,MOVE,MOVE],'Berserker'+Game.time,{memory: {role: 'berserk',home_room: spawn.room, target_room: 'W2N8'}})==0)
         {//costs 520 energy
             console.log("Spawning Berserker");
-            return;
+           // return;
         }
     }
     if(pop_farmers<spawn.memory.req_farmers/* && spawn.memory.roles_counter==2 */ && pop_harvesters>0
@@ -475,7 +492,7 @@ module.exports.loop = function () {
     }
     if(pop_towerKeepers<spawn.memory.req_towerKeepers /* && spawn.memory.roles_counter==10 */ && pop_carriers>=spawn.memory.req_carriers)
     {
-        if(spawn.spawnCreep(maxTransporter(energyCap,spawn),'TowerKeeper'+Game.time,{memory: {role: 'towerKeeper',home_room: spawn.room}})==0)
+        if(spawn.spawnCreep(maxTransporter(energyCap%1000,spawn),'TowerKeeper'+Game.time,{memory: {role: 'towerKeeper',home_room: spawn.room}})==0)
         {
             console.log('Spawning TowerKeeper')
             return;
@@ -493,7 +510,7 @@ module.exports.loop = function () {
             return;
         }
     }
-    if(pop_distanceBuilders<spawn.memory.req_distanceBuilders /*&& spawn.memory.roles_counter==12 && pop_distanceCarriers<pop_farmers*/)
+    if(pop_distanceBuilders<spawn.memory.req_distanceBuilders && pop_farmers>0/*&& spawn.memory.roles_counter==12 && pop_distanceCarriers<pop_farmers*/)
     {
         if(spawn.spawnCreep(maxDistanceBuilder(energyCap),'DistanceBuilder'+Game.time,{memory: {role: 'distanceBuilder',
         target_room: spawn.memory.claiming_rooms[pop_distanceBuilders%spawn.memory.claiming_rooms.length],
@@ -518,15 +535,13 @@ module.exports.loop = function () {
     if(pop_distanceCarriers<spawn.memory.req_DistanceCarriers /* && spawn.memory.roles_counter==14 */ && pop_distanceCarriers<=pop_farmers
     && pop_harvesters>=spawn.memory.req_harvesters/2)//spawning new DistanceCarrier
     {
-        //console.log("ASD");
-        //if(pop_distanceCarriers==0){pop_distanceCarriers=1;}
-        //return 0;
+        //console.log("ASD")
         if(spawn.spawnCreep(maxCarrier(energyCap,spawn),'distnaceCarrier'+Game.time,{memory: {role: 'distanceCarrier', home_room: spawn.room,
          target_room: spawn.memory.farming_rooms[spawn.memory.distance_carriers_counter%spawn.memory.farming_rooms.length], path: undefined}})==0)
         {
             spawn.memory.distance_carriers_counter++;
             console.log("Spawning DistanceCarrier");
-            return;
+           // return;
         }
         
     }
@@ -551,27 +566,22 @@ module.exports.loop = function () {
     }
     if(pop_keeperCarriers<spawn.memory.req_keeperCarriers && pop_keeperKillers>0 && pop_keeperHealers>0)
     {
-        if(spawn.spawnCreep(maxHauler(energyCap,spawn),'KeeperCarrier'+Game.time,{memory: {role: 'keeperCarrier', target_room: spawn.memory.keepers_rooms[0],home_room: spawn.room}})==0)
+        if(spawn.spawnCreep(maxHauler(energyCap/2,spawn),'KeeperCarrier'+Game.time,{memory: {role: 'keeperCarrier', target_room: spawn.memory.keepers_rooms[0],home_room: spawn.room}})==0)
         {
             console.log("Spawning KeeperCarrier");
             return;
         }
     }
-    
-
-    //better carriers spawning
-    if(pop_carriers<=spawn.memory.req_carriers+1 && pop_harvesters>=spawn.memory.req_harvesters/2)
-    {
-        if(maxCarrier(spawn.room.energyAvailable,spawn).length>smallest_carrier)
-        {//can spawn better creep
-            if(spawn.spawnCreep(maxCarrier(spawn.room.energyAvailable,spawn),'Carrier'+Game.time, {memory: {role: 'carrier', home_room: spawn.room}})==0)
-            {
-                console.log('Spawning Carrier');
-                return;
-            }
+    if(pop_keeperFarmers<spawn.memory.req_keeperFarmers && pop_keeperKillers>0 && pop_keeperHealers>0)
+    {   
+        var a=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK];
+        if(spawn.spawnCreep(a,'KeeperFarmer'+Game.time,{memory: {role: 'keeperFarmer', target_room: spawn.memory.keepers_rooms[0],home_room: spawn.room, closest_source: undefined}})==0)
+        {
+            console.log("Spawning KeeperFarmer");
+            return;
         }
     }
-
+    
 
     }
     });

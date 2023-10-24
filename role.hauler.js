@@ -1,6 +1,6 @@
 
 
-
+var roleTransporter=require('role.transporter');
 var roleHauler = {//transfer energy grom containers (and storage) to extensions and spawn (if they are full equalize energy at containers)
 
     /** @param {Creep} creep **/
@@ -11,10 +11,15 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
         
         var extensions = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
-                return structure.structureType === STRUCTURE_EXTENSION;
+                return structure.structureType === STRUCTURE_EXTENSION
+                && structure.store.getFreeCapacity(RESOURCE_ENERGY)>0;
             }
         });
-        var extensions_full = 1;//1 when all are full
+        var extensions_full=0;// 1 when tyey are all full
+        if(extensions==undefined || extensions.length<1)
+        {
+            var extensions_full=1;
+        }
         for (let i = 0; i < extensions.length; i++) {
             if (extensions[i].store[RESOURCE_ENERGY] < 50)
                 extensions_full = 0;
@@ -25,6 +30,18 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 /*&& structure.store[RESOURCE_ENERGY]>creep.store.getCapacity(RESOURCE_ENERGY)/2;*/
             }
         });
+
+        var full_containers = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY]>1900;
+                /*&& structure.store[RESOURCE_ENERGY]>creep.store.getCapacity(RESOURCE_ENERGY)/2;*/
+            }
+        });
+        if(full_containers!=undefined && full_containers.length>0)
+        {
+            roleTransporter.run(creep,spawn);
+        }
+
         var storages=creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_STORAGE && structure.store[RESOURCE_ENERGY]>0;

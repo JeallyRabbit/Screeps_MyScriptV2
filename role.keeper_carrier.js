@@ -1,5 +1,7 @@
 const { toArray } = require("lodash");
 var RoomPositionFunctions = require('roomPositionFunctions');
+const { goOutOfRange } = require("./goOutOfRange");
+const { move_avoid_hostile } = require("./move_avoid_hostile");
 
 const keeper_carrier = {
     /** @param {Creep} creep **/
@@ -7,7 +9,8 @@ const keeper_carrier = {
         creep.say("&&");
         var position = creep.pos;
         if (creep.store[RESOURCE_ENERGY] == 0 && creep.room.name == creep.memory.target_room
-            /*&& creep.store[RESOURCE_ENERGY]>0*/) {
+            /*&& creep.store[RESOURCE_ENERGY]>0*/)
+            {
 
             //console.log(" 1");
 
@@ -25,17 +28,13 @@ const keeper_carrier = {
             }
 
         }
-        var keepers = creep.room.find(FIND_HOSTILE_CREEPS);
-        var to_avoid = [];
-        for (let i = 0; i < keepers.length; i++) {
-            to_avoid = to_avoid.concat(keepers[i].pos.getNearbyPositions2());
-        }
 
+        
         //creep.say("!");
         // Check if the creep has a target room
         if (!creep.memory.target_room) {
             //console.log(" 2");
-            //return 0;
+            return 0;
         }
         // Check if the creep is in the target room
         if (creep.room.name !== creep.memory.target_room
@@ -45,121 +44,73 @@ const keeper_carrier = {
             creep.moveTo(destination);
         }
         else if (creep.room.name == creep.memory.target_room
-            && creep.store.getFreeCapacity() > 0.1 * creep.store.getCapacity()) {
+            && creep.store.getFreeCapacity() > 0) 
+            {// in target room and is collecting
+            
+                if(creep.pos.findInRange(FIND_HOSTILE_CREEPS,4).length>0)
+                {
+                    goOutOfRange(creep,4);
+                    delete creep.memory.path;
+                }
             var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
                 filter: resource => resource.resourceType == RESOURCE_ENERGY
                     && resource.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length < 1
+                    && resource.amount>100
             })
-            creep.say('collecting energy');
+            
             closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy);
             //creep.say(closestDroppedEnergy.pos.x+" "+closestDroppedEnergy.pos.y);
             if (closestDroppedEnergy != undefined && (droppedEnergy != undefined || droppedEnergy.length >= 1))
-            {//there is safe energy
-                console.log(closestDroppedEnergy.pos);
-                // if closest dropped energy is safe
+             {//there is safe energy
+                creep.say('E');
                 if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                     // Move to it
-                    creep.moveTo(closestDroppedEnergy,
-                        {//avoid: to_avoid
-                            costCallback: function (roomName, costmatrix) {
-                                if (roomName == creep.room.name) {
-                                    for (let i = 0; i < to_avoid.length; i++) {
-                                        costmatrix.set(to_avoid.x, to_avoid.y, 255);
-                                    }
-                                }
-                            }
-
-                        });
+                    move_avoid_hostile(creep,closestDroppedEnergy);
+                }
+                else{
+                    creep.memory.path=undefined;
                 }
 
             }
             else {// go to tombstones
-                creep.say("TOMBSTONES");
-                var tombstones = creep.room.find(FIND_TOMBSTONES);
-                if(tombstones!=undefined && tombstones.length>=1)
-                {
+                creep.say("T");
+                var tombstones = creep.room.find(FIND_TOMBSTONES, {
+                    filter: structure => structure.pos.findInRange(FIND_HOSTILE_CREEPS, 3).length < 1
+                });
+                if (tombstones != undefined && tombstones.length >= 1) {
                     var min_decay = tombstones[0].ticksToDecay;
                     var nearest_tombstone = tombstones[0];
                     for (let i = 1; i < tombstones.length; i++) {
-                    if (tombstones[i].ticksToDecay < min_decay) {
-                        nearest_tombstone = tombstones[i];
-                        min_decay = tombstones[i].ticksToDecay;
-                    }
-                    console.log("nearest tombstone: ",nearest_tombstone.pos);
-                }
-
-                var keepers = creep.room.find(FIND_HOSTILE_CREEPS);
-                var to_avoid = [];
-                for (let i = 0; i < keepers.length; i++) {
-                    to_avoid = to_avoid.concat(keepers[i].pos.getNearbyPositions2());
-                }
-                creep.moveTo(nearest_tombstone,
-                    {//avoid: to_avoid
-                        costCallback: function (roomName, costmatrix) {
-                            if (roomName == creep.room.name) {
-                                for (let i = 0; i < to_avoid.length; i++) {
-                                    costmatrix.set(to_avoid.x, to_avoid.y, 255);
-                                }
-                            }
+                        if (tombstones[i].ticksToDecay < min_decay) {
+                            nearest_tombstone = tombstones[i];
+                            min_decay = tombstones[i].ticksToDecay;
                         }
-
+                        //console.log("nearest tombstone: ",nearest_tombstone.pos);
                     }
-                );
+                    move_avoid_hostile(creep,nearest_tombstone.pos,4);
 
                 }
-                
-
             }
+            var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {
+                filter: function (hostile) {
+                    return hostile.pos.inRangeTo(creep,3) == true;
+                }
+            });
+            if (hostileCreeps != undefined && hostileCreeps.length > 0) {
+                //creep.say("RUN");
+                goOutOfRange(creep,4);
+            }
+
         }
         else if (creep.room.name != creep.memory.home_room.name
-            && creep.store[RESOURCE_ENERGY] >= creep.store.getCapacity() * 0.9) {// not in home_room and no free space - go home_room
-            const destination = new RoomPosition(25, 25, creep.memory.home_room.name); // Replace with your destination coordinates and room name
-            creep.say("go home");
-            //console.log(creep.name);
-            //console.log(creep.store.getFreeCapacity());
-            if (!creep.memory.path) {
-                // Calculate and cache the path if it doesn't exist in memory
-                var keepers = creep.room.find(FIND_HOSTILE_CREEPS);
-                var to_avoid = [];
-                for (let i = 0; i < keepers.length; i++) {
-                    to_avoid = to_avoid.concat(keepers[i].pos.getNearbyPositions2());
-                }
-                const path = creep.pos.findPathTo(destination, { ignoreCreeps: false, avoid: to_avoid });
-                creep.memory.path = JSON.stringify(path);
-                //creep.move(BOTTOM);
-                //creep.say("Calc");
-            }
-
-            if (creep.memory.path) {
-                //creep.say("USE");
-
-                const path = JSON.parse(creep.memory.path);
-                if (path.length > 0) {
-                    const moveResult = creep.moveByPath(path);
-                    if (moveResult === OK) {
-                        // Successfully moved along the path
-                    }
-                    else if (moveResult === ERR_NOT_FOUND) {
-                        // Path is no longer valid, clear the cached path
-                        delete creep.memory.path;
-                    }
-                }
-                else {
-                    // The path is empty, meaning the creep has reached its destination
-                    // Clear the cached path
-                    delete creep.memory.path;
-                }
-            }
-            else {
-                // If the cached path doesn't exist, recalculate it and store it
-                const path = creep.pos.findPathTo(destination, { ignoreCreeps: false });
-                creep.memory.path = JSON.stringify(path);
-            }
+            && creep.store[RESOURCE_ENERGY] >= creep.store.getCapacity() * 0.9) 
+        {// not in home_room and no free space - go home_room
+            creep.say("GH");
+            //creep.say(creep.moveTo(25,25,creep.memory.home_room.name));
+            //console.log("home: ", home);
+            move_avoid_hostile(creep, new RoomPosition(25,25,creep.memory.home_room.name),1);
         }
         else if (creep.room.name == creep.memory.home_room.name) {
-            // in home room and have energy - store it in container or storage
-            //console.log(creep.pos);
-            //creep.say(4);
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_CONTAINER &&
@@ -189,6 +140,13 @@ const keeper_carrier = {
                 }
             }));
 
+            containers=containers.concat(creep.room.find(FIND_STRUCTURES,{
+                filter: function (structure){
+                    return structure.structureType==STRUCTURE_LINK
+                    && structure.store.getFreeCapacity(RESOURCE_ENERGY)>0;
+                }
+            }))
+
             if (containers.length > 0) {
                 //console.log(6.1);
                 var closest_container = creep.pos.findClosestByRange(containers);
@@ -196,7 +154,7 @@ const keeper_carrier = {
                 var transfer_amount = 1;
                 transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
                 if (creep.transfer(closest_container, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {// if creep have energy go to container and store
-                    creep.say(creep.moveTo(closest_container));
+                    creep.moveTo(closest_container);
                 }
             }
 
@@ -214,11 +172,10 @@ const keeper_carrier = {
             }
 
         }
-        else {
-            //console.log(creep.memory.home_room.name)
-            //creep.move(BOTTOM);
-        }
     }
 };
 
 module.exports = keeper_carrier;
+
+
+
