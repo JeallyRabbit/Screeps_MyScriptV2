@@ -4,8 +4,9 @@ var RoomPositionFunctions=require('roomPositionFunctions');
 var roleHarvester = {
 
     /** @param {Creep} creep **/
-    run: function(creep) 
+    run: function(creep,spawn) 
     {
+        var rcl=spawn.room.controller.level;
         if(creep.memory.sources==undefined)
         {
             creep.memory.sources=creep.room.find(FIND_SOURCES);
@@ -52,7 +53,7 @@ var roleHarvester = {
                             }
                         }
                     }
-                    if(construction_sites.length<1 && containers.length<1)
+                    if(construction_sites.length<1 && containers.length<1 && rcl>=2)
                         {// build container next to source
                             
                            

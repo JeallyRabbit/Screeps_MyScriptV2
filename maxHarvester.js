@@ -4,9 +4,9 @@ function maxHarvester(cap)// return array with max possible work parts for harve
     parts.push(MOVE);
     //parts.push(CARRY);
     parts.push(WORK);
-    parts.push(WORK);
-    cap-=250;
-    if(cap>500)
+    //parts.push(WORK);
+    cap-=150;
+    if(cap>600)
     {
         cap=500;
     }

@@ -10,6 +10,14 @@ var roleRepairer = {
         var targets=creep.room.find(FIND_STRUCTURES, {
             filter: object => object.hits<object.hitsMax && object.hits<30000 && object.hits!=object.hitsMax
         });
+
+        var containers = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_CONTAINER
+                && structure.store[RESOURCE_ENERGY]>0;
+            }
+        });
+
         if(targets.length<1)
         {
             //creep.say("no repair");
@@ -40,9 +48,9 @@ var roleRepairer = {
                 }
             }
 	    }
-        else if(getMaxEnergyDeposit(creep)!=-1 && creep.store[RESOURCE_ENERGY]==0)
+        else if(creep.store[RESOURCE_ENERGY]==0 && containers!=undefined && containers.length>0)
         {// go to deposits
-            var source=getMaxEnergyDeposit(creep);
+            var source=creep.pos.findClosestByRange(containers);
             var withdraw_amount=0;
             withdraw_amount=Math.min(creep.store.getFreeCapacity(), source.store[RESOURCE_ENERGY]);
             //console.log("withdraw_amount: ",withdraw_amount);

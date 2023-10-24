@@ -17,22 +17,25 @@ RoomPosition.prototype.getNearbyPositions=function getNearbyPositions(){
     return positions;
 }
 
-RoomPosition.prototype.getNearbyPositions2=function getNearbyPositions2(){
+RoomPosition.prototype.getN_NearbyPositions=function getN_NearbyPositions(n){//returns positions in area 8x8 (creep inside)
     var positions=[];
 
-    let startX=this.x-4 || 4;
-    let startY=this.y-4 || 4;
-
-    for (x=startX;x<=this.x+4 && x<49;x++)
+    let startX=this.x-n || n;
+    let startY=this.y-n || n;
+    if(startX>0 && startY>0)
     {
-        for(y=startY;y<=this.y+4 && y<49;y++)
+        for (x=startX;x<=this.x+n && x<49;x++)
         {
-            if(x!== this.x || y!== this.y)
+            for(y=startY;y<=this.y+n && y<49;y++)
             {
-                positions.push(new RoomPosition(x,y,this.roomName));
+                if(x!== this.x || y!== this.y)
+                {
+                    positions.push(new RoomPosition(x,y,this.roomName));
+                }
             }
         }
     }
+    
     return positions;
 }
 
@@ -70,4 +73,26 @@ RoomPosition.prototype.getOpenPositions2=function getOpenPositions2(){ //returns
     });
 
     return walkablePositions;
+}
+
+RoomPosition.prototype.getNOpenPositions=function getNOpenPositions(n){ //returns open nearby positions around
+    // open means creep can walk on that position
+    let nearbyPositions = this.getN_NearbyPositions(n);
+
+    
+    let terrain = Game.map.getRoomTerrain(this.roomName);
+
+    let walkablePositions =_.filter(nearbyPositions, function(pos)
+    {
+        return terrain.get(pos.x,pos.y) !== TERRAIN_MASK_WALL;
+
+    });
+
+    let freePositions=_.filter(walkablePositions, function(pos)
+    {
+        return !pos.lookFor(LOOK_CREEPS).length;
+
+    });
+
+    return freePositions;
 }

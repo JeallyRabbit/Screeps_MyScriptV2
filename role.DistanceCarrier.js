@@ -77,6 +77,10 @@ var roleDistanceCarrier = {
                 {
                     //console.log("creep.memory.cID_max: ",creep.memory.cID_max);
                     //console.log(creep.pos);
+                    if(containers[creep.memory.cID_max]==undefined)
+                    {
+                        return 0;
+                    }
                     var withdraw_amount = 1;
                     if (creep.memory.cID_max >= 0 ) {
                         withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[creep.memory.cID_max].store[RESOURCE_ENERGY]);
