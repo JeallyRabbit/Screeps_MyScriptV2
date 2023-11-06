@@ -1,11 +1,18 @@
-function maxCarrier(cap,spawn)// return array with max possible work parts for hauler
+function maxCarrier(cap,spawn,limit)// return array with max possible work parts for hauler
 {
     var rcl=spawn.room.controller.level;
-    
-    if(cap>1200)
+    if(limit==undefined)
     {
-        cap=1200;
+        limit=false;
     }
+    if(limit==true)
+    {
+        if(cap>1200)
+        {
+            cap=1200;
+        }
+    }
+    
     var parts=[];
     parts.push(MOVE);
     parts.push(CARRY);

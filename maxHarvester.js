@@ -8,7 +8,7 @@ function maxHarvester(cap)// return array with max possible work parts for harve
     cap-=150;
     if(cap>600)
     {
-        cap=500;
+        cap=600;
     }
     //console.log("avaliable work parts: ", Math.floor(cap/100));
     for(let i=0;i<Math.floor(cap/100);i++)

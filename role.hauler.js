@@ -1,14 +1,13 @@
 
 
 var roleTransporter=require('role.transporter');
+const { move_avoid_hostile } = require("./move_avoid_hostile");
+
 var roleHauler = {//transfer energy grom containers (and storage) to extensions and spawn (if they are full equalize energy at containers)
 
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
-        //creep.say("H");
-        
-        
-        
+        //creep.move(TOP);
         var extensions = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_EXTENSION
@@ -18,11 +17,7 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
         var extensions_full=0;// 1 when tyey are all full
         if(extensions==undefined || extensions.length<1)
         {
-            var extensions_full=1;
-        }
-        for (let i = 0; i < extensions.length; i++) {
-            if (extensions[i].store[RESOURCE_ENERGY] < 50)
-                extensions_full = 0;
+            extensions_full=1;
         }
         var containers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -30,16 +25,13 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 /*&& structure.store[RESOURCE_ENERGY]>creep.store.getCapacity(RESOURCE_ENERGY)/2;*/
             }
         });
-
-        var full_containers = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY]>1900;
-                /*&& structure.store[RESOURCE_ENERGY]>creep.store.getCapacity(RESOURCE_ENERGY)/2;*/
-            }
-        });
-        if(full_containers!=undefined && full_containers.length>0)
+        //if(full_containers!=undefined && full_containers.length>0)
+        
+        if(extensions_full==1 && spawn.store[RESOURCE_ENERGY]==300)
         {
+            //creep.say("T");
             roleTransporter.run(creep,spawn);
+            return;
         }
 
         var storages=creep.room.find(FIND_STRUCTURES, {
@@ -66,7 +58,7 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
         //var cID=-1;
         //var cID_max = -1, cID_min = -1;
         var max_energy = 0;
-        var min_energy = 100;
+        var min_energy = 1;
         if(creep.memory.cID_max==-1 || creep.memory.cID_max==undefined)
         {
             for (let i = 0; i < containers.length; i++) {
@@ -97,7 +89,7 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
             var withdraw_amount = 1;
             if (creep.memory.cID_max >= 0 && containers[creep.memory.cID_max]!=undefined) {
                 //creep.memory.cID_max=-1;
-                withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[creep.memory.cID_max].store[RESOURCE_ENERGY]);
+                var withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[creep.memory.cID_max].store[RESOURCE_ENERGY]);
                 if (creep.withdraw(containers[creep.memory.cID_max], RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
                     creep.moveTo(containers[creep.memory.cID_max]);
                 }
@@ -114,18 +106,20 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
         }
         else if (extensions_full == 1)// if all extensions are full go to spawn
         {
-            if (spawn.store[RESOURCE_ENERGY] == 300 && creep.memory.cID_min >= 0)//if spawn is full equalize containers
+            if (spawn.store[RESOURCE_ENERGY] == 300 /* && creep.memory.cID_min >= 0*/)//if spawn is full equalize containers
             {// go to container with minimum energy
+                roleTransporter.run(creep,spawn);
+                /*
                 if (creep.transfer(containers[creep.memory.cID_min], RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and put energy there
                     creep.moveTo(containers[creep.memory.cID_min]);
-                }
+                }*/
             }
             else // spawn is not full go fill the spawn
             {
                 var transfered_amount = 1;
                 transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], spawn.store[RESOURCE_ENERGY].getFreeCapacity);
                 if (creep.transfer(spawn, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                    ;
+                    
                     creep.moveTo(spawn);
                 }
             }
@@ -138,14 +132,37 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                         && structure.energy < 50;;
                 }
             });
-            var closestExtension = creep.pos.findClosestByRange(extensions);
+            var closestExtension = creep.pos.findClosestByPath(extensions);
             if (closestExtension) {
                 var transfered_amount = 1;
                 transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
                 if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                    creep.moveTo(closestExtension);
+                    //creep.moveTo(closestExtension);
+                    move_avoid_hostile(creep,closestExtension.pos,1);
                 }
             }
+            /*
+            else
+            {
+                var terminal=creep.room.find(FIND_STRUCTURES,{
+                    filter: function(structure)
+                    {
+                        return structure.structureType==STRUCTURE_TERMINAL
+                        && structure.store[RESOURCE_ENERGY]<5000;
+                    }
+                });
+                console.log("TERMINAL POS: ", terminal.pos);
+                if(terminal!=undefined)
+                {
+                    var transfered_amount = 1;
+                    transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], terminal[0].store.getFreeCapacity(RESOURCE_ENERGY));
+                    if (creep.transfer(terminal[0], RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
+                        creep.moveTo(terminal[0]);
+                    }
+                }
+                
+
+            }*/
         }
     }
 };

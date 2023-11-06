@@ -6,6 +6,8 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
 
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
+
+        
         //creep.memory.target_energy=undefined;
         if (creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.collecting = true;
