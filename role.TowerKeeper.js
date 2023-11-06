@@ -6,6 +6,7 @@ var roleTowerKeeper = {
     run: function (creep,spawn) {
         //var deposit = getClosestEnergyDeposit(creep);
 
+
         var containers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_CONTAINER
@@ -29,7 +30,7 @@ var roleTowerKeeper = {
         });
         if(deposit==undefined || (towers==undefined || towers.length<1))
         {
-            creep.moveTo(spawn.pos.x+1,spawn.pos.y+1);
+            creep.moveTo(spawn.pos.x,spawn.pos.y+1);
         }
         var tower_min = 1000;
         var minID = 0;

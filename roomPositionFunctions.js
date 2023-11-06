@@ -17,7 +17,7 @@ RoomPosition.prototype.getNearbyPositions=function getNearbyPositions(){
     return positions;
 }
 
-RoomPosition.prototype.getN_NearbyPositions=function getN_NearbyPositions(n){//returns positions in area 8x8 (creep inside)
+RoomPosition.prototype.getN_NearbyPositions=function getN_NearbyPositions(n){//returns positions in area nXn (creep inside)
     var positions=[];
 
     let startX=this.x-n || n;

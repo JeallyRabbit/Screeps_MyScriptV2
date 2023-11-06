@@ -8,6 +8,7 @@ var roleBuilder = {
         var targets=creep.room.find(FIND_CONSTRUCTION_SITES)
         if(targets.length==0) // if no constructuin sites go upgrade
         {
+            creep.suicide();
             roleUpgrader.run(creep);
         }
 
@@ -37,6 +38,7 @@ var roleBuilder = {
                 if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0]);
                 }
+                creep.moveTo(targets[0],{range:1});
             }
 	    }
         else if(!creep.memory.building && creep.pos.findClosestByRange(deposits)!=null)// not building and there are deposits

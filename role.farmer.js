@@ -13,9 +13,17 @@ var roleFarmer = {
             filter: object => object.hits<object.hitsMax && object.hits<150000 && object.hits!=object.hitsMax
             && object.structureType!=STRUCTURE_ROAD && object.pos.inRangeTo(creep.pos,3)
         });
-
-        var construction_sites=creep.pos.findInRange(FIND_CONSTRUCTION_SITES,3);
-        if(creep.room.name==target_room && creep.store[RESOURCE_ENERGY]!=0 && (repair_sites.length>0 || construction_sites.length>0))
+        var construction_sites=creep.room.find(FIND_CONSTRUCTION_SITES);
+        if(creep.store[RESOURCE_ENERGY]==0)
+        {
+            creep.memory.building=false;
+        }
+        else if(creep.store.getFreeCapacity(RESOURCE_ENERGY)==0 && construction_sites!=undefined)
+        {
+            creep.memory.building=true;
+        }
+        
+        if(creep.room.name==target_room && creep.memory.building==true && (repair_sites.length>0 || construction_sites.length>0))
         {
             //creep.say("REP");
             //roleRepairer.run(creep);
@@ -27,9 +35,14 @@ var roleFarmer = {
             }
             else
             {//build close sites
-                if(creep.build(construction_sites[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(construction_sites[0]);
+                if(creep.memory.building==true)
+                {
+                    var closest_construction=creep.pos.findClosestByRange(construction_sites);
+                    if(creep.build(closest_construction) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(closest_construction);
+                    }
                 }
+                
             }
 
         }
@@ -53,10 +66,10 @@ var roleFarmer = {
             var sources = creep.room.find(FIND_SOURCES);
             
             var min_source_farmers=10;
-            if (creep.memory.source_id == undefined || (creep.ticksToLive%13==0) &&
-                creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id))==false)  {
+            if (creep.memory.source_id == undefined || (creep.ticksToLive%2==0)
+                 && creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id))==false )  {
                 //console.log("sources: ",sources.length);
-                //creep.say("#");
+                creep.say("#");
                 var sources = creep.room.find(FIND_SOURCES);
                 var min_hp=100;
                 var sources_hp=[];
@@ -94,7 +107,7 @@ var roleFarmer = {
             creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id))==false) 
             {// if sources became unavailable ( due to creeps around it) and creep is not near this source 
                 creep.say(creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id)));
-                console.log('Farmer .isnearto: ', creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id)));
+                //console.log('Farmer .isnearto: ', creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id)));
                 creep.memory.source_id = undefined;
                 //creep.say("U");
             }

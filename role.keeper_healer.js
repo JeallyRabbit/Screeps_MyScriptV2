@@ -35,7 +35,7 @@ const keeper_Healer = {
             creep.move(BOTTOM);
         }
 
-        //creep.say("!");
+        ////creep.say("!");
         // Check if the creep has a target room
         if (!creep.memory.target) {
             //return 0;
@@ -75,7 +75,7 @@ const keeper_Healer = {
                 return 0;
             }
 
-            if (healers.length >= 0 && killers.length >= 1) {// if there are killers go to them and support
+            if (killers.length >= 1) {// if there are killers go to them and support
 
                 /*var friendlyDamagedCreeps = creep.room.find(FIND_MY_CREEPS, {
                     filter: function (creep) {
@@ -91,7 +91,7 @@ const keeper_Healer = {
                 // console.log("damaged: ",friendlyHealthyKillers.length);
 
                 if (friendlyDamagedCreeps.length > 0) {//find most damaged one and heal up
-                    //creep.say("AAA");
+                    ////creep.say("AAA");
                     var health_percentage = 100;
                     var damaged_id = 0;
                     for (let i = 0; i < friendlyDamagedCreeps.length; i++) {
@@ -108,44 +108,13 @@ const keeper_Healer = {
                     }
                 }
                 else if (friendlyHealthyKillers != undefined) {
-                    //creep.say("PQPQPQPPQ");
+                    ////creep.say("PQPQPQPPQ");
                     //console.log(friendlyHealthyKillers[0]);
-                    move_avoid_hostile(creep,friendlyHealthyKillers[0]);
+                    move_avoid_hostile(creep,friendlyHealthyKillers[0].pos);
                 }
 
 
             }
-            else {// in target room and not enough creeps to support
-
-
-                var myCreeps = creep.room.find(FIND_MY_CREEPS, {
-                    filter: function (myCreeps) {
-                        return (myCreeps.memory.role == 'keeperHealer' ||
-                            myCreeps.memory.role == 'keeperKiller')
-                            && myCreeps.name!=creep.name;
-                        }
-                });
-                if(myCreeps==undefined || myCreeps.length<1)
-                {
-                    creep.say("RUN");
-                    goOutOfRange(creep,4);
-                }
-                if (myCreeps != undefined && myCreeps.length > 1) {
-                    creep.moveTo(myCreeps[0],
-                        {//avoid: to_avoid
-                            costCallback: function (roomName) {
-                                let costs = new PathFinder.CostMatrix;
-                                if (roomName == creep.room.name) {
-                                    for (let i = 0; i < to_avoid.length; i++) {
-                                        costs.set(to_avoid.x, to_avoid.y, 0xff);
-                                    }
-                                }
-                            }
-
-                        });
-                }
-            }
-            
             var hostileCreeps=creep.room.find(FIND_HOSTILE_CREEPS, {
                 filter: function (hostile){
                     return hostile.pos.inRangeTo(creep,3)==true;
@@ -153,7 +122,7 @@ const keeper_Healer = {
             });
             if(hostileCreeps!=undefined && hostileCreeps.length>0)
             {//if is in enemy range
-                //creep.say("R");
+                ////creep.say("R");
                 var closestHostile=creep.pos.findClosestByRange(hostileCreeps);
                 var friendlyCreeps = creep.room.find(FIND_MY_CREEPS, {
                     filter: function (friendly) {
@@ -161,7 +130,7 @@ const keeper_Healer = {
                         && friendly.name!=creep.name;
                     }
                 });
-                goOutOfRange(creep,3);
+                goOutOfRange(creep,4);
                 /*
                 var health_percentage = 100;
                 var damaged_id = 0;
@@ -175,25 +144,25 @@ const keeper_Healer = {
                 if(distance_x>=Math.abs(distance_y) && distance_x>0
                    )
                 {//hostile is on right side
-                    creep.say("Ri0");
+                    ////creep.say("Ri0");
                     if(friendlyCreeps!=undefined || friendlyCreeps.length>0)
                     {
-                        //creep.say("Ri");
+                        ////creep.say("Ri");
                         if(creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x-1,friendlyCreeps[damaged_id].pos.y)!=undefined &&
                         creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x-1,friendlyCreeps[damaged_id].pos.y).length<1 )
                         {//try to hide on left
-                            creep.say("Ri1");
+                            //creep.say("Ri1");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x-1,friendlyCreeps[damaged_id].pos.y);
                         }
                         else if(creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x-1,friendlyCreeps[damaged_id].pos.y+1)!=undefined &&
                         creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x-1,friendlyCreeps[damaged_id].pos.y+1).length<1 )
                         {//try to hide down left
-                            creep.say("Ri2");
+                            //creep.say("Ri2");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x-1,friendlyCreeps[damaged_id].pos.y-1);
                         }
                         else{
                             //try to hide up left
-                            creep.say("Ri3");
+                            //creep.say("Ri3");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y-1);
                         }
                     }
@@ -203,72 +172,72 @@ const keeper_Healer = {
                 {//hostile is on left side
                     if(friendlyCreeps!=undefined && friendlyCreeps[damaged_id]!=undefined)
                     {
-                        creep.say("L1");
+                        //creep.say("L1");
                         if(creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y)!=undefined &&
                         creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y).length<1 )
                         {//try to hide on right
-                            creep.say("L1");
+                            //creep.say("L1");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y);
                         }
                         else if(creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y+1)!=undefined &&
                         creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y+1).length<1 )
                         {//try to hide down right
-                            creep.say("L2");
+                            //creep.say("L2");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y-1);
                         }
                         else{
                             //try to hide up right
-                            creep.say("L3");
+                            //creep.say("L3");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y-1);
                         }
                     }
                 }
                 if(distance_y>=Math.abs(distance_x) && distance_y>0)
                 {// hostile is below (down)
-                    creep.say("BO");
+                    //creep.say("BO");
                     if(friendlyCreeps!=undefined)
                     {
                         if(creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x,friendlyCreeps[damaged_id].pos.y-1)!=undefined &&
                         creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x,friendlyCreeps[damaged_id].pos.y-1).length<1 )
                         {//try to hide on top
-                            creep.say("BO1");
+                            //creep.say("BO1");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x,friendlyCreeps[damaged_id].pos.y-1);
                         }
                         else if(creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y-1)!=undefined &&
                         creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y-1).length<1 )
                         {//try to hide up right
-                            creep.say("BO2");
+                            //creep.say("BO2");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y-1);
                         }
                         else{
                             //try to hide up left
-                            creep.say("BO3");
+                            //creep.say("BO3");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x-1,friendlyCreeps[damaged_id].pos.y-1);
                         }
                     }
                 }
                 if(Math.abs(distance_y)>=Math.abs(distance_x) && distance_y<0)
                 {//hostile is up
-                    creep.say("UP1");
+                    //creep.say("UP1");
                     //console.log("friendly: ",friendlyCreeps[damaged_id].pos);
                     if(friendlyCreeps!=undefined)
                     {
-                        creep.say("UP1");
+                        //creep.say("UP1");
                         if(creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x,friendlyCreeps[damaged_id].pos.y+1)!=undefined &&
                         creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x,friendlyCreeps[damaged_id].pos.y+1).length<1 )
                         {//try to hide behind healed creep (below)
-                            creep.say("UP2");
+                            //creep.say("UP2");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x,friendlyCreeps[damaged_id].pos.y+1);
                         }
                         else if(creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x-1,friendlyCreeps[damaged_id].pos.y+1)!=undefined &&
                         creep.room.lookForAt(LOOK_CREEPS, friendlyCreeps[damaged_id].pos.x-1,friendlyCreeps[damaged_id].pos.y+1).length<1 )
                         {//try to hide down left
-                            creep.say("UP3");
+                            //creep.say("UP3");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x-1,friendlyCreeps[damaged_id].pos.y+1);
                         }
                         else{
                             //try to hide down right
-                            creep.say("UP4");
+                            //creep.say("UP4");
                             creep.moveTo(friendlyCreeps[damaged_id].pos.x+1,friendlyCreeps[damaged_id].pos.y+1);
                         }
                     }

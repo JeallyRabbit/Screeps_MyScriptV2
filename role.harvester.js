@@ -6,6 +6,15 @@ var roleHarvester = {
     /** @param {Creep} creep **/
     run: function(creep,spawn) 
     {
+
+        /*
+        if(creep.ticksToLive<40)
+        {
+            creep.memory.to_recycle=true;
+            creep.moveTo(spawn);
+            return;
+        }
+        */
         var rcl=spawn.room.controller.level;
         if(creep.memory.sources==undefined)
         {

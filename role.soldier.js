@@ -2,6 +2,10 @@
 var roleSoldier = {
     run: function(creep) {
         
+        if(creep.hits<creep.hitsMax)
+        {
+            creep.heal(creep);
+        }
         /*
         var pos = creep.pos;
             if (pos.x > 48) {
@@ -34,7 +38,8 @@ var roleSoldier = {
                     return structure.owner!="Jeally_Rabbit"
                     && structure.structureType!=STRUCTURE_CONTROLLER
                     && structure.structureType!=STRUCTURE_WALL
-                    && structure.structureType!=STRUCTURE_CONTAINER;
+                    && structure.structureType!=STRUCTURE_CONTAINER
+                    && structure.structureType!=STRUCTURE_ROAD;
                 }
                 })
             //if(!target) {

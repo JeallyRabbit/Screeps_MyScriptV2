@@ -6,10 +6,12 @@ const { move_avoid_hostile } = require("./move_avoid_hostile");
 const keeper_carrier = {
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
-        creep.say("&&");
+        //creep.say("&&");
+
+        /*
         var position = creep.pos;
         if (creep.store[RESOURCE_ENERGY] == 0 && creep.room.name == creep.memory.target_room
-            /*&& creep.store[RESOURCE_ENERGY]>0*/)
+           )
             {
 
             //console.log(" 1");
@@ -27,7 +29,7 @@ const keeper_carrier = {
                 creep.move(BOTTOM);
             }
 
-        }
+        }*/
 
         
         //creep.say("!");
@@ -50,7 +52,7 @@ const keeper_carrier = {
                 if(creep.pos.findInRange(FIND_HOSTILE_CREEPS,4).length>0)
                 {
                     goOutOfRange(creep,4);
-                    delete creep.memory.path;
+                    delete creep.memory.my_path;
                 }
             var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
                 filter: resource => resource.resourceType == RESOURCE_ENERGY
@@ -62,18 +64,30 @@ const keeper_carrier = {
             //creep.say(closestDroppedEnergy.pos.x+" "+closestDroppedEnergy.pos.y);
             if (closestDroppedEnergy != undefined && (droppedEnergy != undefined || droppedEnergy.length >= 1))
              {//there is safe energy
-                creep.say('E');
+                //creep.say('E');
                 if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                     // Move to it
-                    move_avoid_hostile(creep,closestDroppedEnergy);
+                    move_avoid_hostile(creep,closestDroppedEnergy.pos);
                 }
                 else{
-                    creep.memory.path=undefined;
+                    creep.memory.my_path=undefined;
                 }
 
             }
-            else {// go to tombstones
-                creep.say("T");
+            else {// go to farmers
+
+                var farmer=creep.pos.findClosestByPath(FIND_MY_CREEPS,{
+                    filter: function (farmer)
+                    {
+                        return farmer.memory.role=='keeperFarmer';
+                    }
+                });
+                if(farmer!=undefined && farmer.length>0)
+                {
+                    move_avoid_hostile(creep,farmer[0].pos,3);
+                }
+                //creep.say("T");
+                /*
                 var tombstones = creep.room.find(FIND_TOMBSTONES, {
                     filter: structure => structure.pos.findInRange(FIND_HOSTILE_CREEPS, 3).length < 1
                 });
@@ -89,7 +103,7 @@ const keeper_carrier = {
                     }
                     move_avoid_hostile(creep,nearest_tombstone.pos,4);
 
-                }
+                }*/
             }
             var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {
                 filter: function (hostile) {
@@ -105,7 +119,7 @@ const keeper_carrier = {
         else if (creep.room.name != creep.memory.home_room.name
             && creep.store[RESOURCE_ENERGY] >= creep.store.getCapacity() * 0.9) 
         {// not in home_room and no free space - go home_room
-            creep.say("GH");
+            //creep.say("GH");
             //creep.say(creep.moveTo(25,25,creep.memory.home_room.name));
             //console.log("home: ", home);
             move_avoid_hostile(creep, new RoomPosition(25,25,creep.memory.home_room.name),1);
@@ -121,13 +135,6 @@ const keeper_carrier = {
 
             containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return structure.structureType === STRUCTURE_EXTENSION
-                        && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                }
-            }));
-
-            containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
                     return structure.structureType === STRUCTURE_STORAGE;
                 }
             }));
@@ -140,17 +147,10 @@ const keeper_carrier = {
                 }
             }));
 
-            containers=containers.concat(creep.room.find(FIND_STRUCTURES,{
-                filter: function (structure){
-                    return structure.structureType==STRUCTURE_LINK
-                    && structure.store.getFreeCapacity(RESOURCE_ENERGY)>0;
-                }
-            }))
-
             if (containers.length > 0) {
                 //console.log(6.1);
                 var closest_container = creep.pos.findClosestByRange(containers);
-                console.log(closest_container.pos);
+                //console.log(closest_container.pos);
                 var transfer_amount = 1;
                 transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
                 if (creep.transfer(closest_container, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {// if creep have energy go to container and store
@@ -158,18 +158,6 @@ const keeper_carrier = {
                 }
             }
 
-            if (position.x > 48) {
-                creep.move(LEFT);
-            }
-            else if (position.x < 2) {
-                creep.move(RIGHT);
-            }
-            if (position.y > 48) {
-                creep.move(TOP);
-            }
-            else if (position.y < 2) {
-                creep.move(BOTTOM);
-            }
 
         }
     }

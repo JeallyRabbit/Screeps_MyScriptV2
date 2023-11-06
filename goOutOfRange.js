@@ -1,12 +1,12 @@
-function goOutOfRange(creep, n,avoid_position = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS)) {
+function goOutOfRange(creep, n, avoid_position = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS)) {
     //var hostileCreeps = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
     //var avoid_position = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
     var run_aways = creep.pos.getNOpenPositions(n);
     var to_run = [];//positions to which creep can run
     for (let i = 0; i < run_aways.length; i++) {
         //console.log("run away[i]: ",run_aways[i]);
-        if (run_aways[i] != undefined  && run_aways[i]!=null) {
-            if (run_aways[i].inRangeTo(avoid_position, n-1) == false &&
+        if (run_aways[i] != undefined && run_aways[i] != null) {
+            if (run_aways[i].inRangeTo(avoid_position, n - 1) == false &&
                 creep.room.lookForAt(LOOK_CREEPS, run_aways[i].x, run_aways[i].y).length < 1) {
                 to_run.push(run_aways[i]);
             }
