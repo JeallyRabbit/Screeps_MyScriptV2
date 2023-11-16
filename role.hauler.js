@@ -91,7 +91,7 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 //creep.memory.cID_max=-1;
                 var withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[creep.memory.cID_max].store[RESOURCE_ENERGY]);
                 if (creep.withdraw(containers[creep.memory.cID_max], RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
-                    creep.moveTo(containers[creep.memory.cID_max]);
+                    creep.moveTo(containers[creep.memory.cID_max],{ignoreCreeps: true});
                 }
                 else if(containers[creep.memory.cID_max].store[RESOURCE_ENERGY]==0)
                 {
@@ -120,7 +120,7 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], spawn.store[RESOURCE_ENERGY].getFreeCapacity);
                 if (creep.transfer(spawn, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
                     
-                    creep.moveTo(spawn);
+                    creep.moveTo(spawn,{ignoreCreeps: true});
                 }
             }
         }
@@ -137,8 +137,8 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 var transfered_amount = 1;
                 transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
                 if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                    //creep.moveTo(closestExtension);
-                    move_avoid_hostile(creep,closestExtension.pos,1);
+                    creep.moveTo(closestExtension,{ignoreCreeps: true});
+                    //move_avoid_hostile(creep,closestExtension.pos,1);
                 }
             }
             /*

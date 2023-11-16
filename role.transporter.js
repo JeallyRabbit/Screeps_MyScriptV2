@@ -29,7 +29,7 @@ var roleTransporter = {//transfer energy grom containers to storage
             withdraw_amount=Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, deposit.store[RESOURCE_ENERGY]);
             if(creep.withdraw(deposit,RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE )
             {// if creep have no energy go to container and withdraw energy
-                creep.moveTo(deposit);
+                creep.moveTo(deposit,{ignoreCreeps: true});
             }
         }
         else
@@ -55,7 +55,7 @@ var roleTransporter = {//transfer energy grom containers to storage
                 //creep.say(storage[0].store[RESOURCE_ENERGY]);
                 if(creep.transfer(storage[0],RESOURCE_ENERGY)==ERR_NOT_IN_RANGE )
                 {// if creep have no energy go to container and withdraw energy
-                    creep.moveTo(storage[0]);
+                    creep.moveTo(storage[0],{ignoreCreeps: true});
                 }
             }
         }

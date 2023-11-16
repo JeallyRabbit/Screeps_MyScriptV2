@@ -58,7 +58,8 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
             {
                 if (creep.pickup(droppedEnergy[creep.memory.target_energy]) == ERR_NOT_IN_RANGE) {
                     // Move to it
-                    creep.moveTo(droppedEnergy[creep.memory.target_energy]);
+                    creep.moveTo(droppedEnergy[creep.memory.target_energy],{ignoreCreeps: true});
+                   // move_avoid()
                 }
                 else// if(creep.pickup(droppedEnergy[creep.memory.target_energy])==OK)
                 {
@@ -82,7 +83,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
                     var transfered_amount = 1;
                     transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
                     if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                        creep.moveTo(closestExtension);
+                        creep.moveTo(closestExtension,{ignoreCreeps: true});
                     }
                 }
 
@@ -97,14 +98,14 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
                     var transfer_amount = 1;
                     transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closestContainer.store[RESOURCE_ENERGY]);
                     if (creep.transfer(closestContainer, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(closestContainer);
+                        creep.moveTo(closestContainer,{ignoreCreeps: true});
                     }
 
                 }
                 else // no extensions - fill spawn
                 {
                     if (creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(spawn);
+                        creep.moveTo(spawn,{ignoreCreeps: true});
                     }
                 }
 

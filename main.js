@@ -47,14 +47,15 @@ var RoomPositionFunctions=require('roomPositionFunctions');
 const maxSoldier = require('./maxSoldier');
 const maxReserver = require('./maxReserver');
 const setBaseLayout = require('./setBaseLayout');
+const { pos_exchange } = require('./pos_exchange');
 
 
 
 
-profiler.enable();
+//profiler.enable();
 module.exports.loop = function () {
-    profiler.wrap(function()
-    {
+   // profiler.wrap(function()
+   // {
     
     for(var i in Memory.creeps) {  //clearing data about dead creeps
         if(!Game.creeps[i]) {
@@ -67,7 +68,7 @@ module.exports.loop = function () {
         setRequiredPopulation(Game.spawns);
         if(Game.cpu.bucket==10000)
         {
-            Game.cpu.generatePixel();
+            //Game.cpu.generatePixel();
         }
         
     }
@@ -359,6 +360,7 @@ module.exports.loop = function () {
                 roleDoctor.run(creep,spawn)
                 pop_doctors++;
             }
+            pos_exchange(creep);
         }
 
         
@@ -701,5 +703,5 @@ module.exports.loop = function () {
         }
     }
     }
-    });
+    //});
 }
