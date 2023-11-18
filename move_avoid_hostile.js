@@ -136,7 +136,7 @@ function move_avoid_hostile(creep,destination,my_range,my_avoid) {
                     //delete creep.memory.my_path.path[0];
                     creep.memory.path_counter++;
                     creep.memory.next_pos=direction;
-                    creep.say(moveResult);
+                    //creep.say(moveResult);
                     // Successfully moved along the path
                 }
                 else if (moveResult === ERR_INVALID_ARGS)// && creep.memory.wait_counter>1) 

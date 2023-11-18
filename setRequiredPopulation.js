@@ -24,7 +24,7 @@ function setRequiredPopulation(mySpawns) {
     {
         mySpawns['Spawn1'].memory.req_upgraders =8;
     }
-    mySpawns['Spawn1'].memory.req_carriers = 3;//role num 1
+    mySpawns['Spawn1'].memory.req_carriers = 1;//role num 1
     mySpawns['Spawn1'].memory.req_farmers = 0;//role num 2
     mySpawns['Spawn1'].memory.req_builders =0;// role num 3
     if (mySpawns['Spawn1'].room.find(FIND_MY_CONSTRUCTION_SITES).length >0) {
@@ -40,13 +40,13 @@ function setRequiredPopulation(mySpawns) {
     mySpawns['Spawn1'].memory.req_keeperKillers=0;//role num 15
     mySpawns['Spawn1'].memory.req_keeperHealers=0;//role num 16
     mySpawns['Spawn1'].memory.req_keeperCarriers=0;//role num 17
-    mySpawns['Spawn1'].memory.req_keeperFarmers=0;//role num 17
+    mySpawns['Spawn1'].memory.req_keeperFarmers=0;//ro le num 17
     mySpawns['Spawn1'].memory.req_claimers = 0;//role num 11
     mySpawns['Spawn1'].memory.req_doctors=0;
     mySpawns['Spawn1'].memory.farming_rooms = [];
     mySpawns['Spawn1'].memory.claiming_rooms = [];
     //mySpawns['Spawn1'].memory.farming_rooms.push('E34N53');
-    //mySpawns['Spawn1'].memory.farming_rooms.push('W7N3');
+    mySpawns['Spawn1'].memory.farming_rooms.push('W7N3');
     //mySpawns['Spawn1'].memory.farming_rooms.push('W8N4');
     //mySpawns['Spawn1'].memory.farming_rooms.push('E35N51');
     mySpawns['Spawn1'].memory.keepers_rooms=[];

@@ -64,7 +64,7 @@ module.exports.loop = function () {
         }
     }
     //var mySpawns=Game.spawns;
-    if(Game.time%40==0)
+    if(Game.time%10==0)
     {
         setRequiredPopulation(Game.spawns);
         if(Game.cpu.bucket==10000)
@@ -364,7 +364,7 @@ module.exports.loop = function () {
                 roleDoctor.run(creep,spawn)
                 pop_doctors++;
             }
-            //pos_exchange(creep);
+            pos_exchange(creep);
         }
     }
 
