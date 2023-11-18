@@ -12,6 +12,10 @@ function maxHauler(cap,spawn,limit)// return array with max possible work parts 
             cap=2000;
         }
     }
+    if(cap>2400)
+    {
+        cap=2400
+    }
     var parts=[];
     parts.push(MOVE);
     parts.push(CARRY);

@@ -1,5 +1,5 @@
 var RoomPositionFunctions = require('roomPositionFunctions');
-var routeCreep = require('routeCreep');
+//var routeCreep = require('routeCreep');
 
 var roleFarmer = {
     run: function (creep, spawn) {
@@ -13,7 +13,12 @@ var roleFarmer = {
             filter: object => object.hits<object.hitsMax && object.hits<150000 && object.hits!=object.hitsMax
             && object.structureType!=STRUCTURE_ROAD && object.pos.inRangeTo(creep.pos,3)
         });
-        var construction_sites=creep.room.find(FIND_CONSTRUCTION_SITES);
+        var construction_sites=creep.room.find(FIND_CONSTRUCTION_SITES,{
+            filter: function (structure)
+            {
+                return structure.pos.inRangeTo(creep.pos,3);
+            }
+        });
         if(creep.store[RESOURCE_ENERGY]==0)
         {
             creep.memory.building=false;

@@ -102,7 +102,7 @@ const keeper_farmer = {
                     {
                         //creep.my_path=undefined;
                         creep.say("K2");
-                        move_avoid_hostile(creep,killer.pos,4);
+                        move_avoid_hostile(creep,killer.pos,6);
                     }
                 }
                 

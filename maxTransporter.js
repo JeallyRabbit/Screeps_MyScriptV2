@@ -2,14 +2,17 @@ function maxTransporter(cap,spawn)// return array with max possible work parts f
 {
     var rcl=spawn.room.controller.level;
     
-    cap=cap%2000+1;
-    var parts=[];
+    if(cap>2500)
+    {
+        cap=2500;
+    }
+    var parts=[];/*
     for(let i=0;i<rcl-1;i++)//minimum body
     {
         parts.push(MOVE);
         parts.push(CARRY);
         cap-=100;
-    }
+    }*/
     //console.log("avaliable work parts: ", Math.floor(cap/100));
     for(let i=0;i<Math.floor(cap/100);i++)
     {

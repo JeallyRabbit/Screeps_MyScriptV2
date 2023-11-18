@@ -6,7 +6,7 @@ const { move_avoid_hostile } = require("./move_avoid_hostile");
 const keeper_carrier = {
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
-        //creep.say("&&");
+        //creep.say("@");
 
         /*
         var position = creep.pos;

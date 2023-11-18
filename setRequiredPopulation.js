@@ -13,21 +13,22 @@ function setRequiredPopulation(mySpawns) {
     if(mySpawns['Spawn1'].room.controller.level==1)
     {
         mySpawns['Spawn1'].memory.req_harvesters =6;
+        mySpawns['Spawn1'].memory.req_carriers =3;
     }
     else if(mySpawns['Spawn1'].room.controller.level==2)
     {
         mySpawns['Spawn1'].memory.req_harvesters =4;
-        mySpawns['Spawn1'].memory.req_upgraders =12;
+        mySpawns['Spawn1'].memory.req_upgraders =2;
     }
     else if(mySpawns['Spawn1'].room.controller.level==3)
     {
-        mySpawns['Spawn1'].memory.req_upgraders =4;
+        mySpawns['Spawn1'].memory.req_upgraders =8;
     }
-    mySpawns['Spawn1'].memory.req_carriers = 1;//role num 1
+    mySpawns['Spawn1'].memory.req_carriers = 3;//role num 1
     mySpawns['Spawn1'].memory.req_farmers = 0;//role num 2
     mySpawns['Spawn1'].memory.req_builders =0;// role num 3
     if (mySpawns['Spawn1'].room.find(FIND_MY_CONSTRUCTION_SITES).length >0) {
-        mySpawns['Spawn1'].memory.req_builders = 6;
+        mySpawns['Spawn1'].memory.req_builders = 4;
     }
     mySpawns['Spawn1'].memory.req_haulers =1;// role num 4
     // role num 5
@@ -45,7 +46,7 @@ function setRequiredPopulation(mySpawns) {
     mySpawns['Spawn1'].memory.farming_rooms = [];
     mySpawns['Spawn1'].memory.claiming_rooms = [];
     //mySpawns['Spawn1'].memory.farming_rooms.push('E34N53');
-    mySpawns['Spawn1'].memory.farming_rooms.push('W7N3');
+    //mySpawns['Spawn1'].memory.farming_rooms.push('W7N3');
     //mySpawns['Spawn1'].memory.farming_rooms.push('W8N4');
     //mySpawns['Spawn1'].memory.farming_rooms.push('E35N51');
     mySpawns['Spawn1'].memory.keepers_rooms=[];
@@ -60,7 +61,7 @@ function setRequiredPopulation(mySpawns) {
         mySpawns['Spawn1'].memory.req_towerKeepers = 1;
         if(storage[0].store[RESOURCE_ENERGY]>14000)
         {
-            mySpawns['Spawn1'].memory.keepers_rooms.push('W6N4');
+            //mySpawns['Spawn1'].memory.keepers_rooms.push('W6N4');
             
             if(mySpawns['Spawn1'].room.controller.level>=5 && mySpawns['Spawn1'].memory.keepers_rooms.length>0)
             {
@@ -111,7 +112,7 @@ function setRequiredPopulation(mySpawns) {
     });
     if(terminal!=undefined && terminal.length>0)
     {
-        mySpawns['Spawn1'].memory.req_merchants=1;
+        mySpawns['Spawn1'].memory.req_merchants=0;
     }
     else{
         mySpawns['Spawn1'].memory.req_merchants=0;
@@ -142,7 +143,7 @@ function setRequiredPopulation(mySpawns) {
     if(labs!=undefined && labs.length>0)
     {
         //mySpawns['Spawn1'].memory.req_doctors=1;
-        mySpawns['Spawn1'].memory.req_doctors=1;
+        mySpawns['Spawn1'].memory.req_doctors=0;
     }
 
 

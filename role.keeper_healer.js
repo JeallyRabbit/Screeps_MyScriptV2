@@ -5,7 +5,7 @@ const { move_avoid_hostile } = require('./move_avoid_hostile');
 const keeper_Healer = {
     /** @param {Creep} creep **/
     run: function (creep) {
-
+        creep.memory.target='E36S4';
         var friendlyDamagedCreeps = creep.room.find(FIND_MY_CREEPS, {
             filter: function (creep) {
                 return creep.hits < creep.hitsMax && 
@@ -55,7 +55,7 @@ const keeper_Healer = {
            // console.log("to_avoid: ",to_avoid);
 
 
-            if(creep.hits<creep.hitsMax*0.8)
+            if(creep.hits<creep.hitsMax)
             {
                 creep.heal(creep);
             }

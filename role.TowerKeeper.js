@@ -30,7 +30,7 @@ var roleTowerKeeper = {
         });
         if(deposit==undefined || (towers==undefined || towers.length<1))
         {
-            creep.moveTo(spawn.pos.x,spawn.pos.y+1);
+            creep.moveTo(spawn.pos.x-2,spawn.pos.y+1);
         }
         var tower_min = 1000;
         var minID = 0;

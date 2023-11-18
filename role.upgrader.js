@@ -116,7 +116,7 @@ var roleUpgrader = {
                 if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(creep.room.controller);
                 }
-                creep.moveTo(creep.room.controller, { range: 1 ,ignoreCreeps: true});
+                creep.moveTo(creep.room.controller, { range: 1 });
             }
             else if (!creep.memory.upgrading && creep.pos.findClosestByRange(deposits) != null)// if no energy and there are deposits
             {// go to deposits
@@ -142,7 +142,7 @@ var roleUpgrader = {
                 if (droppedEnergy.length > 0) {
                     if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                         // Move to it
-                        creep.moveTo(closestDroppedEnergy,{ignoreCreeps: true});
+                        creep.moveTo(closestDroppedEnergy);
                     }
                 }
             }

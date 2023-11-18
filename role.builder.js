@@ -1,4 +1,5 @@
 var roleUpgrader=require('role.upgrader');
+const { move_avoid_hostile } = require('./move_avoid_hostile');
 
 var roleBuilder = {
 
@@ -31,14 +32,16 @@ var roleBuilder = {
                 && structure.store[RESOURCE_ENERGY]>50;
             }
         }));
-
+        var closest_target=creep.pos.findClosestByRange(targets);
 	    if(creep.memory.building) { // if building go to construction site and build
 	        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if(targets.length) {
                 if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0]);
+                    //creep.say("NB");
+                    move_avoid_hostile(creep,closest_target.pos,3,false);
                 }
-                creep.moveTo(targets[0],{range:1});
+                move_avoid_hostile(creep,closest_target.pos,3,false);
+                //creep.moveTo(targets[0],{range:3});
             }
 	    }
         else if(!creep.memory.building && creep.pos.findClosestByRange(deposits)!=null)// not building and there are deposits
@@ -51,7 +54,8 @@ var roleBuilder = {
             {
                 if(creep.withdraw(deposit,RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
                 {
-                    creep.moveTo(deposit);
+                    //creep.moveTo(deposit);
+                    move_avoid_hostile(creep,deposit.pos,1,false);
                 }
             }
         }
@@ -66,7 +70,8 @@ var roleBuilder = {
                 if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) 
                 {
                 // Move to it
-                creep.moveTo(closestDroppedEnergy);
+                //creep.moveTo(closestDroppedEnergy);
+                move_avoid_hostile(creep,closestDroppedEnergy.pos,1,false);
                 }
             }
 	    }

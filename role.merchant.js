@@ -82,57 +82,50 @@ var roleMerchant = {//transfer energy grom containers to storage
                     }
                     else if(creep.memory.energy_from_terminal==-1 && creep.memory.energy_to_terminal==-1)
                     {
+                        
                         for(const resource in terminal[0].store)
                         {
+                            
                             if(resource!=RESOURCE_ENERGY)
                             {
                                 if(creep.store.getUsedCapacity(resource)==0)
                                 {
                                     creep.withdraw(terminal[0],resource);
                                 }
+                                
                             }
-                        }
+                            
+                        } 
                         for(const resource in creep.store)
                         {
-                            if(resource!=RESOURCE_ENERGY)
+                            if(resource=="XGHO2")
+                            {
+                                //creep.say("B");
+                                if(creep.store.getUsedCapacity(resource)>0)
+                                {
+                                    //creep.say("A");
+                                    creep.transfer(terminal[0],resource);
+                                }
+                            }
+                            else if(resource!=RESOURCE_ENERGY)
                             {
                                 if(creep.store.getUsedCapacity(resource)>0)
                                 {
                                     creep.transfer(storage[0],resource)
                                 }
-                                
+                            }
+                        }
+                        for(const resource in storage[0].store)
+                        {
+                            if(resource=="XGHO2")
+                            {
+                                if(creep.store.getUsedCapacity(resource)==0)
+                                {
+                                    creep.withdraw(storage[0],resource);
+                                }
                             }
                         }
                     }
-                    /*
-                    if (resource == RESOURCE_ENERGY && creep.memory.energy_from_terminal == true
-                        && creep.store.getUsedCapacity(resource) == 0) {
-                        if (creep.withdraw(terminal[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(terminal[0]);
-                        }
-                    }
-                    else if (resource == RESOURCE_ENERGY && creep.memory.to_terminal == true
-                        && creep.store.getUsedCapacity(resource) > 0) {
-
-                        if (creep.store.getUsedCapacity(resource) == 0) {
-                            if (creep.withdraw(storage[0], resource) == ERR_NOT_IN_RANGE) {
-                                creep.moveTo(storage[0]);
-                            }
-                        }
-                        if (creep.transfer(terminal[0], resource) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(terminal[0]);
-                        }
-                    }
-                    else if (creep.store[resource] == 0 && creep.memory.energy_from_terminal==true) {
-                        if (creep.withdraw(terminal[0], resource) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(terminal[0]);
-                        }
-                    }
-                    else {
-                        if (creep.transfer(storage[0], resource) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(storage[0]);
-                        }
-                    }*/
                 }
 
             }

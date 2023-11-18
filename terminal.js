@@ -9,10 +9,20 @@ var terminal = {
         {
             if(terminal[0].cooldown==0)
             {
-
-                //const order=Game.market.getOrderById('654805c29a89e1804f6def31');
-                //console.log("COST: ",Game.market.calcTransactionCost(2000,order.roomName,spawn.room.name));
-                //console.log(Game.market.deal(order.id,2000,spawn.room.name));
+                
+                /*
+                const order=Game.market.getOrderById('655480b6e8b9dba6bb283223');
+                console.log(order.roomName);
+                if(order!=undefined)
+                {
+                    console.log(order.roomName);
+                    console.log("COST: ",Game.market.calcTransactionCost(10000,order.roomName,spawn.room.name));
+                    if(Game.market.calcTransactionCost(2000,order.roomName,spawn.room.name)<4000)
+                    {
+                        console.log("deal: ",Game.market.deal(order.id,10000,spawn.room.name));
+                    }
+                }*/
+                
                 var buy_GH20=false;
 
                 if(buy_GH20==true)
@@ -27,7 +37,7 @@ var terminal = {
                         }
                         //console.log("max_amount_to_buy: ", max_amount_to_buy);
                         if(Game.market.calcTransactionCost(max_amount_to_buy,orders[i].roomName,spawn.room.name)<terminal[0].store[RESOURCE_ENERGY]
-                        && orders[i].price<1000.000)
+                        && orders[i].price<10000.000)
                         {
                             
                             //console.log("DEAL REsult; ",Game.market.deal(orders[i].id,max_amount_to_buy,spawn.room.name));
