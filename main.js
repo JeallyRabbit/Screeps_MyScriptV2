@@ -408,6 +408,32 @@ module.exports.loop = function () {
     //console.log(spawn.room.controller.progress);
     
     var energyCap=spawn.room.energyAvailable;
+
+    var storage=spawn.room.find(FIND_STRUCTURES,{
+        filter: function (structure)
+        {
+            return structure.structureType==STRUCTURE_STORAGE
+            && structure.store[RESOURCE_ENERGY]>0;
+        }
+    });
+    if(storage!= undefined && storage.length>0 && pop_haulers>0)
+    {
+        var rcl=spawn.room.controller.level;
+        var max_energy=300;
+        if(rcl==2){max_energy=550;}
+        else if(rcl==3){max_energy=800;}
+        else if(rcl==4){max_energy=1300;}
+        else if(rcl==5){max_energy=1800;}
+        else if(rcl==6){max_energy=2300;}
+        else if(rcl==7){max_energy=5600;}
+        else {max_energy=12900;}
+        if(storage[0].store[RESOURCE_ENERGY]>energyCap && energyCap<max_energy/2)
+        {
+            energyCap=max_energy/2;
+            console.log("changing energy cap");
+        }
+
+    }
     console.log("energyCap: ", energyCap);
     console.log("carrying power: ", carrying_power);
 
@@ -449,7 +475,11 @@ module.exports.loop = function () {
 
     if(pop_keeperKillers>0 && pop_keeperHealers==0)
     {
-        const healer_body=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL];
+        var healer_body=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL];
+        if(spawn.room.controller.level==5)
+        {
+            healer_body=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL];
+        }
         if(spawn.spawnCreep(healer_body,'KeeperHealer'+Game.time,{memory: {role: 'keeperHealer', target: spawn.memory.keepers_rooms[0],home_room: spawn.room}})==0)
         {
             console.log("Spawning KeeperHealer");
@@ -674,7 +704,11 @@ module.exports.loop = function () {
     }
     if(pop_keeperHealers<spawn.memory.req_keeperHealers)
     {
-        const healer_body=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL];
+        var healer_body=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL];
+        if(spawn.room.controller.level==5)
+        {
+            healer_body=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL];
+        }
         if(spawn.spawnCreep(healer_body,'KeeperHealer'+Game.time,{memory: {role: 'keeperHealer', target: spawn.memory.keepers_rooms[0],home_room: spawn.room}})==0)
         {
             console.log("Spawning KeeperHealer");

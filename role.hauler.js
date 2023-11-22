@@ -143,7 +143,11 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
                 if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
                     //creep.moveTo(closestExtension);
-                    move_avoid_hostile(creep,closestExtension.pos,1);
+                    move_avoid_hostile(creep,closestExtension.pos,1,false);
+                }
+                else if(creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == OK)
+                {
+                    //creep.memory.is_working=true;
                 }
             }
             /*

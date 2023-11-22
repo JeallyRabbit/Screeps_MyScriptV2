@@ -77,13 +77,16 @@ function pos_exchange(creep) {
         {
             return creep.pos.isNearTo(adjacent.pos)==true
             && adjacent.pos!=creep.pos
-            && adjacent.memory.my_path!=undefined 
+           //&& adjacent.memory.my_path!=undefined 
+            && adjacent.memory.next_pos!=undefined
+            && adjacent.memory.is_working!=true
+            && adjacent.fatigue==0
             && adjacent.memory.next_pos.x== creep.pos.x && adjacent.memory.next_pos.y==creep.pos.y;
         }
     });
 
     if(creep.memory.is_moving==false && moving_creeps!=undefined && moving_creeps.length>0
-        /*&& creep.memory.my_path==undefined*/)
+      /*  && creep.memory.my_path==undefined*/)
     {
         
         creep.say("EX");

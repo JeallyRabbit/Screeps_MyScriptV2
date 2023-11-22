@@ -5,7 +5,7 @@ const { move_avoid_hostile } = require('./move_avoid_hostile');
 const keeper_Healer = {
     /** @param {Creep} creep **/
     run: function (creep) {
-        creep.memory.target='E36S4';
+        //creep.memory.target='W6N4';
         var friendlyDamagedCreeps = creep.room.find(FIND_MY_CREEPS, {
             filter: function (creep) {
                 return creep.hits < creep.hitsMax && 
@@ -72,11 +72,13 @@ const keeper_Healer = {
             });
 
             if (killers.length < 1) {
+                creep.memory.is_working=false;
                 return 0;
             }
 
             if (killers.length >= 1) {// if there are killers go to them and support
 
+                creep.memory.is_working=true;
                 /*var friendlyDamagedCreeps = creep.room.find(FIND_MY_CREEPS, {
                     filter: function (creep) {
                         return creep.hits < creep.hitsMax && 

@@ -32,20 +32,27 @@ var roleBuilder = {
                 && structure.store[RESOURCE_ENERGY]>50;
             }
         }));
-        var closest_target=creep.pos.findClosestByRange(targets);
+       
 	    if(creep.memory.building) { // if building go to construction site and build
 	        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if(targets.length) {
-                if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
+                var closest_target=creep.pos.findClosestByRange(targets);
+                if(creep.build(closest_target) == ERR_NOT_IN_RANGE) {
                     //creep.say("NB");
+                    creep.memory.is_working=false;
                     move_avoid_hostile(creep,closest_target.pos,3,false);
                 }
-                move_avoid_hostile(creep,closest_target.pos,3,false);
+                else if(creep.build(closest_target) ==OK)
+                {
+                    creep.memory.is_working=true;
+                }
+                //move_avoid_hostile(creep,closest_target.pos,3,false);
                 //creep.moveTo(targets[0],{range:3});
             }
 	    }
         else if(!creep.memory.building && creep.pos.findClosestByRange(deposits)!=null)// not building and there are deposits
         {
+            creep.memory.is_working=false;
             //var deposit=getMaxEnergyDeposit(creep);
             var deposit=creep.pos.findClosestByRange(deposits);
             var withdraw_amount=0;

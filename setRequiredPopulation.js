@@ -8,7 +8,7 @@ function setRequiredPopulation(mySpawns) {
     });
 
     mySpawns['Spawn1'].memory.num_towers = mySpawns['Spawn1'].memory.num_towers.length;
-    mySpawns['Spawn1'].memory.req_harvesters =2;// role num 0
+    mySpawns['Spawn1'].memory.req_harvesters =4;// role num 0
     mySpawns['Spawn1'].memory.req_upgraders = 1;
     if(mySpawns['Spawn1'].room.controller.level==1)
     {
@@ -18,11 +18,12 @@ function setRequiredPopulation(mySpawns) {
     else if(mySpawns['Spawn1'].room.controller.level==2)
     {
         mySpawns['Spawn1'].memory.req_harvesters =4;
-        mySpawns['Spawn1'].memory.req_upgraders =2;
+        mySpawns['Spawn1'].memory.req_upgraders =6;
+        mySpawns['Spawn1'].memory.req_carriers =2;
     }
     else if(mySpawns['Spawn1'].room.controller.level==3)
     {
-        mySpawns['Spawn1'].memory.req_upgraders =8;
+        mySpawns['Spawn1'].memory.req_upgraders =4;
     }
     mySpawns['Spawn1'].memory.req_carriers = 1;//role num 1
     mySpawns['Spawn1'].memory.req_farmers = 0;//role num 2
@@ -61,7 +62,7 @@ function setRequiredPopulation(mySpawns) {
         mySpawns['Spawn1'].memory.req_towerKeepers = 1;
         if(storage[0].store[RESOURCE_ENERGY]>14000)
         {
-            //mySpawns['Spawn1'].memory.keepers_rooms.push('W6N4');
+            mySpawns['Spawn1'].memory.keepers_rooms.push('W6N4');
             
             if(mySpawns['Spawn1'].room.controller.level>=5 && mySpawns['Spawn1'].memory.keepers_rooms.length>0)
             {
@@ -72,14 +73,14 @@ function setRequiredPopulation(mySpawns) {
             }
             if(storage[0].store[RESOURCE_ENERGY]>100000)
             {
-                mySpawns['Spawn1'].memory.req_upgraders = 2;
+                mySpawns['Spawn1'].memory.req_upgraders = 3;
             }
             
         }
         else if(storage[0].store[RESOURCE_ENERGY]<4000)
         {
             mySpawns['Spawn1'].memory.keepers_rooms=[];
-            mySpawns['Spawn1'].memory.req_towerKeepers = 0;
+            //mySpawns['Spawn1'].memory.req_towerKeepers = 0;
             mySpawns['Spawn1'].memory.req_keeperKillers=0;//role num 15
             mySpawns['Spawn1'].memory.req_keeperHealers=0;//role num 16
             mySpawns['Spawn1'].memory.req_keeperCarriers=0;//role num 17
