@@ -123,7 +123,7 @@ module.exports.loop = function () {
         var roles_num=15;// 0 1 2 3 4 5 6 7 8 9 10 11 12 13 
         //var spawn.memory.roles_counter=0;
         
-        if(Game.time%1==0)
+        if(Game.time%50 ==0)
         {
             setBaseLayout(spawn);
         }
@@ -131,7 +131,7 @@ module.exports.loop = function () {
         {
             spawn.memory.progress_old=spawn.memory.progress;
             spawn.memory.progress=spawn.room.controller.progress;
-            if(spawn.memory.progress_old!=0)
+            if(spawn.memory.progress_old!=0) 
             {
                 spawn.memory.progress_sum+=(spawn.memory.progress-spawn.memory.progress_old);
             }
@@ -427,9 +427,9 @@ module.exports.loop = function () {
         else if(rcl==6){max_energy=2300;}
         else if(rcl==7){max_energy=5600;}
         else {max_energy=12900;}
-        if(storage[0].store[RESOURCE_ENERGY]>energyCap && energyCap<max_energy/2)
+        if(storage[0].store[RESOURCE_ENERGY]>energyCap && energyCap<max_energy/3)
         {
-            energyCap=max_energy/2;
+            energyCap=max_energy/3;
             console.log("changing energy cap");
         }
 
@@ -683,6 +683,11 @@ module.exports.loop = function () {
             console.log("Spawning DistanceCarrier");
             return;
         }
+        /*
+        else{
+            console.log("spawn result: ",spawn.spawnCreep(maxCarrier(energyCap,spawn,false),'distnaceCarrier'+Game.time,{memory: {role: 'distanceCarrier', home_room: spawn.room,
+            target_room: spawn.memory.farming_rooms[spawn.memory.distance_carriers_counter%spawn.memory.farming_rooms.length], path: undefined}}));
+        }*/ 
         
     }
     if(pop_keeperKillers<spawn.memory.req_keeperKillers )
