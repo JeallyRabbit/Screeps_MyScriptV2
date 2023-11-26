@@ -82,7 +82,7 @@ function setBaseLayout(spawn) {
 
 
     for (let i = 0; i < 3; i++) {
-        spawn.room.createConstructionSite(spawn.pos.x + 2 + i, spawn.pos.y + i, STRUCTURE_EXTENSION);
+        //spawn.room.createConstructionSite(spawn.pos.x + 2 + i, spawn.pos.y + i, STRUCTURE_EXTENSION);
         spawn.room.createConstructionSite(spawn.pos.x + 2 + i, spawn.pos.y + 1 + i, STRUCTURE_EXTENSION);
 
         spawn.room.createConstructionSite(spawn.pos.x + i, spawn.pos.y + 2 + i, STRUCTURE_EXTENSION);
@@ -95,13 +95,14 @@ function setBaseLayout(spawn) {
     spawn.room.createConstructionSite(spawn.pos.x + 2, spawn.pos.y + 5, STRUCTURE_EXTENSION);
     spawn.room.createConstructionSite(spawn.pos.x + 1, spawn.pos.y + 5, STRUCTURE_EXTENSION);
     spawn.room.createConstructionSite(spawn.pos.x + 2, spawn.pos.y + 7, STRUCTURE_EXTENSION);
+    
     for (let i = 0; i < 6; i++) {
         spawn.room.createConstructionSite(spawn.pos.x - i, spawn.pos.y + 7 - i, STRUCTURE_EXTENSION);
         spawn.room.createConstructionSite(spawn.pos.x - 1 - i, spawn.pos.y + 7 - i, STRUCTURE_EXTENSION);
         spawn.room.createConstructionSite(spawn.pos.x + 1 - i, spawn.pos.y + 6 - i, STRUCTURE_EXTENSION);
     }
-    for (let i = 0; i < 5; i++) {
-        spawn.room.createConstructionSite(spawn.pos.x + -i, spawn.pos.y + 5 - i, STRUCTURE_EXTENSION);
+    for (let i = 0; i < 4; i++) {
+        spawn.room.createConstructionSite(spawn.pos.x - i, spawn.pos.y + 4 - i, STRUCTURE_EXTENSION);
     }
     spawn.room.createConstructionSite(spawn.pos.x - 6, spawn.pos.y + 1, STRUCTURE_EXTENSION);
     for (let i = 0; i < 3; i++) {
@@ -115,6 +116,7 @@ function setBaseLayout(spawn) {
     spawn.room.createConstructionSite(spawn.pos.x - 3, spawn.pos.y - 6, STRUCTURE_EXTENSION);
     spawn.room.createConstructionSite(spawn.pos.x - 2, spawn.pos.y - 6, STRUCTURE_EXTENSION);
     spawn.room.createConstructionSite(spawn.pos.x - 1, spawn.pos.y - 6, STRUCTURE_EXTENSION);
+    
 
     //Create STORAGE - stays
     spawn.room.createConstructionSite(spawn.pos.x + 2, spawn.pos.y - 2, STRUCTURE_STORAGE);
@@ -125,11 +127,12 @@ function setBaseLayout(spawn) {
     //Create TOWERS - CHANGE
     spawn.room.createConstructionSite(spawn.pos.x - 2, spawn.pos.y - 1, STRUCTURE_TOWER);
     spawn.room.createConstructionSite(spawn.pos.x - 1, spawn.pos.y - 2, STRUCTURE_TOWER);
+    /*
     spawn.room.createConstructionSite(spawn.pos.x, spawn.pos.y - 2, STRUCTURE_TOWER);
     spawn.room.createConstructionSite(spawn.pos.x, spawn.pos.y - 3, STRUCTURE_TOWER);
     spawn.room.createConstructionSite(spawn.pos.x + 1, spawn.pos.y - 4, STRUCTURE_TOWER);
     spawn.room.createConstructionSite(spawn.pos.x + 2, spawn.pos.y - 3, STRUCTURE_TOWER);
-
+    */
 
     //create terminal - stays
     spawn.room.createConstructionSite(spawn.pos.x + 1, spawn.pos.y - 1, STRUCTURE_TERMINAL);// build terminal
@@ -176,9 +179,9 @@ function setBaseLayout(spawn) {
     spawn.room.createConstructionSite(spawn.pos.x + 3, spawn.pos.y, STRUCTURE_LAB);
     spawn.room.createConstructionSite(spawn.pos.x + 4, spawn.pos.y, STRUCTURE_LAB);
 
+    spawn.room.createConstructionSite(spawn.pos.x + 4, spawn.pos.y - 2, STRUCTURE_LAB);
     spawn.room.createConstructionSite(spawn.pos.x + 5, spawn.pos.y - 2, STRUCTURE_LAB);
-    spawn.room.createConstructionSite(spawn.pos.x + 6, spawn.pos.y - 2, STRUCTURE_LAB);
-    spawn.room.createConstructionSite(spawn.pos.x + 6, spawn.pos.y - 1, STRUCTURE_LAB);
+    spawn.room.createConstructionSite(spawn.pos.x + 5, spawn.pos.y - 1, STRUCTURE_LAB);
 
     spawn.room.createConstructionSite(spawn.pos.x + 6, spawn.pos.y - 1, STRUCTURE_LAB);
     spawn.room.createConstructionSite(spawn.pos.x + 6, spawn.pos.y, STRUCTURE_LAB);

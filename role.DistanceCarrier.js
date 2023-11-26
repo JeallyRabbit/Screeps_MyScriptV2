@@ -90,7 +90,7 @@ var roleDistanceCarrier = {
         else if (creep.room.name != creep.memory.home_room.name && creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {// not in home_room and no free space - go home_room
             const destination = new RoomPosition(25, 25, creep.memory.home_room.name); // Replace with your destination coordinates and room name
 
-
+            creep.say("go home");
             var home_containers = spawn.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_CONTAINER &&
@@ -119,8 +119,9 @@ var roleDistanceCarrier = {
                         && structure.store[RESOURCE_ENERGY] < 800
                 }
             }));
-
-            move_avoid_hostile(creep, home_containers, 1);
+            var closest_home_container=creep.pos.findClosestByPath(home_containers);
+            //move_avoid_hostile(creep, destination);
+            creep.moveTo(destination,{reusePath: 15});
             if (creep.memory.my_path != undefined) {
                 if (creep.memory.my_path.incomplete == false && creep.memory.carry_distance != undefined) {
                     if (creep.memory.my_path.path.length < creep.memory.carry_distance) {
@@ -169,12 +170,12 @@ var roleDistanceCarrier = {
 
             if (containers.length > 0) {
                 //console.log("containers: ", containers.length);
-                var closest_container = creep.pos.findClosestByRange(containers);
+                var closest_container = creep.pos.findClosestByPath(containers);
                 var transfer_amount = 1;
                 transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
                 if (creep.transfer(closest_container, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {// if creep have energy go to container and store
-                    move_avoid_hostile(creep, closest_container.pos, 1);
-                    //creep.moveTo(closest_container, { noPathFinding: false, reusePath: 5 });
+                    //move_avoid_hostile(creep, containers, 1);
+                    creep.moveTo(closest_container, { noPathFinding: false, reusePath: 5 });
                 }
                 else {
                     delete creep.memory.my_path;

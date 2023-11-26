@@ -25,6 +25,8 @@ const keeper_killerRole = {
                 creep.moveTo(destination);
             }
             else {// If in the target room
+                creep.memory.is_working=true;
+                
                 var pos = creep.pos;
                 if (pos.x > 48) {
                     creep.move(LEFT);

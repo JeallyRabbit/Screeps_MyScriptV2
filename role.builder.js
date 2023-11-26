@@ -1,4 +1,5 @@
 var roleUpgrader=require('role.upgrader');
+const { move_avoid_hostile } = require('./move_avoid_hostile');
 
 var roleBuilder = {
 
@@ -31,18 +32,27 @@ var roleBuilder = {
                 && structure.store[RESOURCE_ENERGY]>50;
             }
         }));
-
+       
 	    if(creep.memory.building) { // if building go to construction site and build
 	        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if(targets.length) {
-                if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0]);
+                var closest_target=creep.pos.findClosestByRange(targets);
+                if(creep.build(closest_target) == ERR_NOT_IN_RANGE) {
+                    //creep.say("NB");
+                    creep.memory.is_working=false;
+                    move_avoid_hostile(creep,closest_target.pos,3,false);
                 }
-                creep.moveTo(targets[0],{range:1});
+                else if(creep.build(closest_target) ==OK)
+                {
+                    creep.memory.is_working=true;
+                }
+                //move_avoid_hostile(creep,closest_target.pos,3,false);
+                //creep.moveTo(targets[0],{range:3});
             }
 	    }
         else if(!creep.memory.building && creep.pos.findClosestByRange(deposits)!=null)// not building and there are deposits
         {
+            creep.memory.is_working=false;
             //var deposit=getMaxEnergyDeposit(creep);
             var deposit=creep.pos.findClosestByRange(deposits);
             var withdraw_amount=0;
@@ -51,7 +61,8 @@ var roleBuilder = {
             {
                 if(creep.withdraw(deposit,RESOURCE_ENERGY,withdraw_amount)==ERR_NOT_IN_RANGE)
                 {
-                    creep.moveTo(deposit);
+                    //creep.moveTo(deposit);
+                    move_avoid_hostile(creep,deposit.pos,1,false);
                 }
             }
         }
@@ -66,7 +77,8 @@ var roleBuilder = {
                 if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) 
                 {
                 // Move to it
-                creep.moveTo(closestDroppedEnergy);
+                //creep.moveTo(closestDroppedEnergy);
+                move_avoid_hostile(creep,closestDroppedEnergy.pos,1,false);
                 }
             }
 	    }

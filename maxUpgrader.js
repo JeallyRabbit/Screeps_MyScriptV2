@@ -3,9 +3,9 @@ function maxUpgrader(cap,spawn)// return array with max possible work parts for 
     var rcl=spawn.room.controller.level;
     
     
-    if(cap>2000)
+    if(cap>3200)
     {
-        cap=2000;
+        cap=3200;
     }
     var parts=[];
         parts.push(MOVE);

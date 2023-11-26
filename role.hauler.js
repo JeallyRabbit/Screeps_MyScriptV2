@@ -17,6 +17,7 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
         var extensions_full=0;// 1 when tyey are all full
         if(extensions==undefined || extensions.length<1)
         {
+            //creep.say("EX");
             extensions_full=1;
         }
         var containers = creep.room.find(FIND_STRUCTURES, {
@@ -91,7 +92,8 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 //creep.memory.cID_max=-1;
                 var withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[creep.memory.cID_max].store[RESOURCE_ENERGY]);
                 if (creep.withdraw(containers[creep.memory.cID_max], RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
-                    creep.moveTo(containers[creep.memory.cID_max]);
+                    //creep.moveTo(containers[creep.memory.cID_max]);
+                    move_avoid_hostile(creep,containers[creep.memory.cID_max].pos,1,false);
                 }
                 else if(containers[creep.memory.cID_max].store[RESOURCE_ENERGY]==0)
                 {
@@ -120,25 +122,32 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], spawn.store[RESOURCE_ENERGY].getFreeCapacity);
                 if (creep.transfer(spawn, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
                     
-                    creep.moveTo(spawn);
+                   // creep.moveTo(spawn);
+                    move_avoid_hostile(creep,spawn.pos,1,false);;
                 }
             }
         }
         else // go to extension and put all energy to extension ( if have some energy)
         {
+            //creep.say("ext");
             var extensions = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_EXTENSION
-                        && structure.energy < 50;;
+                        && structure.store.getFreeCapacity(RESOURCE_ENERGY)>0;
                 }
             });
+            //creep.say(extensions.length);
             var closestExtension = creep.pos.findClosestByPath(extensions);
             if (closestExtension) {
                 var transfered_amount = 1;
                 transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
                 if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
                     //creep.moveTo(closestExtension);
-                    move_avoid_hostile(creep,closestExtension.pos,1);
+                    move_avoid_hostile(creep,closestExtension.pos,1,false);
+                }
+                else if(creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == OK)
+                {
+                    //creep.memory.is_working=true;
                 }
             }
             /*

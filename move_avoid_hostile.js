@@ -1,8 +1,13 @@
 const { goOutOfRange } = require("./goOutOfRange");
 
-function move_avoid_hostile(creep,destination,my_range) {
+function move_avoid_hostile(creep,destination,my_range,my_avoid) {
     //destination=destination.pos;
     //const destination = new RoomPosition(25, 25, creep.memory.home_room.name); // Replace with your destination coordinates and room name
+    //my_avoid=false;
+    if(my_avoid==undefined)
+    {
+        my_avoid=true;
+    }
     if(my_range==undefined)
     {
         my_range=1;
@@ -36,7 +41,7 @@ function move_avoid_hostile(creep,destination,my_range) {
     if (creep.memory.my_path==undefined) {
         //creep.say("CALC");
         var ret = PathFinder.search(creep.pos, destination, {
-            maxCost: 300,
+            //maxCost: 300,
             range: my_range,
             plainCost: 2,
             swampCost: 10,
@@ -61,13 +66,29 @@ function move_avoid_hostile(creep,destination,my_range) {
                         costs.set(struct.pos.x, struct.pos.y, 255);
                     }
                 });
+                creep.room.find(FIND_MY_CREEPS).forEach(function (working_creep)
+                    {
+                        if(working_creep.memory.is_working==true)
+                        {
+                            costs.set(working_creep.pos.x,working_creep.pos.y, 255);
+                        }
+                    });
+
+                creep.room.find(FIND_CONSTRUCTION_SITES).forEach(function (struct){
+                    costs.set(struct.pos.x, struct.pos.y, 255);
+                });
     
                 // Avoid creeps in the room
-                creep.room.find(FIND_CREEPS).forEach(function (creep) {
+                if(my_avoid!=false)
+                {
+                    creep.room.find(FIND_CREEPS).forEach(function (creep) {
                     costs.set(creep.pos.x, creep.pos.y, 255);
-                });
+                    });
+                }
+                
 
                 // avoid hostile creeps
+                
                 for (let i = 0; i < to_avoid.length; i++) {
                     costs.set(to_avoid[i].x, to_avoid[i].y, 255);
                 }
@@ -84,32 +105,6 @@ function move_avoid_hostile(creep,destination,my_range) {
             //creep.move(creep.pos.getDirectionTo(creep.memory.my_path[0]));
             //creep.move(creep.pos.getDirectionTo(ret.path[0]));
         }
-        /*
-        creep.memory.wait_counter=0;
-        // Calculate and cache the path if it doesn't exist in memory
-        //PathFinder.use(true);
-        const path = creep.pos.findPathTo(destination, {
-            ignoreCreeps: false,
-            plainCost: 2,
-            swampCost: 10,
-            costCallback: function (roomName,costMatrix) {
-                if (roomName == creep.room.name) {
-                    //let costs = new PathFinder.CostMatrix;//
-                    for (let i = 0; i < to_avoid.length; i++) {
-                        costMatrix.set(to_avoid[i].x, to_avoid[i].y, 255);
-                    }
-                    for (let i=0;i<roads.length;i++)
-                    {
-                        costMatrix.set(roads[i].x,roads[i].y,1);
-                    }
-                }
-                return costMatrix;
-            }
-        });
-        creep.memory.my_path = JSON.stringify(path);
-        //creep.move(BOTTOM);
-        //creep.say("Calc");
-        */
     }
     if (creep.memory.my_path!=undefined) {
         //creep.say("USE");
@@ -151,31 +146,25 @@ function move_avoid_hostile(creep,destination,my_range) {
                     //creep.memory.my_path.path=creep.memory.my_path.path.slice(1);
                     //delete creep.memory.my_path.path[0];
                     creep.memory.path_counter++;
-                    //creep.say("GO");
+                    creep.memory.next_pos=direction;
+                    //creep.say(moveResult);
                     // Successfully moved along the path
                 }
                 else if (moveResult === ERR_INVALID_ARGS)// && creep.memory.wait_counter>1) 
                 {
-                    //creep.say("del1");
-                    //creep.memory.wait_counter=0;
-                    // Path is no longer valid, clear the cached path
-                    //console.log("creep: ",creep.name);
-                    //console.log("wrong args: ",creep.pos.getDirectionTo(creep.memory.my_path.path[creep.memory.path_counter]));
-                    //console.log(creep.memory.my_path.path[creep.memory.path_counter].x);
-                    //console.log(creep.memory.my_path.path[creep.memory.path_counter].y);
-                    //console.log("");
-                    creep.memory.path_counter=0;
+                    delete creep.memory.next_pos;
+                    delete creep.memory.path_counter;
                     creep.say("del2");
                     delete creep.memory.my_path;
                 }
-                /*
-                else{
+                else if(moveResult!=-11){
                     //creep.memory.my_path.path=creep.memory.my_path.path.slice(1);
+                    //creep.say(moveResult);
+                    console.log("moveResult: ", moveResult);
+                }
+                else{
                     creep.say(moveResult);
-                    creep.memory.path_counter=0;
-                    delete creep.memory.my_path;
-                    //creep.memory.wait_counter++;
-                }*/
+                }
             }
             else {
                 // The path is empty, meaning the creep has reached its destination
@@ -183,6 +172,7 @@ function move_avoid_hostile(creep,destination,my_range) {
                 //creep.say("del2");
                 creep.say("del4");
                 delete creep.memory.my_path;
+                delete creep.memory.next_pos;
             }
         }
 

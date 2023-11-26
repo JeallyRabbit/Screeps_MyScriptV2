@@ -40,8 +40,6 @@ function setRequiredPopulation(mySpawns) {
     mySpawns['Spawn1'].memory.claiming_rooms = [];
     //mySpawns['Spawn1'].memory.farming_rooms.push('E34N53');
     mySpawns['Spawn1'].memory.farming_rooms.push('E38S4');
-    //mySpawns['Spawn1'].memory.farming_rooms.push('W8N4');
-    //mySpawns['Spawn1'].memory.farming_rooms.push('E35N51');
     mySpawns['Spawn1'].memory.keepers_rooms=[];
     var storage=mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
         filter: function(structure)
@@ -51,7 +49,7 @@ function setRequiredPopulation(mySpawns) {
     });
     if(storage!=undefined && storage.length>0 && mySpawns['Spawn1'].memory.num_towers > 0)
     {
-        if(storage[0].store[RESOURCE_ENERGY]>14000)
+        if(storage[0].store[RESOURCE_ENERGY]>10000)
         {
             mySpawns['Spawn1'].memory.keepers_rooms.push('E36S4');
             mySpawns['Spawn1'].memory.req_towerKeepers = 1;
@@ -64,11 +62,11 @@ function setRequiredPopulation(mySpawns) {
             }
             if(storage[0].store[RESOURCE_ENERGY]>100000)
             {
-                mySpawns['Spawn1'].memory.req_upgraders = 2;
+                mySpawns['Spawn1'].memory.req_upgraders = 1;
             }
             
         }
-        else if(storage[0].store[RESOURCE_ENERGY]<4000)
+        else if(storage[0].store[RESOURCE_ENERGY]<4000 && mySpawns['Spawn1'].memory.keepers_rooms.length>0)
         {
             mySpawns['Spawn1'].memory.keepers_rooms=[];
             mySpawns['Spawn1'].memory.req_towerKeepers = 0;

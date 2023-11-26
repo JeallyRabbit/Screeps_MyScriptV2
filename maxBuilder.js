@@ -2,9 +2,9 @@ function maxBuilder(cap,spawn)// return array with max possible work parts for b
 {
     var rcl=spawn.room.controller.level;
     
-    if(cap>1200)
+    if(cap>3000)
     {
-        cap=1200;
+        cap=3000;
     }
     var parts=[];
     parts.push(MOVE);

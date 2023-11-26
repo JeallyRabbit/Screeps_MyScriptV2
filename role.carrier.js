@@ -1,6 +1,7 @@
 
 const { drop } = require('lodash');
 var roleHauler = require('role.hauler');
+const { move_avoid_hostile } = require('./move_avoid_hostile');
 
 var roleCarrier = {//collect dropped energy and store it into extensions and containers
 
@@ -58,7 +59,8 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
             {
                 if (creep.pickup(droppedEnergy[creep.memory.target_energy]) == ERR_NOT_IN_RANGE) {
                     // Move to it
-                    creep.moveTo(droppedEnergy[creep.memory.target_energy]);
+                    //creep.moveTo(droppedEnergy[creep.memory.target_energy]);
+                    move_avoid_hostile(creep,droppedEnergy[creep.memory.target_energy].pos,1,false);
                 }
                 else// if(creep.pickup(droppedEnergy[creep.memory.target_energy])==OK)
                 {
@@ -71,7 +73,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
             var extensions = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_EXTENSION
-                        && structure.store[RESOURCE_ENERGY] < 50;
+                        && structure.store.getFreeCapacity(RESOURCE_ENERGY)>0;
                 }
             });
             if (extensions.length > 0) {// if there are extensions go fill them
@@ -82,7 +84,8 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
                     var transfered_amount = 1;
                     transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
                     if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                        creep.moveTo(closestExtension);
+                        //creep.moveTo(closestExtension);
+                        move_avoid_hostile(creep,closestExtension.pos,1,false);
                     }
                 }
 
@@ -97,14 +100,16 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
                     var transfer_amount = 1;
                     transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closestContainer.store[RESOURCE_ENERGY]);
                     if (creep.transfer(closestContainer, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(closestContainer);
+                        //creep.moveTo(closestContainer.pos);
+                        move_avoid_hostile(creep,closestContainer.pos,1,false);
                     }
 
                 }
                 else // no extensions - fill spawn
                 {
                     if (creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(spawn);
+                        //creep.moveTo(spawn);
+                        move_avoid_hostile(creep,spawn.pos,1,false);
                     }
                 }
 

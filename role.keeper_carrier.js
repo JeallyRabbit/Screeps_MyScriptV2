@@ -6,7 +6,7 @@ const { move_avoid_hostile } = require("./move_avoid_hostile");
 const keeper_carrier = {
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
-        //creep.say("&&");
+        //creep.say("@");
 
         /*
         var position = creep.pos;
@@ -49,6 +49,8 @@ const keeper_carrier = {
             && creep.store.getFreeCapacity() > 0) 
             {// in target room and is collecting
             
+                creep.memory.is_working=true;
+                
                 if(creep.pos.findInRange(FIND_HOSTILE_CREEPS,4).length>0)
                 {
                     goOutOfRange(creep,4);

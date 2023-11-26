@@ -1,6 +1,6 @@
 var roleBuilder = require('role.builder');
 var RoomPositionFunctions=require('roomPositionFunctions');
-var routeCreep=require('routeCreep');
+//var routeCreep=require('routeCreep');
 
 var roleFarmer = {
     run: function(creep) {

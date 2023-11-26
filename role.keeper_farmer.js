@@ -57,7 +57,7 @@ const keeper_farmer = {
             creep.moveTo(destination);
         }
         else if (creep.room.name == creep.memory.target_room) {
-
+            creep.memory.is_working=true;
 
             if (creep.pos.findInRange(FIND_HOSTILE_CREEPS, 5).length > 0) {
                 //creep.say("RUN2");
@@ -102,7 +102,7 @@ const keeper_farmer = {
                     {
                         //creep.my_path=undefined;
                         creep.say("K2");
-                        move_avoid_hostile(creep,killer.pos,4);
+                        move_avoid_hostile(creep,killer.pos,6);
                     }
                 }
                 

@@ -12,6 +12,12 @@ function maxCarrier(cap,spawn,limit)// return array with max possible work parts
             cap=1200;
         }
     }
+    else{
+        if(cap>2500)
+        {
+            cap=2500;
+        }
+    }
     
     var parts=[];
     parts.push(MOVE);
