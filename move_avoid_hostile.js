@@ -74,6 +74,7 @@ function move_avoid_hostile(creep,destination,my_range,my_avoid) {
                         }
                     });
 
+                // avoid construction sites
                 creep.room.find(FIND_CONSTRUCTION_SITES).forEach(function (struct){
                     costs.set(struct.pos.x, struct.pos.y, 255);
                 });
