@@ -6,6 +6,8 @@ const keeper_killerRole = {
     /** @param {Creep} creep **/
     run: function (creep,spawn) {
         //creep.say("!");
+        //creep.move(BOTTOM_RIGHT);
+        //return;
         if (creep.memory.boosting_list == undefined) {
             creep.memory.boosting_list = ["KO", "KHO2", "XKHO2"];//boost types that creep accepts
         }

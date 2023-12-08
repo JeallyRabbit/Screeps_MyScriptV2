@@ -88,24 +88,24 @@ const keeper_carrier = {
                 {
                     move_avoid_hostile(creep,farmer[0].pos,3);
                 }
-                //creep.say("T");
-                /*
-                var tombstones = creep.room.find(FIND_TOMBSTONES, {
-                    filter: structure => structure.pos.findInRange(FIND_HOSTILE_CREEPS, 3).length < 1
-                });
-                if (tombstones != undefined && tombstones.length >= 1) {
-                    var min_decay = tombstones[0].ticksToDecay;
-                    var nearest_tombstone = tombstones[0];
-                    for (let i = 1; i < tombstones.length; i++) {
-                        if (tombstones[i].ticksToDecay < min_decay) {
-                            nearest_tombstone = tombstones[i];
-                            min_decay = tombstones[i].ticksToDecay;
+                else{
+                    var fighter=creep.room.find(FIND_MY_CREEPS,{
+                        filter: function (fighter)
+                        {
+                            return fighter.memory.role=='keeperKiller';
                         }
-                        //console.log("nearest tombstone: ",nearest_tombstone.pos);
+                    });
+                    fighter=fighter.concat(creep.room.find(FIND_MY_CREEPS,{
+                        filter: function (healer)
+                        {
+                            return healer.memory.role=='keeperHealer';
+                        }
+                    }));
+                    if(fighter!=undefined && fighter.length>0)
+                    {
+                        move_avoid_hostile(creep,fighter[0].pos,3);
                     }
-                    move_avoid_hostile(creep,nearest_tombstone.pos,4);
-
-                }*/
+                }
             }
             var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {
                 filter: function (hostile) {
