@@ -57,8 +57,7 @@ const keeper_carrier = {
                     delete creep.memory.my_path;
                 }
             var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: resource => resource.resourceType == RESOURCE_ENERGY
-                    && resource.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length < 1
+                filter: resource => resource.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length < 1
                     && resource.amount>100
             })
             

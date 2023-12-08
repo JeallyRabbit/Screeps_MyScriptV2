@@ -49,9 +49,9 @@ var roleDistanceCarrier = {
                 if(creep.memory.energy_to_collect==undefined)
                 {
                     const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                    filter: resource => resource.resourceType == RESOURCE_ENERGY && resource.amount > 30
+                    filter: resource => resource.amount > 30
                 });
-                    if(droppedEnergy.length>0)
+                    if(droppedEnergy!=undefined && droppedEnergy.length>0)
                     {
                         creep.memory.energy_to_collect=creep.pos.findClosestByPath(droppedEnergy).id;
                     }
@@ -61,7 +61,7 @@ var roleDistanceCarrier = {
                 {
                     if(Game.getObjectById(creep.memory.energy_to_collect)!=null)
                     {
-                        if (creep.pickup(droppedEnergy[creep.memory.target_energy]) == ERR_NOT_IN_RANGE) {
+                        if (Game.getObjectById(creep.memory.energy_to_collect) == ERR_NOT_IN_RANGE) {
                             move_avoid_hostile(creep,Game.getObjectById(creep.memory.energy_to_collect).pos,1,false);
                         }
                     }

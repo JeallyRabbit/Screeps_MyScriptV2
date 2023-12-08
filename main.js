@@ -115,6 +115,23 @@ module.exports.loop = function () {
 
             if (spawn == undefined) { continue; }
             if (spawnName == 'Spawn1') {
+
+                //spawn.memory.avg_source_dist=undefined;
+                if(spawn.memory.avg_source_dist==undefined)
+                {
+                    spawn.memory.avg_source_dist=0;
+                    var room_sources=spawn.room.find(FIND_SOURCES);
+                    if(room_sources!=undefined && room_sources.length>0)
+                    {
+                        for(const room_source of room_sources)
+                        {
+                            spawn.memory.avg_source_dist+=spawn.pos.findPathTo(room_source).length;
+                            //console.log("distance: ",spawn.pos.findPathTo(room_source).length);
+                        }
+                        spawn.memory.avg_source_dist/=room_sources.length;
+                    }
+                }
+
                 if (Game.time % 50 == 0) {
                     setBaseLayout(spawn);
                 }
@@ -129,7 +146,7 @@ module.exports.loop = function () {
                     var hostile_creeps = spawn.room.find(FIND_HOSTILE_CREEPS);
                     console.log("hostile_Creeps: ", hostile_creeps);
                     if (hostile_creeps.length == 0) {
-                        spawn.memory.req_soldiers = 0;
+                        spawn.memory.req_soldiers = 1;
                     }
                     else {
                         //spawn.memory.req_soldiers=3;
@@ -169,6 +186,13 @@ module.exports.loop = function () {
                     }
                     else if (creep.memory.role == 'carrier') {
                         //creep.suicide();
+                       // if(creep.memory.)
+                        if(creep.memory.carry_speed==undefined)
+                        {
+                            creep.memory.carry_speed=creep.store.getCapacity()/(spawn.memory.avg_source_dist*2);
+                        }
+
+
                         roleCarrier.run(creep, spawn);
                         if (creep.ticksToLive > 100) {
                             pop_carriers++;

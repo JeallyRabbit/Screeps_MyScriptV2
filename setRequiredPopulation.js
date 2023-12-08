@@ -62,7 +62,7 @@ function setRequiredPopulation(mySpawns) {
     if(storage!=undefined && storage.length>0 && mySpawns['Spawn1'].memory.num_towers > 0)
     {
         mySpawns['Spawn1'].memory.req_towerKeepers = 1;
-        if(storage[0].store[RESOURCE_ENERGY]>20000 && mySpawns['Spawn1'].memory.keepers_rooms.length==0)
+        if(storage[0].store[RESOURCE_ENERGY]>20000 && storage[0].store[RESOURCE_ENERGY]>2000000)
         {
             mySpawns['Spawn1'].memory.keepers_rooms.push('E36S4');
             
@@ -75,7 +75,7 @@ function setRequiredPopulation(mySpawns) {
             }
             if(storage[0].store[RESOURCE_ENERGY]>100000)
             {
-                mySpawns['Spawn1'].memory.req_upgraders = 1;
+                mySpawns['Spawn1'].memory.req_upgraders = 2;
             }
             
         }
