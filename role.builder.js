@@ -6,7 +6,6 @@ var roleBuilder = {
     /** @param {Creep} creep **/
     run: function(creep) {
         creep.say("B");
-        var targets=creep.room.find(FIND_CONSTRUCTION_SITES)
         if(targets.length==0) // if no constructuin sites go upgrade
         {
             creep.suicide();
@@ -32,27 +31,31 @@ var roleBuilder = {
                 && structure.store[RESOURCE_ENERGY]>50;
             }
         }));
-       
+        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+        var closest_target=creep.pos.findClosestByRange(targets);
+        for(let i=0;i<targets.length;i++)
+        {
+            if(targets[i].structureType==STRUCTURE_SPAWN)
+            {
+                closest_target=targets[i];
+                creep.say("S");
+                break;
+            }
+        }
+        creep.say("A");
 	    if(creep.memory.building) { // if building go to construction site and build
-	        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+	        
             if(targets.length) {
-                var closest_target=creep.pos.findClosestByRange(targets);
                 if(creep.build(closest_target) == ERR_NOT_IN_RANGE) {
                     //creep.say("NB");
-                    creep.memory.is_working=false;
                     move_avoid_hostile(creep,closest_target.pos,3,false);
                 }
-                else if(creep.build(closest_target) ==OK)
-                {
-                    creep.memory.is_working=true;
-                }
-                //move_avoid_hostile(creep,closest_target.pos,3,false);
+                move_avoid_hostile(creep,closest_target.pos,3,false);
                 //creep.moveTo(targets[0],{range:3});
             }
 	    }
         else if(!creep.memory.building && creep.pos.findClosestByRange(deposits)!=null)// not building and there are deposits
         {
-            creep.memory.is_working=false;
             //var deposit=getMaxEnergyDeposit(creep);
             var deposit=creep.pos.findClosestByRange(deposits);
             var withdraw_amount=0;

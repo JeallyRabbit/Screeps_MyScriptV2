@@ -17,6 +17,13 @@ var towers = {
                 && structure.hits<50000
             });
             var mostDamagedStructure=DamagedStructures[0];
+
+            var damagedCreeps=spawn.room.find(FIND_MY_CREEPS,{filter:
+            function (myCreep)
+            {
+                return myCreep.hits<myCreep.hitsMax;
+            }});
+            console.log("damged Creeps: ",damagedCreeps.length);
             for (let i=1;i<DamagedStructures.length;i++)
             {
                 if(DamagedStructures[i].hits<mostDamagedStructure.hits)
@@ -29,6 +36,10 @@ var towers = {
             }
             else if(mostDamagedStructure) {
                 tower.repair(mostDamagedStructure);
+            }
+            else if(damagedCreeps)
+            {
+                tower.heal(damagedCreeps[0]);
             }
         })
 	}

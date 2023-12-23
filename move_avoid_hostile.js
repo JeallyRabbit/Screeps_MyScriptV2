@@ -66,18 +66,6 @@ function move_avoid_hostile(creep,destination,my_range,my_avoid) {
                         costs.set(struct.pos.x, struct.pos.y, 255);
                     }
                 });
-                creep.room.find(FIND_MY_CREEPS).forEach(function (working_creep)
-                    {
-                        if(working_creep.memory.is_working==true)
-                        {
-                            costs.set(working_creep.pos.x,working_creep.pos.y, 255);
-                        }
-                    });
-
-                // avoid construction sites
-                creep.room.find(FIND_CONSTRUCTION_SITES).forEach(function (struct){
-                    costs.set(struct.pos.x, struct.pos.y, 255);
-                });
     
                 // Avoid creeps in the room
                 if(my_avoid!=false)
@@ -148,7 +136,7 @@ function move_avoid_hostile(creep,destination,my_range,my_avoid) {
                     //delete creep.memory.my_path.path[0];
                     creep.memory.path_counter++;
                     creep.memory.next_pos=direction;
-                    //creep.say(moveResult);
+                    creep.say(moveResult);
                     // Successfully moved along the path
                 }
                 else if (moveResult === ERR_INVALID_ARGS)// && creep.memory.wait_counter>1) 

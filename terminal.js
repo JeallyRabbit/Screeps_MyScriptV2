@@ -11,21 +11,17 @@ var terminal = {
             {
                 
                 /*
-                const order=Game.market.getOrderById('6567010e77f75f0012cba4dd');
+                const order=Game.market.getOrderById('655480b6e8b9dba6bb283223');
+                console.log(order.roomName);
                 if(order!=undefined)
                 {
                     console.log(order.roomName);
-                    if(order!=undefined)
+                    console.log("COST: ",Game.market.calcTransactionCost(10000,order.roomName,spawn.room.name));
+                    if(Game.market.calcTransactionCost(2000,order.roomName,spawn.room.name)<4000)
                     {
-                        console.log(order.roomName);
-                        console.log("COST: ",Game.market.calcTransactionCost(10000,order.roomName,spawn.room.name));
-                        if(Game.market.calcTransactionCost(2000,order.roomName,spawn.room.name)<4000)
-                        {
-                            console.log("deal: ",Game.market.deal(order.id,10000,spawn.room.name));
-                        }
+                        console.log("deal: ",Game.market.deal(order.id,10000,spawn.room.name));
                     }
                 }*/
-                
                 
                 var buy_GH20=false;
 

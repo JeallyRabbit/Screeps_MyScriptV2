@@ -18,7 +18,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
         }
 
         const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-            filter: resource => resource.resourceType == RESOURCE_ENERGY && resource.amount > 30
+            filter: resource => resource.resourceType == RESOURCE_ENERGY && resource.amount > creep.store.getCapacity()*0.8
         })
 
         var containers = creep.room.find(FIND_STRUCTURES, {

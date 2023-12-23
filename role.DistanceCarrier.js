@@ -12,8 +12,7 @@ var roleDistanceCarrier = {
         if (creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.closest_home_container = undefined;
         }
-        if (creep.room.name == creep.memory.target_room && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-            // in target room and have free space - collect dropped energy or energy from containers
+        if (creep.room.name == creep.memory.target_room && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {// in target room and have free space - collect dropped energy or energy from containers
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_CONTAINER
@@ -22,54 +21,27 @@ var roleDistanceCarrier = {
                 }
             });
 
-            /*
             containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_STORAGE
                         && structure.store[RESOURCE_ENERGY] > 0;
                 }
             }));
-            */
 
-            
-                if(creep.pos.y>=49){
+
+            /*
+                if(creep.pos.y>49){
                     creep.move(TOP);
                 }
-                else if(creep.pos.y<=1){
+                else if(creep.pos.y<1){
                     creep.move(BOTTOM);
                 }
-                else if(creep.pos.x>=49){
+                else if(creep.pos.x>49){
                     creep.move(LEFT);
                 }
-                else if(creep.pos.x<=1){
+                else if(creep.pos.x<1){
                     creep.move(RIGHT);
-                }
-
-                
-                if(creep.memory.energy_to_collect==undefined)
-                {
-                    const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                    filter: resource => resource.resourceType == RESOURCE_ENERGY && resource.amount > 30
-                });
-                    if(droppedEnergy.length>0)
-                    {
-                        creep.memory.energy_to_collect=creep.pos.findClosestByPath(droppedEnergy).id;
-                    }
-                    
-                }
-                if(creep.memory.energy_to_collect!=undefined)
-                {
-                    if(Game.getObjectById(creep.memory.energy_to_collect)!=null)
-                    {
-                        if (creep.pickup(droppedEnergy[creep.memory.target_energy]) == ERR_NOT_IN_RANGE) {
-                            move_avoid_hostile(creep,Game.getObjectById(creep.memory.energy_to_collect).pos,1,false);
-                        }
-                    }
-                    else {
-                        delete creep.memory.energy_to_collect;
-                    }
-                    return;
-                }
+                }*/
             //else (return 0;)
             //creep.moveTo(25,25,creep.memory.target_room)
 
@@ -99,11 +71,10 @@ var roleDistanceCarrier = {
                 }
                 var withdraw_amount = 1;
                 if (creep.memory.cID_max >= 0) {
-                    creep.say("A");
                     withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, containers[creep.memory.cID_max].store[RESOURCE_ENERGY]);
                     if (creep.withdraw(containers[creep.memory.cID_max], RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have free space go colelct energy from containers
-                        creep.moveTo(containers[creep.memory.cID_max]);
-                        //move_avoid_hostile(creep, containers[creep.memory.cID_max].pos, 1,true);
+                        //creep.moveTo(containers[creep.memory.cID_max]);
+                        move_avoid_hostile(creep, containers[creep.memory.cID_max].pos, 1);
                     }
                     else if (creep.withdraw(containers[creep.memory.cID_max], RESOURCE_ENERGY, withdraw_amount) == OK) {
                         creep.memory.cID_max = undefined;
@@ -148,8 +119,8 @@ var roleDistanceCarrier = {
                         && structure.store[RESOURCE_ENERGY] < 800
                 }
             }));
-            //var closest_home_container=creep.pos.findClosestByPath(home_containers);
-            //move_avoid_hostile(creep, destination,1,false);
+            var closest_home_container=creep.pos.findClosestByPath(home_containers);
+            //move_avoid_hostile(creep, destination);
             creep.moveTo(destination,{reusePath: 15});
             if (creep.memory.my_path != undefined) {
                 if (creep.memory.my_path.incomplete == false && creep.memory.carry_distance != undefined) {
@@ -197,23 +168,19 @@ var roleDistanceCarrier = {
                 }
             }));
 
-            if (containers.length > 0 && containers!=undefined) {
+            if (containers.length > 0) {
                 //console.log("containers: ", containers.length);
                 var closest_container = creep.pos.findClosestByPath(containers);
                 var transfer_amount = 1;
-                if(closest_container!=null)
-                {
-                    transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
-                    if (creep.transfer(closest_container, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {// if creep have energy go to container and store
-                        move_avoid_hostile(creep, containers, 1,false);
-                        //creep.moveTo(closest_container, { noPathFinding: false, reusePath: 5 });
-                    }
-                    else {
-                        delete creep.memory.my_path;
-                    }
-
+                transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
+                if (creep.transfer(closest_container, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {// if creep have energy go to container and store
+                    //move_avoid_hostile(creep, containers, 1);
+                    creep.moveTo(closest_container, { noPathFinding: false, reusePath: 5 });
                 }
-                
+                else {
+                    delete creep.memory.my_path;
+                }
+
             }
         }
         else if (creep.room.name != creep.memory.target_room && creep.store[RESOURCE_ENERGY] == 0) {// not in target room and no energy - go target room
@@ -223,7 +190,7 @@ var roleDistanceCarrier = {
             //creep.say("target");
             const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
             //creep.moveTo(destination);
-            move_avoid_hostile(creep, destination, 1,false);
+            move_avoid_hostile(creep, destination, 20);
 
         }
     }
