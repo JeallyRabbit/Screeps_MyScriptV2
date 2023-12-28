@@ -21,7 +21,7 @@ var roleRepairer = {
         if(targets.length<1)
         {
             //creep.say("no repair");
-            roleBuilder.run(creep);
+            //roleBuilder.run(creep);
         }
         else{
             targets.sort((a,b)=> a.hits - b.hits);

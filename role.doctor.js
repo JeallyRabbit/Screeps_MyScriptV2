@@ -36,25 +36,25 @@ var roleDoctor = {
                 return structure.structureType == STRUCTURE_LAB 
                 && ((structure.pos.x!=input1pos.x && structure.pos.y!=input1pos.y)
                 || (structure.pos.x!=input2pos.x && structure.pos.y!=input2pos.y))
-                && have_mineral_in_it(structure)!=false;
+                //&& have_mineral_in_it(structure)!=false;
                     //&& have_mineral_in_it(structure)==true;
             }
         });
-        console.log(output_lab.length);
+        //console.log(output_lab.length);
         if(output_lab.length!=0)
         {
             //console.log("output.lab[0]: ",output_lab[0].store.getCapacity());
             output_lab=output_lab.sort((a,b) => (b.store[have_mineral_in_it(b)])-(a.store[have_mineral_in_it(a)]));
             output_lab=output_lab[0];
-            console.log("output_lab: ", output_lab.store[have_mineral_in_it(output_lab)]);
+            //console.log("output_lab: ", output_lab.store[have_mineral_in_it(output_lab)]);
         }
         
 
         var creeps_to_boost = creep.room.find(FIND_MY_CREEPS, {
             filter: function (creep_to_boost) {
                 return creep_to_boost.memory.need_boosting == true
-                    && creep_to_boost.memory.booster != undefined
-                    && creep_to_boost.pos.isNearTo(output_lab.pos);
+                    && creep_to_boost.memory.booster != undefined;
+                    //&& creep_to_boost.pos.isNearTo(output_lab.pos);
             }
         });
         //console.log("output_laAb: ",output_lab);
@@ -62,7 +62,7 @@ var roleDoctor = {
         //console.log(have_mineral_in_it(output_lab));
         if (creeps_to_boost != undefined && creeps_to_boost.length > 0) {
             creep.memory.boosting = true;
-
+            creep.say("A");
             if (have_mineral_in_it(output_lab)!=false) {
                 creep.memory.filling_booster = false;
             }
@@ -122,6 +122,7 @@ var roleDoctor = {
                 creep.memory.to_transport = can_run_lvl_2_reaction(storage[0]);
             }
             else if (can_run_lvl_3_reaction(storage[0]) != "NOTHING") {
+                //creep.say("V");
                 creep.memory.to_transport = can_run_lvl_3_reaction(storage[0]);
             }
 
@@ -129,6 +130,7 @@ var roleDoctor = {
                 && can_run_lvl_1_reaction(storage[0]) == "NOTHING"
                 && can_run_lvl_2_reaction(storage[0]) == "NOTHING"
                 && can_run_lvl_3_reaction(storage[0]) == "NOTHING") {
+                    //creep.say("A");
                 creep.memory.to_transport = false;
             }
         }
@@ -156,6 +158,7 @@ var roleDoctor = {
 
         if (creep.memory.boosting == true) {
             if (creep.memory.filling_booster == true) {
+                creep.say("b");
                 var withdraw_amount = Math.min(creep.store.getFreeCapacity(), storage[0].store[creeps_to_boost[0].memory.booster]);
                     var upgrades_num = Math.floor(withdraw_amount / 30);
                     withdraw_amount = Math.min(upgrades_num, creeps_to_boost[0].memory.parts_to_boost.length) * 30;
@@ -178,9 +181,15 @@ var roleDoctor = {
                     }
                 }
                 else if (creep.store[creeps_to_boost[0].memory.booster] > 0) {
+                    creep.say("c");
                     if (creep.transfer(output_lab, creeps_to_boost[0].memory.booster) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(output_lab);
                     }
+                    //creep.say(creep.transfer(output_lab, creeps_to_boost[0].memory.booster));
+                    creep.moveTo(output_lab);
+                    return;
+
+                    //return ;
                 }
             }
             else {//go empty the output lab

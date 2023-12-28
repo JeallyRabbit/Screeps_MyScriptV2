@@ -115,7 +115,7 @@ function can_run_lvl_3_reaction(storage) {
     if (storage.store["ZHO2"] > 0 && storage.store["X"] > 0) {
         return ["ZHO2", "X"];
     }
-    if (storage.store["GH20"] > 0 && storage.store["X"] > 0) {
+    if (storage.store["GH2O"] > 0 && storage.store["X"] > 0) {
         return ["GH2O", "X"];
     }
     if (storage.store["GHO2"] > 0 && storage.store["X"] > 0) {

@@ -18,9 +18,18 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
         }
 
         const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-            filter: resource => resource.resourceType == RESOURCE_ENERGY && resource.amount > creep.store.getCapacity()*0.8
-        })
-
+            filter: function (resource)
+            {
+                return /* resource.resourceType=RESOURCE_ENERGY &&*/ resource.amount>=30;
+            }
+        });
+        
+        
+        var storage=creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_STORAGE;
+            }});
+            
         var containers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_CONTAINER
@@ -69,7 +78,7 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
             }
             
         }
-        else if (creep.memory.collecting == false) {// go try fill extensions
+        else if (creep.memory.collecting == false && creep.store[RESOURCE_ENERGY]>0) {// go try fill extensions
             var extensions = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_EXTENSION
@@ -114,6 +123,19 @@ var roleCarrier = {//collect dropped energy and store it into extensions and con
                 }
 
             }
+        }
+        else
+        {
+            creep.say("RES");
+            for(resource in creep.store)
+            {
+                if(creep.transfer(storage[0],resource)==ERR_NOT_IN_RANGE)
+                {
+                    creep.moveTo(storage[0]);
+                }
+                
+            }
+            
         }
 
     }

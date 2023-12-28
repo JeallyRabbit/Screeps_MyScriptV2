@@ -20,8 +20,7 @@ var roleMerchant = {//transfer energy grom containers to storage
 
                 var storage = creep.room.find(FIND_STRUCTURES, {
                     filter: function (structure) {
-                        return structure.structureType == STRUCTURE_STORAGE
-                            && structure.store[RESOURCE_ENERGY] > 12000;
+                        return structure.structureType == STRUCTURE_STORAGE;
                     }
                 });
 

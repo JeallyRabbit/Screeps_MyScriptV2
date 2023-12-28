@@ -49,15 +49,16 @@ const keeper_carrier = {
             && creep.store.getFreeCapacity() > 0) 
             {// in target room and is collecting
             
+                creep.memory.is_working=true;
+                
                 if(creep.pos.findInRange(FIND_HOSTILE_CREEPS,4).length>0)
                 {
                     goOutOfRange(creep,4);
                     delete creep.memory.my_path;
                 }
             var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: resource => resource.resourceType == RESOURCE_ENERGY
-                    && resource.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length < 1
-                    && resource.amount>100
+                filter: resource => resource.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length < 1
+                    && resource.amount>50
             })
             
             closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy);
@@ -76,7 +77,7 @@ const keeper_carrier = {
             }
             else {// go to farmers
 
-                var farmer=creep.pos.findClosestByPath(FIND_MY_CREEPS,{
+                var farmer=creep.room.find(FIND_MY_CREEPS,{
                     filter: function (farmer)
                     {
                         return farmer.memory.role=='keeperFarmer';
@@ -86,24 +87,24 @@ const keeper_carrier = {
                 {
                     move_avoid_hostile(creep,farmer[0].pos,3);
                 }
-                //creep.say("T");
-                /*
-                var tombstones = creep.room.find(FIND_TOMBSTONES, {
-                    filter: structure => structure.pos.findInRange(FIND_HOSTILE_CREEPS, 3).length < 1
-                });
-                if (tombstones != undefined && tombstones.length >= 1) {
-                    var min_decay = tombstones[0].ticksToDecay;
-                    var nearest_tombstone = tombstones[0];
-                    for (let i = 1; i < tombstones.length; i++) {
-                        if (tombstones[i].ticksToDecay < min_decay) {
-                            nearest_tombstone = tombstones[i];
-                            min_decay = tombstones[i].ticksToDecay;
+                else{
+                    var fighter=creep.room.find(FIND_MY_CREEPS,{
+                        filter: function (fighter)
+                        {
+                            return fighter.memory.role=='keeperKiller';
                         }
-                        //console.log("nearest tombstone: ",nearest_tombstone.pos);
+                    });
+                    fighter=fighter.concat(creep.room.find(FIND_MY_CREEPS,{
+                        filter: function (healer)
+                        {
+                            return healer.memory.role=='keeperHealer';
+                        }
+                    }));
+                    if(fighter!=undefined && fighter.length>0)
+                    {
+                        move_avoid_hostile(creep,fighter[0].pos,5,false);
                     }
-                    move_avoid_hostile(creep,nearest_tombstone.pos,4);
-
-                }*/
+                }
             }
             var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {
                 filter: function (hostile) {

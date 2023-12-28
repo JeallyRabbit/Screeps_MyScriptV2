@@ -1,3 +1,4 @@
+const { move_avoid_hostile } = require("./move_avoid_hostile");
 var roleMiner = {
 
     /** @param {Creep} creep **/
@@ -23,7 +24,8 @@ var roleMiner = {
             else{
                 if(creep.transfer(storage[0],mineral[0].mineralType)==ERR_NOT_IN_RANGE)
                 {
-                    creep.moveTo(storage[0]);
+                    move_avoid_hostile(creep,storage[0].pos,1,false);
+                    //creep.moveTo(storage[0]);
                 }
             }
         }

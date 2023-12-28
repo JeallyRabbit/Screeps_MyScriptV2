@@ -5,7 +5,9 @@ var roleBuilder = {
 
     /** @param {Creep} creep **/
     run: function(creep) {
-        creep.say("B");
+        creep.say("BB");
+        //creep.suicide();
+        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
         if(targets.length==0) // if no constructuin sites go upgrade
         {
             creep.suicide();
@@ -14,6 +16,7 @@ var roleBuilder = {
 
 	    if(creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) { // if building and no energy go harvest
             creep.memory.building = false;
+            creep.memory.is_working=false;
 	    }
 	    if(!creep.memory.building && creep.store[RESOURCE_ENERGY] > 0) { // if have energy and construstion site go build
 	        creep.memory.building = true;
@@ -31,7 +34,7 @@ var roleBuilder = {
                 && structure.store[RESOURCE_ENERGY]>50;
             }
         }));
-        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+        
         var closest_target=creep.pos.findClosestByRange(targets);
         for(let i=0;i<targets.length;i++)
         {
@@ -50,6 +53,7 @@ var roleBuilder = {
                     //creep.say("NB");
                     move_avoid_hostile(creep,closest_target.pos,3,false);
                 }
+                else if(creep.build(closest_target) == OK) {creep.memory.is_working=true;}
                 move_avoid_hostile(creep,closest_target.pos,3,false);
                 //creep.moveTo(targets[0],{range:3});
             }

@@ -4,7 +4,7 @@ var roleUpgrader = {
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
         if (creep.memory.boosting_list == undefined) {
-            creep.memory.boosting_list = ["GH", "XGH2O", "GH2O"];//boost types that creep accepts
+            creep.memory.boosting_list = ["GH", "XGH2O" , "GH2O"];//boost types that creep accepts
         }
        //boosting-driver(creep,spawn,creep.memory.boosting_list,WORK);
         /*
