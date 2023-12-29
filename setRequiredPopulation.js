@@ -123,7 +123,7 @@ function setRequiredPopulation(mySpawns) {
     else if(mySpawns['Spawn1'].memory.farming_rooms.length>1)
     {
         mySpawns['Spawn1'].memory.farming_rooms.sort((a,b) => a.distance-b.distance);
-        while(mySpawns['Spawn1'].memory.farming_rooms.length>2)
+        while(mySpawns['Spawn1'].memory.farming_rooms.length>1)
         {
             mySpawns['Spawn1'].memory.farming_rooms.pop();
         }
@@ -188,7 +188,7 @@ function setRequiredPopulation(mySpawns) {
                     mySpawns['Spawn1'].memory.need_keeperFarmer=mySpawns['Spawn1'].memory.keepers_rooms[i].name;
                 }
 
-                if(mySpawns['Spawn1'].memory.keepers_rooms[i].carry_power<mySpawns['Spawn1'].memory.keepers_rooms[i].harvesting_power)
+                if(mySpawns['Spawn1'].memory.keepers_rooms[i].carry_power<mySpawns['Spawn1'].memory.keepers_rooms[i].harvesting_power*0.8)
                 {
                     mySpawns['Spawn1'].memory.need_keeperCarrier=mySpawns['Spawn1'].memory.keepers_rooms[i].name;
                 }
@@ -253,7 +253,7 @@ function setRequiredPopulation(mySpawns) {
                 break;
             }
         }
-        //console.log(mySpawns['Spawn1'].memory.need_DistanceCarrier);
+        console.log(mySpawns['Spawn1'].memory.need_DistanceCarrier);
         mySpawns['Spawn1'].memory.need_farmer=undefined;
         for(let i=0;i<mySpawns['Spawn1'].memory.farming_rooms.length;i++)
         {

@@ -171,7 +171,9 @@ module.exports.loop = function () {
             links.tick(spawn);
             terminal.tick(spawn);
             lab.tick(spawn);
-
+            //delete spawn.memory.farming_rooms;
+            //delete spawn.memory.keepers_rooms;
+            //delete spawn.memory.rooms_to_scan;
 
             if(spawn.memory.farming_rooms!=undefined && spawn.memory.farming_rooms.length>0)
             {
@@ -233,6 +235,8 @@ module.exports.loop = function () {
                         }
                     }
                     else if (creep.memory.role == 'hauler') {
+                        //creep.suicide();
+
                         roleHauler.run(creep, spawn);
                         if (creep.ticksToLive > 50) {
                             pop_haulers++;

@@ -106,8 +106,8 @@ var roleScout = {
                 const destination = new RoomPosition(25, 25, spawn.memory.rooms_to_scan[0]);
                 console.log("destination: ", destination);
                 creep.say(spawn.memory.rooms_to_scan[0]);
-                //creep.moveTo(destination);
-                move_avoid_hostile(creep, destination, 1, true,4000);
+                creep.moveTo(destination,{reusePath: 10});
+                //move_avoid_hostile(creep, destination, 1, true,4000);
             }
             else {
                 spawn.memory.rooms_to_scan.shift();
@@ -251,8 +251,33 @@ var roleScout = {
                         if (spawn.memory.farming_rooms[i].name == creep.room.name) {
                             already_scanned = true;
                         }
+
+                        if(creep.room.controller!=undefined)
+                        {
+                            /*if(Creep.room.controller.owner!=undefined)
+                            {
+                                already_scanned=true;
+                            }*/
+                            if(creep.room.controller.reservation.username=='Jeally_Rabbit')
+                            {
+                                already_scanned=false;
+                            }
+                        }
+
                     }
-                    
+                    /*
+                    if(creep.room.controller!=undefined)
+                    {
+                        if(Creep.room.controller.owner!=undefined)
+                        {
+                            already_scanned=true;
+                        }
+                        if(creep.room.controller.reservation.username=='Jeally_Rabbit')
+                        {
+                            already_scanned=false;
+                        }
+                    }
+                    */
                   //  if(creep.room.controller!=undefined)
                    // {
                         if (already_scanned == false){

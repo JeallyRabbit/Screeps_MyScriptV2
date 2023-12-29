@@ -62,10 +62,11 @@ var terminal = {
                 }
 
                 /// buy XGH2O (actively)
-
+                //buy KH (actively)
+                /*
                 var lowest_price = 0;
                 var best_order_id = undefined
-                const orders = Game.market.getAllOrders({ type: ORDER_SELL, resourceType: "XGH2O" }); // fast
+                const orders = Game.market.getAllOrders({ type: ORDER_SELL, resourceType: "KH" }); // fast
                 if (orders != undefined && orders.length>0) {
                     best_order_id = orders[0].id;
                 }
@@ -99,13 +100,13 @@ var terminal = {
                     var full_cost_per_unit = full_cost / trade_amount;
                     //console.log("full_cost per unit: ",full_cost_per_unit)
                     if (Game.market.getOrderById(best_order_id).price < 900) {
-                       // console.log("XGH2O Buying result: ", Game.market.deal(best_order_id, trade_amount, spawn.room.name));
+                       // console.log("KH Buying result: ", Game.market.deal(best_order_id, trade_amount, spawn.room.name));
 
                     }
                     //console.log("trade_amount: ",trade_amount);
                     //console.log("cost: ",cost);
                 }
-
+                */
 
                 /*
                 //buy energy
@@ -145,7 +146,7 @@ var terminal = {
                     var full_cost_per_unit = full_cost / trade_amount;
                     //console.log("full_cost per unit: ",full_cost_per_unit)
                     if (Game.market.getOrderById(best_order_id).price < 900) {
-                        ///console.log("Energy Buying result: ", Game.market.deal(best_order_id, trade_amount, spawn.room.name));
+                        console.log("Energy Buying result: ", Game.market.deal(best_order_id, trade_amount, spawn.room.name));
 
                     }
                     //console.log("trade_amount: ",trade_amount);

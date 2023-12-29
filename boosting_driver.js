@@ -1,6 +1,12 @@
 function boosting_driver(creep,spawn,boosting_list,body_type_to_boost)
 {
     //creep.say("BOS1");
+
+    if(creep.ticksToLive<1200)
+    {
+        return -1;
+    }
+
     var lab = creep.room.find(FIND_STRUCTURES, {
         filter: function (structure) {
             return structure.structureType == STRUCTURE_LAB

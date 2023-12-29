@@ -5,6 +5,11 @@ function maxSoldier(cap)// return array with max possible work parts for hauler
     {
         cap=5000;
     }
+
+    if(cap>2500)
+    {
+        cap=2500;
+    }
     parts.push(MOVE);
     parts.push(RANGED_ATTACK);
     parts.push(HEAL);

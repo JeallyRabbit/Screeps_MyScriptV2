@@ -105,7 +105,7 @@ function move_avoid_hostile(creep,destination,my_range,my_avoid,my_ops) {
             }
         });
 
-        if (ret.incomplete != true || true) {
+        if (ret.incomplete != true) {
             //creep.say(creep.moveByPath(ret.path));
             creep.memory.path_counter=0;
             creep.memory.my_path=ret;
