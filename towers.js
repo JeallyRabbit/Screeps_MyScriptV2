@@ -23,7 +23,7 @@ var towers = {
             {
                 return myCreep.hits<myCreep.hitsMax;
             }});
-            console.log("damged Creeps: ",damagedCreeps.length);
+            //console.log("damged Creeps: ",damagedCreeps.length);
             for (let i=1;i<DamagedStructures.length;i++)
             {
                 if(DamagedStructures[i].hits<mostDamagedStructure.hits)

@@ -1,10 +1,16 @@
 function boosting_driver(creep,spawn,boosting_list,body_type_to_boost)
 {
     //creep.say("BOS1");
+
+    if(creep.ticksToLive<1200)
+    {
+        return -1;
+    }
+
     var lab = creep.room.find(FIND_STRUCTURES, {
         filter: function (structure) {
             return structure.structureType == STRUCTURE_LAB
-                && (structure.pos.x==spawn.pos.x+3 && structure.pos.y==spawn.pos.y-1);
+                && (structure.pos.x==spawn.pos.x+4 && structure.pos.y==spawn.pos.y-0);
         }
     });
     creep.memory.parts_to_boost = _.filter(creep.body, part => _.isUndefined(part.boost) && part.type == body_type_to_boost);

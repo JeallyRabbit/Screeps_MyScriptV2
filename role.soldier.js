@@ -1,3 +1,4 @@
+const { move_avoid_hostile } = require("./move_avoid_hostile");
 
 var roleSoldier = {
     run: function(creep) {
@@ -30,6 +31,24 @@ var roleSoldier = {
         //console.log("creep.room.name: ", creep.room.name);
         //console.log("creep.memory.target: ", creep.memory.target);
 	    if(creep.room.name == creep.memory.target) {
+
+            var pos = creep.pos;
+            if (pos.x > 48) {
+                creep.move(LEFT);
+                return;
+            }
+            else if (pos.x < 2) {
+                creep.move(RIGHT);
+                return;
+            }
+            if (pos.y > 48) {
+                creep.move(TOP);
+                return;
+            }
+            else if (pos.y < 2) {
+                creep.move(BOTTOM);
+                return;
+            }
 
             var target_creep = creep.pos.findClosestByPath(FIND_HOSTILE_CREEPS);
             var target_structure=creep.pos.findClosestByRange(FIND_STRUCTURES,{
@@ -64,7 +83,7 @@ var roleSoldier = {
                     creep.heal(creep);
                 }
 
-                if(creep.pos.inRangeTo(target_creep,3))
+                if(creep.pos.inRangeTo(target_creep,2))
                 {
                     if(creep.pos.x-target_creep.pos.x>0)
                     {
@@ -112,10 +131,12 @@ var roleSoldier = {
             }
         } 
         else {
+            move_avoid_hostile(creep,new RoomPosition(25,25,creep.memory.target),15,true,4000);
+            /*
             var route = Game.map.findRoute(creep.room, creep.memory.target)
             if(route.length > 0) {
                 creep.moveTo(creep.pos.findClosestByRange(route[0].exit))
-            }
+            }*/
         }
 	}
 };

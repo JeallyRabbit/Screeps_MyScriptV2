@@ -5,7 +5,9 @@ const { move_avoid_hostile } = require('./move_avoid_hostile');
 const keeper_Healer = {
     /** @param {Creep} creep **/
     run: function (creep) {
-        creep.memory.target='E36S4';
+        //creep.memory.target='E36S4';
+        //creep.move(BOTTOM);
+        //return;
         var friendlyDamagedCreeps = creep.room.find(FIND_MY_CREEPS, {
             filter: function (creep) {
                 return creep.hits < creep.hitsMax && 
@@ -22,16 +24,16 @@ const keeper_Healer = {
         }
 
         var pos = creep.pos;
-        if (pos.x > 48) {
+        if (pos.x >= 48) {
             creep.move(LEFT);
         }
-        else if (pos.x < 2) {
+        else if (pos.x <= 2) {
             creep.move(RIGHT);
         }
-        if (pos.y > 48) {
+        if (pos.y >= 48) {
             creep.move(TOP);
         }
-        else if (pos.y < 2) {
+        else if (pos.y <= 2) {
             creep.move(BOTTOM);
         }
 
@@ -70,13 +72,19 @@ const keeper_Healer = {
                     //&& creep.pos.x>0 && creep.pos<49;
                 }
             });
-
-            if (killers.length < 1) {
+            const aux_keepers=creep.pos.findInRange(FIND_HOSTILE_CREEPS,8);
+            if (killers.length < 1 && aux_keepers.length<1) {
+                creep.memory.is_working=false;
                 return 0;
             }
 
-            if (killers.length >= 1) {// if there are killers go to them and support
+            if (killers.length >= 1 ) {// if there are killers go to them and support
 
+                if(aux_keepers.length>0)
+                {
+                    creep.memory.is_working=true;
+                }
+                
                 /*var friendlyDamagedCreeps = creep.room.find(FIND_MY_CREEPS, {
                     filter: function (creep) {
                         return creep.hits < creep.hitsMax && 

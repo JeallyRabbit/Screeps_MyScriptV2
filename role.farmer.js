@@ -4,7 +4,7 @@ var RoomPositionFunctions = require('roomPositionFunctions');
 var roleFarmer = {
     run: function (creep, spawn) {
 
-
+        //creep.say(creep.room.controller.reservation.username);
         var sources = creep.room.find(FIND_SOURCES);
         var target_room = creep.memory.target_room;
         //console.log(target_room);

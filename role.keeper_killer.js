@@ -6,6 +6,8 @@ const keeper_killerRole = {
     /** @param {Creep} creep **/
     run: function (creep,spawn) {
         //creep.say("!");
+        //creep.move(BOTTOM_LEFT);
+        //return;
         if (creep.memory.boosting_list == undefined) {
             creep.memory.boosting_list = ["KO", "KHO2", "XKHO2"];//boost types that creep accepts
         }
@@ -25,6 +27,8 @@ const keeper_killerRole = {
                 creep.moveTo(destination);
             }
             else {// If in the target room
+                creep.memory.is_working=true;
+                
                 var pos = creep.pos;
                 if (pos.x > 48) {
                     creep.move(LEFT);
@@ -132,7 +136,7 @@ const keeper_killerRole = {
                         //console.log("myCreeps: ",myCreeps);
                         if (myCreeps != undefined) {
                             //creep.say("group H");
-                            move_avoid_hostile(creep, myCreeps.pos, 2);
+                            move_avoid_hostile(creep, myCreeps.pos, 1);
                         }
                         else {
                             var myCreeps = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
