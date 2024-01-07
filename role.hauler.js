@@ -92,7 +92,7 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
         {// go to container
             //creep.say("A");
             var withdraw_amount = 1;
-            if (creep.memory.cID_max !=undefined) {
+            if (creep.memory.cID_max !=undefined && Game.getObjectById(creep.memory.cID_max)!=null) {
                 //creep.memory.cID_max=-1;
                 var withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, Game.getObjectById(creep.memory.cID_max).store[RESOURCE_ENERGY]);
                 if (creep.withdraw(Game.getObjectById(creep.memory.cID_max), RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
@@ -108,6 +108,9 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 {
                     creep.memory.cID_max=undefined;
                 }
+            }
+            else{
+                creep.memory.cID_max=undefined;
             }
 
         }

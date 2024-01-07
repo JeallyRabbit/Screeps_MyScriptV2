@@ -2,20 +2,29 @@ function maxFarmer(cap,spawn,limit)// return array with max possible work parts 
 {
     var rcl=spawn.room.controller.level;
     var rcl=0;
+    var parts=[];
     if(limit==undefined)
     {
         limit=false;
     }
-    if(cap>1400 && limit==true)
+    if(cap>1000 && limit==true)
     {
-        cap=1400;
+        cap=1000;
     }
-    var parts=[];
+    if(cap>1100)
+    {
+        parts.push(CARRY);
+        parts.push(CARRY);
+        cap-=100;
+    }
+    
     parts.push(MOVE);
     parts.push(CARRY);
-    parts.push(CARRY);
+    //parts.push(CARRY);
     parts.push(WORK);
-    cap-=250;
+    //parts.push(MOVE);
+    parts.push(WORK);
+    cap-=300;
     /*
     for(let i=0;i<rcl-1;i++)
     {

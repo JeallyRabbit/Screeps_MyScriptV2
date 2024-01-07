@@ -9,7 +9,7 @@ var terminal = {
         storage = spawn.room.find(FIND_MY_STRUCTURES, {
             filter: function (structure) {
                 return structure.structureType == STRUCTURE_STORAGE
-                    && structure.store[RESOURCE_ENERGY] > 400000;
+                    && structure.store[RESOURCE_ENERGY] > 500000;
             }
         });
         if (terminal != undefined & terminal.length > 0) {

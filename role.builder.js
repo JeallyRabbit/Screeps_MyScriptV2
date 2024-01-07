@@ -10,6 +10,10 @@ var roleBuilder = {
         var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
         if(targets.length==0) // if no constructuin sites go upgrade
         {
+            if(creep.memory.target_room!=undefined)
+            {
+                return;
+            }
             creep.suicide();
             roleUpgrader.run(creep);
         }
