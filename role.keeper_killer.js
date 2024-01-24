@@ -8,6 +8,9 @@ const keeper_killerRole = {
         //creep.say("!");
         //creep.move(BOTTOM_LEFT);
         //return;
+
+        //creep.memory.healers=undefined;
+
         if (creep.memory.boosting_list == undefined) {
             creep.memory.boosting_list = ["KO", "KHO2", "XKHO2"];//boost types that creep accepts
         }
@@ -27,6 +30,7 @@ const keeper_killerRole = {
                 creep.moveTo(destination);
             }
             else {// If in the target room
+                //creep.say("!");
                 creep.memory.is_working=true;
                 
                 var pos = creep.pos;
@@ -46,22 +50,38 @@ const keeper_killerRole = {
                     creep.move(BOTTOM);
                     return;
                 }
-
+                /*
                 const healers = creep.room.find(FIND_MY_CREEPS, {
                     filter: function (healer) {
                         return healer.memory.role == 'keeperHealer'
                             && healer.hits > healer.hitsMax * 0.5
                             && healer.pos.inRangeTo(creep.pos, 2) == true;
                     }
-                });
-                const killers = creep.room.find(FIND_MY_CREEPS, {
-                    filter: function (killer) {
-                        return killer.memory.role == 'keeperKiller'
-                            && killer.hits > killer.hitsMax * 0.5
-                            && killer.pos.inRangeTo(creep.pos, 2) == true;
-                    }
-                });
-                if (healers.length >= 1) {//if enough friendly creeps to proceed attack
+                });*/
+                //creep.memory.healers=undefined;
+                if(creep.memory.healers!=undefined && creep.memory.healers.length>0)
+                {
+                    for(let i=0;i<creep.memory.healers.length;i++)
+                    {
+                        if(Game.getObjectById(creep.memory.healers[i].id)==undefined )
+                        {
+                            creep.memory.healers=undefined;
+                            break;
+                        }
+                    }  
+                }
+                else if(creep.memory.healers==undefined || (creep.memory.healers!=undefined && creep.memory.healers.length==0))
+                {
+                    creep.memory.healers=creep.room.find(FIND_MY_CREEPS, {
+                        filter: function (healer) {
+                            return healer.memory.role == 'keeperHealer'
+                                && healer.hits > healer.hitsMax * 0.5
+                                && healer.pos.inRangeTo(creep.pos, 2) == true;
+                        }
+                    });
+                }
+                
+                if (creep.memory.healers!=undefined && creep.memory.healers.length >= 1) {//if enough friendly creeps to proceed attack
                     //creep.say("AATTAAACK");
                     creep.memory.grouping = false;
                     var hostileCreeps = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS /*, {
@@ -71,20 +91,51 @@ const keeper_killerRole = {
 
                     if (hostileCreeps == undefined) {// there are no keepers - go to lair with smallest 
                         //creep.say(6);
+
+                        if(creep.memory.min_lair!=undefined && creep.memory.lairs!=undefined && creep.memory.lairs.length>0)
+                        {
+                            for(let i=0;i<creep.memory.lairs.length;i++)
+                            {
+                                if(Game.getObjectById(creep.memory.lairs[i].id)==undefined)
+                                {
+                                    //creep.memory.lairs=undefined;
+                                    creep.memory.min_lair=undefined;
+                                    creep.say("del lair");
+                                    break;
+                                }
+                            }
+
+                            if(Game.getObjectById(creep.memory.min_lair.spawning!=true))
+                            {
+                                creep.memory.min_lair=undefined;
+                            }
+                        }
+                        else if(creep.memory.min_lair==undefined)
+                        {
+                            var lairs=creep.room.find(FIND_STRUCTURES, {
+                                filter: function (structure) {
+                                    return structure.structureType == STRUCTURE_KEEPER_LAIR;
+                                }
+                            });
+                            creep.memory.min_lair = lairs[0];
+                            for (let i = 1; i < lairs.length; i++) {
+                                if (lairs[i].ticksToSpawn < creep.memory.min_lair.ticksToSpawn) {
+                                    creep.memory.min_lair = lairs[i];
+                                }
+                            }
+                        }
+                        /*
                         const lairs = creep.room.find(FIND_STRUCTURES, {
                             filter: function (structure) {
                                 return structure.structureType == STRUCTURE_KEEPER_LAIR;
                             }
                         });
+                        */
 
                         ////creep.say(lairs.length);
-                        var min_lair = lairs[0];
-                        for (let i = 1; i < lairs.length; i++) {
-                            if (lairs[i].ticksToSpawn < min_lair.ticksToSpawn) {
-                                min_lair = lairs[i];
-                            }
-                        }
-                        creep.moveTo(min_lair, { range: 4 });
+                        
+                        move_avoid_hostile(creep,creep.memory.min_lair.pos,4);
+                        //creep.moveTo(Game.getObjectById(min_lair.id), { range: 4 });
                     }
                     else {// if is too close to enemy (range 2 and less - it have to bee atdistance of 3 squaers of enemy )
                         ////creep.say(4.5);
@@ -100,6 +151,8 @@ const keeper_killerRole = {
                         }
 
                         else if (creep.rangedAttack(target) == ERR_NOT_IN_RANGE) {
+                            creep.memory.min_lair=undefined;
+
                             creep.moveTo(target, { range: 3 });
                             //creep.say("A");
                         }
@@ -116,6 +169,7 @@ const keeper_killerRole = {
                     });
                     if (target != undefined && target != null) {
                         creep.rangedAttack(target);
+                        creep.memory.min_lair=undefined;
                         goOutOfRange(creep, 5);
                     }
                     else {//group with closest healer or killer if there is no healer
