@@ -7,31 +7,9 @@ const keeper_carrier = {
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
         //creep.say("@");
-
-        /*
-        var position = creep.pos;
-        if (creep.store[RESOURCE_ENERGY] == 0 && creep.room.name == creep.memory.target_room
-           )
-            {
-
-            //console.log(" 1");
-
-            if (position.x > 48) {
-                creep.move(LEFT);
-            }
-            else if (position.x < 2) {
-                creep.move(RIGHT);
-            }
-            if (position.y > 48) {
-                creep.move(TOP);
-            }
-            else if (position.y < 2) {
-                creep.move(BOTTOM);
-            }
-
-        }*/
-
         
+        //creep.suicide();
+
         //creep.say("!");
         // Check if the creep has a target room
         if (!creep.memory.target_room) {
@@ -46,99 +24,110 @@ const keeper_carrier = {
             creep.moveTo(destination);
         }
         else if (creep.room.name == creep.memory.target_room
-            && creep.store.getFreeCapacity() > 0) 
-            {// in target room and is collecting
-            
-                creep.memory.is_working=true;
-                
-                if(creep.pos.findInRange(FIND_HOSTILE_CREEPS,4).length>0)
+            && creep.store.getFreeCapacity() > 0) {// in target room and is collecting
+
+            creep.memory.is_working = true;
+
+            if (creep.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length > 0) {
+                goOutOfRange(creep, 4);
+                delete creep.memory.my_path;
+            }
+
+            if (creep.memory.closestDroppedEnergy != undefined && creep.memory.closestDroppedEnergy.length > 0) {
+                for (let i = 0; i < creep.memory.closestDroppedEnergy.length; i++) {
+                    if (Game.getObjectById(creep.memory.closestDroppedEnergy) == undefined) {
+                        creep.say("del energy");
+                        creep.memory.closestDroppedEnergy = undefined;
+                        break;
+                    }
+                }
+            }
+            else if (creep.memory.closestDroppedEnergy == undefined) {
+                var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
+                    filter: resource => resource.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length < 1
+                        && resource.amount > 50
+                });
+                closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy);
+                if(closestDroppedEnergy!=null)
                 {
-                    goOutOfRange(creep,4);
-                    delete creep.memory.my_path;
+                    creep.memory.closestDroppedEnergy=closestDroppedEnergy.id;
                 }
-            var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: resource => resource.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length < 1
-                    && resource.amount>50
-            })
-            
-            closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy);
+            }
+            //closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy);
             //creep.say(closestDroppedEnergy.pos.x+" "+closestDroppedEnergy.pos.y);
-            if (closestDroppedEnergy != undefined && (droppedEnergy != undefined || droppedEnergy.length >= 1))
-             {//there is safe energy
+            if (creep.memory.closestDroppedEnergy != undefined && creep.memory.closestDroppedEnergy!=null/* && (droppedEnergy != undefined || droppedEnergy.length >= 1)*/) {//there is safe energy
                 //creep.say('E');
-                if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
+                if (creep.pickup(Game.getObjectById(creep.memory.closestDroppedEnergy)) == ERR_NOT_IN_RANGE) {
                     // Move to it
-                    move_avoid_hostile(creep,closestDroppedEnergy.pos);
+                    move_avoid_hostile(creep, Game.getObjectById(creep.memory.closestDroppedEnergy).pos,0,false);
+                    if(creep.memory.my_path==undefined)
+                    {
+                        creep.memory.closestDroppedEnergy=undefined;
+                    }
                 }
-                else{
-                    creep.memory.my_path=undefined;
+                else {
+                    creep.memory.my_path = undefined;
                 }
 
             }
             else {// go to farmers
 
-                var farmer=creep.room.find(FIND_MY_CREEPS,{
-                    filter: function (farmer)
-                    {
-                        return farmer.memory.role=='keeperFarmer';
+                var farmer = creep.room.find(FIND_MY_CREEPS, {
+                    filter: function (farmer) {
+                        return farmer.memory.role == 'keeperFarmer';
                     }
                 });
-                if(farmer!=undefined && farmer.length>0)
-                {
-                    move_avoid_hostile(creep,farmer[0].pos,3);
+                if (farmer != undefined && farmer.length > 0) {
+                    move_avoid_hostile(creep, farmer[0].pos, 3);
                 }
-                else{
-                    var fighter=creep.room.find(FIND_MY_CREEPS,{
-                        filter: function (fighter)
-                        {
-                            return fighter.memory.role=='keeperKiller';
+                else {
+                    var fighter = creep.room.find(FIND_MY_CREEPS, {
+                        filter: function (fighter) {
+                            return fighter.memory.role == 'keeperKiller';
                         }
                     });
-                    fighter=fighter.concat(creep.room.find(FIND_MY_CREEPS,{
-                        filter: function (healer)
-                        {
-                            return healer.memory.role=='keeperHealer';
+                    fighter = fighter.concat(creep.room.find(FIND_MY_CREEPS, {
+                        filter: function (healer) {
+                            return healer.memory.role == 'keeperHealer';
                         }
                     }));
-                    if(fighter!=undefined && fighter.length>0)
-                    {
-                        move_avoid_hostile(creep,fighter[0].pos,5,false);
+                    if (fighter != undefined && fighter.length > 0) {
+                        move_avoid_hostile(creep, fighter[0].pos, 5, false);
                     }
                 }
             }
             var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {
                 filter: function (hostile) {
-                    return hostile.pos.inRangeTo(creep,3) == true;
+                    return hostile.pos.inRangeTo(creep, 3) == true;
                 }
             });
             if (hostileCreeps != undefined && hostileCreeps.length > 0) {
                 //creep.say("RUN");
-                goOutOfRange(creep,4);
+                goOutOfRange(creep, 4);
             }
 
         }
         else if (creep.room.name != creep.memory.home_room.name
-            && creep.store[RESOURCE_ENERGY] >= creep.store.getCapacity() * 0.9) 
-        {// not in home_room and no free space - go home_room
+            && creep.store[RESOURCE_ENERGY] >= creep.store.getCapacity() * 0.9) {// not in home_room and no free space - go home_room
             //creep.say("GH");
             //creep.say(creep.moveTo(25,25,creep.memory.home_room.name));
             //console.log("home: ", home);
-            move_avoid_hostile(creep, new RoomPosition(25,25,creep.memory.home_room.name),1);
+            move_avoid_hostile(creep, new RoomPosition(25, 25, creep.memory.home_room.name), 1);
         }
         else if (creep.room.name == creep.memory.home_room.name) {
+            /*
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_CONTAINER &&
                         structure.store[RESOURCE_ENERGY] < 2000;
-                    /*&& structure.store[RESOURCE_ENERGY]>creep.store.getCapacity(RESOURCE_ENERGY)/2;*/
                 }
             });
-
-            containers = containers.concat(creep.room.find(FIND_STRUCTURES, {
+            */
+            var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_STORAGE;
                 }
-            }));
+            });
 
             containers = containers.concat(creep.room.find(FIND_MY_STRUCTURES, {
                 filter: (structure) => {

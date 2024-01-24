@@ -2,6 +2,7 @@ const berserkRole = {
   /** @param {Creep} creep **/
   run: function (creep) {
       creep.say("!");
+     //creep.memory.target_room='E8S5';
     // Check if the creep has a target room
     if (!creep.memory.target_room) {
       return 0;
@@ -18,27 +19,27 @@ const berserkRole = {
     {
       // If in the target room, attack hostile creeps
       const hostileCreep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
-        filter: (enemyCreep) => enemyCreep.owner.username !== 'Jeally_Rabbit',
+        filter: (enemyCreep) => enemyCreep.owner.username !== 'JeallyRabbit',
       });
 
       if (hostileCreep!=null) 
       {
-        if (creep.rangedAttack(hostileCreep) == ERR_NOT_IN_RANGE) {
+        if (creep.attack(hostileCreep) == ERR_NOT_IN_RANGE) {
           creep.moveTo(hostileCreep);
         }
       } 
       else {
         // If no hostile creeps, attack player-owned structures
         const structures = creep.room.find(FIND_HOSTILE_STRUCTURES, {
-          filter: (structure) => structure.owner !== 'Jeally_Rabbit',
+          filter: (structure) => structure.owner !== 'JeallyRabbit',
         });
         if (structures!=null) {
-          if (creep.rangedAttack(structures[0]) === ERR_NOT_IN_RANGE) {
+          if (creep.attack(structures[0]) === ERR_NOT_IN_RANGE) {
             creep.moveTo(structures[0]);
           }
         } else {
           // If no targets found, move to my rooms
-          const homeRoom = Game.rooms['Jeally_Rabbit']; // Replace with your home room name
+          const homeRoom = Game.rooms['JeallyRabbit']; // Replace with your home room name
           if (homeRoom) {
             // If no targets are found, move back to your home room
             creep.moveTo(homeRoom.controller);

@@ -3,13 +3,17 @@ function maxRepairer(cap)// return array with max possible work parts for repair
     var parts=[];
     parts.push(MOVE);
     parts.push(CARRY);
+    parts.push(CARRY);
     parts.push(WORK);
-    cap-=200;
+    cap-=250;
+    if(cap>800)
+    {
+        cap=800;
+    }
     //console.log("avaliable work parts: ", Math.floor(cap/100));
-    for(let i=0;i<Math.floor(cap/200);i++)
+    for(let i=0;i<Math.floor(cap/150);i++)
     {
         parts.push(WORK);
-        parts.push(CARRY);
         parts.push(MOVE);
     }
     return parts;

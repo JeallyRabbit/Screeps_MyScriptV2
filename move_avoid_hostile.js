@@ -1,9 +1,17 @@
 const { goOutOfRange } = require("./goOutOfRange");
 
-function move_avoid_hostile(creep,destination,my_range,my_avoid,my_ops) {
+function move_avoid_hostile(creep,destination,my_range,my_avoid,my_ops,my_plain,my_swamp) {
     //destination=destination.pos;
     //const destination = new RoomPosition(25, 25, creep.memory.home_room.name); // Replace with your destination coordinates and room name
     //my_avoid=false;
+    if(my_plain==undefined)
+    {
+        my_plain=2;
+    }
+    if(my_swamp==undefined)
+    {
+        my_swamp=10;
+    }
     if(my_ops==undefined)
     {
         my_ops=2000;
@@ -20,12 +28,13 @@ function move_avoid_hostile(creep,destination,my_range,my_avoid,my_ops) {
     {
         delete creep.memory.my_path;
     } 
-    
+    /*
     if(creep.pos.getRangeTo(destination)<=my_range)
     {
 
         return 0;
     }
+    */
     //creep.say("mov");
     //console.log(creep.name);
     //console.log(creep.store.getFreeCapacity());
@@ -47,8 +56,8 @@ function move_avoid_hostile(creep,destination,my_range,my_avoid,my_ops) {
         var ret = PathFinder.search(creep.pos, destination, {
             //maxCost: 300,
             range: my_range,
-            plainCost: 2,
-            swampCost: 10,
+            plainCost: my_plain,
+            swampCost: my_swamp,
             maxOps: my_ops,
 
             roomCallback: function () {
@@ -167,22 +176,25 @@ function move_avoid_hostile(creep,destination,my_range,my_avoid,my_ops) {
                     creep.say("del2");
                     delete creep.memory.my_path;
                 }
+                /*
                 else if(moveResult!=-11){
                     //creep.memory.my_path.path=creep.memory.my_path.path.slice(1);
                     //creep.say(moveResult);
-                    console.log("moveResult: ", moveResult);
+                    //console.log("moveResult: ", moveResult);
                 }
                 else{
                     creep.say(moveResult);
-                }
+                }*/
             }
             else {
                 // The path is empty, meaning the creep has reached its destination
                 // Clear the cached path
                 //creep.say("del2");
+                return -1;
                 creep.say("del4");
                 delete creep.memory.my_path;
                 delete creep.memory.next_pos;
+
             }
         }
 

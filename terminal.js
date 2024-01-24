@@ -9,7 +9,7 @@ var terminal = {
         storage = spawn.room.find(FIND_MY_STRUCTURES, {
             filter: function (structure) {
                 return structure.structureType == STRUCTURE_STORAGE
-                    && structure.store[RESOURCE_ENERGY] > 400000;
+                    && structure.store[RESOURCE_ENERGY] > 500000;
             }
         });
         if (terminal != undefined & terminal.length > 0) {
@@ -21,7 +21,7 @@ var terminal = {
                     best_profit = 0;
                     var best_order_id = undefined
                     const energy_orders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType: RESOURCE_ENERGY }); // fast
-                    if (energy_orders != undefined) {
+                    if (energy_orders != undefined && energy_orders.length>0) {
                         best_order_id = energy_orders[0].id;
                     }
                     for (let i = 1; i < energy_orders.length; i++) {

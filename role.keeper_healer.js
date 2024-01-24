@@ -11,7 +11,7 @@ const keeper_Healer = {
         var friendlyDamagedCreeps = creep.room.find(FIND_MY_CREEPS, {
             filter: function (creep) {
                 return creep.hits < creep.hitsMax && 
-                (creep.memory.role=='keeperKiller' || creep.memory.role=='keeperHealer') 
+                (creep.memory.role=='keeperKiller' || creep.memory.role=='keeperHealer' /*|| creep.memory.role=='soldier'*/) 
                 && (creep.pos.x>0 && creep.pos.x<49)
                 && (creep.pos.y>0 && creep.pos.y<49);
             }
