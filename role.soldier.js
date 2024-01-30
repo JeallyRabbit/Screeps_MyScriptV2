@@ -110,11 +110,11 @@ var roleSoldier = {
                 console.log(creep.room.name," ","fighting structures");
                 creep.say("STR");
                 //console.log("target_structure: ",target_structure);
-                if(creep.attack(target_structure) == ERR_NOT_IN_RANGE){
+                if(creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE){
                     creep.moveTo(target_structure);
-                    console.log("structure to far");
+                    //console.log("structure to far");
                 }
-                creep.say(creep.attack(target_structure));
+                //creep.say(creep.rangedAttack(target_structure));
                 /*
                 else if(creep.attack(target_structure)==ERR_NO_BODYPART)
                 {

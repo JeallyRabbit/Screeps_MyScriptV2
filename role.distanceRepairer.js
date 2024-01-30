@@ -97,8 +97,8 @@ var roleRepairer = {
                 if_avoid = true;
             }
 
-            //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room));
-            move_avoid_hostile(creep, new RoomPosition(25, 25, creep.memory.target_room), 5, if_avoid);
+            creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room),{reUsePath: 10});
+            //move_avoid_hostile(creep, new RoomPosition(25, 25, creep.memory.target_room), 5, if_avoid);
         }
 
 
