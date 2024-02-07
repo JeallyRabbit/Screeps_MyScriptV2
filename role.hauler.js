@@ -17,8 +17,8 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
             var filler_containers = creep.room.find(FIND_STRUCTURES, {
                 filter: function (structure) {
                     return structure.structureType == STRUCTURE_CONTAINER &&
-                        ((structure.pos.x = spawn.pos.x + 2 && structure.pos.y == spawn.pos.y - 2) ||
-                            (structure.pos.x = spawn.pos.x - 2 && structure.pos.y == spawn.pos.y - 2));
+                        ((structure.pos.x == spawn.pos.x + 2 && structure.pos.y == spawn.pos.y - 2) ||
+                            (structure.pos.x ==spawn.pos.x - 2 && structure.pos.y == spawn.pos.y - 2));
                 }
             });
 
@@ -119,16 +119,18 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
             }
 
         }
-        else if (creep.memory.filler_containers.length > 0 && Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+        else if (creep.memory.filler_containers!=undefined && creep.memory.filler_containers.length>0 
+            && (Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store.getCapacity(RESOURCE_ENERGY)
+            || Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) >= 400)) {
             if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[0]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-
+                creep.say("Q");
                 // creep.moveTo(spawn);
                 move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[0]).pos, 1, false);;
             }
         }
-        else if ((creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+        else if ((creep.memory.filler_containers!=undefined  && creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[1]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                
+                creep.say("P");
                 // creep.moveTo(spawn);
                 move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[1]).pos, 1, false);;
             }

@@ -113,8 +113,21 @@ function setBaseLayout(spawn) {
         spawn.room.createConstructionSite(spawn.pos.x - 2, spawn.pos.y -3, STRUCTURE_EXTENSION);
         spawn.room.createConstructionSite(spawn.pos.x - 2, spawn.pos.y -4, STRUCTURE_EXTENSION);
         spawn.room.createConstructionSite(spawn.pos.x - 1, spawn.pos.y -4, STRUCTURE_EXTENSION);
+        
     }
     
+
+    for(let i=0;i<7;i++)
+    {
+        //bottom edge
+        spawn.room.createConstructionSite(spawn.pos.x -3 +i , spawn.pos.y +1 , STRUCTURE_ROAD);
+        //top edge
+        spawn.room.createConstructionSite(spawn.pos.x -3 +i , spawn.pos.y -5 , STRUCTURE_ROAD);
+        //left edge
+        spawn.room.createConstructionSite(spawn.pos.x -3 , spawn.pos.y +1 -i , STRUCTURE_ROAD);
+        //right edge
+        spawn.room.createConstructionSite(spawn.pos.x +3 , spawn.pos.y +1 -i , STRUCTURE_ROAD);
+    }
     /*
     for (let i = 0; i < 3; i++) {
         //spawn.room.createConstructionSite(spawn.pos.x + 2 + i, spawn.pos.y + i, STRUCTURE_EXTENSION);
@@ -156,10 +169,10 @@ function setBaseLayout(spawn) {
     */
 
     //Create STORAGE - stays
-    spawn.room.createConstructionSite(spawn.pos.x + 2, spawn.pos.y - 2, STRUCTURE_STORAGE);
-
+    spawn.room.createConstructionSite(spawn.pos.x + 2, spawn.pos.y + 3, STRUCTURE_STORAGE);
+    spawn.room.createConstructionSite(spawn.pos.x + 2, spawn.pos.y + 4, STRUCTURE_TOWER);
     //create link next to storage - stays
-    spawn.room.createConstructionSite(spawn.pos.x + 3, spawn.pos.y - 3, STRUCTURE_LINK);
+    //spawn.room.createConstructionSite(spawn.pos.x + 3, spawn.pos.y - 3, STRUCTURE_LINK);
 
     //Create TOWERS - CHANGE
     //spawn.room.createConstructionSite(spawn.pos.x - 2, spawn.pos.y - 1, STRUCTURE_TOWER);
@@ -173,7 +186,7 @@ function setBaseLayout(spawn) {
     */
 
     //create terminal - stays
-    spawn.room.createConstructionSite(spawn.pos.x + 1, spawn.pos.y - 1, STRUCTURE_TERMINAL);// build terminal
+    //spawn.room.createConstructionSite(spawn.pos.x + 1, spawn.pos.y - 1, STRUCTURE_TERMINAL);// build terminal
 
     var towers = spawn.room.find(FIND_MY_STRUCTURES,
         { filter: function (structure) { return structure.structureType == STRUCTURE_TOWER; } });
@@ -213,6 +226,7 @@ function setBaseLayout(spawn) {
 
     //LABS
 
+    /*
     spawn.room.createConstructionSite(spawn.pos.x + 3, spawn.pos.y - 1, STRUCTURE_LAB);
     spawn.room.createConstructionSite(spawn.pos.x + 3, spawn.pos.y, STRUCTURE_LAB);
     spawn.room.createConstructionSite(spawn.pos.x + 4, spawn.pos.y, STRUCTURE_LAB);
@@ -226,6 +240,7 @@ function setBaseLayout(spawn) {
 
     spawn.room.createConstructionSite(spawn.pos.x + 4, spawn.pos.y + 1, STRUCTURE_LAB);
     spawn.room.createConstructionSite(spawn.pos.x + 5, spawn.pos.y + 1, STRUCTURE_LAB);
+    */
 
     /*
     for (let i = 0; i < 4; i++) {

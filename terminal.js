@@ -2,17 +2,14 @@ var terminal = {
 
     /** @param {Game} game **/
     tick: function (spawn) {
-        terminal = spawn.room.find(FIND_MY_STRUCTURES, {
-            filter: { structureType: STRUCTURE_TERMINAL }
-        });
+        terminal = spawn.room.terminal;
 
-        storage = spawn.room.find(FIND_MY_STRUCTURES, {
-            filter: function (structure) {
-                return structure.structureType == STRUCTURE_STORAGE
-                    && structure.store[RESOURCE_ENERGY] > 500000;
-            }
-        });
-        if (terminal != undefined & terminal.length > 0) {
+        storage = spawn.room.storage;
+        if(storage.store[RESOURCE_ENERGY]<500000)
+        {
+            storage=undefined;
+        }
+        if (terminal != undefined && terminal.length > 0) {
             if (terminal[0].cooldown == 0) {
                 //console.log("cooldown=0");
                 //sell energy (actively)

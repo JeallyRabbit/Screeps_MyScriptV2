@@ -16,7 +16,7 @@ var roleBuilder = {
                     return structure.my==true;
                 }
         });
-        if (targets.length == 0) // if no constructuin sites go upgrade
+        if (targets.length == 0) // if no constructuin sites suicide
         {
             if(creep.memory.role!='distanceRepairer')
             {
