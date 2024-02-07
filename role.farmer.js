@@ -24,12 +24,11 @@ var roleFarmer = {
                 //return;
             }
             */
-           if(creep.ticksToLive==1200)
-           {
-            creep.memory.source_id=undefined;
-           }
+            if (creep.ticksToLive == 1200) {
+                creep.memory.source_id = undefined;
+            }
 
-            var construction_sites = creep.room.find(FIND_CONSTRUCTION_SITES, {
+            var construction_sites = creep.pos.findInRange(FIND_CONSTRUCTION_SITES, 3, {
                 filter: function (structure) {
                     return (structure.pos.inRangeTo(creep.pos, 3) && (structure.structureType == STRUCTURE_CONTAINER
                         || structure.structureType == STRUCTURE_ROAD));
@@ -44,26 +43,23 @@ var roleFarmer = {
                 creep.memory.building = false;
             }
 
-            if(Game.time%5==0)
-            {
-                var repair_sites=creep.pos.findInRange(FIND_STRUCTURES,3,{
-                filter: function (structure)
-                {
-                    return structure.hits<structure.hitsMax && structure.structureType==STRUCTURE_CONTAINER;
-                }
-            });
+            if (Game.time % 1 == 0) {
+                var repair_sites = creep.pos.findInRange(FIND_STRUCTURES, 3, {
+                    filter: function (structure) {
+                        return structure.hits < structure.hitsMax && structure.structureType == STRUCTURE_CONTAINER;
+                    }
+                });
             }
-            else{
-                var repair_sites=[];
+            else {
+                var repair_sites = [];
             }
-            
 
-            if(repair_sites!=undefined && repair_sites.length>0 && creep.memory.building == false && creep.store.getFreeCapacity() == 0)
-            {
-                creep.memory.repairing=true;
+
+            if (repair_sites != undefined && repair_sites.length > 0 && creep.memory.building == false && creep.store[RESOURCE_ENERGY] > 0) {
+                creep.memory.repairing = true;
             }
-            else if(repair_sites.length==0 || creep.memory.repairing==undefined || creep.store.getUsedCapacity(RESOURCE_ENERGY)==0){
-                creep.memory.repairing=false;
+            else if (repair_sites.length == 0 || creep.memory.repairing == undefined || creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
+                creep.memory.repairing = false;
             }
 
         }
@@ -88,13 +84,16 @@ var roleFarmer = {
             //  }
 
         }
-        else if(creep.room.name == creep.memory.target_room && creep.memory.repairing==true)
-        {
+        else if (creep.room.name == creep.memory.target_room && creep.memory.repairing == true) {
             creep.repair(repair_sites[0]);
         }
         else if (creep.room.name == creep.memory.target_room && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
             // if have some free space and at destination room - go harvest
-            
+            if(creep.memory.closest_container!=undefined)
+            {
+                
+                creep.transfer(Game.getObjectById(creep.memory.closest_container), RESOURCE_ENERGY);
+            }
             if (creep.memory.source_id == undefined /*|| (creep.ticksToLive % 2 == 0)*/
                 /*&& creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id)) == false */) {
                 //console.log("sources: ",sources.length);
@@ -115,7 +114,7 @@ var roleFarmer = {
                 for (let i = 0; i < sources.length; i++) {
                     var farmers = creep.room.find(FIND_MY_CREEPS, {
                         filter: function (farmer) {
-                            return farmer.pos.isNearTo(sources[i]) && farmer.memory.role == 'farmer' && farmer.name!=creep.name;
+                            return farmer.pos.isNearTo(sources[i]) && farmer.memory.role == 'farmer' && farmer.name != creep.name;
                         }
                     });
                     for (let j = 0; j < farmers.length; j++) {
@@ -129,15 +128,12 @@ var roleFarmer = {
                 }
             }
             else if (Game.getObjectById(creep.memory.source_id).pos.getOpenPositions().length < 1 &&
-                creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id)) == false) {// if sources became unavailable ( due to creeps around it) and creep is not near this source 
-                creep.say(creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id)));
-                //console.log('Farmer .isnearto: ', creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id)));
+                creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id)) == false) {
+                    // if sources became unavailable ( due to creeps around it) and creep is not near this source 
                 creep.memory.source_id = undefined;
                 //creep.say("U");
             }
             else {
-                //creep.say(creep.harvest(sources[creep.memory.source_id]));
-                //console.log(creep.name, ' harvesting');
                 if (creep.harvest(Game.getObjectById(creep.memory.source_id)) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(Game.getObjectById(creep.memory.source_id), { noPathFinding: false, reusePath: 9 });
                     //move_avoid_hostile(creep, Game.getObjectById(creep.memory.source_id).pos, 1, false);
@@ -149,62 +145,87 @@ var roleFarmer = {
             }
 
         }
-        else if (creep.room.name != creep.memory.target_room && creep.store[RESOURCE_ENERGY] == 0) {// not in target room and have free space - go to target room
+        else if (creep.room.name != creep.memory.target_room /*&& creep.store[RESOURCE_ENERGY] == 0*/) {// not in target room and have free space - go to target room
             const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
-            //creep.moveTo(destination);
+            creep.moveTo(destination);
             var if_avoid = false;
             if (creep.pos.y >= 48 || creep.pos.x >= 48 || creep.pos.y <= 1 || creep.pos.x <= 1) {
                 if_avoid = true;
             }
-            move_avoid_hostile(creep, destination, 1, if_avoid,5000);
+            //move_avoid_hostile(creep, destination, 1, if_avoid,5000);
 
         }
-        else if (creep.room.name == creep.memory.target_room && creep.store.getFreeCapacity() == 0 /*&& creep.room.name==home_room*/)//if not in home room and no free space, put energy to most empty container
+        else if (creep.room.name == creep.memory.target_room   && creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0   /*&& creep.room.name==home_room*/)//if not in home room and no free space, put energy to most empty container
         {// in target room and no free space - put energy to container or build one if there is no container close
 
+            creep.say(3);
+            if (creep.memory.closest_container != undefined && Game.getObjectById(creep.memory.closest_container) == null) {
+                creep.say("reset");
+                creep.memory.closest_container = undefined;
+            }
+            if (creep.memory.closest_container == undefined) {
+                /*
+                var containers = creep.pos.findInRange(FIND_STRUCTURES, 4, {
+                    filter: (structure) => {
+                        return structure.structureType === STRUCTURE_CONTAINER
+                            structure.store[RESOURCE_ENERGY] < 2000;
+                    }
+                });
+                */
+                var closest_container = creep.pos.findInRange(FIND_STRUCTURES, 2, {
+                    filter: (structure) => {
+                        return structure.structureType === STRUCTURE_CONTAINER;
+                    }
+                });
+                if (closest_container.length>0) {
+                    closest_container=creep.pos.findClosestByRange(closest_container);
+                    creep.memory.closest_container = closest_container.id;
+                }
 
+            }
+            /*
             var containers = creep.pos.findInRange(FIND_STRUCTURES, 4, {
                 filter: (structure) => {
                     return structure.structureType === STRUCTURE_CONTAINER
-                        && /*structure.pos.inRangeTo(creep.pos,3)*/
                         structure.store[RESOURCE_ENERGY] < 2000;
                 }
             });
+            */
 
-           
-            
-            if (containers.length > 0) {// store in to container
-                var closestContainer = creep.pos.findClosestByRange(containers);
-                var transfer_amount = 1;
-                transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closestContainer.store[RESOURCE_ENERGY]);
-                if (creep.transfer(closestContainer, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(closestContainer);
+
+
+            if (creep.memory.closest_container != undefined) {// store in to container
+                
+                creep.say("tra");
+                //transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closestContainer.store[RESOURCE_ENERGY]);
+                if (creep.transfer(Game.getObjectById(creep.memory.closest_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(Game.getObjectById(creep.memory.closest_container));
                     //move_avoid_hostile(creep, closestContainer.pos, 1, true);
                 }
 
             }
             else if (construction_sites == undefined || construction_sites.length < 1) {// build container next to source
 
-                // creep.say("BU");
-                if( Game.getObjectById(creep.memory.source_id)!=null)
-                {
+                 creep.say("BU");
+                if (Game.getObjectById(creep.memory.source_id) != null) {
                     var positions = new RoomPosition(Game.getObjectById(creep.memory.source_id).pos.x, Game.getObjectById(creep.memory.source_id).pos.y, creep.room.name).getOpenPositions2();
 
                     if (positions != undefined && positions.length > 0) {
                         //creep.say('constructing');
                         //console.log('constructing container at: ',positions[0])
-                        creep.say(positions[0].createConstructionSite(STRUCTURE_CONTAINER));
+                        positions[0].createConstructionSite(STRUCTURE_CONTAINER);
                     }
                 }
-                
-
+            }
+            else{
+                creep.say("kupa");
             }
 
 
         }
 
         if (creep.room.name == creep.memory.target_room && Game.getObjectById(creep.memory.source_id) != null) {
-            if (Game.time % 100 == 0 || (Game.time % 50 == 0 && (creep.memory.source_path != undefined && creep.memory.source_path.incomplete == true)) /*|| creep.memory.source_path==undefined */) {
+            if (Game.time % 1004 == 0 || (Game.time % 50 == 0 && (creep.memory.source_path != undefined && creep.memory.source_path.incomplete == true)) /*|| creep.memory.source_path==undefined */) {
 
                 var ret = PathFinder.search(Game.getObjectById(creep.memory.source_id).pos, spawn.pos, {
                     //maxCost: 300,

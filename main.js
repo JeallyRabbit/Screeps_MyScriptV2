@@ -26,6 +26,7 @@ var roleMiner = require('role.miner');
 var roleDoctor = require('role.doctor');
 var roleScout = require('role.scout');
 var roleDistanceRepairer = require('role.distanceRepairer');
+var roleFiller=require('role.filler');
 var _ = require('lodash');
 
 const profiler = require('screeps-profiler');
@@ -92,6 +93,7 @@ module.exports.loop = function () {
         var pop_doctors = 0;
         var pop_scouts = 0;
         var carrying_power = 0;
+        var pop_fillers=0
         var spawned_body_parts = 0;
 
 
@@ -154,7 +156,7 @@ module.exports.loop = function () {
                 }
                 */
 
-                if (Game.time % 50 == 0) {
+                if (Game.time % 53 == 0) {
                     setBaseLayout(spawn);
                 }
                 if (Game.time % 1 == 0) {
@@ -477,6 +479,11 @@ module.exports.loop = function () {
                             roleScout.run(creep, spawn);
                             pop_scouts++;
                         }
+                        else if(creep.memory.role=='filler')
+                        {
+                            roleFiller.run(creep,spawn);
+                            pop_fillers++;
+                        }
                         else {
                             creep.say('no role');
                         }
@@ -527,7 +534,7 @@ module.exports.loop = function () {
 
             console.log("-----------------------", spawn, "---------------------------------");
             console.log("Upgraders: ", pop_upgraders, "/", spawn.memory.req_upgraders, " | ",
-                "Builders: ", pop_builders, "/", spawn.memory.req_builders, " | ");
+                "Builders: ", pop_builders, "/", spawn.memory.req_builders, " | ",pop_fillers,"/",spawn.memory.req_fillers);
 
             console.log("haulers: ", pop_haulers, "/", spawn.memory.req_haulers, " | ",
                 "Transporters: ", pop_transporters, "/", spawn.memory.req_transporters);
@@ -552,6 +559,7 @@ module.exports.loop = function () {
                 console.log("Progress/tick: ", (spawn.memory.progress_sum / spawn.memory.progress_counter));
                 //console.log("Spawn points: ",spawn.memory.progress);
             }
+            
 
 
             //counting currently spawned creeps
@@ -665,6 +673,15 @@ module.exports.loop = function () {
                 }
             }
 
+            if(pop_fillers<spawn.memory.req_fillers)
+            {
+
+                if(spawn.spawnCreep([MOVE,CARRY],'Filler'+ Game.time,{memory:{role:'filler',home_room: spawn.room}})==OK)
+                {
+                    console.log("Spawning filler");
+                }
+                return;
+            }
 
             if (spawn.memory.need_soldier != undefined) {
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier' + Game.time, {
@@ -858,7 +875,7 @@ module.exports.loop = function () {
                 && pop_harvesters >= spawn.memory.req_harvesters / 2)//spawning new DistanceCarrier */
             if (spawn.memory.need_DistanceCarrier != undefined && pop_distanceCarriers < 15) {
                 //console.log("ASD")
-                if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, false, 250), 'distnaceCarrier' + Game.time, {
+                if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, false), 'distnaceCarrier' + Game.time, {
                     memory: {
                         role: 'distanceCarrier', home_room: spawn.room,
                         target_room: spawn.memory.need_DistanceCarrier, path: undefined

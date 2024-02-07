@@ -64,10 +64,11 @@ var roleBuilder = {
             if (targets.length) {
                 if (creep.build(closest_target) == ERR_NOT_IN_RANGE) {
                     //creep.say("NB");
-                    move_avoid_hostile(creep, closest_target.pos, 3, false);
+                    creep.moveTo(targets[0],{range:3});
+                    //move_avoid_hostile(creep, closest_target.pos, 3, false);
                 }
                 else if (creep.build(closest_target) == OK) { creep.memory.is_working = true; }
-                move_avoid_hostile(creep, closest_target.pos, 3, false);
+                //move_avoid_hostile(creep, closest_target.pos, 3, false);
                 //creep.moveTo(targets[0],{range:3});
             }
         }

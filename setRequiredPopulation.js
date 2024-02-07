@@ -51,7 +51,11 @@ function setRequiredPopulation(mySpawns) {
                 return structure.structureType == STRUCTURE_STORAGE;
             }
         })
-        mySpawns['Spawn1'].memory.storage = storage_temp[0].id;
+        if(storage_temp.length>0)
+        {
+            mySpawns['Spawn1'].memory.storage = storage_temp[0].id;
+        }
+        
     }
 
     mySpawns['Spawn1'].memory.req_carriers = 0;
@@ -73,13 +77,14 @@ function setRequiredPopulation(mySpawns) {
     mySpawns['Spawn1'].memory.req_harvesters = 0;// role num 0
     //mySpawns['Spawn1'].memory.req_c
     mySpawns['Spawn1'].memory.req_upgraders = 1;
-
+    mySpawns['Spawn1'].memory.req_fillers=4;
     if (mySpawns['Spawn1'].room.controller.level == 1) {
         // mySpawns['Spawn1'].memory.req_harvesters = 6;
         mySpawns['Spawn1'].memory.req_upgraders = 1;
         if (mySpawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES).length > 0) {
             mySpawns['Spawn1'].memory.req_builders = 1;
         }
+        mySpawns['Spawn1'].memory.req_fillers=0;
     }
     else if (mySpawns['Spawn1'].room.controller.level == 2) {
         //mySpawns['Spawn1'].memory.req_harvesters = 4;
@@ -87,18 +92,20 @@ function setRequiredPopulation(mySpawns) {
         if (mySpawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES).length > 0) {
             mySpawns['Spawn1'].memory.req_upgraders = 1;
         }
+        mySpawns['Spawn1'].memory.req_fillers=1;
     }
     else if (mySpawns['Spawn1'].room.controller.level == 3) {
         mySpawns['Spawn1'].memory.req_upgraders = 2;
         if (mySpawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES).length < 1) {
-            mySpawns['Spawn1'].memory.req_upgraders = 12;
+            mySpawns['Spawn1'].memory.req_upgraders = 4;
         }
         else {
             mySpawns['Spawn1'].memory.req_upgraders = 1;
         }
+        mySpawns['Spawn1'].memory.req_fillers=3;
     }
 
-    if (storage != undefined && storage != null && mySpawns['Spawn1'].room.controller.level <8) {
+    if (storage != undefined && storage != null && mySpawns['Spawn1'].room.controller.level <8 &&  mySpawns['Spawn1'].room.controller.level >3) {
         if (storage.store[RESOURCE_ENERGY] > 100000) {
             mySpawns['Spawn1'].memory.req_upgraders = 2;
         }
@@ -112,11 +119,11 @@ function setRequiredPopulation(mySpawns) {
     mySpawns['Spawn1'].memory.req_builders = 0;// role num 3
     if (mySpawns['Spawn1'].room.find(FIND_MY_CONSTRUCTION_SITES).length > 0
         && mySpawns['Spawn1'].room.controller.level > 1) {
-        mySpawns['Spawn1'].memory.req_builders = 3;
+        mySpawns['Spawn1'].memory.req_builders = 4;
     }
     mySpawns['Spawn1'].memory.req_haulers = 1;// role num 4
     mySpawns['Spawn1'].memory.req_berserk = 1;//role num 8
-    mySpawns['Spawn1'].memory.req_transporters = 2;//role numm 9
+    mySpawns['Spawn1'].memory.req_transporters = 0;//role numm 9
     mySpawns['Spawn1'].memory.req_towerKeepers = 0;//role num 10
     if (mySpawns['Spawn1'].memory.num_towers > 0) {
         mySpawns['Spawn1'].memory.req_towerKeepers = 1;
@@ -133,9 +140,9 @@ function setRequiredPopulation(mySpawns) {
         mySpawns['Spawn1'].memory.farming_rooms = [];
 
     }
-    else if (mySpawns['Spawn1'].memory.farming_rooms.length > 4) {
+    else if (mySpawns['Spawn1'].memory.farming_rooms.length > 3) {
         mySpawns['Spawn1'].memory.farming_rooms.sort((a, b) => a.distance - b.distance);
-        while (mySpawns['Spawn1'].memory.farming_rooms.length > 4) {
+        while (mySpawns['Spawn1'].memory.farming_rooms.length > 3) {
             mySpawns['Spawn1'].memory.farming_rooms.pop();
         }
     }
