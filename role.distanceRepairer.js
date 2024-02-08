@@ -10,12 +10,15 @@ var roleRepairer = {
         //creep.say("R");
         //var targets=creep.room.find(FIND_CONSTRUCTION_SITES)
         if (creep.room.name == creep.memory.target_room) {
+            
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: function (object) {
                     return object.hits < object.hitsMax && object.hits<300000
-                   // && object.owner=='JeallyRabbit'; /*&& object.structureType != STRUCTURE_CONTAINER;*/
                 }
             });
+            
+           //var targets=creep.room.find(FIND_CONSTRUCTION_SITES);
+
 
             var containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
@@ -24,7 +27,7 @@ var roleRepairer = {
                 }
             });
 
-            if (targets.length < 5) {
+            if (targets.length <3) {
                 //creep.say("no repair");
                 roleBuilder.run(creep, spawn);
             }
@@ -55,9 +58,9 @@ var roleRepairer = {
                         var closest_target = creep.pos.findClosestByRange(targets);
                         if (creep.repair(closest_target) == ERR_NOT_IN_RANGE) {
                             //creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ff0000' } });
-                            //move_avoid_hostile(creep,closest_target.pos,2,false);
+                            move_avoid_hostile(creep, closest_target.pos, 2, false);
                         }
-                        move_avoid_hostile(creep, closest_target.pos, 2, false);
+                        
                     }
                 }
                 else if (creep.store[RESOURCE_ENERGY] == 0 && containers != undefined && containers.length > 0) {// go to deposits
@@ -70,7 +73,7 @@ var roleRepairer = {
                         if (creep.withdraw(source, RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {
                             //creep.say("Going to Cintainer");
                             //creep.moveTo(source);
-                            move_avoid_hostile(creep, source.pos);
+                            move_avoid_hostile(creep, source.pos,1);
                         }
                     }
                     //console.log("qwert");

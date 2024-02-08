@@ -13,6 +13,11 @@ class farmingRoom {
         this.max_farmers = max_farmers;
 
         this.farmers = 0;
+
+        var body_parts_cost=(sources_num*12);//parts for farmers (max farmer is made off 12 bodyparts);
+        body_parts_cost+=14;//maxRepairer
+        body_parts_cost+=Math.ceil((sources_num*10*distance*2*3)/100);//distanceCarriers
+        this.body_parts_cost=body_parts_cost;
     }
 }
 

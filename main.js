@@ -1,5 +1,3 @@
-var roleHarvester = require('role.harvester');
-var roleCarrier = require('role.carrier');
 var roleHauler = require('role.hauler');
 var roleBuilder = require('role.builder');
 var roleUpgrader = require('role.upgrader');
@@ -7,7 +5,6 @@ var roleRepairer = require('role.repairer')
 var roleSoldier = require('role.soldier');
 var roleFarmer = require('role.farmer');
 var roleBerserk = require('role.berserk');
-var roleTransporter = require('role.transporter');
 var towers = require('towers');
 var links = require('links');
 var terminal = require('terminal');
@@ -26,7 +23,7 @@ var roleMiner = require('role.miner');
 var roleDoctor = require('role.doctor');
 var roleScout = require('role.scout');
 var roleDistanceRepairer = require('role.distanceRepairer');
-var roleFiller=require('role.filler');
+var roleFiller = require('role.filler');
 var _ = require('lodash');
 
 const profiler = require('screeps-profiler');
@@ -34,16 +31,12 @@ const setRequiredPopulation = require('setRequiredPopulation');
 
 
 
-const maxHarvester = require('maxHarvester');
 const maxRepairer = require('maxRepairer');
 const maxBuilder = require('maxBuilder');
 const maxHauler = require('maxHauler');
 const maxUpgrader = require('maxUpgrader');
-const maxCarrier = require('maxCarrier');
 const maxDistanceCarrier = require('maxDistanceCarrier');
-const maxTransporter = require('maxTransporter');
 const maxFarmer = require('maxFarmer');
-const minSource = require('minSource');
 const maxClaimer = require('maxClaimer');
 const maxDistanceBuilder = require('maxDistanceBuilder');
 
@@ -66,58 +59,35 @@ module.exports.loop = function () {
                 delete Memory.creeps[i];
             }
         }
-        //var mySpawns=Game.spawns;
-
-        var pop_harvesters = 0;
-        var pop_carriers = 0;
         var pop_builders = 0;
         var pop_upgraders = 0;
-        var pop_repairers = 0;
         var pop_haulers = 0;
-        var pop_soldiers = 0;
-        var pop_farmers = 0;
         var pop_berserkers = 0;
-        var pop_transporters = 0;
         var pop_towerKeepers = 0;
         var pop_claimers = 0;
         var pop_distanceBuilders = 0;
         var pop_reservers = 0;
         var pop_distanceCarriers = 0;
-        var pop_keeperKillers = 0;
-        var pop_keeperHealers = 0;
-        var pop_keeperCarriers = 0;
-        var pop_keeperFarmers = 0;
-        var smallest_carrier = 100;
         var pop_merchants = 0;
         var pop_miners = 0;
         var pop_doctors = 0;
         var pop_scouts = 0;
-        var carrying_power = 0;
-        var pop_fillers=0
+        var pop_fillers = 0
         var spawned_body_parts = 0;
+        var pop_soldiers=0;
 
 
 
 
         for (let spawnName in Game.spawns) {
 
-            /*
-            const myRooms = Object.keys(Game.rooms).filter(roomName => {
-                const room = Game.rooms[roomName];
-                return room.controller && room.controller.my;
-            });*/
-
             var spawn = Game.spawns[spawnName];
             if (spawnName != 'Spawn1') {
                 spawn.memory = Game.spawns['Spawn1'].memory;
                 return;
-                //console.log("after return");
             }
             else {
                 if (Game.time % 1 == 0) {
-                    //delete spawn.memory.rooms_to_scan;
-
-                    //delete spawn.memory.keepers_rooms;
                     setRequiredPopulation(Game.spawns);
                     if (Game.cpu.bucket == 10000) {
                         //Game.cpu.generatePixel();
@@ -129,82 +99,32 @@ module.exports.loop = function () {
             if (spawn == undefined) { continue; }
             if (spawnName == 'Spawn1') {
 
-                /*
-                var construction_sites=spawn.room.find(FIND_CONSTRUCTION_SITES);
-                for (let i = 0; i < construction_sites.length; i++) {
-                    construction_sites[i].remove();
-                }
-                */
 
-                //spawn.memory.rooms_to_scan=undefined;
-
-                //spawn.memory.farming_rooms=undefined;
-
-                //spawn.memory.avg_source_dist=undefined;
-
-                /*
-                if (spawn.memory.avg_source_dist == undefined) {
-                    spawn.memory.avg_source_dist = 0;
-                    var room_sources = spawn.room.find(FIND_SOURCES);
-                    if (room_sources != undefined && room_sources.length > 0) {
-                        for (const room_source of room_sources) {
-                            spawn.memory.avg_source_dist += spawn.pos.findPathTo(room_source).length;
-                            //console.log("distance: ",spawn.pos.findPathTo(room_source).length);
-                        }
-                        spawn.memory.avg_source_dist /= room_sources.length;
-                    }
-                }
-                */
 
                 if (Game.time % 53 == 0) {
                     setBaseLayout(spawn);
                 }
-                if (Game.time % 1 == 0) {
-                    spawn.memory.progress_old = spawn.memory.progress;
-                    spawn.memory.progress = spawn.room.controller.progress;
-                    if (spawn.memory.progress_old != 0) {
-                        spawn.memory.progress_sum += (spawn.memory.progress - spawn.memory.progress_old);
-                    }
-                    spawn.memory.progress_counter += 1;
 
-                    //var hostile_creeps = spawn.room.find(FIND_HOSTILE_CREEPS);
-                    //console.log("hostile_Creeps: ", hostile_creeps);
+                spawn.memory.progress_old = spawn.memory.progress;
+                spawn.memory.progress = spawn.room.controller.progress;
+                if (spawn.memory.progress_old != 0) {
+                    spawn.memory.progress_sum += (spawn.memory.progress - spawn.memory.progress_old);
                 }
+                spawn.memory.progress_counter += 1;
 
-                //const room=Game.rooms[myRooms[0]];
-                /*
-                const sources = spawn.room.find(FIND_SOURCES);
-                //console.log(sources_hp.length);
-                var sources_hp = [];// harvesting power assigned to every source in my room (working only for first room)
-                for (let i = 0; i < sources.length; i++) {
-                    sources_hp[i] = 0;
-                }
-                */
-                if(spawn.memory.terminal!= undefined && Game.getobjectbyId(spawn.memory.terminal)==null)
-                {
-                    spawn.memory.terminal=undefined;
-                }
-                if(spawn.memory.terminal==undefined && Game.time%13==0)
-                {
-                    var terminals = spawn.room.find(FIND_STRUCTURES, {
-                        filter: function (structure) {
-                            return structure.structureType == STRUCTURE_TERMINAL;
+
+                if (spawn.room.controller.level >= 4) {
+                    towers.tick(spawn);
+
+                    if (spawn.room.controller.level >= 5) {
+                        links.tick(spawn);
+                        if (spawn.room.controller.level >= 6) {
+                            terminal.tick(spawn);
+                            lab.tick(spawn);
                         }
-                    });
-                    if(terminal!=undefined && terminal.length>0)
-                    {
-                        spawn.memory.terminal=terminals[0].id;
                     }
                 }
-                
-                towers.tick(spawn);
-                links.tick(spawn);
-                terminal.tick(spawn);
-                lab.tick(spawn);
-                //delete spawn.memory.farming_rooms;
-                //delete spawn.memory.keepers_rooms;
-                //spawn.memory.rooms_to_scan=undefined;
-                //spawn.memory.farming_rooms=undefined;
+
                 if (spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0) {
                     for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
                         spawn.memory.farming_rooms[i].harvesting_power = 0;
@@ -230,37 +150,12 @@ module.exports.loop = function () {
                 for (var name in Game.creeps) {
                     var creep = Game.creeps[name];
                     //creep.suicide();
-                    //if(creep.memory.home_room==undefined){creep.suicide()}
+                    if(creep.memory.home_room==undefined){creep.suicide()}
                     if (creep.memory.home_room.name == spawn.room.name) {
                         //creep.memory.my_path=undefined;
                         //creep.suicide();
                         spawned_body_parts += creep.body.length;
-                        if (creep.memory.role == 'harvester') {
-                            if (creep.ticksToLive > 50) {
-                                const workParts = _.filter(creep.body, { type: WORK }).length;
-                                creep.memory.harvesting_power = workParts * 2;
-                                sources_hp[creep.memory.target_source] += creep.memory.harvesting_power;
-                                pop_harvesters++;
-                            }
-                            roleHarvester.run(creep, spawn);
-                        }
-                        else if (creep.memory.role == 'carrier') {
-                            //creep.suicide();
-                            // if(creep.memory.)
-                            if (creep.memory.carry_speed == undefined) {
-                                creep.memory.carry_speed = creep.store.getCapacity() / (spawn.memory.avg_source_dist * 2);
-                            }
-
-
-                            roleCarrier.run(creep, spawn);
-                            if (creep.ticksToLive > 100) {
-                                pop_carriers++;
-                            }
-                            if (creep.body.length < smallest_carrier) {
-                                smallest_carrier = creep.body.length;
-                            }
-                        }
-                        else if (creep.memory.role == 'upgrader') {
+                        if (creep.memory.role == 'upgrader') {
                             roleUpgrader.run(creep, spawn);
                             if (creep.ticksToLive > 50) {
                                 pop_upgraders++;
@@ -281,10 +176,6 @@ module.exports.loop = function () {
                                 pop_builders++;
                             }
                         }
-                        else if (creep.memory.role == 'repairer') {
-                            pop_repairers++;
-                            roleRepairer.run(creep, spawn);
-                        }
                         else if (creep.memory.role == 'soldier') {
                             roleSoldier.run(creep, spawn);
 
@@ -301,7 +192,7 @@ module.exports.loop = function () {
                         }
                         else if (creep.memory.role == 'farmer') {
                             //creep.suicide();
-                            
+
                             if (creep.memory.harvesting_power == undefined) {
                                 const workParts = _.filter(creep.body, { type: WORK }).length;
                                 creep.memory.harvesting_power = workParts * 2;
@@ -316,10 +207,6 @@ module.exports.loop = function () {
                             }
                             //sources_hp[creep.memory.target_source]+=creep.memory.harvesting_power;
                             roleFarmer.run(creep, spawn);
-                            if (creep.ticksToLive > 200) {
-                                pop_farmers++;
-                            }
-
 
                         }
                         else if (creep.memory.role == 'berserk') {
@@ -327,12 +214,6 @@ module.exports.loop = function () {
                             roleBerserk.run(creep, spawn);
                             if (creep.ticksToLive > 200) {
                                 pop_berserkers++;
-                            }
-                        }
-                        else if (creep.memory.role == 'transporter') {
-                            roleTransporter.run(creep, spawn);
-                            if (creep.ticksToLive > 50) {
-                                pop_transporters++;
                             }
                         }
                         else if (creep.memory.role == 'towerKeeper') {
@@ -371,9 +252,7 @@ module.exports.loop = function () {
                         }
                         else if (creep.memory.role == 'distanceCarrier') {
                             //creep.suicide();
-                            //if (creep.memory.carrying_power != undefined) {
-                            //    carrying_power += creep.memory.carrying_power;
-                            //}
+
                             roleDistanceCarrier.run(creep, spawn);
 
                             for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
@@ -383,10 +262,7 @@ module.exports.loop = function () {
                                     creep.memory.carry_power = creep.store.getCapacity() / (spawn.memory.farming_rooms[i].distance * 2);
                                 }
                             }
-
-                            if (creep.ticksToLive > 200) {
-                                pop_distanceCarriers++;
-                            }
+                            pop_distanceCarriers++;
                         }
                         else if (creep.memory.role == 'distanceRepairer') {
                             roleDistanceRepairer.run(creep, spawn);
@@ -412,9 +288,6 @@ module.exports.loop = function () {
                                 }
                             }
                             roleKeeperKiller.run(creep, spawn);
-                            if (creep.ticksToLive > 250) {
-                                pop_keeperKillers++;
-                            }
                         }
                         else if (creep.memory.role == 'keeperHealer') {
                             roleKeeperHealer.run(creep, spawn);
@@ -426,9 +299,6 @@ module.exports.loop = function () {
                                     spawn.memory.keepers_rooms[i].keeperHealer = creep.id;
                                     break;
                                 }
-                            }
-                            if (creep.ticksToLive > 250) {
-                                pop_keeperHealers++;
                             }
                         }
                         else if (creep.memory.role == 'keeperCarrier') {
@@ -443,9 +313,6 @@ module.exports.loop = function () {
                             }
 
                             roleKeeperCarrier.run(creep, spawn);
-                            //if (creep.ticksToLive > 200) {
-                            //   pop_keeperCarriers++;
-                            //}
                         }
                         else if (creep.memory.role == 'keeperFarmer') {
                             roleKeeperFarmer.run(creep, spawn);
@@ -459,9 +326,6 @@ module.exports.loop = function () {
                                     break;
                                 }
                             }
-                            //if (creep.ticksToLive > 100){
-                            //    pop_keeperFarmers++;
-                            //}
                         }
                         else if (creep.memory.role == 'merchant') {
                             roleMerchant.run(creep, spawn);
@@ -479,9 +343,8 @@ module.exports.loop = function () {
                             roleScout.run(creep, spawn);
                             pop_scouts++;
                         }
-                        else if(creep.memory.role=='filler')
-                        {
-                            roleFiller.run(creep,spawn);
+                        else if (creep.memory.role == 'filler') {
+                            roleFiller.run(creep, spawn);
                             pop_fillers++;
                         }
                         else {
@@ -495,25 +358,8 @@ module.exports.loop = function () {
             //console.log(spawn.room.controller.progress);
 
             var energyCap = spawn.room.energyAvailable;
-            /*
-            if(spawn.memory.storage_id!=undefined && Game.getobjectbyId(spawn.memory.storage_id)==null)
-            {
-                spawn.memory.storage_id=undefined;
-            }
-            if (spawn.memory.storage_id == undefined && Game.time % 10 == 0) {
-                var storage = spawn.room.find(FIND_STRUCTURES, {
-                    filter: function (structure) {
-                        return structure.structureType == STRUCTURE_STORAGE
-                            && structure.store[RESOURCE_ENERGY] > 0;
-                    }
-                });
-                if (storage != undefined && storage.length > 0) {
-                    spawn.memory.storage_id = storage.id;
-                }
-            }
-            */
 
-            if (spawn.memory.storage != undefined && Game.getObjectById(spawn.memory.storage) != null && (pop_haulers > 0 || pop_carriers > 0)) {
+            if (spawn.room.storage != undefined && pop_haulers > 0) {
                 var rcl = spawn.room.controller.level;
                 var max_energy = 300;
                 if (rcl == 2) { max_energy = 550; }
@@ -523,7 +369,7 @@ module.exports.loop = function () {
                 else if (rcl == 6) { max_energy = 2300; }
                 else if (rcl == 7) { max_energy = 5600; }
                 else { max_energy = 12900; }
-                if (Game.getObjectById(spawn.memory.storage).store[RESOURCE_ENERGY] > max_energy / 3 && energyCap < max_energy / 3) {
+                if (spawn.room.storage.store[RESOURCE_ENERGY] > max_energy / 3 && energyCap < max_energy / 3) {
                     energyCap = max_energy / 3;
                     //  console.log("changing energy cap");
                 }
@@ -532,63 +378,36 @@ module.exports.loop = function () {
             //console.log("carrying power: ", carrying_power);
 
 
-            console.log("-----------------------", spawn, "---------------------------------");
+            console.log("----------------------------------------------", spawn, "----------------------------------------------");
             console.log("Upgraders: ", pop_upgraders, "/", spawn.memory.req_upgraders, " | ",
-                "Builders: ", pop_builders, "/", spawn.memory.req_builders, " | ",pop_fillers,"/",spawn.memory.req_fillers);
-
-            console.log("haulers: ", pop_haulers, "/", spawn.memory.req_haulers, " | ",
-                "Transporters: ", pop_transporters, "/", spawn.memory.req_transporters);
-
-            console.log("TowerKeepers: ", pop_towerKeepers, "/", spawn.memory.req_towerKeepers, " | ",
-                "Claimers: ", pop_claimers, "/", spawn.memory.req_claimers, " | ",
-                "DistanceBuilders: ", pop_distanceBuilders, "/", spawn.memory.req_distanceBuilders, " | ");
-
-            console.log("DistanceCarriers: ", pop_distanceCarriers, "/",
-                "Keeper Killers: ", pop_keeperKillers,
-                "Keeper Healers: ", pop_keeperHealers,
-                "Keeper Carriers: ", pop_keeperCarriers,
-                "Keeper Farmers: ", pop_keeperFarmers,);
-            console.log("Merchants: ", pop_merchants, "/", spawn.memory.req_merchants,
-                " | Miners: ", pop_miners, "/", spawn.memory.req_miners);
-            console.log("Doctors: ", pop_doctors, "/", spawn.memory.req_doctors, " | ",
-                "Scouts: ", pop_scouts, "/", spawn.memory.req_scouts, " | ",
-                "Spawned Body parts: ", spawned_body_parts, "/500");
+                "Builders: ", pop_builders, "/", spawn.memory.req_builders, " | fillers:", pop_fillers, "/", spawn.memory.req_fillers,
+                " | haulers: ", pop_haulers, "/", spawn.memory.req_haulers, " | TowerKeepers: ", pop_towerKeepers, "/", spawn.memory.req_towerKeepers,
+                " | Claimers: ", pop_claimers, "/", spawn.memory.req_claimers, " | DistanceBuilders: ", pop_distanceBuilders, "/", spawn.memory.req_distanceBuilders,
+                " | DistanceCarriers: ", pop_distanceCarriers, " | Doctors: ", pop_doctors, "/", spawn.memory.req_doctors, " | ",
+                "Scouts: ", pop_scouts, "/", spawn.memory.req_scouts, " | ","Spawned Body parts: ", spawned_body_parts, "/500");
             if (spawn.memory.progress != 0 && spawn.memory.progress_old != 0 &&
                 spawn.memory.progress_sum != 0 && spawn.memory.progress_counter > 4 &&
                 spawn.memory.progress != spawn.memory.progress_old) {
                 console.log("Progress/tick: ", (spawn.memory.progress_sum / spawn.memory.progress_counter));
-                //console.log("Spawn points: ",spawn.memory.progress);
             }
-            
 
 
-            //counting currently spawned creeps
             for (let spawnName2 in Game.spawns) {
 
                 var spawn2 = Game.spawns[spawnName2];
-                //console.log(spawn2.name);
                 if (spawn2.spawning) {
                     var aux_role = Game.creeps[spawn2.spawning.name].memory.role;
                     console.log('spawning role: ', aux_role);
-                    if (aux_role == 'harvester') { pop_harvesters++; }
-                    else if (aux_role == "carrier") { pop_carriers++; }
-                    else if (aux_role == "upgrader") { pop_upgraders++; }
+                    if (aux_role == "upgrader") { pop_upgraders++; }
                     else if (aux_role == "builder") { pop_builders++; }
-                    else if (aux_role == "repairer") { pop_repairers++; }
                     else if (aux_role == "hauler") { pop_haulers++; }
                     else if (aux_role == "soldier") { pop_soldiers++; }
-                    else if (aux_role == "farmer") { pop_farmers++; }
                     else if (aux_role == "berserk") { pop_berserkers++; }
-                    else if (aux_role == "transporter") { pop_transporters++; }
                     else if (aux_role == "towerKeeper") { pop_towerKeepers++; }
                     else if (aux_role == "claimer") { pop_claimers++; }
                     else if (aux_role == "distanceBuilder") { pop_distanceBuilders++; }
                     else if (aux_role == "reserver") { pop_reservers++; }
                     else if (aux_role == "distanceCarrier") { pop_distanceCarriers++; }
-                    else if (aux_role == "keeperKiller") { pop_keeperKillers++; }
-                    else if (aux_role == "keeperHealer") { pop_keeperHealers++; }
-                    else if (aux_role == "keeperCarrier") { pop_keeperCarriers++; }
-                    else if (aux_role == "keeperFarmer") { pop_keeperFarmers++; }
                     else if (aux_role == "scout") { pop_scouts++; }
                 }
 
@@ -606,9 +425,8 @@ module.exports.loop = function () {
 
                     }
                 }
-                
-                if(spawn.spawning!=null && Game.spawns['Spawn3']!=undefined)
-                {
+
+                if (spawn.spawning != null && Game.spawns['Spawn3'] != undefined) {
                     if (spawn.spawning.remainingTime < spawn.spawning.needTime - 5
                         && Game.spawns['Spawn3'].spawning == null) {
                         var aux_memory = spawn.memory;
@@ -626,9 +444,6 @@ module.exports.loop = function () {
 
 
 
-
-
-            //if (pop_keeperKillers > 0 && pop_keeperHealers == 0 && spawn.memory.keepers_rooms.length>0)
             if (pop_haulers > 0) {
                 if (spawn.memory.need_keeperHealer != undefined) {
                     var healer_body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL];
@@ -665,7 +480,6 @@ module.exports.loop = function () {
                     }
                 }
                 if (spawn.memory.need_keeperFarmer != undefined) {
-                    console.log("trying to spawn keeperFarmer");
                     if (spawn.spawnCreep(maxKeeperFarmer(energyCap - 200, spawn), 'KeeperFarmer' + Game.time, { memory: { role: 'keeperFarmer', target_room: spawn.memory.need_keeperFarmer, home_room: spawn.room, closest_source: undefined } }) == 0) {
                         console.log("Spawning KeeperFarmer");
                         return;
@@ -673,11 +487,9 @@ module.exports.loop = function () {
                 }
             }
 
-            if(pop_fillers<spawn.memory.req_fillers)
-            {
+            if (pop_fillers < spawn.memory.req_fillers) {
 
-                if(spawn.spawnCreep([MOVE,CARRY],'Filler'+ Game.time,{memory:{role:'filler',home_room: spawn.room}})==OK)
-                {
+                if (spawn.spawnCreep([MOVE, CARRY], 'Filler' + Game.time, { memory: { role: 'filler', home_room: spawn.room } }) == OK) {
                     console.log("Spawning filler");
                 }
                 return;
@@ -694,72 +506,24 @@ module.exports.loop = function () {
                     console.log("Spawning Soldier");
                     return;
                 }
-                /*
-                else{
-                    console.log("spawning soldier result");
-                    console.log(spawn.spawnCreep(maxSoldier(energyCap),'Soldier'+Game.time,{memory: {role: 'soldier', target: 'E34N53',home_room: spawn.room}}));
-                }*/
             }
-
-            //console.log("ASDASD");
-
-            if (pop_harvesters < spawn.memory.req_harvesters /* && spawn.memory.roles_counter==0*/) // spawning new harvester
-            {
-                var assigned_source = -1;
-                var assigned_source = minSource(sources_hp);
-
-                //console.log("assigned_source: ", sources_hp[assigned_source]);
-                if (assigned_source >= 0 && sources_hp[assigned_source] < 12) {
-                    if (spawn.spawnCreep(maxHarvester(energyCap), 'Harvester' + Game.time, {
-                        memory: {
-                            role: 'harvester',
-                            target_source: assigned_source, home_room: spawn.room
-                        }
-                    }) == 0) {
-                        const workParts = _.filter(creep.body, { type: WORK }).length;
-                        //creep.say(workParts);
-                        creep.memory.harvesting_power = workParts * 2;
-                        sources_hp[assigned_source] += energyCap / 150;//harvesting power approximately
-                        console.log('Spawning Harvester');
-                        return;
-                    }
-                    else {
-                        //console.log("not spawned");
-                        //console.log(spawn.spawnCreep(maxHarvester(energyCap),'Harvester'+Game.time, {memory: {role: 'harvester',
-                        //target_source: assigned_source, home_room: spawn.room}}));
-                    }
-
-                }
-            }
-            if (pop_carriers < spawn.memory.req_carriers && pop_carriers <= pop_harvesters) // spawning new Carrier
-            {
-                if (spawn.spawnCreep(maxCarrier(energyCap, spawn), 'Carrier' + Game.time, { memory: { role: 'carrier', home_room: spawn.room } }) == 0) {
-                    console.log('Spawning Carrier');
-                    return;
-                }
-            }
-            //if (pop_soldiers < spawn.memory.req_soldiers) {
 
             if (pop_scouts < spawn.memory.req_scouts) {
                 if (spawn.spawnCreep([MOVE], 'Scout' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }) == 0) {
                     console.log("Spawning Scout");
                 }
+                return;
             }
 
 
-            if (pop_berserkers < spawn.memory.req_berserk /*&& spawn.memory.roles_counter==8 */ && pop_harvesters > 0) {
+            if (pop_berserkers < spawn.memory.req_berserk && false) {
                 var berserk_body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK];
                 if (spawn.spawnCreep(berserk_body, 'Berserker' + Game.time, { memory: { role: 'berserk', home_room: spawn.room, target_room: 'E7S5' } }) == 0) {//costs 520 energy
                     console.log("Spawning Berserker");
                     // return;
                 }
             }
-            /*
-            if (pop_farmers < spawn.memory.req_farmers/* && spawn.memory.roles_counter==2  && pop_harvesters > 0
-                && pop_farmers <= pop_distanceCarriers + 2)//spawning new farmer*/
             if (spawn.memory.need_farmer != undefined) {
-                //console.log("ASD");
-                //if(pop_farmers==0){pop_farmers=1;}
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer' + Game.time, {
                     memory: {
                         role: 'farmer', home_room: spawn.room,
@@ -786,47 +550,31 @@ module.exports.loop = function () {
                     return;
                 }
             }
-            if (pop_builders < spawn.memory.req_builders /* && spawn.memory.roles_counter==3*/ && pop_carriers >= spawn.memory.req_carriers) // spawning new builder
+            if (pop_builders < spawn.memory.req_builders) // spawning new builder
             {
-                console.log(spawn.spawnCreep(maxBuilder(energyCap, spawn), 'Builder' + Game.time, { memory: { role: 'builder', home_room: spawn.room } }));
+                spawn.spawnCreep(maxBuilder(energyCap, spawn), 'Builder' + Game.time, { memory: { role: 'builder', home_room: spawn.room } });
                 if (spawn.spawnCreep(maxBuilder(energyCap / 2, spawn), 'Builder' + Game.time, { memory: { role: 'builder', home_room: spawn.room } }) == 0) {
                     console.log('Spawning Builder');
                     return;
                 }
+                return;
             }
-            if (pop_haulers < spawn.memory.req_haulers && pop_carriers >= spawn.memory.req_carriers)//spawning new hauler
+            if (pop_haulers < spawn.memory.req_haulers)//spawning new hauler
             {
-                if (spawn.spawnCreep(maxCarrier(energyCap, spawn), 'hauler' + Game.time, { memory: { role: 'hauler', home_room: spawn.room } }) == 0) {
+                if (spawn.spawnCreep(maxHauler(energyCap, spawn), 'hauler' + Game.time, { memory: { role: 'hauler', home_room: spawn.room } }) == 0) {
                     console.log("Spawning hauler");
                     return;
                 }
             }
-            if (pop_upgraders < spawn.memory.req_upgraders && pop_carriers >= spawn.memory.req_carriers) // spawning new upgrader
+            if (pop_upgraders < spawn.memory.req_upgraders && spawn.memory.farming_rooms[0].carry_power>0) // spawning new upgrader
             {
                 if (spawn.spawnCreep(maxUpgrader(energyCap, spawn), 'Upgrader' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {
                     console.log('Spawning Upgrader');
                     return;
                 }
             }
-            if (pop_repairers < spawn.memory.req_repairers /*&& spawn.memory.roles_counter==6*/ && pop_carriers >= spawn.memory.req_carriers / 2)//spawning new repairer
-            {
-                if (spawn.spawnCreep(maxRepairer(energyCap), 'Repairer' + Game.time, { memory: { role: 'repairer', home_room: spawn.room } }) == 0) {
-                    console.log('Spawning Repairer');
-                    return;
-                }
-            }
-            if (pop_transporters < spawn.memory.req_transporters && spawn.memory.storage != undefined/* && spawn.memory.roles_counter==9 && pop_carriers > 0 */) {
-
-                //if (storages_num.length > 0) {
-                if (spawn.spawnCreep(maxTransporter(energyCap, spawn), 'Transporter' + Game.time, { memory: { role: 'transporter', home_room: spawn.room } }) == 0) {
-                    console.log('Spawning Transporter')
-                    return;
-                }
-                // }
-
-            }
-            if (pop_towerKeepers < spawn.memory.req_towerKeepers /* && spawn.memory.roles_counter==10 */ && pop_carriers >= spawn.memory.req_carriers) {
-                if (spawn.spawnCreep(maxTransporter(energyCap % 1000, spawn), 'TowerKeeper' + Game.time, { memory: { role: 'towerKeeper', home_room: spawn.room } }) == 0) {
+            if (pop_towerKeepers < spawn.memory.req_towerKeepers) {
+                if (spawn.spawnCreep(maxHauler(energyCap % 1000, spawn), 'TowerKeeper' + Game.time, { memory: { role: 'towerKeeper', home_room: spawn.room } }) == 0) {
                     console.log('Spawning TowerKeeper')
                     return;
                 }
@@ -845,7 +593,7 @@ module.exports.loop = function () {
                     return;
                 }
             }
-            if (pop_distanceBuilders < spawn.memory.req_distanceBuilders && pop_farmers > 0) {
+            if (pop_distanceBuilders < spawn.memory.req_distanceBuilders) {
                 if (spawn.spawnCreep(maxDistanceBuilder(energyCap), 'DistanceBuilder' + Game.time, {
                     memory: {
                         role: 'distanceBuilder',
@@ -870,11 +618,7 @@ module.exports.loop = function () {
                     return;
                 }
             }
-            /*
-            if (pop_distanceCarriers < spawn.memory.req_DistanceCarriers /* && spawn.memory.roles_counter==14  && pop_distanceCarriers <= pop_farmers
-                && pop_harvesters >= spawn.memory.req_harvesters / 2)//spawning new DistanceCarrier */
             if (spawn.memory.need_DistanceCarrier != undefined && pop_distanceCarriers < 15) {
-                //console.log("ASD")
                 if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, false), 'distnaceCarrier' + Game.time, {
                     memory: {
                         role: 'distanceCarrier', home_room: spawn.room,
@@ -885,21 +629,20 @@ module.exports.loop = function () {
                     console.log("Spawning DistanceCarrier");
                     return;
                 }
-                /*
-                else{
-                    console.log("spawn result: ",spawn.spawnCreep(maxCarrier(energyCap,spawn,false),'distnaceCarrier'+Game.time,{memory: {role: 'distanceCarrier', home_room: spawn.room,
-                    target_room: spawn.memory.farming_rooms[spawn.memory.distance_carriers_counter%spawn.memory.farming_rooms.length], path: undefined}}));
-                }*/
+                if(spawn.memory.need_DistanceCarrier==spawn.room.name)
+                {
+                    return;
+                }
 
             }
-            if (pop_merchants < spawn.memory.req_merchants && spawn.memory.terminal != undefined) {
+            if (pop_merchants < spawn.memory.req_merchants && spawn.room.terminal != undefined) {
                 if (spawn.spawnCreep([MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
                     CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY], 'Merchant' + Game.time, { memory: { role: 'merchant', home_room: spawn.room } }) == 0) {
                     console.log("Spawning Merchant");
                     return;
                 }
             }
-            if (pop_miners < spawn.memory.req_miners) {
+            if (pop_miners < spawn.memory.req_miners && spawn.memory.farming_rooms[0].carry_power>=spawn.memory.farming_rooms[0].harvesting_power) {
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn), 'Miner' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }) == 0) {
                     console.log("Spawning Miner");
                     return;

@@ -123,6 +123,7 @@ function move_avoid_hostile(creep,destination,my_range,my_avoid,my_ops,my_plain,
         }
         else if ( ret.incomplete==true){
             creep.say("no path");
+            creep.moveTo(destination);
         }
     }
     if (creep.memory.my_path!=undefined) {

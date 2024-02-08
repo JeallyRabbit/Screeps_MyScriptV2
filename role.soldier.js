@@ -1,5 +1,5 @@
 const { move_avoid_hostile } = require("./move_avoid_hostile");
-
+const { goOutOfRange } = require("./goOutOfRange");
 var roleSoldier = {
     run: function(creep,spawn) {
         
@@ -39,19 +39,19 @@ var roleSoldier = {
             var pos = creep.pos;
             if (pos.x > 48) {
                 creep.move(LEFT);
-                return;
+                //return;
             }
             else if (pos.x < 2) {
                 creep.move(RIGHT);
-                return;
+                //return;
             }
             if (pos.y > 48) {
                 creep.move(TOP);
-                return;
+                //return;
             }
             else if (pos.y < 2) {
                 creep.move(BOTTOM);
-                return;
+                //return;
             }
             var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
             
@@ -83,28 +83,12 @@ var roleSoldier = {
                     }
                 //}
 
-                /*
+                
                 if(creep.pos.inRangeTo(target_creep,2))
                 {
-                    if(creep.pos.x-target_creep.pos.x>0)
-                    {
-                        creep.move(RIGHT);
-
-                    }
-                    else if(creep.pos.x-target_creep.pos.x<0)
-                    {
-                        creep.move(LEFT);
-                    }
-                    if(creep.pos.y-target_creep.pos.y>0)
-                    {
-                        creep.move(BOTTOM)
-                    }
-                    else if(creep.pos.y-target_creep.pos.y<0)
-                    {
-                        creep.move(TOP);
-                    }
+                    goOutOfRange(creep,3);
                 }
-                */
+                
             } 
             else if(target_structure){
                 console.log(creep.room.name," ","fighting structures");
@@ -133,7 +117,8 @@ var roleSoldier = {
             }
         } 
         else {
-            move_avoid_hostile(creep,new RoomPosition(25,25,creep.memory.target_room),25,false,4000);
+            //move_avoid_hostile(creep,new RoomPosition(25,25,creep.memory.target_room),25,false,8000);
+            creep.moveTo(new RoomPosition(25,25,creep.memory.target_room));
             
         }
 

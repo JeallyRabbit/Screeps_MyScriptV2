@@ -47,6 +47,11 @@ var roleFiller = {
         if (creep.memory.working_pos != undefined) {
 
             //creep.say("moving");
+            var at_pos=creep.room.lookForAt(LOOK_CREEPS,creep.memory.working_pos.x,creep.memory.working_pos.y);
+            if(at_pos.length>0 && at_pos[0].name!=creep.name)
+            {
+                creep.memory.working_pos=undefined;
+            }
             
             creep.moveTo(creep.memory.working_pos.x, creep.memory.working_pos.y);
         }
@@ -54,7 +59,8 @@ var roleFiller = {
             //creep.say('at pos');
             creep.memory.is_working=true;
             if (creep.memory.my_container != undefined && Game.getObjectById(creep.memory.my_container) == null) {
-                creep.memory.my_container == undefined;
+                creep.memory.my_container = undefined;
+                creep.say("clearing");
             }
 
             if (creep.memory.my_container == undefined) {
@@ -85,7 +91,7 @@ var roleFiller = {
                 }
                 if (creep.memory.to_fill != undefined) {
                     if (creep.store[RESOURCE_ENERGY] == 0) {
-                        creep.withdraw(Game.getObjectById(creep.memory.my_container), RESOURCE_ENERGY);
+                        creep.withdraw(Game.getObjectById(creep.memory.my_container), RESOURCE_ENERGY); 
                     }
                     else {
                         for (let i = 0; i < creep.memory.to_fill.length; i++) {

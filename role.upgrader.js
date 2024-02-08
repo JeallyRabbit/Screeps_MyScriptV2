@@ -1,5 +1,6 @@
 const {boosting_driver}=require('boosting_driver');
 const { move_avoid_hostile } = require('./move_avoid_hostile');
+var roleBuilder = require('role.builder');
 var roleUpgrader = {
 
     /** @param {Creep} creep **/
@@ -7,84 +8,14 @@ var roleUpgrader = {
         if (creep.memory.boosting_list == undefined) {
             creep.memory.boosting_list = ["GH", "XGH2O" , "GH2O"];//boost types that creep accepts
         }
-        //creep.suicide();
-        //return ;
-       //boosting-driver(creep,spawn,creep.memory.boosting_list,WORK);
-        /*
-        var lab = creep.room.find(FIND_STRUCTURES, {
-            filter: function (structure) {
-                return structure.structureType == STRUCTURE_LAB
-                    && ((structure.pos.x != spawn.pos.x + 3 && structure.pos.y != spawn.pos.y)
-                        || (structure.pos.x != spawn.pos.x + 3 && structure.pos.t != spawn.pos.y - 1));
-            }
-        });
-        //console.log(lab);
-        creep.memory.parts_to_boost = _.filter(creep.body, part => _.isUndefined(part.boost) && part.type == WORK);
-        //console.log("PARTS");
-        if (creep.memory.parts_to_boost != undefined && lab != undefined) {
-            creep.memory.need_boosting = true;
-            for (let i = 0; i < creep.memory.parts_to_boost.length; i++) {
-                //console.log(typeof creep.memory.parts_to_boost[i].boost);
-            }
-        }
-        else {
-            creep.memory.need_boosting = false;
-        }
-
-        if (lab != undefined && lab.length > 0) {
-            //creep.say(console.log(lab[0].pos));
-            //creep.memory.need_boosting=false;
-        }
-        var storage = creep.room.find(FIND_STRUCTURES, {
-            filter: function (structure) {//["GH","XGH2O","GH2O"]
-                return structure.structureType == STRUCTURE_STORAGE
-                    && (structure.store["GH"] > 30 || structure.store["GH2O"] > 30 || structure.store["XGH2O"] > 30);
-            }
-        });
-
-
-        if (creep.memory.need_boosting == true && creep.memory.parts_to_boost != undefined && creep.memory.parts_to_boost.length > 0
-            && lab != undefined && lab.length > 0 && creep.store[RESOURCE_ENERGY] == 0 && storage != undefined && storage.length > 0)
-             {
-                //creep.say("Q");
-            if (creep.store["GH"] == 0 && creep.store["GH2O"] == 0 && creep.store["XGH2O"] == 0) {//creep don't have upgrading resource
-                var upgrade_lvl = undefined;
-                var upgrade_resource = undefined;
-                if (storage[0].store["GH"] > 30) { upgrade_lvl = 1; upgrade_resource="GH";}
-                if (storage[0].store["GH2O"] > 30) { upgrade_lvl = 2; upgrade_resource="GH2O";}
-                if (storage[0].store["XGH2O"] > 30) { upgrade_lvl = 3; upgrade_resource="XGH2O";}
-
-                var withdraw_amount = Math.min(creep.store.getFreeCapacity(), storage[0].store[upgrade_resource]);
-                var upgrades_num=Math.floor(withdraw_amount/30);
-                withdraw_amount=Math.min(upgrades_num,parts_to_boost.length)*30;
-                if (withdraw_amount > 0) {
-                    if (creep.withdraw(storage[0], upgrade_resource, withdraw_amount) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(storage[0]);
-                    }
-                }
-            }
-            else{
-                //creep.say("B");
-                creep.moveTo(lab[0]);
-            }
-        }
-        else if(creep.memory.need_boosting == true && creep.memory.parts_to_boost != undefined && creep.memory.parts_to_boost.length > 0
-            && lab != undefined && lab.length > 0 && creep.store[RESOURCE_ENERGY] == 0)
-        {
-            creep.moveTo(lab[0]);
-            if(lab[0].cooldown<4)
-            {
-                for(const resource in creep.store)
-                {
-                    creep.transfer(lab[0],resource);
-                    
-                }
-                creep.memory.need_boosting=false;
-            }
-        }*/
        // else 
        if(boosting_driver(creep,spawn,creep.memory.boosting_list,WORK)==-1){
             //creep.say(creep.store[RESOURCE_ENERGY], "energy");
+            if(spawn.memory.building==true)
+            {
+                //roleBuilder.run(creep,spawn);
+                //return;
+            }
             if(creep.memory.upgrading==undefined)
             {
                 creep.memory.upgrading=false;
@@ -136,8 +67,8 @@ var roleUpgrader = {
                 //console.log(creep.name," ",creep.upgradeController(creep.room.controller));
                 if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
 
-                    //creep.moveTo(creep.room.controller);
-                    move_avoid_hostile(creep,creep.room.controller.pos,1,true);
+                    creep.moveTo(creep.room.controller);
+                    //move_avoid_hostile(creep,creep.room.controller.pos,1,true);
                 }
                 //creep.moveTo(creep.room.controller, { range: 1 });
             }

@@ -29,34 +29,7 @@ function calculateDistance(point1, point2) {
 
 
 function setRequiredPopulation(mySpawns) {
-    ////////// spawn 1
-    /*
-    if(mySpawns['Spawn1'].memory.keepers_rooms.length>1)
-    {
-        mySpawns['Spawn1'].memory.keepers_rooms.pop();
-    }
-    */
-    //delete spawn.memory.rooms_to_scan;
-    //delete spawn.memory.keepers_rooms;
-    if (mySpawns['Spawn1'].memory.storage != undefined) {
-        var storage = Game.getObjectById(mySpawns['Spawn1'].memory.storage);
-        if (storage == null) {
-            console.log('clearing spawn storage')
-            mySpawns['Spawn1'].memory.storage = undefined;
-        }
-    }
-    if (mySpawns['Spawn1'].memory.storage == undefined) {
-        var storage_temp = mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
-            filter: function (structure) {
-                return structure.structureType == STRUCTURE_STORAGE;
-            }
-        })
-        if(storage_temp.length>0)
-        {
-            mySpawns['Spawn1'].memory.storage = storage_temp[0].id;
-        }
-        
-    }
+
 
     mySpawns['Spawn1'].memory.req_carriers = 0;
 
@@ -67,59 +40,64 @@ function setRequiredPopulation(mySpawns) {
         mySpawns['Spawn1'].memory.req_scouts = 0;
     }
 
-    mySpawns['Spawn1'].memory.num_towers = mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return structure.structureType === STRUCTURE_TOWER;
-        }
-    });
+    if (mySpawns['Spawn1'].memory.num_towers == undefined || Game.time % 50001 == 0) {
+        mySpawns['Spawn1'].memory.num_towers = mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_TOWER;
+            }
+        });
 
-    mySpawns['Spawn1'].memory.num_towers = mySpawns['Spawn1'].memory.num_towers.length;
+        mySpawns['Spawn1'].memory.num_towers = mySpawns['Spawn1'].memory.num_towers.length;
+    }
+
     mySpawns['Spawn1'].memory.req_harvesters = 0;// role num 0
     //mySpawns['Spawn1'].memory.req_c
     mySpawns['Spawn1'].memory.req_upgraders = 1;
-    mySpawns['Spawn1'].memory.req_fillers=4;
+    mySpawns['Spawn1'].memory.req_fillers = 4;
+    if((mySpawns['Spawn1'].memory.building!=true && Game.time%1==0) || Game.time%11==0)
+    {
+        var construction_sites=mySpawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES);
+        if(construction_sites.length>0)
+        {
+            mySpawns['Spawn1'].memory.building=true;
+        }
+        else{
+            mySpawns['Spawn1'].memory.building=undefined;
+        }
+        
+    }
     if (mySpawns['Spawn1'].room.controller.level == 1) {
         // mySpawns['Spawn1'].memory.req_harvesters = 6;
         mySpawns['Spawn1'].memory.req_upgraders = 1;
-        if (mySpawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES).length > 0) {
-            mySpawns['Spawn1'].memory.req_builders = 1;
-        }
-        mySpawns['Spawn1'].memory.req_fillers=0;
+        mySpawns['Spawn1'].memory.req_fillers = 0;
     }
     else if (mySpawns['Spawn1'].room.controller.level == 2) {
         //mySpawns['Spawn1'].memory.req_harvesters = 4;
         mySpawns['Spawn1'].memory.req_upgraders = 6;
-        if (mySpawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES).length > 0) {
-            mySpawns['Spawn1'].memory.req_upgraders = 1;
-        }
-        mySpawns['Spawn1'].memory.req_fillers=1;
+        mySpawns['Spawn1'].memory.req_fillers = 1;
     }
     else if (mySpawns['Spawn1'].room.controller.level == 3) {
-        mySpawns['Spawn1'].memory.req_upgraders = 2;
-        if (mySpawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES).length < 1) {
-            mySpawns['Spawn1'].memory.req_upgraders = 4;
-        }
-        else {
-            mySpawns['Spawn1'].memory.req_upgraders = 1;
-        }
-        mySpawns['Spawn1'].memory.req_fillers=3;
+        mySpawns['Spawn1'].memory.req_upgraders = 6;
+        mySpawns['Spawn1'].memory.req_fillers = 3;
     }
 
-    if (storage != undefined && storage != null && mySpawns['Spawn1'].room.controller.level <8 &&  mySpawns['Spawn1'].room.controller.level >3) {
-        if (storage.store[RESOURCE_ENERGY] > 100000) {
+    if (mySpawns['Spawn1'].room.storage != undefined && mySpawns['Spawn1'].room.controller.level < 8 && mySpawns['Spawn1'].room.controller.level > 3) {
+        if (mySpawns['Spawn1'].room.storage.store[RESOURCE_ENERGY] > 100000) {
             mySpawns['Spawn1'].memory.req_upgraders = 2;
         }
 
-        if (storage.store[RESOURCE_ENERGY] > 200000) {
-            mySpawns['Spawn1'].memory.req_upgraders = storage.store[RESOURCE_ENERGY] / 100000;
+        if (mySpawns['Spawn1'].room.storage!=undefined && mySpawns['Spawn1'].room.storage.store[RESOURCE_ENERGY] > 200000) {
+            mySpawns['Spawn1'].memory.req_upgraders = mySpawns['Spawn1'].room.storage.store[RESOURCE_ENERGY] / 100000;
         }
     }
-
+    if(mySpawns['Spawn1'].memory.building==true)
+    {
+        mySpawns['Spawn1'].memory.req_upgraders=1;
+    }
     mySpawns['Spawn1'].memory.req_farmers = 0;//role num 2
     mySpawns['Spawn1'].memory.req_builders = 0;// role num 3
-    if (mySpawns['Spawn1'].room.find(FIND_MY_CONSTRUCTION_SITES).length > 0
-        && mySpawns['Spawn1'].room.controller.level > 1) {
-        mySpawns['Spawn1'].memory.req_builders = 4;
+    if (mySpawns['Spawn1'].memory.building==true && mySpawns['Spawn1'].room.controller.level > 1) {
+        mySpawns['Spawn1'].memory.req_builders = 6;
     }
     mySpawns['Spawn1'].memory.req_haulers = 1;// role num 4
     mySpawns['Spawn1'].memory.req_berserk = 1;//role num 8
@@ -140,21 +118,80 @@ function setRequiredPopulation(mySpawns) {
         mySpawns['Spawn1'].memory.farming_rooms = [];
 
     }
+    else {
+        for (let i = 0; i < mySpawns['Spawn1'].memory.farming_rooms.length; i++) {
+
+            if (mySpawns['Spawn1'].memory.farming_rooms[i].body_parts_cost == undefined) {
+
+                var body_parts_cost = (mySpawns['Spawn1'].memory.farming_rooms[i].sources_num * 12);//parts for farmers (max farmer is made off 12 bodyparts);
+                body_parts_cost += 14;//maxRepairer
+                body_parts_cost += Math.ceil((mySpawns['Spawn1'].memory.farming_rooms[i].sources_num * 10 * mySpawns['Spawn1'].memory.farming_rooms[i].distance * 2 * 3) / 100);//distanceCarriers
+                mySpawns['Spawn1'].memory.farming_rooms[i].body_parts_cost = body_parts_cost;
+            }
+
+            if (mySpawns['Spawn1'].memory.farming_rooms[i].carry_power == undefined) {
+                mySpawns['Spawn1'].memory.farming_rooms[i].carry_power = 0;
+            }
+            if (mySpawns['Spawn1'].memory.farming_rooms[i].harvesting_power == undefined) {
+                mySpawns['Spawn1'].memory.farming_rooms[i].harvesting_power = 0;
+            }
+            if (mySpawns['Spawn1'].memory.farming_rooms[i].calculatedIncome == undefined || true) {
+                var sources_num = mySpawns['Spawn1'].memory.farming_rooms[i].sources_num;
+                var distance = mySpawns['Spawn1'].memory.farming_rooms[i].distance;
+                //source_income = raw income from sources per CREEP_LIFE_TIME (1500 ticks)
+                var raw_source_income = (sources_num * (CREEP_LIFE_TIME / ENERGY_REGEN_TIME) * SOURCE_ENERGY_CAPACITY);
+                //console.log(mySpawns['Spawn1'].memory.farming_rooms[i].name);
+                //console.log("raw_source_income: ",raw_source_income);
+                var farmers_cost = sources_num * 950;
+                var repairer_cost = 750;
+                //var distanceCarrier_cost=(((3*sources_num*(SOURCE_ENERGY_CAPACITY/ENERGY_REGEN_TIME)*mySpawns['Spawn1'].memory.farming_rooms[i].distance*2)/100)/3)*50;
+                var distanceCarrier_parts = (sources_num * (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * distance * 2 * 3) / 100;
+                var distanceCarriers_cost = distanceCarrier_parts * 50;
+                //console.log("farmers_cost; ",farmers_cost);
+                //console.log("repairer_cost: ", repairer_cost);
+                //console.log("distanceCarrier_parts; ",distanceCarrier_parts);
+                //console.log("distanceCarrier_cost: ",distanceCarriers_cost);
+                var cost = farmers_cost + repairer_cost + distanceCarriers_cost;
+                var final_income = raw_source_income - cost;
+                //console.log("cost: ",cost);
+                //console.log("final_income: ",final_income);
+                mySpawns['Spawn1'].memory.farming_rooms[i].calculatedIncome = final_income;
+                mySpawns['Spawn1'].memory.farming_rooms[i].income_per_body_part = mySpawns['Spawn1'].memory.farming_rooms[i].calculatedIncome / mySpawns['Spawn1'].memory.farming_rooms[i].body_parts_cost;
+
+            }
+
+        }
+        var farming_body_parts = 0;
+        var farming_rooms_num = 0;
+        mySpawns['Spawn1'].memory.farming_rooms.sort((a, b) => b.income_per_body_part - a.income_per_body_part);
+        while (farming_body_parts < 400 && farming_rooms_num < mySpawns['Spawn1'].memory.farming_rooms.length) {
+            farming_body_parts += mySpawns['Spawn1'].memory.farming_rooms[farming_rooms_num].body_parts_cost;
+            if (farming_body_parts < 400) {
+                farming_rooms_num++;
+            }
+
+        }
+
+        if (mySpawns['Spawn1'].memory.farming_rooms.length > farming_rooms_num && mySpawns['Spawn1'].memory.farming_rooms.length > 0) {
+            while (mySpawns['Spawn1'].memory.farming_rooms.length > farming_rooms_num) {
+                mySpawns['Spawn1'].memory.farming_rooms.pop();
+            }
+        }
+
+    }
+    /*
     else if (mySpawns['Spawn1'].memory.farming_rooms.length > 3) {
         mySpawns['Spawn1'].memory.farming_rooms.sort((a, b) => a.distance - b.distance);
         while (mySpawns['Spawn1'].memory.farming_rooms.length > 3) {
             mySpawns['Spawn1'].memory.farming_rooms.pop();
         }
     }
+    */
 
 
     if (mySpawns['Spawn1'].memory.claiming_rooms == undefined) {
         mySpawns['Spawn1'].memory.claiming_rooms = [];
     }
-
-    //mySpawns['Spawn1'].memory.farming_rooms.push('E34N53');
-    //mySpawns['Spawn1'].memory.farming_rooms.push('E38S4');
-    //mySpawns['Spawn1'].memory.farming_rooms.push('E38S5');
     if (mySpawns['Spawn1'].memory.keepers_rooms == undefined) {
         mySpawns['Spawn1'].memory.keepers_rooms = [];
     }
@@ -172,9 +209,8 @@ function setRequiredPopulation(mySpawns) {
 
 
     if (mySpawns['Spawn1'].memory.keepers_rooms != undefined && mySpawns['Spawn1'].memory.keepers_rooms.length > 0
-        && mySpawns['Spawn1'].room.controller.level >= 7) {
+        && mySpawns['Spawn1'].room.controller.level >= 5) {
         for (let keeper_room of mySpawns['Spawn1'].memory.keepers_rooms) {
-            console.log(keeper_room.name);
             if (keeper_room.keeperKiller == undefined && mySpawns['Spawn1'].memory.need_keeperKiller == undefined) {
                 mySpawns['Spawn1'].memory.need_keeperKiller = keeper_room.name;
             }
@@ -206,14 +242,12 @@ function setRequiredPopulation(mySpawns) {
     mySpawns['Spawn1'].memory.need_soldier = undefined;
     mySpawns['Spawn1'].memory.need_reserver = undefined;
     if (mySpawns['Spawn1'].memory.farming_rooms != undefined && mySpawns['Spawn1'].memory.farming_rooms.length > 0 &&
-        (mySpawns['Spawn1'].memory.rooms_to_scan != undefined /*&& mySpawns['Spawn1'].memory.rooms_to_scan.length == 0*/)) {
-        // console.log("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+        (mySpawns['Spawn1'].memory.rooms_to_scan != undefined)) {
         //mySpawns['Spawn1'].memory.need_DistanceCarrier = undefined;
         //  CARRIERS //
         for (let i = 0; i < mySpawns['Spawn1'].memory.farming_rooms.length; i++) {
             if (mySpawns['Spawn1'].memory.farming_rooms[i].carry_power < mySpawns['Spawn1'].memory.farming_rooms[i].sources_num * 10
                 && mySpawns['Spawn1'].memory.farming_rooms[i].carry_power < mySpawns['Spawn1'].memory.farming_rooms[i].harvesting_power) {
-                //console.log("NNNNNNNNNEEEEEEEEEEEEEEEEEEDDDDDDDDDDD");
                 if (Game.rooms[mySpawns['Spawn1'].memory.farming_rooms[i].name] != undefined && Game.rooms[mySpawns['Spawn1'].memory.farming_rooms[i].name].controller.reservation != undefined
                     && Game.rooms[mySpawns['Spawn1'].memory.farming_rooms[i].name].controller.reservation.username == 'Invader') {
                     //console.log('ROom: ', mySpawns['Spawn1'].memory.farming_rooms[i].name, ' reserved by invader');
@@ -230,12 +264,13 @@ function setRequiredPopulation(mySpawns) {
         for (let i = 0; i < mySpawns['Spawn1'].memory.farming_rooms.length; i++) {
             if (mySpawns['Spawn1'].memory.farming_rooms[i].harvesting_power < mySpawns['Spawn1'].memory.farming_rooms[i].sources_num * 11
                 && mySpawns['Spawn1'].memory.farming_rooms[i].farmers < mySpawns['Spawn1'].memory.farming_rooms[i].max_farmers) {
-                if (Game.rooms[mySpawns['Spawn1'].memory.farming_rooms[i].name] != undefined && Game.rooms[mySpawns['Spawn1'].memory.farming_rooms[i].name].controller.reservation != undefined
+
+                if (Game.rooms[mySpawns['Spawn1'].memory.farming_rooms[i].name] != undefined
+                    && Game.rooms[mySpawns['Spawn1'].memory.farming_rooms[i].name].controller.reservation != undefined
                     && Game.rooms[mySpawns['Spawn1'].memory.farming_rooms[i].name].controller.reservation.username == 'Invader') {
                     //console.log('ROom: ', mySpawns['Spawn1'].memory.farming_rooms[i].name, ' reserved by invader');
                     continue;
                 }
-
                 mySpawns['Spawn1'].memory.need_farmer = mySpawns['Spawn1'].memory.farming_rooms[i].name;
 
                 break;
@@ -262,9 +297,7 @@ function setRequiredPopulation(mySpawns) {
         if (Game.time % 1 == 0) {
             loop1:
             for (let myRoom in Game.rooms) {
-                //console.log("ignoring hoooostile at: ", myRoom);
                 for (let keeperRoom of mySpawns['Spawn1'].memory.keepers_rooms) {
-                    //console.log("ignoring hostile at: ", keeperRoom.name);
                     if (myRoom == keeperRoom.name) {
                         console.log("ignoring hostile at: ", keeperRoom.name);
                         continue loop1;
@@ -272,11 +305,9 @@ function setRequiredPopulation(mySpawns) {
                 }
                 if (Game.rooms[myRoom].name != mySpawns['Spawn1'].room.name) {
                     var is_farming_room = false;
-                    for(let farmingRoom of mySpawns['Spawn1'].memory.farming_rooms)
-                    {
-                        if(myRoom==farmingRoom.name)
-                        {
-                            is_farming_room=true;
+                    for (let farmingRoom of mySpawns['Spawn1'].memory.farming_rooms) {
+                        if (myRoom == farmingRoom.name) {
+                            is_farming_room = true;
                             break;
                         }
                     }
@@ -304,23 +335,14 @@ function setRequiredPopulation(mySpawns) {
             }
         }
 
-        //
-
-
-        /*
-        for (let i = 0; i < mySpawns['Spawn1'].memory.farming_rooms.length; i++) {
-            if (mySpawns['Spawn1'].memory.farming_rooms[i].harvesting_power > 0 && mySpawns['Spawn1'].memory.farming_rooms[i].soldier == undefined) {
-                
-
-                mySpawns['Spawn1'].memory.need_soldier = mySpawns['Spawn1'].memory.farming_rooms[i].name;
-                break;
-            }
-        }
-        */
         // RESERVERS //
 
 
         for (let i = 0; i < mySpawns['Spawn1'].memory.farming_rooms.length; i++) {
+
+
+
+
             if (mySpawns['Spawn1'].memory.farming_rooms[i].harvesting_power > 0 && mySpawns['Spawn1'].memory.farming_rooms[i].reserver == undefined
                 && mySpawns['Spawn1'].memory.farming_rooms[i].name != mySpawns['Spawn1'].room.name) {
 
@@ -335,11 +357,9 @@ function setRequiredPopulation(mySpawns) {
                 break;
             }
         }
-        console.log('need DistanceCarrier: ', mySpawns['Spawn1'].memory.need_DistanceCarrier);
-        console.log('need farmer: ', mySpawns['Spawn1'].memory.need_farmer);
-        console.log(mySpawns['Spawn1'].memory.need_distanceRepairer)
-        console.log('need soldier', mySpawns['Spawn1'].memory.need_soldier);
-        console.log('need reserver ', mySpawns['Spawn1'].memory.need_reserver);
+        console.log('need DistanceCarrier: ', mySpawns['Spawn1'].memory.need_DistanceCarrier, ' | need farmer: ', mySpawns['Spawn1'].memory.need_farmer,
+            ' | need distanceRepairer ', mySpawns['Spawn1'].memory.need_distanceRepairer, ' | need soldier', mySpawns['Spawn1'].memory.need_soldier,
+            ' | need reserver ', mySpawns['Spawn1'].memory.need_reserver);
 
 
 
@@ -375,11 +395,7 @@ function setRequiredPopulation(mySpawns) {
 
 
 
-    var terminal = mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
-        filter: function (structure) {
-            return structure.structureType == STRUCTURE_TERMINAL;
-        }
-    });
+    var terminal = mySpawns['Spawn1'].room.terminal;
     if (terminal != undefined && terminal.length > 0) {
         mySpawns['Spawn1'].memory.req_merchants = 1;
     }
@@ -387,13 +403,30 @@ function setRequiredPopulation(mySpawns) {
         mySpawns['Spawn1'].memory.req_merchants = 0;
     }
 
-    var extractor = mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
-        filter: function (structure) {
-            return structure.structureType == STRUCTURE_EXTRACTOR;
+    //EXTRACTOR
+    if (mySpawns['Spawn1'].memory.extractor == undefined) {
+        var extractor = mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
+            filter: function (structure) {
+                return structure.structureType == STRUCTURE_EXTRACTOR;
+            }
+        });
+        if (extractor.length > 0) {
+            mySpawns['Spawn1'].memory.extractor = extractor[0].id;
         }
-    });
-    var mineral = mySpawns['Spawn1'].room.find(FIND_MINERALS);
-    if (extractor != undefined && extractor.length > 0 && mineral[0].mineralAmount > 0) {
+
+    }
+
+    //MINERAL
+    if (mySpawns['Spawn1'].memory.mineral == undefined) {
+        var mineral = mySpawns['Spawn1'].room.find(FIND_MINERALS);
+        if (mineral.length > 0) {
+            mySpawns['Spawn1'].memory.mineral = mineral[0].id;
+        }
+
+    }
+
+    if (Game.getObjectById(mySpawns['Spawn1'].memory.extractor) != null &&
+        Game.getObjectById(mySpawns['Spawn1'].memory.mineral) != null && Game.getObjectById(mySpawns['Spawn1'].memory.mineral).mineralAmount > 0) {
         mySpawns['Spawn1'].memory.req_miners = 1;
     }
     else {
@@ -401,15 +434,21 @@ function setRequiredPopulation(mySpawns) {
     }
 
 
-    var labs = mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
-        filter: function (structure) {
-            return structure.structureType == STRUCTURE_LAB;
+    if (mySpawns['Spawn1'].room.controller.level >= 6 && Game.time%1400==1) {
+        var labs = mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
+            filter: function (structure) {
+                return structure.structureType == STRUCTURE_LAB;
+            }
+        });
+        if (labs != undefined && labs.length > 0) {
+            //mySpawns['Spawn1'].memory.req_doctors=1;
+            mySpawns['Spawn1'].memory.req_doctors = 1;
         }
-    });
-    if (labs != undefined && labs.length > 0) {
-        //mySpawns['Spawn1'].memory.req_doctors=1;
-        mySpawns['Spawn1'].memory.req_doctors = 1;
     }
+    else {
+        mySpawns['Spawn1'].memory.req_doctors = 0;
+    }
+
 
 
 
@@ -427,24 +466,6 @@ function setRequiredPopulation(mySpawns) {
         mySpawns['Spawn1'].memory.soldiers_counter = 0;
     }
 
-
-    for (let i = 0; i < mySpawns['Spawn1'].memory.farming_rooms.length; i++) {
-        if (mySpawns['Spawn1'].memory.farming_rooms[i].carry_power == undefined) {
-            mySpawns['Spawn1'].memory.farming_rooms[i].carry_power = 0;
-        }
-        if (mySpawns['Spawn1'].memory.farming_rooms[i].harvesting_power == undefined) {
-            mySpawns['Spawn1'].memory.farming_rooms[i].harvesting_power = 0;
-        }
-
-        /*
-        if(mySpawns['Spawn1'].memory.farming_rooms[i].distance==undefined)
-        {
-            mySpawns['Spawn1'].memory.farming_rooms[i].distance=Math.abs(calculateDistance(mySpawns['Spawn1'].room.name,
-                mySpawns['Spawn1'].memory.farming_rooms[i].name));
-        }
-        */
-
-    }
     for (let i = 0; i < mySpawns['Spawn1'].memory.keepers_rooms.length; i++) {
         if (mySpawns['Spawn1'].memory.keepers_rooms[i].carry_power == undefined) {
             mySpawns['Spawn1'].memory.keepers_rooms[i].carry_power = 0;
@@ -459,13 +480,6 @@ function setRequiredPopulation(mySpawns) {
             mySpawns['Spawn1'].memory.keepers_rooms[i].max_farmers = 3;
         }
 
-        /*
-        if(mySpawns['Spawn1'].memory.keepers_rooms[i].distance==undefined)
-        {
-            mySpawns['Spawn1'].memory.keepers_rooms[i].distance=Math.abs(calculateDistance(mySpawns['Spawn1'].room.name,
-                mySpawns['Spawn1'].memory.keepers_rooms[i].name));
-        }
-        */
     }
 
 
