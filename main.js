@@ -104,7 +104,8 @@ module.exports.loop = function () {
                 if (Game.time % 53 == 0) {
                     setBaseLayout(spawn);
                 }
-
+                //spawn.memory.farming_rooms=undefined;
+                //spawn.memory.rooms_to_scan=undefined;
                 spawn.memory.progress_old = spawn.memory.progress;
                 spawn.memory.progress = spawn.room.controller.progress;
                 if (spawn.memory.progress_old != 0) {
@@ -566,7 +567,8 @@ module.exports.loop = function () {
                     return;
                 }
             }
-            if (pop_upgraders < spawn.memory.req_upgraders && spawn.memory.farming_rooms[0].carry_power>0) // spawning new upgrader
+            if (pop_upgraders < spawn.memory.req_upgraders && spawn.memory.farming_rooms[0].carry_power>0
+                && pop_upgraders/spawn.memory.req_upgraders<spawn.memory.farming_rooms[0].carry_power/spawn.memory.farming_rooms[0].sources_num*10) // spawning new upgrader
             {
                 if (spawn.spawnCreep(maxUpgrader(energyCap, spawn), 'Upgrader' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {
                     console.log('Spawning Upgrader');
@@ -618,7 +620,7 @@ module.exports.loop = function () {
                     return;
                 }
             }
-            if (spawn.memory.need_DistanceCarrier != undefined && pop_distanceCarriers < 15) {
+            if (spawn.memory.need_DistanceCarrier != undefined && pop_distanceCarriers < 30) {
                 if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, false), 'distnaceCarrier' + Game.time, {
                     memory: {
                         role: 'distanceCarrier', home_room: spawn.room,

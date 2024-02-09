@@ -50,7 +50,7 @@ var roleBuilder = {
                     && structure.store[RESOURCE_ENERGY] > 50;
             }
         }));
-        if(spawn.store[RESOURCE_ENERGY]>0)
+        if(spawn.store[RESOURCE_ENERGY]>=300)
         {
             deposits=deposits.concat(spawn);
         }
