@@ -29,11 +29,12 @@ function maxDistanceCarrier(cap,spawn,limit,min)// return array with max possibl
     parts.push(CARRY);
     parts.push(CARRY);
     cap-=150;
+    /*
     parts.push(MOVE);
     parts.push(CARRY);
     parts.push(CARRY);
     cap-=150;
-    
+    */
     
 
     //console.log("avaliable work parts: ", Math.floor(cap/100));

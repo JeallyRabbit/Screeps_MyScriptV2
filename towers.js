@@ -24,7 +24,7 @@ var towers = {
         }
         if (spawn.memory.damagedStructures == undefined && Game.time%23==0) {
             var damagedStructures = spawn.room.find(FIND_STRUCTURES, {
-                filter: (structure) => structure.hits < structure.hitsMax
+                filter: (structure) => structure.hits < structure.hitsMax*0.3
                     && structure.hits < 50000
             });
             damagedStructures.sort((a, b) => b.hits - a.hits);

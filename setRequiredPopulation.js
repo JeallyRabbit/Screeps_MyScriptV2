@@ -54,14 +54,24 @@ function setRequiredPopulation(mySpawns) {
     //mySpawns['Spawn1'].memory.req_c
     mySpawns['Spawn1'].memory.req_upgraders = 1;
     mySpawns['Spawn1'].memory.req_fillers = 4;
-    if(mySpawns['Spawn1'].memory.construction_sites==undefined && Game.time%127==0)
-    {
-        var construction_sites=mySpawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES);
-        if(construction_sites.length>0)
-        {
-            mySpawns['Spawn1'].memory.building=true;
+    if ((mySpawns['Spawn1'].memory.building != true && Game.time % 1 == 0) || Game.time % 11 == 0) {
+        if (mySpawns['Spawn1'].memory.farming_rooms != undefined) {
+            var farming_rooms_num = mySpawns['Spawn1'].memory.farming_rooms.length;
+            if (farming_rooms_num>0 && mySpawns['Spawn1'].memory.farming_rooms[Math.floor(farming_rooms_num/2)].carry_power > 0) {
+                var construction_sites = mySpawns['Spawn1'].room.find(FIND_CONSTRUCTION_SITES);
+                if (construction_sites.length > 0) {
+                    mySpawns['Spawn1'].memory.building = true;
+                    mySpawns['Spawn1'].memory.upgrading = undefined;
+                }
+                else {
+                    mySpawns['Spawn1'].memory.building = undefined;
+                    mySpawns['Spawn1'].memory.upgrading = true;
+                }
+            }
         }
-        
+
+
+
     }
     if (mySpawns['Spawn1'].room.controller.level == 1) {
         // mySpawns['Spawn1'].memory.req_harvesters = 6;
@@ -70,7 +80,11 @@ function setRequiredPopulation(mySpawns) {
     }
     else if (mySpawns['Spawn1'].room.controller.level == 2) {
         //mySpawns['Spawn1'].memory.req_harvesters = 4;
-        mySpawns['Spawn1'].memory.req_upgraders = 6;
+        if(mySpawns['Spawn1'].memory.upgrading)
+        {
+            mySpawns['Spawn1'].memory.req_upgraders = 6;
+        }
+        
         mySpawns['Spawn1'].memory.req_fillers = 1;
     }
     else if (mySpawns['Spawn1'].room.controller.level == 3) {
@@ -83,15 +97,18 @@ function setRequiredPopulation(mySpawns) {
             mySpawns['Spawn1'].memory.req_upgraders = 2;
         }
 
-        if (mySpawns['Spawn1'].room.storage.store[RESOURCE_ENERGY] > 200000) {
-            mySpawns['Spawn1'].memory.req_upgraders = storage.store[RESOURCE_ENERGY] / 100000;
+        if (mySpawns['Spawn1'].room.storage != undefined && mySpawns['Spawn1'].room.storage.store[RESOURCE_ENERGY] > 200000) {
+            mySpawns['Spawn1'].memory.req_upgraders = mySpawns['Spawn1'].room.storage.store[RESOURCE_ENERGY] / 100000;
         }
     }
-
+    if (mySpawns['Spawn1'].memory.building == true) {
+        mySpawns['Spawn1'].memory.req_upgraders = 1;
+        mySpawns['Spawn1'].memory.req_builders=4;
+    }
     mySpawns['Spawn1'].memory.req_farmers = 0;//role num 2
     mySpawns['Spawn1'].memory.req_builders = 0;// role num 3
-    if (mySpawns['Spawn1'].memory.building==true && mySpawns['Spawn1'].room.controller.level > 1) {
-        mySpawns['Spawn1'].memory.req_builders = 3;
+    if (mySpawns['Spawn1'].memory.building == true && mySpawns['Spawn1'].room.controller.level > 1) {
+        mySpawns['Spawn1'].memory.req_builders = 6;
     }
     mySpawns['Spawn1'].memory.req_haulers = 1;// role num 4
     mySpawns['Spawn1'].memory.req_berserk = 1;//role num 8
@@ -266,8 +283,8 @@ function setRequiredPopulation(mySpawns) {
                     continue;
                 }
                 mySpawns['Spawn1'].memory.need_farmer = mySpawns['Spawn1'].memory.farming_rooms[i].name;
-
-                break;
+                //consone.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                //break;
             }
         }
 
@@ -428,7 +445,7 @@ function setRequiredPopulation(mySpawns) {
     }
 
 
-    if (mySpawns['Spawn1'].room.controller.level >= 6 && Game.time%1400==1) {
+    if (mySpawns['Spawn1'].room.controller.level >= 6 && Game.time % 1400 == 1) {
         var labs = mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
             filter: function (structure) {
                 return structure.structureType == STRUCTURE_LAB;

@@ -92,7 +92,8 @@ var roleDistanceCarrier = {
                     if (Game.getObjectById(creep.memory.energy_to_collect) != null) {
                         creep.memory.max_container = undefined;
                         if (creep.pickup(Game.getObjectById(creep.memory.energy_to_collect)) == ERR_NOT_IN_RANGE) {
-                            move_avoid_hostile(creep, Game.getObjectById(creep.memory.energy_to_collect).pos, 1, true);
+                            //move_avoid_hostile(creep, Game.getObjectById(creep.memory.energy_to_collect).pos, 1, true);
+                            creep.moveTo(Game.getObjectById(creep.memory.energy_to_collect));
                             //creep.say("E");
                         }
                     }
@@ -180,13 +181,12 @@ var roleDistanceCarrier = {
 
                 //creep.memory.home_container=undefined;
                 if (creep.memory.home_room.name == creep.memory.target_room || true) {
-                    creep.say("con");
                     if (creep.memory.home_container != undefined && Game.getObjectById(creep.memory.home_container) == null
                         || (creep.memory.home_container != undefined && Game.getObjectById(creep.memory.home_container).store.getFreeCapacity(RESOURCE_ENERGY) == 0)) {
                         creep.memory.home_container = undefined
                     }
                     if (creep.memory.home_container == undefined) {
-                        creep.say("un");
+                        //creep.say("un");
                         if (creep.room.controller.level >= 4 && false) {
                             var storage = creep.room.find(FIND_STRUCTURES, {
                                 filter: function (structure) {
@@ -219,17 +219,21 @@ var roleDistanceCarrier = {
                                     creep.memory.home_container = container.id;
                                 }
                                 else {
-                                    var conatiner = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                                    conatiner = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                                         filter: function (structure) {
                                             return structure.structureType == STRUCTURE_TERMINAL && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                                         }
                                     });
+                                    if(container==null)
+                                    {
+                                        container=spawn;
+                                    }
                                 }
                                 if (container != null) {
                                     creep.memory.home_container = container.id;
                                 }
                             }
-                            creep.say("no con");
+                            //creep.say("no con");
                         }
 
                     }
@@ -237,7 +241,7 @@ var roleDistanceCarrier = {
                     if (creep.memory.home_container != undefined && Game.getObjectById(creep.memory.home_container) != null) {
                         if (creep.transfer(Game.getObjectById(creep.memory.home_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                             // if creep have energy go to container and store\
-                            creep.say("con");
+                            //creep.say("con");
                             /*
                             var if_avoid = false;
                             if (creep.pos.y >= 48 || creep.pos.x >= 48 || creep.pos.y <= 1 || creep.pos.x <= 1) {

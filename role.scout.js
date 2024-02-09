@@ -147,10 +147,10 @@ var roleScout = {
 
                                 plainCost: 2,
                                 swampCost: 10,
+                                maxOps: 8000,
+                                roomCallback: function (roomName) {
 
-                                roomCallback: function () {
-
-                                    let room = creep.memory.home_room.name;
+                                    let room = Game.rooms[roomName];
                                     // In this example `room` will always exist, but since 
                                     // PathFinder supports searches which span multiple rooms 
                                     // you should be careful!
@@ -215,9 +215,9 @@ var roleScout = {
                                 plainCost: 2,
                                 swampCost: 10,
                                 maxOps: 8000,
-                                roomCallback: function () {
+                                roomCallback: function (roomName) {
 
-                                    let room = creep.memory.home_room.name;
+                                    let room = Game.rooms[roomName];
                                     // In this example `room` will always exist, but since 
                                     // PathFinder supports searches which span multiple rooms 
                                     // you should be careful!
@@ -282,7 +282,7 @@ var roleScout = {
                         }
 
                     }
-                    if (already_scanned == false) {
+                    if (already_scanned == false && avg_distance<50) {
                         spawn.memory.farming_rooms.push(new_farming);
                     }
                     // }

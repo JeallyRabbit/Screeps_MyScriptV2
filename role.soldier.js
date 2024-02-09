@@ -1,5 +1,5 @@
 const { move_avoid_hostile } = require("./move_avoid_hostile");
-const goOutOfRange= require('./goOutOfRange');
+const { goOutOfRange } = require("./goOutOfRange");
 var roleSoldier = {
     run: function(creep,spawn) {
         
@@ -86,7 +86,7 @@ var roleSoldier = {
                 
                 if(creep.pos.inRangeTo(target_creep,2))
                 {
-                    goOutOfRange(creep,3,);
+                    goOutOfRange(creep,3);
                 }
                 
             } 

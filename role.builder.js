@@ -1,4 +1,4 @@
-var roleUpgrader = require('role.upgrader');
+//var roleUpgrader = require('role.upgrader');
 const { move_avoid_hostile } = require('./move_avoid_hostile');
 
 var roleBuilder = {
@@ -20,11 +20,12 @@ var roleBuilder = {
         {
             if(creep.memory.role!='distanceRepairer')
             {
+                spawn.memory.building=undefined;
                 creep.suicide();
             }
             
             if (creep.room.name == creep.memory.home_room.name && creep.memory.role != 'distanceCarrier') {
-                roleUpgrader.run(creep, spawn);
+                //roleUpgrader.run(creep, spawn);
             }
 
         }
@@ -49,7 +50,11 @@ var roleBuilder = {
                     && structure.store[RESOURCE_ENERGY] > 50;
             }
         }));
-
+        if(spawn.store[RESOURCE_ENERGY]>=300)
+        {
+            deposits=deposits.concat(spawn);
+        }
+        
         var closest_target = creep.pos.findClosestByRange(targets);
         for (let i = 0; i < targets.length; i++) {
             if (targets[i].structureType == STRUCTURE_SPAWN) {

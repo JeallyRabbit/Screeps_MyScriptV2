@@ -104,7 +104,8 @@ module.exports.loop = function () {
                 if (Game.time % 53 == 0) {
                     setBaseLayout(spawn);
                 }
-
+                //spawn.memory.farming_rooms=undefined;
+                //spawn.memory.rooms_to_scan=undefined;
                 spawn.memory.progress_old = spawn.memory.progress;
                 spawn.memory.progress = spawn.room.controller.progress;
                 if (spawn.memory.progress_old != 0) {
@@ -150,7 +151,7 @@ module.exports.loop = function () {
                 for (var name in Game.creeps) {
                     var creep = Game.creeps[name];
                     //creep.suicide();
-                    //if(creep.memory.home_room==undefined){creep.suicide()}
+                    if(creep.memory.home_room==undefined){creep.suicide()}
                     if (creep.memory.home_room.name == spawn.room.name) {
                         //creep.memory.my_path=undefined;
                         //creep.suicide();
@@ -512,10 +513,11 @@ module.exports.loop = function () {
                 if (spawn.spawnCreep([MOVE], 'Scout' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }) == 0) {
                     console.log("Spawning Scout");
                 }
+                return;
             }
 
 
-            if (pop_berserkers < spawn.memory.req_berserk) {
+            if (pop_berserkers < spawn.memory.req_berserk && false) {
                 var berserk_body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK];
                 if (spawn.spawnCreep(berserk_body, 'Berserker' + Game.time, { memory: { role: 'berserk', home_room: spawn.room, target_room: 'E7S5' } }) == 0) {//costs 520 energy
                     console.log("Spawning Berserker");
@@ -556,6 +558,7 @@ module.exports.loop = function () {
                     console.log('Spawning Builder');
                     return;
                 }
+                return;
             }
             if (pop_haulers < spawn.memory.req_haulers)//spawning new hauler
             {
@@ -564,7 +567,8 @@ module.exports.loop = function () {
                     return;
                 }
             }
-            if (pop_upgraders < spawn.memory.req_upgraders) // spawning new upgrader
+            if (pop_upgraders < spawn.memory.req_upgraders && spawn.memory.farming_rooms[0].carry_power>0
+                && pop_upgraders/spawn.memory.req_upgraders<spawn.memory.farming_rooms[0].carry_power/spawn.memory.farming_rooms[0].sources_num*10) // spawning new upgrader
             {
                 if (spawn.spawnCreep(maxUpgrader(energyCap, spawn), 'Upgrader' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {
                     console.log('Spawning Upgrader');
@@ -616,7 +620,7 @@ module.exports.loop = function () {
                     return;
                 }
             }
-            if (spawn.memory.need_DistanceCarrier != undefined && pop_distanceCarriers < 15) {
+            if (spawn.memory.need_DistanceCarrier != undefined && pop_distanceCarriers < 30) {
                 if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, false), 'distnaceCarrier' + Game.time, {
                     memory: {
                         role: 'distanceCarrier', home_room: spawn.room,
@@ -625,6 +629,10 @@ module.exports.loop = function () {
                 }) == 0) {
                     spawn.memory.distance_carriers_counter++;
                     console.log("Spawning DistanceCarrier");
+                    return;
+                }
+                if(spawn.memory.need_DistanceCarrier==spawn.room.name)
+                {
                     return;
                 }
 
@@ -636,7 +644,7 @@ module.exports.loop = function () {
                     return;
                 }
             }
-            if (pop_miners < spawn.memory.req_miners) {
+            if (pop_miners < spawn.memory.req_miners && spawn.memory.farming_rooms[0].carry_power>=spawn.memory.farming_rooms[0].harvesting_power) {
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn), 'Miner' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }) == 0) {
                     console.log("Spawning Miner");
                     return;
