@@ -11,6 +11,8 @@ var roleRepairer = {
         //var targets=creep.room.find(FIND_CONSTRUCTION_SITES)
         if (creep.room.name == creep.memory.target_room) {
             
+            //creep.move(TOP);
+            //return;
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: function (object) {
                     return object.hits < object.hitsMax && object.hits<300000
@@ -28,7 +30,7 @@ var roleRepairer = {
             });
 
             if (targets.length <3) {
-                //creep.say("no repair");
+                //creep.move(TOP);
                 roleBuilder.run(creep, spawn);
             }
             else {
@@ -36,7 +38,7 @@ var roleRepairer = {
                 //console.log("require repair: ", targets.length);
                 creep.memory.repairing = true;
 
-                if (creep.memory.repairing && creep.store[RESOURCE_ENERGY] == 0) { // if don't have energy go harvest
+                if (creep.memory.repairing && creep.store[RESOURCE_ENERGY] == 0) { 
                     creep.memory.repairing = false;
                     //creep.say('🔄 harvest');
 
@@ -57,8 +59,8 @@ var roleRepairer = {
                     if (targets.length) {
                         var closest_target = creep.pos.findClosestByRange(targets);
                         if (creep.repair(closest_target) == ERR_NOT_IN_RANGE) {
-                            //creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ff0000' } });
-                            move_avoid_hostile(creep, closest_target.pos, 2, false);
+                            creep.moveTo(targets[0], { visualizePathStyle: { stroke: 'red' } });
+                            //move_avoid_hostile(creep, closest_target.pos, 2, false);
                         }
                         
                     }
@@ -72,8 +74,8 @@ var roleRepairer = {
                         //console.log("energy");
                         if (creep.withdraw(source, RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {
                             //creep.say("Going to Cintainer");
-                            //creep.moveTo(source);
-                            move_avoid_hostile(creep, source.pos,1);
+                            creep.moveTo(source);
+                            //move_avoid_hostile(creep, source.pos,1);
                         }
                     }
                     //console.log("qwert");
@@ -86,21 +88,16 @@ var roleRepairer = {
                     if (droppedEnergy.length > 0) {
                         if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                             // Move to it
-                            //creep.moveTo(closestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' } });
-                            move_avoid_hostile(creep, closestDroppedEnergy.pos)
+                            creep.moveTo(closestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' } });
+                            //move_avoid_hostile(creep, closestDroppedEnergy.pos)
                         }
                     }
                 }
             }
         }
         else {
-
-            var if_avoid = false;
-            if (creep.pos.y >= 48 || creep.pos.x >= 48 || creep.pos.y <= 1 || creep.pos.x <= 1) {
-                if_avoid = true;
-            }
-
             creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room),{reUsePath: 10});
+            
             //move_avoid_hostile(creep, new RoomPosition(25, 25, creep.memory.target_room), 5, if_avoid);
         }
 

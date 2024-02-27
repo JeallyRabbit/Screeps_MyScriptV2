@@ -119,6 +119,7 @@ const keeper_Healer = {
                     ////creep.say("PQPQPQPPQ");
                     //console.log(friendlyHealthyKillers[0]);
                     move_avoid_hostile(creep,friendlyHealthyKillers[0].pos);
+                    creep.moveTo(friendlyHealthyKillers[0]);
                 }
 
 

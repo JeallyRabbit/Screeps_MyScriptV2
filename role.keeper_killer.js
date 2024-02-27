@@ -31,6 +31,7 @@ const keeper_killerRole = {
             }
             else {// If in the target room
                 //creep.say("!");
+                /*
                 creep.memory.is_working=true;
                 
                 var pos = creep.pos;
@@ -50,6 +51,7 @@ const keeper_killerRole = {
                     creep.move(BOTTOM);
                     return;
                 }
+                */
                 /*
                 const healers = creep.room.find(FIND_MY_CREEPS, {
                     filter: function (healer) {
@@ -124,18 +126,10 @@ const keeper_killerRole = {
                                 }
                             }
                         }
-                        /*
-                        const lairs = creep.room.find(FIND_STRUCTURES, {
-                            filter: function (structure) {
-                                return structure.structureType == STRUCTURE_KEEPER_LAIR;
-                            }
-                        });
-                        */
-
-                        ////creep.say(lairs.length);
+                        else if(Game.getObjectById(creep.memory.min_lair)!=null){
+                            creep.moveTo(Game.getObjectById(creep.memory.min_lair), { range: 4 });
+                        }
                         
-                        move_avoid_hostile(creep,creep.memory.min_lair.pos,4);
-                        //creep.moveTo(Game.getObjectById(min_lair.id), { range: 4 });
                     }
                     else {// if is too close to enemy (range 2 and less - it have to bee atdistance of 3 squaers of enemy )
                         ////creep.say(4.5);
@@ -191,6 +185,7 @@ const keeper_killerRole = {
                         if (myCreeps != undefined) {
                             //creep.say("group H");
                             move_avoid_hostile(creep, myCreeps.pos, 1);
+                            creep.moveTo(myCreeps);
                         }
                         else {
                             var myCreeps = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
@@ -201,7 +196,8 @@ const keeper_killerRole = {
                             });
                             if (myCreeps != undefined) {
                                 //creep.say("group K");
-                                move_avoid_hostile(creep, myCreeps.pos, 2);
+                                //move_avoid_hostile(creep, myCreeps.pos, 2);
+                                creep.moveTo(myCreeps);
                             }
 
                         }

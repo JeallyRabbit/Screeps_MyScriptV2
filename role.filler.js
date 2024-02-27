@@ -44,16 +44,21 @@ var roleFiller = {
             }
 
         }
-        if (creep.memory.working_pos != undefined) {
+        if (creep.memory.working_pos != undefined && (creep.pos.x!=creep.memory.working_pos.x || creep.pos.y!=creep.memory.working_pos.y)) {
 
             //creep.say("moving");
-            var at_pos=creep.room.lookForAt(LOOK_CREEPS,creep.memory.working_pos.x,creep.memory.working_pos.y);
-            if(at_pos.length>0 && at_pos[0].name!=creep.name)
+            var at_pos=creep.room.lookForAt(LOOK_CREEPS,creep.memory.working_pos.x,creep.memory.working_pos.y,creep.room.name);
+            creep.memory.at_pos=at_pos;
+            if(at_pos.length>0 && at_pos[0].id!=creep.id)
             {
                 creep.memory.working_pos=undefined;
             }
+            else{
+                creep.say("Free");
+                creep.memory.at_pos=undefined;
+                creep.moveTo(new RoomPosition(creep.memory.working_pos.x,creep.memory.working_pos.y,creep.room.name),{range:0});
+            }
             
-            creep.moveTo(creep.memory.working_pos.x, creep.memory.working_pos.y);
         }
         if ((creep.memory.working_pos != undefined) && creep.memory.working_pos.x == creep.pos.x && creep.memory.working_pos.y == creep.pos.y) {
             //creep.say('at pos');

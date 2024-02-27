@@ -82,8 +82,8 @@ var roleUpgrader = {
                     withdraw_amount = Math.min(creep.store.getFreeCapacity(), Game.getObjectById(creep.memory.deposit).store[RESOURCE_ENERGY]);
                     if (withdraw_amount > 0) {
                         if (creep.withdraw(Game.getObjectById(creep.memory.deposit), RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {
-                            //creep.moveTo(Game.getObjectById(creep.memory.deposit));
-                            move_avoid_hostile(creep,Game.getObjectById(creep.memory.deposit).pos,1);
+                            creep.moveTo(Game.getObjectById(creep.memory.deposit));
+                            //move_avoid_hostile(creep,Game.getObjectById(creep.memory.deposit).pos,1);
                         }
                     }
                 }
@@ -97,8 +97,8 @@ var roleUpgrader = {
                 if (droppedEnergy.length > 0) {
                     if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                         // Move to it
-                       // creep.moveTo(closestDroppedEnergy);
-                        move_avoid_hostile(creep,closestDroppedEnergy.pos);
+                        creep.moveTo(closestDroppedEnergy);
+                        //move_avoid_hostile(creep,closestDroppedEnergy.pos);
                     }
                 }
             }
