@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Created Nov. 2022 by @clarkok
  *
@@ -63,12 +62,15 @@
  * We also introduced some optimization to reuse bfs result, especially the last[] array to reduce the work of
  * each round of bfs. See the comments in the code for details.
  */
-//const assert = require('./node:assert');
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.minCutToExit = void 0;
+
+interface Point {
+    x: number;
+    y: number;
+}
+
 // the eight surrounding points of a tile
 // note the order here is somehow important, the element i and (i + 4) % 8 should be the opposite direction
-var EIGHT_DELTA = [
+const EIGHT_DELTA = [
     { x: 0, y: -1 }, // TOP
     { x: 1, y: -1 }, // TOP_RIGHT
     { x: 1, y: 0 }, // RIGHT
@@ -78,220 +80,258 @@ var EIGHT_DELTA = [
     { x: -1, y: 0 }, // LEFT
     { x: -1, y: -1 }, // TOP_LEFT
 ];
+
 /**
  * pack x-y pairs in 12-bit integers, assuming both x and y in [0, 49]
  */
-function calcIdx(x, y) {
+function calcIdx(x: number, y: number) {
     return (y << 6) | x;
 }
+
 /**
  * unpack the 12-bit integer into x-y pair
  */
-function calcPt(v) {
+function calcPt(v: number): Point {
     return { x: v & 0x3f, y: v >> 6 };
 }
-function isPointInRoom(p) {
+
+function isPointInRoom(p: Point): boolean {
     return p.x >= 0 && p.x <= 49 && p.y >= 0 && p.y <= 49;
 }
-function pointAdd(a, b) {
+
+function pointAdd(a: Point, b: Point): Point {
     return { x: a.x + b.x, y: a.y + b.y };
 }
-function surroundingPoints(p) {
-    return EIGHT_DELTA.map(function (d) { return pointAdd(p, d); }).filter(isPointInRoom);
+
+function surroundingPoints(p: Point): Point[] {
+    return EIGHT_DELTA.map(d => pointAdd(p, d)).filter(isPointInRoom);
 }
-var Int32Queue = /** @class */ (function () {
-    function Int32Queue(capacity) {
+
+class Int32Queue {
+    private q: Int32Array;
+    private h: number;
+    private t: number;
+
+    constructor(capacity: number) {
         this.q = new Int32Array(capacity);
         this.h = this.t = 0;
     }
-    Int32Queue.prototype.reset = function (arr) {
+
+    reset(arr: number[]) {
         this.q.set(arr);
         this.h = 0;
         this.t = arr.length;
-    };
-    Int32Queue.prototype.push = function (v) {
+    }
+
+    push(v: number) {
         this.q[this.t] = v;
         this.t = (this.t + 1) % this.q.length;
-    };
-    Int32Queue.prototype.shift = function () {
-        var v = this.q[this.h];
+    }
+
+    shift(): number {
+        const v = this.q[this.h];
         this.h = (this.h + 1) % this.q.length;
         return v;
-    };
-    Object.defineProperty(Int32Queue.prototype, "length", {
-        get: function () {
-            return (this.t - this.h + this.q.length) % this.q.length;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Int32Queue.prototype.clear = function () {
+    }
+
+    get length(): number {
+        return (this.t - this.h + this.q.length) % this.q.length;
+    }
+
+    clear() {
         this.t = this.h = 0;
-    };
-    return Int32Queue;
-}());
-var MAX_PT = 1 << 12;
-var PT_MASK = MAX_PT - 1;
+    }
+}
+
+const MAX_PT = 1 << 12;
+const PT_MASK = MAX_PT - 1;
+
 // the bit to indicate a d-node in the 13-bits node id
-var D_NODE = 1 << 12;
+const D_NODE = 1 << 12;
+
 // max encoded node id, there can only be at most 5000 nodes in the graph, some
 // spaces are wasted
-var MAX_NODE = 1 << 13;
+const MAX_NODE = 1 << 13;
+
 // the edge connecting s-node and d-node
-var REV_EDGE = 1 << 16;
+const REV_EDGE = 1 << 16;
+
 // direction shift in the encoded edge
-var DIR_SHIFT = 13;
-function minCutToExit(sources, costMap) {
-    //console.log("sources in mincut:");
-    //console.log(sources);
-    //return;
+const DIR_SHIFT = 13;
+
+export function minCutToExit(sources: Point[], costMap: CostMatrix): Point[] {
     // an array indicating whether a point is at the exit or near the exit
-    var exit = new Uint8Array(MAX_PT);
-    for (var i = 0; i < 49; ++i) {
-        for (var _i = 0, _a = [
+    const exit = new Uint8Array(MAX_PT);
+    for (let i = 0; i < 49; ++i) {
+        for (const [x, y] of [
             [i, 0],
             [49, i],
             [49 - i, 49],
             [0, 49 - i],
-        ]; _i < _a.length; _i++) {
-            var _b = _a[_i], x = _b[0], y = _b[1];
+        ]) {
             if (costMap.get(x, y) == 255) {
                 continue;
             }
             exit[calcIdx(x, y)] = 1;
-            for (var _c = 0, _d = surroundingPoints({ x: x, y: y }); _c < _d.length; _c++) {
-                var p = _d[_c];
+            for (const p of surroundingPoints({ x, y })) {
                 exit[calcIdx(p.x, p.y)] = 1;
             }
         }
     }
-    for (var _e = 0, sources_1 = sources; _e < sources_1.length; _e++) {
-        var s = sources_1[_e];
+
+    for (const s of sources) {
         if (exit[calcIdx(s.x, s.y)]) {
-            throw new Error("Invalid source ".concat(s.x, ",").concat(s.y));
+            throw new Error(`Invalid source ${s.x},${s.y}`);
         }
     }
+
     // setup the capacity map, the keys are the encoded edges
     // 0-12 bits    - source node
     //   0-11 bits      - the packed location of the source node
     //   12 bit         - s-node or the d-node
     // 13-16 bits   - direction of the edge, 0-7 means the edge goes to another
     // location, while 8 means the edge goes from s-node to d-node or vice versa
-    var capacityMap = new Int32Array(1 << 17);
+    const capacityMap = new Int32Array(1 << 17);
     capacityMap.fill(0);
-    for (var y = 0; y < 50; ++y) {
-        for (var x = 0; x < 50; ++x) {
+    for (let y = 0; y < 50; ++y) {
+        for (let x = 0; x < 50; ++x) {
             if (costMap.get(x, y) == 255) {
                 continue;
             }
-            var idx = calcIdx(x, y);
+
+            const idx = calcIdx(x, y);
+
             // setting up the capacity of the edge from s-node to the d-node at the
             // location x,y
             capacityMap[idx | REV_EDGE] = costMap.get(x, y);
+
             // setting up the capacity of the edges from d-node to s-nodes of the
             // surrounding locations
-            for (var dir = 0; dir < EIGHT_DELTA.length; ++dir) {
-                var np = pointAdd({ x: x, y: y }, EIGHT_DELTA[dir]); // next point
+            for (let dir = 0; dir < EIGHT_DELTA.length; ++dir) {
+                const np = pointAdd({ x, y }, EIGHT_DELTA[dir]); // next point
                 if (!isPointInRoom(np)) {
                     continue;
                 }
+
                 if (costMap.get(np.x, np.y) == 255) {
                     continue;
                 }
+
                 capacityMap[idx | D_NODE | (dir << DIR_SHIFT)] = 10000; // almost infinite
             }
         }
     }
+
     // storing the previous node, and the edge direction in the path found from
     // the sources to the sinks the keys are the encoded nodes the values are
     //   -2: the node is not visited
     //   -1: the node is in the sources set
     //   (direction << 16) | prev_node_id: by which node the current node is
     //   visited, and the direction of the edge
-    var last = new Int32Array(MAX_NODE);
+    const last = new Int32Array(MAX_NODE);
     last.fill(-2);
+
     // whether or not a node is in the bfsQ
-    var added = new Uint8Array(MAX_NODE);
+    const added = new Uint8Array(MAX_NODE);
     added.fill(0);
+
     // the queue for bfs
-    var bfsQ = new Int32Queue(MAX_NODE);
-    for (var _f = 0, sources_2 = sources; _f < sources_2.length; _f++) {
-        var p = sources_2[_f];
-        var pidx = calcIdx(p.x, p.y);
+    const bfsQ = new Int32Queue(MAX_NODE);
+
+    for (const p of sources) {
+        const pidx = calcIdx(p.x, p.y);
         last[pidx] = -1;
         added[pidx] = 1;
         bfsQ.push(pidx);
     }
+
     // bfs to find a path from the sources to the sinks, returns the sink point or
     // null if no path is found
-    var bfs = function () {
+    const bfs = (): Point | null => {
         while (bfsQ.length) {
-            var opidx = bfsQ.shift(); // original node id
+            const opidx = bfsQ.shift(); // original node id
             added[opidx] = 0;
+
             if (last[opidx] == -2) {
                 // if the node is no-longer reachable from the sources, skip it
                 // this can happen during the loosen operation below, after we reduce
                 // the capacity of some edges to zero, the descendants of the node may
                 // become unreachable and requires a next bfs round to be re-discovered
+
                 continue;
             }
+
             // checking the edge to its counterpart, from s-node to d-node or vice versa
             if (capacityMap[opidx | REV_EDGE]) {
-                var onpidx = opidx ^ D_NODE; // the counterpart node id
+                const onpidx = opidx ^ D_NODE; // the counterpart node id
                 if (last[onpidx] == -2) {
                     last[onpidx] = (8 << 16) | opidx;
+
                     // note that we don't need to check the `added` flag here, in `bfs`
                     // we won't add a node to the queue twice
                     added[onpidx] = 1;
                     bfsQ.push(onpidx);
                 }
             }
+
             // checking the edges to the surrounding nodes
-            var pidx = opidx & PT_MASK; // the packed location of the node
-            var p = calcPt(pidx);
-            var npCounterpartFlag = (opidx ^ D_NODE) & D_NODE;
-            for (var dir = 0; dir < EIGHT_DELTA.length; ++dir) {
+            const pidx = opidx & PT_MASK; // the packed location of the node
+            const p = calcPt(pidx);
+            const npCounterpartFlag = (opidx ^ D_NODE) & D_NODE;
+            for (let dir = 0; dir < EIGHT_DELTA.length; ++dir) {
                 if (capacityMap[opidx | (dir << DIR_SHIFT)] == 0) {
                     continue;
                 }
-                var np = pointAdd(p, EIGHT_DELTA[dir]); // next point
-                var npidx = calcIdx(np.x, np.y);
+
+                const np = pointAdd(p, EIGHT_DELTA[dir]); // next point
+                const npidx = calcIdx(np.x, np.y);
+
                 // the destination node id, note that the D_NODE flag is different from the opidx node
                 // also note that we don't need to check if the next point is outside the room, this is impossible
-                var onpidx = npidx | npCounterpartFlag;
+                const onpidx = npidx | npCounterpartFlag;
+
                 if (exit[npidx]) {
                     // exit! we successfully found a path from the sources to the sinks
                     // here the last[onpidx] won't be -2, because it is guarenteed that
                     // it is the first time this node is visited by this round of bfs
+
                     // we will also leave the rest of nodes in the queue, and continue the bfs in the next iteration
                     last[onpidx] = (dir << 16) | opidx;
                     return np;
                 }
+
                 if (last[onpidx] != -2) {
                     continue;
                 }
+
                 last[onpidx] = (dir << 16) | opidx;
                 added[onpidx] = 1;
                 bfsQ.push(onpidx);
             }
         }
+
         return null;
     };
+
     // given a node and a dir, return the destination node and the dir to return from source node
-    var revEdge = function (opidx, dir) {
+    const revEdge = (opidx: number, dir: number): [number, number] => {
         if (dir == 8) {
             return [opidx ^ D_NODE, 8];
         }
-        var pidx = opidx & PT_MASK;
-        var p = calcPt(pidx);
-        var np = pointAdd(p, EIGHT_DELTA[dir]);
-        var onpidx = calcIdx(np.x, np.y) | ((opidx ^ D_NODE) & D_NODE);
+
+        const pidx = opidx & PT_MASK;
+        const p = calcPt(pidx);
+        const np = pointAdd(p, EIGHT_DELTA[dir]);
+        const onpidx = calcIdx(np.x, np.y) | ((opidx ^ D_NODE) & D_NODE);
         return [onpidx, (dir + 4) % 8];
     };
+
     // a queue for the traversal in the loosen operation, to find nodes whose reachability from the sources changes
-    var looseQ = new Int32Queue(MAX_NODE);
+    const looseQ = new Int32Queue(MAX_NODE);
+
     // a queue for the adding back nodes to the bfsQ in the loosen operation
-    var readdQ = new Int32Queue(MAX_NODE);
+    const readdQ = new Int32Queue(MAX_NODE);
+
     // the loosen operation, called with the sink point found by bfs, would do 3 things
     //   1. go through the path from the sources to this sink, finding the minimum capacity of the edges in the path,
     //      substract the minimum capacity from all the edges in the path, and add it to all the reverse edges
@@ -299,50 +339,58 @@ function minCutToExit(sources, costMap) {
     //      their last[] to -2, and add them to the readdQ
     //   3. for each the nodes in the readdQ, add all the source-reachable nodes with a non-zero-capacity edge to this node
     //      back to the bfsQ, so the next iteration can continue from these nodes
-    var loosen = function (p) {
+    const loosen = (p: Point) => {
         // step 1.a: find the minimum capacity
-        var minCapacity = Infinity;
-        var highestPt = -1; // the closest node in the path to the sources, where the edge from it is one of the minimum capacity edges
+        let minCapacity = Infinity;
+        let highestPt = -1; // the closest node in the path to the sources, where the edge from it is one of the minimum capacity edges
         // we will start from here to find all the nodes whose reachability from the sources changes
-        for (var res = last[calcIdx(p.x, p.y)]; res != -1;) {
-            var l = res & 0xffff;
-            var d = res >> 16;
-            var capacity = capacityMap[l | (d << DIR_SHIFT)];
+        for (let res = last[calcIdx(p.x, p.y)]; res != -1; ) {
+            const l = res & 0xffff;
+            const d = res >> 16;
+            const capacity = capacityMap[l | (d << DIR_SHIFT)];
             if (capacity <= minCapacity) {
                 minCapacity = capacity;
                 highestPt = l;
             }
             res = last[l];
         }
+
         // step 1.b: loosen the edges
-        for (var res = last[calcIdx(p.x, p.y)]; res != -1;) {
-            var l = res & 0xffff;
-            var d = res >> 16;
+        for (let res = last[calcIdx(p.x, p.y)]; res != -1; ) {
+            const l = res & 0xffff;
+            const d = res >> 16;
             capacityMap[l | (d << DIR_SHIFT)] -= minCapacity;
-            var _a = revEdge(l, d), rl = _a[0], rd = _a[1];
+
+            const [rl, rd] = revEdge(l, d);
             capacityMap[rl | (rd << DIR_SHIFT)] += minCapacity;
+
             res = last[l];
         }
+
         // step 2: find all the nodes whose reachability from the sources changes
         // we follows the last[] direction instead of the capacityMap[]
         looseQ.push(highestPt);
         while (looseQ.length) {
-            var opidx = looseQ.shift();
+            const opidx = looseQ.shift();
+
             // counterpart
             {
-                var onpidx = opidx ^ D_NODE;
+                const onpidx = opidx ^ D_NODE;
                 if (last[onpidx] == (opidx | (8 << 16))) {
                     last[onpidx] = -2;
                     looseQ.push(onpidx);
                     readdQ.push(onpidx);
                 }
             }
-            var pidx = opidx & PT_MASK;
-            var p_1 = calcPt(pidx);
-            var npCounterpartFlag = (opidx ^ D_NODE) & D_NODE;
-            for (var dir = 0; dir < EIGHT_DELTA.length; ++dir) {
-                var np = pointAdd(p_1, EIGHT_DELTA[dir]);
-                var onpidx = calcIdx(np.x, np.y) | npCounterpartFlag;
+
+            const pidx = opidx & PT_MASK;
+            const p = calcPt(pidx);
+            const npCounterpartFlag = (opidx ^ D_NODE) & D_NODE;
+
+            for (let dir = 0; dir < EIGHT_DELTA.length; ++dir) {
+                const np = pointAdd(p, EIGHT_DELTA[dir]);
+                const onpidx = calcIdx(np.x, np.y) | npCounterpartFlag;
+
                 if (last[onpidx] == (opidx | (dir << 16))) {
                     last[onpidx] = -2;
                     looseQ.push(onpidx);
@@ -350,12 +398,13 @@ function minCutToExit(sources, costMap) {
                 }
             }
         }
+
         // step 3: add those nodes that can goes forward back to bfsQ
         while (readdQ.length) {
-            var opidx = readdQ.shift();
-            for (var dir = 0; dir < EIGHT_DELTA.length + 1; ++dir) {
-                var _b = revEdge(opidx, dir), onpidx = _b[0], rd = _b[1];
-                var pidx = onpidx & PT_MASK;
+            const opidx = readdQ.shift();
+            for (let dir = 0; dir < EIGHT_DELTA.length + 1; ++dir) {
+                const [onpidx, rd] = revEdge(opidx, dir);
+                const pidx = onpidx & PT_MASK;
                 if (last[onpidx] != -2 && !exit[pidx] && !added[onpidx] && capacityMap[onpidx | (rd << DIR_SHIFT)]) {
                     added[onpidx] = 1;
                     bfsQ.push(onpidx);
@@ -363,59 +412,66 @@ function minCutToExit(sources, costMap) {
             }
         }
     };
+
     // the main loop, loosen the graph until we can't find a path from the sources to the sinks
-    for (var p = bfs(); p != null; p = bfs()) {
+    for (let p = bfs(); p != null; p = bfs()) {
         loosen(p);
     }
+
     // collecting the result, we do a bfs from source, and collect points where the edge between s-node and d-node has zero capacity
     // those points is what we need for the ramparts or walls
-    var ret = [];
-    var visited = new Uint8Array(MAX_NODE);
-    var q = sources.map(function (p) { return calcIdx(p.x, p.y); });
-    for (var _g = 0, q_1 = q; _g < q_1.length; _g++) {
-        var p = q_1[_g];
+    const ret: Point[] = [];
+    const visited = new Uint8Array(MAX_NODE);
+    const q = sources.map(p => calcIdx(p.x, p.y));
+    for (const p of q) {
         visited[p] = 1;
     }
+
     while (q.length) {
-        var sidx = q.shift();
-        var didx = sidx | D_NODE;
-        var p = calcPt(sidx);
+        const sidx = q.shift()!;
+        const didx = sidx | D_NODE;
+        const p = calcPt(sidx);
+
         if (last[sidx] != -2 && last[didx] == -2) {
             ret.push(p);
         }
-        for (var _h = 0, _j = surroundingPoints(p); _h < _j.length; _h++) {
-            var np = _j[_h];
+
+        for (const np of surroundingPoints(p)) {
             if (!isPointInRoom(np)) {
                 continue;
             }
+
             if (visited[calcIdx(np.x, np.y)]) {
                 continue;
             }
+
             if (costMap.get(np.x, np.y) == 255) {
                 continue;
             }
-            var npidx = calcIdx(np.x, np.y);
+
+            const npidx = calcIdx(np.x, np.y);
             visited[npidx] = 1;
             q.push(npidx);
         }
     }
+
     return ret;
 }
-exports.minCutToExit = minCutToExit;
-
 
 function USAGE() {
-    //return;
-    //var assert = require('assert');
-    var cm = new PathFinder.CostMatrix();
+    const assert = require('assert');
+
+    const cm = new PathFinder.CostMatrix();
     cm._bits.fill(255);
+
     cm.set(5, 0, 1);
-    for (var y = 1; y < 10; ++y) {
-        for (var x = 1; x < 10; ++x) {
+    for (let y = 1; y < 10; ++y) {
+        for (let x = 1; x < 10; ++x) {
             cm.set(x, y, 1);
         }
     }
-    var expected = [
+
+    const expected = [
         { x: 3, y: 1 },
         { x: 7, y: 1 },
         { x: 3, y: 2 },
@@ -424,14 +480,17 @@ function USAGE() {
         { x: 6, y: 2 },
         { x: 7, y: 2 },
     ];
-    var result = minCutToExit(surroundingPoints({ x: 5, y: 5 }), cm);
-    result.sort(function (a, b) {
+
+    const result = minCutToExit(surroundingPoints({ x: 5, y: 5 }), cm);
+
+    result.sort((a, b) => {
         if (a.y != b.y) {
             return a.y - b.y;
         }
         return a.x - b.x;
     });
-    //assert.deepStrictEqual(result, expected);
+    assert.deepStrictEqual(result, expected);
     console.log('Yes!');
 }
+
 USAGE();

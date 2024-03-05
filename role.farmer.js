@@ -123,10 +123,9 @@ var roleFarmer = {
                         return source.pos.getOpenPositions().length > 0;
                     }
                 });
-                if(sources.length==0)
-                {
+                if (sources.length == 0) {
                     creep.say("no src");
-                    sources=creep.pos.findInRange(FIND_SOURCES,2);
+                    sources = creep.pos.findInRange(FIND_SOURCES, 2);
                 }
                 //console.log(sources.length);
                 var min_hp = 100;
@@ -170,7 +169,7 @@ var roleFarmer = {
         }
         else if (creep.room.name != creep.memory.target_room /*&& creep.store[RESOURCE_ENERGY] == 0*/) {// not in target room and have free space - go to target room
             const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
-            if (creep.memory.source_id != undefined && Game.getObjectById(creep.memory.source_id)!=null) {
+            if (creep.memory.source_id != undefined && Game.getObjectById(creep.memory.source_id) != null) {
                 creep.moveTo(Game.getObjectById(creep.memory.source_id));
             }
             else {
@@ -247,7 +246,7 @@ var roleFarmer = {
             }
         }
 
-        if (creep.room.name == creep.memory.target_room && Game.getObjectById(creep.memory.source_id) != null) {
+        if (creep.room.name == creep.memory.target_room && creep.memory.target_room != creep.memory.home_room.name && Game.getObjectById(creep.memory.source_id) != null) {
             if (Game.time % 1004 == 0 || (Game.time % 50 == 0 && (creep.memory.source_path != undefined && creep.memory.source_path.incomplete == true)) /*|| creep.memory.source_path==undefined */) {
 
                 var ret = PathFinder.search(Game.getObjectById(creep.memory.source_id).pos, spawn.pos, {
@@ -330,6 +329,16 @@ var roleFarmer = {
 
 
                             costs.set(spawn.pos.x, spawn.pos.y, 255);
+                        }
+
+                        if (spawn.memory.room_plan != undefined) {
+                            for (let i = 0; i < 50; i++) {
+                                for (let j = 0; j < 50; j++) {
+                                    if (spawn.memory.room_plan[i][j] == STRUCTURE_ROAD) {
+                                        costs.set(i, j, 1);
+                                    }
+                                }
+                            }
                         }
 
                         ///////////////////////////////////////////

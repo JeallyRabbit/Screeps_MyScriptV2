@@ -79,14 +79,14 @@ module.exports.loop = function () {
         var spawned_body_parts = 0;
         var pop_soldiers = 0;
 
-        if (Memory.main_spawns == undefined || Game.time % 127 == 0 || Memory.main_spawns==[]) {
+        if (Memory.main_spawns == undefined || Game.time % 127 == 0 || Memory.main_spawns == []) {
             for (let spawnName in Game.spawns) {
                 Memory.main_spawns = [];
                 var spawn = Game.spawns[spawnName];
                 var name = spawn.name;
                 var name_length = name.length;
-                
-                if (name[name_length - 1] ==  "1") {
+
+                if (name[name_length - 1] == "1") {
                     //console.log('spawn Name: ',name[name_length - 1]);
                     Memory.main_spawns.push(spawn.id);
                     //console.log(Memory.main_spawns[0]);
@@ -109,7 +109,7 @@ module.exports.loop = function () {
                 //return;
             }
             else {
-                if (Game.time % 1 == 0) {
+                if (Game.time % 100 == 0) {
                     setRequiredPopulation(Game.spawns);
                     if (Game.cpu.bucket == 10000) {
                         //Game.cpu.generatePixel();
@@ -121,21 +121,12 @@ module.exports.loop = function () {
             if (spawn == undefined) { continue; }
             if (spawnName == 'Spawn1') {
                 //console.log("QQQQQQQQQQQQQQQQQQQQQQ");
-                /*
-                roads=spawn.room.find(FIND_STRUCTURES,{
-                    filter:function(str)
-                    {
-                        return str.structureType==STRUCTURE_ROAD;
-                    }
-                })
-                for(let road of roads)
-                {
-                    road.destroy();
-                }
-                */
 
 
-                if (Game.time % 134 == 0) {
+
+
+
+                if (Game.time % 97 == 0 && Game.cpu.bucket > 400) {
                     setBaseLayout(spawn);
                 }
                 //spawn.memory.farming_rooms=undefined;

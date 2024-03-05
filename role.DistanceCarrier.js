@@ -80,7 +80,7 @@ var roleDistanceCarrier = {
                         creep.memory.max_container = undefined;
                         if (creep.pickup(Game.getObjectById(creep.memory.energy_to_collect)) == ERR_NOT_IN_RANGE) {
                             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.energy_to_collect).pos, 1, true);
-                            creep.moveTo(Game.getObjectById(creep.memory.energy_to_collect),{reusePath: 5});
+                            creep.moveTo(Game.getObjectById(creep.memory.energy_to_collect),{reusePath: 15});
                             //creep.say("E");
                         }
                     }
@@ -111,7 +111,7 @@ var roleDistanceCarrier = {
                             }
                         }
                         else if(Game.getObjectById(creep.memory.closest_source)!=null){
-                            creep.moveTo(Game.getObjectById(creep.memory.closest_source),{range: 6});
+                            creep.moveTo(Game.getObjectById(creep.memory.closest_source),{range: 6,reusePath: 12});
                         }
                     }
 
@@ -145,7 +145,7 @@ var roleDistanceCarrier = {
                         //creep.say("A");
                         withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]);
                         if (creep.withdraw(Game.getObjectById(creep.memory.max_container), RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have free space go colelct energy from containers
-                            creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 5 });
+                            creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 15 });
                             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.max_container).pos, 1, true);
                         }
                         else if (creep.withdraw(Game.getObjectById(creep.memory.max_container), RESOURCE_ENERGY, withdraw_amount) == OK) {

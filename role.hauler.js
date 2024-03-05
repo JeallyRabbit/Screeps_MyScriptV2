@@ -60,7 +60,7 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
             return;
         }
 
-        if (spawn.room.storage!=undefined && creep.memory.cID_max==undefined || (creep.memory.cID_max!=undefined && Game.getObjectById(creep.memory.cID_max)==null)) {
+        if (spawn.room.storage!=undefined && creep.memory.cID_max==undefined && (creep.memory.cID_max!=undefined && Game.getObjectById(creep.memory.cID_max)==null)) {
             containers = spawn.room.storage;
             creep.memory.cID_max=spawn.room.storage.id;
         }
