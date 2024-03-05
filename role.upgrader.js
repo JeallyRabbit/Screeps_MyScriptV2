@@ -70,7 +70,7 @@ var roleUpgrader = {
                     creep.moveTo(creep.room.controller);
                     //move_avoid_hostile(creep,creep.room.controller.pos,1,true);
                 }
-                //creep.moveTo(creep.room.controller, { range: 1 });
+                creep.moveTo(creep.room.controller, { range: 1 });
             }
             else if (!creep.memory.upgrading && Game.getObjectById(creep.memory.deposit) != null)// if no energy and there are deposits
             {// go to deposits

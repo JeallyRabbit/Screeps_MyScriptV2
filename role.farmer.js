@@ -265,7 +265,21 @@ var roleFarmer = {
                         if (!room) return;
                         let costs = new PathFinder.CostMatrix;
 
-                        if (room.name == creep.room.name) {
+                        if (room.name == creep.room.name || true) {
+
+                            const terrain = spawn.room.getTerrain()
+
+                            for (let y = 0; y < 50; y++) {
+                                for (let x = 0; x < 50; x++) {
+                                    const tile = terrain.get(x, y);
+                                    const weight =
+                                        tile === TERRAIN_MASK_WALL ? 255 : // wall  => unwalkable
+                                            tile === TERRAIN_MASK_SWAMP ? 5 : // swamp => weight:  5
+                                                1; // plain => weight:  1
+                                    costs.set(x, y, weight);
+                                }
+                            }
+
                             creep.room.find(FIND_STRUCTURES).forEach(function (struct) {
                                 if (struct.structureType === STRUCTURE_ROAD) {
                                     // Favor roads over plain tiles

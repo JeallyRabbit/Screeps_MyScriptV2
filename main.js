@@ -126,7 +126,7 @@ module.exports.loop = function () {
 
 
 
-                if (Game.time % 234== 0 && Game.cpu.bucket > 400) {
+                if (Game.time % 436== 0 && Game.cpu.bucket > 400) {
                     setBaseLayout(spawn);
                 }
                 //spawn.memory.farming_rooms=undefined;

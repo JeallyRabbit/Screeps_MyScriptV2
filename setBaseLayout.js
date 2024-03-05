@@ -662,6 +662,22 @@ function plan_controller_ramparts(spawn) {
     }
 }
 
+function plan_controller_container(spawn)
+{
+    var controller_pos = spawn.room.controller.pos.getNearbyPositions();
+    const terrain=spawn.room.getTerrain();
+    //console.log(controller_ramparts);
+    for (let position of controller_pos) {
+        if(terrain.get(position.x,position.y)!=TERRAIN_MASK_WALL)
+        {
+            spawn.memory.room_plan[position.x][position.y] = STRUCTURE_CONTAINER;
+            spawn.memory.building_list.push(new building_list_element(position.x, position.y, STRUCTURE_CONTAINER, 2));
+            break;
+        }
+        
+    }
+}
+
 
 function setBaseLayout(spawn) {
 
@@ -726,11 +742,9 @@ function setBaseLayout(spawn) {
 
         plan_ramparts(spawn, roomCM, 3);
 
-        ////////////////////////////
-        //ramparts for controller
         plan_controller_ramparts(spawn);
-        //build_from_list(spawn);
-        //console.log("PLANING!!!!!!!!!!!!!!!!");
+        plan_controller_container(spawn)
+
     }
 
     build_from_list(spawn);
@@ -747,7 +761,7 @@ function setBaseLayout(spawn) {
 
 
     // console.log("VISUALS");
-    var if_visualize = false;
+    var if_visualize = true;
     if (if_visualize) {
         for (let i = 0; i < 50; i++) {
             for (let j = 0; j < 50; j++) {

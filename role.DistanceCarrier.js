@@ -47,7 +47,8 @@ var roleDistanceCarrier = {
                             filter: (structure) => {
                                 return structure.structureType === STRUCTURE_CONTAINER
                                     && ((structure.pos.x != spawn.pos.x - 2  || structure.pos.y != spawn.pos.y - 2) &&
-                                        (structure.pos.x != spawn.pos.x + 2 ||  structure.pos.y != spawn.pos.y - 2));
+                                        (structure.pos.x != spawn.pos.x + 2 ||  structure.pos.y != spawn.pos.y - 2))
+                                        && (structure.pos.inRangeTo(spawn.room.controller.pos,4)==false);
                             }
                         });
                     }
