@@ -196,7 +196,8 @@ var roleDistanceCarrier = {
                                     return structure.store != undefined && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                                         && structure.structureType != STRUCTURE_TERMINAL &&
                                         ((structure.structureType == STRUCTURE_CONTAINER && structure.pos.x == spawn.pos.x + 2 && structure.pos.y == spawn.pos.y - 2)
-                                            || (structure.structureType == STRUCTURE_CONTAINER && structure.pos.x == spawn.pos.x - 2 && structure.pos.y == spawn.pos.y - 2));
+                                            || (structure.structureType == STRUCTURE_CONTAINER && structure.pos.x == spawn.pos.x - 2 && structure.pos.y == spawn.pos.y - 2)
+                                            || structure.structureType==STRUCTURE_CONTAINER && structure.pos.inRangeTo(spawn.room.controller,4));
                                 }
                             });
                             if (container != null) {
@@ -220,6 +221,10 @@ var roleDistanceCarrier = {
                                     if(container==null)
                                     {
                                         container=spawn;
+                                        if(spawn.store[RESOURCE_ENERGY]==300)
+                                        {
+                                            creep.drop(RESOURCE_ENERGY);
+                                        }
                                     }
                                 }
                                 if (container != null) {

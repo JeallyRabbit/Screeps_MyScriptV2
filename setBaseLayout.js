@@ -1,5 +1,6 @@
 const { create } = require("lodash");
 //const { move_avoid_hostile } = require("./move_avoid_hostile");
+var RoomPositionFunctions = require('roomPositionFunctions');
 const { distanceTransform } = require("./distanceTransform");
 const { floodFill } = require("./floodFill");
 const mincut = require("./mincut")
@@ -645,10 +646,21 @@ function plan_ramparts(spawn, roomCM, rcl) {
     rampartPositions.forEach(pos => {
         spawn.memory.room_plan[pos.x][pos.y] = STRUCTURE_RAMPART;
         buildings.push({ x: pos.x, y: pos.y, structureType: STRUCTURE_RAMPART, rcl });
+        spawn.memory.building_list.push(new building_list_element(pos.x, pos.y, STRUCTURE_RAMPART, 3));
     });
     //console.log(rampartPositions);
 }
 
+
+function plan_controller_ramparts(spawn) {
+    var controller_ramparts = spawn.room.controller.pos.getNearbyPositions();
+    console.log(controller_ramparts);
+    for (let position of controller_ramparts) {
+        console.log(position.x);
+        spawn.memory.room_plan[position.x][position.y] = STRUCTURE_RAMPART;
+        spawn.memory.building_list.push(new building_list_element(position.x, position.y, STRUCTURE_RAMPART, 3));
+    }
+}
 
 
 function setBaseLayout(spawn) {
@@ -687,7 +699,7 @@ function setBaseLayout(spawn) {
 
     //copyinmg room structures data from planner to roomCM (this have to be done before planning every stamp)
     //var { seeds, distanceCM, floodCM, min_distance_from_spawn } = plan_extension_stamp(spawn, roomCM);
-    if (spawn.memory.room_plan == undefined || spawn.memory.building_list == undefined || (spawn.memory.building_list.length == 0) || true) {
+    if (spawn.memory.room_plan == undefined || spawn.memory.building_list == undefined || (spawn.memory.building_list.length == 0)) {
 
         spawn.memory.room_plan = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
         spawn.memory.building_list = [];
@@ -713,6 +725,10 @@ function setBaseLayout(spawn) {
 
 
         plan_ramparts(spawn, roomCM, 3);
+
+        ////////////////////////////
+        //ramparts for controller
+        plan_controller_ramparts(spawn);
         //build_from_list(spawn);
         //console.log("PLANING!!!!!!!!!!!!!!!!");
     }
@@ -731,7 +747,7 @@ function setBaseLayout(spawn) {
 
 
     // console.log("VISUALS");
-    var if_visualize = true;
+    var if_visualize = false;
     if (if_visualize) {
         for (let i = 0; i < 50; i++) {
             for (let j = 0; j < 50; j++) {
@@ -775,6 +791,8 @@ function setBaseLayout(spawn) {
 
 }
 module.exports = setBaseLayout;
+
+
 
 
 
