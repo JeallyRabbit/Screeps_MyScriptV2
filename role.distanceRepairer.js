@@ -15,7 +15,8 @@ var roleRepairer = {
             //return;
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: function (object) {
-                    return object.hits < object.hitsMax && object.hits<300000
+                    return object.hits < object.hitsMax && ((object.structureType==STRUCTURE_RAMPART && object.hits<100000)
+                    || (object.structureType!=STRUCTURE_RAMPART && object.hits<300000))
                 }
             });
             
@@ -29,7 +30,7 @@ var roleRepairer = {
                 }
             });
 
-            if (targets.length <3) {
+            if (targets.length <3 && creep.name.startsWith('Builder')==false) {
                 //creep.move(TOP);
                 roleBuilder.run(creep, spawn);
             }
@@ -96,7 +97,11 @@ var roleRepairer = {
             }
         }
         else {
-            creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room),{reUsePath: 10});
+            if(creep.memory.target_room!=undefined)
+            {
+                creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room),{reUsePath: 10});
+            }
+            
             
             //move_avoid_hostile(creep, new RoomPosition(25, 25, creep.memory.target_room), 5, if_avoid);
         }

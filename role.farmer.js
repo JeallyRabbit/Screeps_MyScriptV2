@@ -14,6 +14,11 @@ var roleFarmer = {
         //console.log(target_room);
         //var x_source=25,y_source=25;
         if (creep.memory.target_room == creep.room.name) {
+            
+            creep.room.find(FIND_CONSTRUCTION_SITES).forEach(function (struct) {
+                struct.remove();
+            })
+
 
             //console.log("full");
             /*
@@ -246,8 +251,10 @@ var roleFarmer = {
             }
         }
 
-        if (creep.room.name == creep.memory.target_room && creep.memory.target_room != creep.memory.home_room.name && Game.getObjectById(creep.memory.source_id) != null) {
-            if (Game.time % 1004 == 0 || (Game.time % 50 == 0 && (creep.memory.source_path != undefined && creep.memory.source_path.incomplete == true)) /*|| creep.memory.source_path==undefined */) {
+        if (creep.room.name == creep.memory.target_room && creep.memory.target_room != creep.memory.home_room.name 
+            && Game.getObjectById(creep.memory.source_id) != null && false) {
+            if (Game.time % 1004 == 0 || (Game.time % 57 == 0 && (creep.memory.source_path != undefined && creep.memory.source_path.incomplete == true)
+            || creep.memory.source_path==undefined) /*|| creep.memory.source_path==undefined */) {
 
                 var ret = PathFinder.search(Game.getObjectById(creep.memory.source_id).pos, spawn.pos, {
                     //maxCost: 300,
@@ -265,21 +272,7 @@ var roleFarmer = {
                         if (!room) return;
                         let costs = new PathFinder.CostMatrix;
 
-                        if (room.name == creep.room.name || true) {
-
-                            const terrain = spawn.room.getTerrain()
-
-                            for (let y = 0; y < 50; y++) {
-                                for (let x = 0; x < 50; x++) {
-                                    const tile = terrain.get(x, y);
-                                    const weight =
-                                        tile === TERRAIN_MASK_WALL ? 255 : // wall  => unwalkable
-                                            tile === TERRAIN_MASK_SWAMP ? 5 : // swamp => weight:  5
-                                                1; // plain => weight:  1
-                                    costs.set(x, y, weight);
-                                }
-                            }
-
+                        if (room.name == creep.room.name) {
                             creep.room.find(FIND_STRUCTURES).forEach(function (struct) {
                                 if (struct.structureType === STRUCTURE_ROAD) {
                                     // Favor roads over plain tiles
@@ -345,16 +338,6 @@ var roleFarmer = {
                             costs.set(spawn.pos.x, spawn.pos.y, 255);
                         }
 
-                        if (spawn.memory.room_plan != undefined) {
-                            for (let i = 0; i < 50; i++) {
-                                for (let j = 0; j < 50; j++) {
-                                    if (spawn.memory.room_plan[i][j] == STRUCTURE_ROAD) {
-                                        costs.set(i, j, 1);
-                                    }
-                                }
-                            }
-                        }
-
                         ///////////////////////////////////////////
                         /*
                         room=spawn.room.name;
@@ -367,11 +350,15 @@ var roleFarmer = {
                 });
 
                 //if (ret.incomplete != true || true) 
-                if (ret != undefined && Game.time % 1004 == 0) {
+                if (ret != undefined && Game.time % 1004==0 && ret.incomplete!=true) {
                     //creep.say(creep.moveByPath(ret.path));
                     creep.memory.source_path = ret;
                     for (let i = 0; i < ret.path.length; i++) {
-                        Game.rooms[ret.path[i].roomName].createConstructionSite(ret.path[i].x, ret.path[i].y, STRUCTURE_ROAD);
+                        if(Game.rooms[ret.path[i].roomName]!=undefined)
+                        {
+                           Game.rooms[ret.path[i].roomName].createConstructionSite(ret.path[i].x, ret.path[i].y, STRUCTURE_ROAD); 
+                        }
+                        
 
                         /*
                         if ((ret.path[i].x != spawn.pos.x || ret.path[i].y != spawn.pos.y) && ret.path[i].roomName == creep.memory.target_room) {

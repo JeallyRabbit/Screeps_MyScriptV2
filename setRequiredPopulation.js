@@ -40,7 +40,7 @@ function setRequiredPopulation(mySpawns) {
         mySpawns['Spawn1'].memory.req_scouts = 0;
     }
 
-    if (mySpawns['Spawn1'].memory.num_towers == undefined || Game.time % 50001 == 0) {
+    if (mySpawns['Spawn1'].memory.num_towers == undefined || Game.time % 2003 == 0) {
         mySpawns['Spawn1'].memory.num_towers = mySpawns['Spawn1'].room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_TOWER;
@@ -118,7 +118,7 @@ function setRequiredPopulation(mySpawns) {
     mySpawns['Spawn1'].memory.req_berserk = 1;//role num 8
     mySpawns['Spawn1'].memory.req_transporters = 0;//role numm 9
     mySpawns['Spawn1'].memory.req_towerKeepers = 0;//role num 10
-    if (mySpawns['Spawn1'].memory.num_towers > 0) {
+    if (mySpawns['Spawn1'].memory.num_towers > 0 || mySpawns['Spawn1'].room.controller.level>=3) {
         mySpawns['Spawn1'].memory.req_towerKeepers = 1;
     }
     /*

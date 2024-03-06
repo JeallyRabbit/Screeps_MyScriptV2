@@ -7,33 +7,89 @@ const mincut = require("./mincut")
 
 
 class building_list_element {
-    constructor(x, y, structureType, min_rcl) {
+    constructor(x, y, roomName, structureType, min_rcl) {
         this.x = x;
         this.y = y;
+        this.roomName = roomName;
         this.structureType = structureType;
         this.min_rcl = min_rcl;
     }
 }
 
 function plan_road_to_target(spawn, roomCM, target, rcl) {
+
+    for (let i = 0; i < 50; i++) {
+        for (let j = 0; j < 50; j++) {
+            if (spawn.memory.room_plan[i][j] != 0 && spawn.memory.room_plan[i][j] != STRUCTURE_ROAD) {
+                roomCM.set(i, j, 255);
+            }
+            else if (spawn.memory.room_plan[i][j] != 0 && spawn.memory.room_plan[i][j] == STRUCTURE_ROAD) {
+                roomCM.set(i, j, 1);
+            }
+        }
+    }
+
+
+    //console.log("target: ", target);
     destination = target;
     var ret = PathFinder.search(spawn.pos, destination, {
         //maxCost: 300,
-        range: 2,
+        range: 1,
         plainCost: 2,
         swampCost: 2,
-        maxOps: 4000,
+        maxOps: 8000,
 
-        roomCallback: function () {
+        roomCallback: function (roomName) {
 
-            let room = spawn.room.name;
+            //let room = spawn.room.name;
             // In this example `room` will always exist, but since 
             // PathFinder supports searches which span multiple rooms 
             // you should be careful!
-            if (!room) return;
-            let costs = new PathFinder.CostMatrix;
+            //if (!room) return;
 
-            spawn.room.find(FIND_STRUCTURES).forEach(function (struct) {
+            let room = Game.rooms[roomName];
+            if (!room) { return; }
+
+            if (roomName == spawn.room.name) {
+                costs = roomCM;
+            }
+            else {
+
+                //console.log(roomName);
+                costs = new PathFinder.CostMatrix;
+                const terrain = room.getTerrain()
+
+                for (let y = 0; y < 50; y++) {
+                    for (let x = 0; x < 50; x++) {
+                        const tile = terrain.get(x, y);
+                        const weight =
+                            tile === TERRAIN_MASK_WALL ? 255 : // wall  => unwalkable
+                                tile === TERRAIN_MASK_SWAMP ? 10 : // swamp => weight:  10
+                                    2; // plain => weight:  2
+                        costs.set(x, y, weight);
+                    }
+                }
+            }
+            //let 
+
+
+            /*
+            const terrain = spawn.room.getTerrain()
+
+            for (let y = 0; y < 50; y++) {
+                for (let x = 0; x < 50; x++) {
+                    const tile = terrain.get(x, y);
+                    const weight =
+                        tile === TERRAIN_MASK_WALL ? 255 : // wall  => unwalkable
+                            tile === TERRAIN_MASK_SWAMP ? 10 : // swamp => weight:  10
+                                2; // plain => weight:  2
+                    costs.set(x, y, weight);
+                }
+            }*/
+
+
+            //spawn.
+            room.find(FIND_STRUCTURES).forEach(function (struct) {
                 if (struct.structureType === STRUCTURE_ROAD) {
                     // Favor roads over plain tiles
                     costs.set(struct.pos.x, struct.pos.y, 1);
@@ -46,7 +102,8 @@ function plan_road_to_target(spawn, roomCM, target, rcl) {
             });
 
             // avoid construction sites
-            spawn.room.find(FIND_CONSTRUCTION_SITES, {
+            //spawn.
+            room.find(FIND_CONSTRUCTION_SITES, {
                 filter: function (construction) {
                     return construction.structureType != STRUCTURE_ROAD;
                 }
@@ -55,13 +112,44 @@ function plan_road_to_target(spawn, roomCM, target, rcl) {
             });
 
             //favour roads under construction
-            spawn.room.find(FIND_CONSTRUCTION_SITES, {
+            //spawn.
+            room.find(FIND_CONSTRUCTION_SITES, {
                 filter: function (construction) {
                     return construction.structureType == STRUCTURE_ROAD;
                 }
             }).forEach(function (struct) {
                 costs.set(struct.pos.x, struct.pos.y, 1);
             });
+
+            //ignore walls
+            if (roomName == spawn.room.name) {
+                for (let i = 0; i < 50; i++) {
+                    for (let j = 0; j < 50; j++) {
+                        if (spawn.memory.room_plan[i][j] == STRUCTURE_WALL /*|| spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART*/ ) {
+                            costs.set(i, j, 3);
+                        }
+                    }
+                }
+
+                for (let i = 0; i < 50; i++) {
+                    for (let j = 0; j < 50; j++) {
+                        if (spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART /*|| spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART*/ ) {
+                            costs.set(i, j, 1);
+                        }
+                    }
+                }
+            }
+
+            /*
+            //spawn.
+            room.find(FIND_STRUCTURES, {
+                filter: function (construction) {
+                    return construction.structureType == STRUCTURE_WALL;
+                }
+            }).forEach(function (struct) {
+                costs.set(struct.pos.x, struct.pos.y, 1);
+            });
+            */
 
             costs.set(destination.x, destination.y, 1);
 
@@ -73,19 +161,62 @@ function plan_road_to_target(spawn, roomCM, target, rcl) {
         //creep.say(creep.moveByPath(ret.path));
         //spawn.memory.source_path = ret;
         for (let i = 0; i < ret.path.length; i++) {
-            if (ret.path[i].x != destination.x || ret.path[i].y != destination.y) {
-                //console.log(destination, " ", ret.path[i]);
-                if (spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] == 0) {
-                    spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
-                    spawn.memory.building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, STRUCTURE_ROAD, rcl));
-                    roomCM.set(ret.path[i].x, ret.path[i].y, 255);
+            //console.log(ret.path[i].x, " ", ret.path[i].y, " ", ret.path[i].roomName);
+            if (ret.path[i].x != destination.x || ret.path[i].y != destination.y || ret.path[i].roomName != destination.roomName) {
+                //console.log("SSSSSSS");
+                ////console.log(destination, " ", ret.path[i]);
+                if (ret.path[i].roomName == spawn.room.name) {
+                    //console.log("QQQ");
+                    //console.log("spawn room part");
+                    //console.log("planing part in spawn room")
+                    if (spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] == 0) {
+
+                        spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
+                        spawn.memory.building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, ret.path[i].roomName, STRUCTURE_ROAD, rcl));
+                        roomCM.set(ret.path[i].x, ret.path[i].y, 1);
+                    }
+                    else //if (spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] == STRUCTURE_WALL ) {
+                    {
+                        //creating hole in wall
+                        //console.log("HOLE");
+                        for (let structure of spawn.memory.building_list) {
+                            //if (Math.abs(structure.x - pos.x) <= 1 && Math.abs(structure.y - pos.y) <= 1 && structure.structureType == STRUCTURE_ROAD)
+                            if (structure.roomName == undefined) {
+                                continue;
+                            }
+                            if ((Math.abs(structure.x - ret.path[i].x) <=1 &&  Math.abs(structure.y - ret.path[i].y) <=1 ) &&
+                             structure.structureType == STRUCTURE_WALL ) {// going through wall
+                                const index=spawn.memory.building_list.indexOf(structure);
+                                spawn.memory.building_list.splice(index,1);
+                                console.log("creating hole in wall at:", ret.path[i].x, " ", ret.path[i].y," ",ret.path[i].roomName,
+                                " ",structure.structureType," ",structure.x," ",structure.y);
+
+                                spawn.memory.room_plan[structure.x][structure.y] = STRUCTURE_RAMPART;
+                                //buildings.push({ x: ret.path[i].x, y: ret.path[i].y, roomName: spawn.room.name, structureType: STRUCTURE_RAMPART, rcl });
+                                spawn.memory.building_list.push(new building_list_element(structure.x, structure.y, spawn.room.name, STRUCTURE_RAMPART, 3));
+                                is_on_road = true;
+                            }
+                        }
+
+                        /*
+                        spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] = STRUCTURE_RAMPART;
+                        spawn.memory.building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, ret.path[i].roomName, STRUCTURE_RAMPART, rcl));
+                        */
+                        roomCM.set(ret.path[i].x, ret.path[i].y, 1);
+                        
+                    }
                 }
+                else {
+                    //console.log("building road to source in farming room resuklt: ", Game.rooms[ret.path[i].roomName].createConstructionSite(ret.path[i].x, ret.path[i].y, STRUCTURE_ROAD));
+                    Game.rooms[ret.path[i].roomName].visual.circle(ret.path[i].x, ret.path[i].y, { fill: '#666666', radius: 0.5, stroke: 'black' });
+
+                }
+
 
                 //spawn.room.createConstructionSite(ret.path[i], STRUCTURE_ROAD);
             }
 
         }
-        //console.log("FOUND ROUTE");
     }
 }
 
@@ -139,7 +270,7 @@ function plan_road_to_controller(spawn, roomCM) {
                 costs.set(struct.pos.x, struct.pos.y, 1);
             });
 
-            costs.set(destination.x, destination.y, 1);
+            costs.set(destination.x, destination.y, 0);
 
             return costs;
         }
@@ -150,18 +281,16 @@ function plan_road_to_controller(spawn, roomCM) {
         spawn.memory.source_path = ret;
         for (let i = 0; i < ret.path.length; i++) {
             if (ret.path[i].x != destination.x || ret.path[i].y != destination.y) {
-                //console.log(destination, " ", ret.path[i]);
                 if (spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] == 0) {
                     spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
-                    spawn.memory.building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, STRUCTURE_ROAD, 2));
-                    roomCM.set(ret.path[i].x, ret.path[i].y, 255);
+                    spawn.memory.building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, ret.path[i].roomName, STRUCTURE_ROAD, 2));
+                    roomCM.set(ret.path[i].x, ret.path[i].y, 0);
                 }
 
                 //spawn.room.createConstructionSite(ret.path[i], STRUCTURE_ROAD);
             }
 
         }
-        //console.log("FOUND ROUTE");
     }
 }
 
@@ -171,15 +300,15 @@ function plan_road_to_controller(spawn, roomCM) {
 
 function create_extension_stamp(spawn, x, y, rcl) { // need min 3's from distanceTransform
     spawn.memory.room_plan[x][y] = STRUCTURE_EXTENSION;//middle
-    spawn.memory.building_list.push(new building_list_element(x, y, STRUCTURE_EXTENSION, rcl));
+    spawn.memory.building_list.push(new building_list_element(x, y, spawn.room.name, STRUCTURE_EXTENSION, rcl));
     spawn.memory.room_plan[x - 1][y] = STRUCTURE_EXTENSION;//left
-    spawn.memory.building_list.push(new building_list_element(x - 1, y, STRUCTURE_EXTENSION, rcl));
+    spawn.memory.building_list.push(new building_list_element(x - 1, y, spawn.room.name, STRUCTURE_EXTENSION, rcl));
     spawn.memory.room_plan[x + 1][y] = STRUCTURE_EXTENSION;//right
-    spawn.memory.building_list.push(new building_list_element(x + 1, y, STRUCTURE_EXTENSION, rcl));
+    spawn.memory.building_list.push(new building_list_element(x + 1, y, spawn.room.name, STRUCTURE_EXTENSION, rcl));
     spawn.memory.room_plan[x][y - 1] = STRUCTURE_EXTENSION;//up
-    spawn.memory.building_list.push(new building_list_element(x, y - 1, STRUCTURE_EXTENSION, rcl));
+    spawn.memory.building_list.push(new building_list_element(x, y - 1, spawn.room.name, STRUCTURE_EXTENSION, rcl));
     spawn.memory.room_plan[x][y + 1] = STRUCTURE_EXTENSION;//down
-    spawn.memory.building_list.push(new building_list_element(x, y + 1, STRUCTURE_EXTENSION, rcl));
+    spawn.memory.building_list.push(new building_list_element(x, y + 1, spawn.room.name, STRUCTURE_EXTENSION, rcl));
 
     /*
     spawn.room.createConstructionSite(x, y, STRUCTURE_EXTENSION);//midle
@@ -191,22 +320,22 @@ function create_extension_stamp(spawn, x, y, rcl) { // need min 3's from distanc
 
     //roads around it
     spawn.memory.room_plan[x][y + 2] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x, y + 2, STRUCTURE_ROAD, rcl));
+    spawn.memory.building_list.push(new building_list_element(x, y + 2, spawn.room.name, STRUCTURE_ROAD, rcl));
     spawn.memory.room_plan[x][y - 2] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x, y - 2, STRUCTURE_ROAD, rcl));
+    spawn.memory.building_list.push(new building_list_element(x, y - 2, spawn.room.name, STRUCTURE_ROAD, rcl));
     spawn.memory.room_plan[x + 2][y] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x + 2, y, STRUCTURE_ROAD, rcl));
+    spawn.memory.building_list.push(new building_list_element(x + 2, y, spawn.room.name, STRUCTURE_ROAD, rcl));
     spawn.memory.room_plan[x - 2][y] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x - 2, y, STRUCTURE_ROAD, rcl));
+    spawn.memory.building_list.push(new building_list_element(x - 2, y, spawn.room.name, STRUCTURE_ROAD, rcl));
 
     spawn.memory.room_plan[x + 1][y + 1] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x + 1, y + 1, STRUCTURE_ROAD, rcl));
+    spawn.memory.building_list.push(new building_list_element(x + 1, y + 1, spawn.room.name, STRUCTURE_ROAD, rcl));
     spawn.memory.room_plan[x + 1][y - 1] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x + 1, y - 1, STRUCTURE_ROAD, rcl));
+    spawn.memory.building_list.push(new building_list_element(x + 1, y - 1, spawn.room.name, STRUCTURE_ROAD, rcl));
     spawn.memory.room_plan[x - 1][y + 1] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x - 1, y + 1, STRUCTURE_ROAD, rcl));
+    spawn.memory.building_list.push(new building_list_element(x - 1, y + 1, spawn.room.name, STRUCTURE_ROAD, rcl));
     spawn.memory.room_plan[x - 1][y - 1] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x - 1, y - 1, STRUCTURE_ROAD, rcl));
+    spawn.memory.building_list.push(new building_list_element(x - 1, y - 1, spawn.room.name, STRUCTURE_ROAD, rcl));
 
     /*
     spawn.room.createConstructionSite(x, y + 2, STRUCTURE_ROAD);
@@ -225,50 +354,50 @@ function create_extension_stamp(spawn, x, y, rcl) { // need min 3's from distanc
 
 function create_manager_stamp(spawn, x, y, rcl) {
     spawn.memory.room_plan[x - 1][y - 1] = STRUCTURE_LINK;
-    spawn.memory.building_list.push(new building_list_element(x - 1, y - 1, STRUCTURE_LINK, 5));
+    spawn.memory.building_list.push(new building_list_element(x - 1, y - 1, spawn.room.name, STRUCTURE_LINK, 5));
     spawn.memory.room_plan[x - 1][y] = STRUCTURE_NUKER;
-    spawn.memory.building_list.push(new building_list_element(x - 1, y, STRUCTURE_NUKER, 8));
+    spawn.memory.building_list.push(new building_list_element(x - 1, y, spawn.room.name, STRUCTURE_NUKER, 8));
     spawn.memory.room_plan[x - 1][y + 1] = STRUCTURE_TERMINAL;
-    spawn.memory.building_list.push(new building_list_element(x - 1, y + 1, STRUCTURE_TERMINAL, 5));
+    spawn.memory.building_list.push(new building_list_element(x - 1, y + 1, spawn.room.name, STRUCTURE_TERMINAL, 5));
     spawn.memory.room_plan[x][y - 1] = STRUCTURE_FACTORY;
-    spawn.memory.building_list.push(new building_list_element(x, y - 1, STRUCTURE_FACTORY, 7));
+    spawn.memory.building_list.push(new building_list_element(x, y - 1, spawn.room.name, STRUCTURE_FACTORY, 7));
     spawn.memory.room_plan[x][y + 1] = STRUCTURE_SPAWN;
-    spawn.memory.building_list.push(new building_list_element(x, y + 1, STRUCTURE_SPAWN, 7));
+    spawn.memory.building_list.push(new building_list_element(x, y + 1, spawn.room.name, STRUCTURE_SPAWN, 7));
     spawn.memory.room_plan[x + 1][y - 1] = STRUCTURE_STORAGE;
-    spawn.memory.building_list.push(new building_list_element(x + 1, y - 1, STRUCTURE_STORAGE, 4));
+    spawn.memory.building_list.push(new building_list_element(x + 1, y - 1, spawn.room.name, STRUCTURE_STORAGE, 4));
     spawn.memory.storage_pos = new RoomPosition(x + 1, y - 1, spawn.room.name);
     spawn.memory.room_plan[x + 1][y] = STRUCTURE_POWER_SPAWN;
-    spawn.memory.building_list.push(new building_list_element(x + 1, y, STRUCTURE_POWER_SPAWN, 8));
+    spawn.memory.building_list.push(new building_list_element(x + 1, y, spawn.room.name, STRUCTURE_POWER_SPAWN, 8));
 
     //top horizontal edge
     spawn.memory.room_plan[x - 1][y - 2] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x - 1, y - 2, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x - 1, y - 2, spawn.room.name, STRUCTURE_ROAD, 4));
     spawn.memory.room_plan[x][y - 2] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x, y - 2, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x, y - 2, spawn.room.name, STRUCTURE_ROAD, 4));
     spawn.memory.room_plan[x + 1][y - 2] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x + 1, y - 2, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x + 1, y - 2, spawn.room.name, STRUCTURE_ROAD, 4));
 
     //left vertical edge
     spawn.memory.room_plan[x - 2][y - 1] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x - 2, y - 1, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x - 2, y - 1, spawn.room.name, STRUCTURE_ROAD, 4));
     spawn.memory.room_plan[x - 2][y] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x - 2, y, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x - 2, y, spawn.room.name, STRUCTURE_ROAD, 4));
     spawn.memory.room_plan[x - 2][y + 1] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x - 2, y + 1, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x - 2, y + 1, spawn.room.name, STRUCTURE_ROAD, 4));
 
     //bottom horizontal
     spawn.memory.room_plan[x - 1][y + 2] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x - 1, y + 2, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x - 1, y + 2, spawn.room.name, STRUCTURE_ROAD, 4));
     spawn.memory.room_plan[x][y + 2] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x, y + 2, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x, y + 2, spawn.room.name, STRUCTURE_ROAD, 4));
 
     //diagonals
     spawn.memory.room_plan[x + 1][y + 1] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x + 1, y + 1, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x + 1, y + 1, spawn.room.name, STRUCTURE_ROAD, 4));
     spawn.memory.room_plan[x + 2][y] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x + 2, y, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x + 2, y, spawn.room.name, STRUCTURE_ROAD, 4));
     spawn.memory.room_plan[x + 2][y - 1] = STRUCTURE_ROAD;
-    spawn.memory.building_list.push(new building_list_element(x + 2, y - 1, STRUCTURE_ROAD, 4));
+    spawn.memory.building_list.push(new building_list_element(x + 2, y - 1, spawn.room.name, STRUCTURE_ROAD, 4));
 }
 function create_ramparts(spawn) {
     //vertical and horizontal borders - right and left side
@@ -327,9 +456,9 @@ function plan_extension_stamp(spawn, roomCM, rcl) {
             if (spawn.memory.room_plan[i][j] != 0) {
                 roomCM.set(i, j, 255);
             }
+
         }
     }
-    //console.log(terrain.get(28,20));
     let distanceCM = spawn.room.diagonalDistanceTransform(roomCM, false);
 
     //Seeds - starting positions for floodfill (it have to be an array - somethink iterable)
@@ -345,7 +474,7 @@ function plan_extension_stamp(spawn, roomCM, rcl) {
         var min_distance_from_spawn = 100;
         for (i = 0; i < 50; i++) {
             for (let j = 0; j < 50; j++) {
-                if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < min_distance_from_spawn) {
+                if (distanceCM.get(i, j) >= 3 && floodCM.get(i, j) < min_distance_from_spawn) {
                     min_distance_from_spawn = floodCM.get(i, j);
                     pos_for_stamp.x = i;
                     pos_for_stamp.y = j;
@@ -416,69 +545,69 @@ function plan_main_spawn_stamp(spawn, roomCM) {
 
     //if (spawn.room.controller.level >= 2) {
     spawn.memory.room_plan[spawn.pos.x + 1][spawn.pos.y] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 1, spawn.pos.y, STRUCTURE_EXTENSION, 2));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 1, spawn.pos.y, spawn.room.name, STRUCTURE_EXTENSION, 2));
 
     spawn.memory.room_plan[spawn.pos.x + 2][spawn.pos.y] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y, STRUCTURE_EXTENSION, 2));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y, spawn.room.name, STRUCTURE_EXTENSION, 2));
 
     spawn.memory.room_plan[spawn.pos.x + 2][spawn.pos.y - 1] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y - 1, STRUCTURE_EXTENSION, 2));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y - 1, spawn.room.name, STRUCTURE_EXTENSION, 2));
 
     spawn.memory.room_plan[spawn.pos.x + 1][spawn.pos.y - 2] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 1, spawn.pos.y - 2, STRUCTURE_EXTENSION, 2));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 1, spawn.pos.y - 2, spawn.room.name, STRUCTURE_EXTENSION, 2));
 
     spawn.memory.room_plan[spawn.pos.x][spawn.pos.y - 1] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x, spawn.pos.y - 1, STRUCTURE_EXTENSION, 2));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x, spawn.pos.y - 1, spawn.room.name, STRUCTURE_EXTENSION, 2));
 
     spawn.memory.room_plan[spawn.pos.x + 2][spawn.pos.y - 2] = STRUCTURE_CONTAINER;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y - 2, STRUCTURE_CONTAINER, 2));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y - 2, spawn.room.name, STRUCTURE_CONTAINER, 2));
 
     //if (spawn.room.controller.level >= 3) {
     spawn.memory.room_plan[spawn.pos.x + 2][spawn.pos.y - 2] = STRUCTURE_CONTAINER;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y - 2, STRUCTURE_CONTAINER, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y - 2, spawn.room.name, STRUCTURE_CONTAINER, 3));
 
     spawn.memory.room_plan[spawn.pos.x + 2][spawn.pos.y - 3] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y - 3, STRUCTURE_EXTENSION, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y - 3, spawn.room.name, STRUCTURE_EXTENSION, 3));
 
     spawn.memory.room_plan[spawn.pos.x + 2][spawn.pos.y - 4] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y - 4, STRUCTURE_EXTENSION, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 2, spawn.pos.y - 4, spawn.room.name, STRUCTURE_EXTENSION, 3));
 
     spawn.memory.room_plan[spawn.pos.x + 1][spawn.pos.y - 4] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 1, spawn.pos.y - 4, STRUCTURE_EXTENSION, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 1, spawn.pos.y - 4, spawn.room.name, STRUCTURE_EXTENSION, 3));
 
     spawn.memory.room_plan[spawn.pos.x][spawn.pos.y - 4] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x, spawn.pos.y - 4, STRUCTURE_EXTENSION, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x, spawn.pos.y - 4, spawn.room.name, STRUCTURE_EXTENSION, 3));
 
     spawn.memory.room_plan[spawn.pos.x][spawn.pos.y - 3] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x, spawn.pos.y - 3, STRUCTURE_EXTENSION, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x, spawn.pos.y - 3, spawn.room.name, STRUCTURE_EXTENSION, 3));
 
     // if (spawn.room.controller.level >= 3) {
     spawn.memory.room_plan[spawn.pos.x - 2][spawn.pos.y - 2] = STRUCTURE_CONTAINER;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2, spawn.pos.y - 2, STRUCTURE_CONTAINER, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2, spawn.pos.y - 2, spawn.room.name, STRUCTURE_CONTAINER, 3));
 
     spawn.memory.room_plan[spawn.pos.x - 1][spawn.pos.y] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 1, spawn.pos.y, STRUCTURE_EXTENSION, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 1, spawn.pos.y, spawn.room.name, STRUCTURE_EXTENSION, 3));
 
     spawn.memory.room_plan[spawn.pos.x - 2][spawn.pos.y] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2, spawn.pos.y, STRUCTURE_EXTENSION, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2, spawn.pos.y, spawn.room.name, STRUCTURE_EXTENSION, 3));
 
     spawn.memory.room_plan[spawn.pos.x - 2][spawn.pos.y - 1] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2, spawn.pos.y - 1, STRUCTURE_EXTENSION, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2, spawn.pos.y - 1, spawn.room.name, STRUCTURE_EXTENSION, 3));
 
     spawn.memory.room_plan[spawn.pos.x - 1][spawn.pos.y - 2] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 1, spawn.pos.y - 2, STRUCTURE_EXTENSION, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 1, spawn.pos.y - 2, spawn.room.name, STRUCTURE_EXTENSION, 3));
 
     spawn.memory.room_plan[spawn.pos.x - 2][spawn.pos.y - 3] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2, spawn.pos.y - 3, STRUCTURE_EXTENSION, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2, spawn.pos.y - 3, spawn.room.name, STRUCTURE_EXTENSION, 3));
 
     // if (spawn.room.controller.level >= 4) {
     spawn.memory.room_plan[spawn.pos.x - 2][spawn.pos.y - 4] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2, spawn.pos.y - 4, STRUCTURE_EXTENSION, 4));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2, spawn.pos.y - 4, spawn.room.name, STRUCTURE_EXTENSION, 4));
     spawn.memory.room_plan[spawn.pos.x - 1][spawn.pos.y - 4] = STRUCTURE_EXTENSION;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 1, spawn.pos.y - 4, STRUCTURE_EXTENSION, 4));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 1, spawn.pos.y - 4, spawn.room.name, STRUCTURE_EXTENSION, 4));
     //if (spawn.room.controller.level >= 5) {
     spawn.memory.room_plan[spawn.pos.x][spawn.pos.y - 2] = STRUCTURE_LINK;
-    spawn.memory.building_list.push(new building_list_element(spawn.pos.x, spawn.pos.y - 2, STRUCTURE_LINK, 3));
+    spawn.memory.building_list.push(new building_list_element(spawn.pos.x, spawn.pos.y - 2, spawn.room.name, STRUCTURE_LINK, 3));
 
     //}
     // }
@@ -492,16 +621,16 @@ function plan_main_spawn_stamp(spawn, roomCM) {
     for (let i = 0; i < 7; i++) {
         //bottom edge
         spawn.memory.room_plan[spawn.pos.x - 3 + i][spawn.pos.y + 1] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 3 + i, spawn.pos.y + 1, STRUCTURE_ROAD, 2));
+        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 3 + i, spawn.pos.y + 1, spawn.room.name, STRUCTURE_ROAD, 2));
         //top edge
         spawn.memory.room_plan[spawn.pos.x - 3 + i][spawn.pos.y - 5] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 3 + i, spawn.pos.y - 5, STRUCTURE_ROAD, 2));
+        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 3 + i, spawn.pos.y - 5, spawn.room.name, STRUCTURE_ROAD, 2));
         //left edge
         spawn.memory.room_plan[spawn.pos.x - 3][spawn.pos.y + 1 - i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 3, spawn.pos.y + 1 - i, STRUCTURE_ROAD, 2));
+        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 3, spawn.pos.y + 1 - i, spawn.room.name, STRUCTURE_ROAD, 2));
         //right edge
         spawn.memory.room_plan[spawn.pos.x + 3][spawn.pos.y + 1 - i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 3, spawn.pos.y + 1 - i, STRUCTURE_ROAD, 2));
+        spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 3, spawn.pos.y + 1 - i, spawn.room.name, STRUCTURE_ROAD, 2));
     }
 
     for (let i = 0; i < 50; i++) {
@@ -544,7 +673,7 @@ function plan_tower(spawn, roomCM, rcl) {
     }
 
     spawn.memory.room_plan[pos_for_tower.x][pos_for_tower.y] = STRUCTURE_TOWER;
-    spawn.memory.building_list.push(new building_list_element(pos_for_tower.x, pos_for_tower.y, STRUCTURE_TOWER, rcl));
+    spawn.memory.building_list.push(new building_list_element(pos_for_tower.x, pos_for_tower.y, spawn.room.name, STRUCTURE_TOWER, rcl));
 
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
@@ -574,16 +703,13 @@ function build_from_plan(spawn) {
 function build_from_list(spawn) {
     var rcl = spawn.room.controller.level;
     for (let i = 0; i < spawn.memory.building_list.length; i++) {
-        //console.log(spawn.memory.building_list[i].rcl);
         if (spawn.memory.building_list[i].min_rcl <= rcl || spawn.memory.building_list[i] == undefined) {
-            //console.log("tryuing to build: ", spawn.memory.building_list[i].structureType);
-            //console.log("on: ",spawn.memory.building_list[i].x,":",spawn.memory.building_list[i].y);
             spawn.room.createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].structureType);
         }
     }
 }
 
-function plan_ramparts(spawn, roomCM, rcl) {
+function plan_borders(spawn, roomCM, rcl) {
     const buildings = spawn.memory.building_list;
     const sources2 = [];
     const costMap = new PathFinder.CostMatrix();
@@ -603,7 +729,7 @@ function plan_ramparts(spawn, roomCM, rcl) {
 
     // Set high cost on building tiles
     for (let building of buildings) {
-        if (building.structureType != STRUCTURE_ROAD && building.structureType != STRUCTURE_RAMPART) {
+        if (building.structureType != STRUCTURE_ROAD && building.structureType != STRUCTURE_RAMPART && building.structureType != STRUCTURE_WALL) {
             sources2.push({ x: building.x, y: building.y });
             costMap.set(building.x, building.y, 200);
         }
@@ -612,7 +738,7 @@ function plan_ramparts(spawn, roomCM, rcl) {
 
     // Determine the bounding box around buildings
     buildings.forEach(building => {
-        if (building.structureType != STRUCTURE_ROAD && building.structureType != STRUCTURE_RAMPART) {
+        if (building.structureType != STRUCTURE_ROAD && building.structureType != STRUCTURE_RAMPART && building.structureType != STRUCTURE_WALL) {
             max_x = Math.max(max_x, building.x);
             min_x = Math.min(min_x, building.x);
             max_y = Math.max(max_y, building.y);
@@ -621,7 +747,7 @@ function plan_ramparts(spawn, roomCM, rcl) {
     });
 
     // Expand the bounding box slightly
-    const padding = 3;
+    const padding = 4;
     min_x = Math.max(min_x - padding, 0);
     min_y = Math.max(min_y - padding, 0);
     max_x = Math.min(max_x + padding, 49);
@@ -642,39 +768,58 @@ function plan_ramparts(spawn, roomCM, rcl) {
     const rampartPositions = mincut.minCutToExit(sources2, costMap);
 
     // Update room_plan and building_list with rampart positions
-    //console.log("ramparts pos: ");
     rampartPositions.forEach(pos => {
-        spawn.memory.room_plan[pos.x][pos.y] = STRUCTURE_RAMPART;
-        buildings.push({ x: pos.x, y: pos.y, structureType: STRUCTURE_RAMPART, rcl });
-        spawn.memory.building_list.push(new building_list_element(pos.x, pos.y, STRUCTURE_RAMPART, 3));
+        var is_on_road = false;
+        for (let structure of spawn.memory.building_list) {
+            //if (Math.abs(structure.x - pos.x) <= 1 && Math.abs(structure.y - pos.y) <= 1 && structure.structureType == STRUCTURE_ROAD)
+            if (structure.roomName == undefined) {
+                continue;
+            }
+            if (Math.abs(structure.x - pos.x) <= 1 && Math.abs(structure.y - pos.y) <= 1 && structure.structureType == STRUCTURE_ROAD) {// if building on road
+                console.log("creating hole in wall at:", pos.x, " ", pos.y);
+                spawn.memory.room_plan[pos.x][pos.y] = STRUCTURE_RAMPART;
+                buildings.push({ x: pos.x, y: pos.y, roomName: spawn.room.name, structureType: STRUCTURE_RAMPART, rcl });
+                spawn.memory.building_list.push(new building_list_element(pos.x, pos.y, spawn.room.name, STRUCTURE_RAMPART, 3));
+                is_on_road = true;
+            }
+        }
+        
+        if (is_on_road == false) {
+            spawn.memory.room_plan[pos.x][pos.y] = STRUCTURE_WALL;
+            buildings.push({ x: pos.x, y: pos.y, structureType: STRUCTURE_WALL, rcl });
+            spawn.memory.building_list.push(new building_list_element(pos.x, pos.y,spawn.room.name, STRUCTURE_WALL, 3));
+        }
+
+        
+        /*
+        else {
+            spawn.memory.room_plan[pos.x][pos.y] = STRUCTURE_RAMPART;
+            buildings.push({ x: pos.x, y: pos.y, structureType: STRUCTURE_RAMPART, rcl });
+            spawn.memory.building_list.push(new building_list_element(pos.x, pos.y, STRUCTURE_RAMPART, 3));
+        }
+        */
     });
-    //console.log(rampartPositions);
 }
 
 
 function plan_controller_ramparts(spawn) {
     var controller_ramparts = spawn.room.controller.pos.getNearbyPositions();
-    console.log(controller_ramparts);
     for (let position of controller_ramparts) {
-        console.log(position.x);
         spawn.memory.room_plan[position.x][position.y] = STRUCTURE_RAMPART;
-        spawn.memory.building_list.push(new building_list_element(position.x, position.y, STRUCTURE_RAMPART, 3));
+        spawn.memory.building_list.push(new building_list_element(position.x, position.y, spawn.room.name, STRUCTURE_RAMPART, 3));
     }
 }
 
-function plan_controller_container(spawn)
-{
+function plan_controller_container(spawn) {
     var controller_pos = spawn.room.controller.pos.getNearbyPositions();
-    const terrain=spawn.room.getTerrain();
-    //console.log(controller_ramparts);
+    const terrain = spawn.room.getTerrain();
     for (let position of controller_pos) {
-        if(terrain.get(position.x,position.y)!=TERRAIN_MASK_WALL)
-        {
+        if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL) {
             spawn.memory.room_plan[position.x][position.y] = STRUCTURE_CONTAINER;
-            spawn.memory.building_list.push(new building_list_element(position.x, position.y, STRUCTURE_CONTAINER, 2));
+            spawn.memory.building_list.push(new building_list_element(position.x, position.y, spawn.room.name, STRUCTURE_CONTAINER, 2));
             break;
         }
-        
+
     }
 }
 
@@ -715,23 +860,26 @@ function setBaseLayout(spawn) {
 
     //copyinmg room structures data from planner to roomCM (this have to be done before planning every stamp)
     //var { seeds, distanceCM, floodCM, min_distance_from_spawn } = plan_extension_stamp(spawn, roomCM);
-    if (spawn.memory.room_plan == undefined || spawn.memory.building_list == undefined || (spawn.memory.building_list.length == 0)) {
+    if (spawn.memory.room_plan == undefined || spawn.memory.building_list == undefined || (spawn.memory.building_list.length == 0) // ||  true
+    ) {
 
         spawn.memory.room_plan = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
         spawn.memory.building_list = [];
 
         plan_main_spawn_stamp(spawn, roomCM);
+        /*
         var sources = spawn.room.find(FIND_SOURCES);
         for (let source of sources) {
             plan_road_to_target(spawn, roomCM, source.pos, 1);
         }
+        */
         plan_manager_stamp(spawn, roomCM);
         plan_road_to_controller(spawn, roomCM);
         plan_tower(spawn, roomCM, 3);
         plan_extension_stamp(spawn, roomCM, 5)
         plan_tower(spawn, roomCM, 5);
         plan_extension_stamp(spawn, roomCM, 5)
-        //console.log("PLANING EX");
+        ////console.log("PLANING EX");
         plan_extension_stamp(spawn, roomCM, 6)
         plan_tower(spawn, roomCM, 7);
         plan_extension_stamp(spawn, roomCM, 7)
@@ -740,13 +888,34 @@ function setBaseLayout(spawn) {
         plan_tower(spawn, roomCM, 8);
 
 
-        plan_ramparts(spawn, roomCM, 3);
+        plan_borders(spawn, roomCM, 4);
 
         plan_controller_ramparts(spawn);
         plan_controller_container(spawn)
 
     }
 
+    //planning roads to sources (in all farming rooms including main room)
+    if (spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length == 0) {
+        //console.log("AAAAAAAAAAAAAAAAAAAAAAAA");
+        if (spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0) {
+            //console.log("BBBBBBBBBBBBBB");
+            for (let farming_room of spawn.memory.farming_rooms) {
+
+                //console.log(farming_room.name);
+                if (Game.rooms[farming_room.name] != undefined) {
+                    var sources = Game.rooms[farming_room.name].find(FIND_SOURCES);
+                    for (let source of sources) {
+                        //console.log("planing to: ", source.pos);
+                        plan_road_to_target(spawn, roomCM, source.pos, 2);
+                        //console.log("DDDDDDDDDDDDDDD");
+                    }
+                    //plan_road_to_target()
+                }
+
+            }
+        }
+    }
     build_from_list(spawn);
     //return;
     ///////////////////////////////////////////////
@@ -760,14 +929,14 @@ function setBaseLayout(spawn) {
 
 
 
-    // console.log("VISUALS");
+    // //console.log("VISUALS");
     var if_visualize = true;
     if (if_visualize) {
         for (let i = 0; i < 50; i++) {
             for (let j = 0; j < 50; j++) {
                 if (spawn.memory.room_plan[i][j] == STRUCTURE_EXTENSION) {
                     spawn.room.visual.circle(i, j, { fill: '#ffff00', radius: 0.5, stroke: 'red' });
-                    //console.log("SHOWING EXTENSION");
+                    ////console.log("SHOWING EXTENSION");
                 }
                 else if (spawn.memory.room_plan[i][j] == STRUCTURE_ROAD) {
                     spawn.room.visual.circle(i, j, { fill: '#666666', radius: 0.5, stroke: 'black' });
@@ -787,6 +956,9 @@ function setBaseLayout(spawn) {
                 else if (spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART) {
                     spawn.room.visual.circle(i, j, { fill: 'green', radius: 0.5, stroke: 'green' });
                 }
+                else if (spawn.memory.room_plan[i][j] == STRUCTURE_WALL) {
+                    spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'grey' });
+                }
             }
         }
     }
@@ -795,7 +967,7 @@ function setBaseLayout(spawn) {
     //    { filter: function (structure) { return structure.structureType == STRUCTURE_TOWER; } });
 
     var mineral = spawn.room.find(FIND_MINERALS);
-    //console.log("mineral pos: ", mineral[0].pos);
+    ////console.log("mineral pos: ", mineral[0].pos);
     spawn.room.createConstructionSite(mineral[0].pos, STRUCTURE_EXTRACTOR); // STAAYS
 
 

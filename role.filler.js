@@ -100,7 +100,11 @@ var roleFiller = {
                     }
                     else {
                         for (let i = 0; i < creep.memory.to_fill.length; i++) {
-                            creep.transfer(Game.getObjectById(creep.memory.to_fill[i]), RESOURCE_ENERGY);
+                            if(Game.getObjectById(creep.memory.to_fill[i]).store.getFreeCapacity(RESOURCE_ENERGY)>0)
+                            {
+                                creep.transfer(Game.getObjectById(creep.memory.to_fill[i]), RESOURCE_ENERGY);
+                            }
+                            
                         }
                     }
                 }

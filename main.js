@@ -121,13 +121,14 @@ module.exports.loop = function () {
             if (spawn == undefined) { continue; }
             if (spawnName == 'Spawn1') {
                 //console.log("QQQQQQQQQQQQQQQQQQQQQQ");
+                //delete spawn.memory;
 
 
 
 
-
-                if (Game.time % 436== 0 && Game.cpu.bucket > 400) {
+                if (Game.time % 247== 0 && Game.cpu.bucket > 400 ) {
                     setBaseLayout(spawn);
+                    //return;
                 }
                 //spawn.memory.farming_rooms=undefined;
                 //spawn.memory.rooms_to_scan=undefined;
@@ -601,7 +602,7 @@ module.exports.loop = function () {
                     return;
                 }
             }
-            if (pop_upgraders < spawn.memory.req_upgraders && spawn.memory.farming_rooms[0].carry_power > 0
+            if (pop_upgraders < spawn.memory.req_upgraders && spawn.memory.farming_rooms!=undefined && spawn.memory.farming_rooms.length>0 && spawn.memory.farming_rooms[0].carry_power > 0
                 && pop_upgraders / spawn.memory.req_upgraders < spawn.memory.farming_rooms[0].carry_power / spawn.memory.farming_rooms[0].sources_num * 10) // spawning new upgrader
             {
                 if (spawn.spawnCreep(maxUpgrader(energyCap, spawn), 'Upgrader' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {

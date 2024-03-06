@@ -41,7 +41,7 @@ var roleDistanceCarrier = {
             }
             if (creep.room.name == creep.memory.target_room && creep.memory.collecting == true /*creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0*/) {
                 // in target room and have free space - collect dropped energy or energy from containers
-                if (creep.memory.target_room_containers == undefined) {
+                if (creep.memory.target_room_containers == undefined || (creep.memory.target_room_containers!=undefined && creep.memory.target_room_containers.length==0)) {
                     if (creep.memory.target_room == creep.memory.home_room.name) {
                         var containers = creep.room.find(FIND_STRUCTURES, {
                             filter: (structure) => {
@@ -91,7 +91,7 @@ var roleDistanceCarrier = {
                     return;
                 }
 
-                if (creep.memory.energy_to_collect == undefined && Game.time % 12 == 0) {
+                if (creep.memory.energy_to_collect == undefined && (Game.time % 12 == 0 || Game.time%13==0)) {
                     const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
                         filter: resource => resource.amount > 30
                     });

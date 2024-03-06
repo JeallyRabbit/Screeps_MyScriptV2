@@ -19,8 +19,10 @@ var roleBuilder = {
         {
             if(creep.memory.role!='distanceRepairer')
             {
-                spawn.memory.building=undefined;
-                creep.suicide();
+                spawn.memory.req_builders=0;
+                spawn.memory.building=false;
+                creep.memory.role='distanceRepairer';
+                creep.memory.target_room=creep.memory.home_room.name;
             }
             
             if (creep.room.name == creep.memory.home_room.name && creep.memory.role != 'distanceCarrier') {
