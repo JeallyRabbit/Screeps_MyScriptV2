@@ -704,7 +704,8 @@ function build_from_list(spawn) {
     var rcl = spawn.room.controller.level;
     for (let i = 0; i < spawn.memory.building_list.length; i++) {
         if (spawn.memory.building_list[i].min_rcl <= rcl || spawn.memory.building_list[i] == undefined) {
-            spawn.room.createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].structureType);
+            Game.rooms[spawn.memory.building_list[i].roomName].createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].structureType);
+            //spawn.room.createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].structureType);
         }
     }
 }
@@ -916,6 +917,7 @@ function setBaseLayout(spawn) {
             }
         }
     }
+    console.log("building");
     build_from_list(spawn);
     //return;
     ///////////////////////////////////////////////

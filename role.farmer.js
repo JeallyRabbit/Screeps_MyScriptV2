@@ -15,9 +15,11 @@ var roleFarmer = {
         //var x_source=25,y_source=25;
         if (creep.memory.target_room == creep.room.name) {
             
+            /*
             creep.room.find(FIND_CONSTRUCTION_SITES).forEach(function (struct) {
                 struct.remove();
             })
+            */
 
 
             //console.log("full");
