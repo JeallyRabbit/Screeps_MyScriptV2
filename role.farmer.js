@@ -14,6 +14,13 @@ var roleFarmer = {
         //console.log(target_room);
         //var x_source=25,y_source=25;
         if (creep.memory.target_room == creep.room.name) {
+            
+            /*
+            creep.room.find(FIND_CONSTRUCTION_SITES).forEach(function (struct) {
+                struct.remove();
+            })
+            */
+
 
             //console.log("full");
             /*
@@ -123,10 +130,9 @@ var roleFarmer = {
                         return source.pos.getOpenPositions().length > 0;
                     }
                 });
-                if(sources.length==0)
-                {
+                if (sources.length == 0) {
                     creep.say("no src");
-                    sources=creep.pos.findInRange(FIND_SOURCES,2);
+                    sources = creep.pos.findInRange(FIND_SOURCES, 2);
                 }
                 //console.log(sources.length);
                 var min_hp = 100;
@@ -170,7 +176,7 @@ var roleFarmer = {
         }
         else if (creep.room.name != creep.memory.target_room /*&& creep.store[RESOURCE_ENERGY] == 0*/) {// not in target room and have free space - go to target room
             const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
-            if (creep.memory.source_id != undefined) {
+            if (creep.memory.source_id != undefined && Game.getObjectById(creep.memory.source_id) != null) {
                 creep.moveTo(Game.getObjectById(creep.memory.source_id));
             }
             else {
@@ -247,8 +253,10 @@ var roleFarmer = {
             }
         }
 
-        if (creep.room.name == creep.memory.target_room && Game.getObjectById(creep.memory.source_id) != null) {
-            if (Game.time % 1004 == 0 || (Game.time % 50 == 0 && (creep.memory.source_path != undefined && creep.memory.source_path.incomplete == true)) /*|| creep.memory.source_path==undefined */) {
+        if (creep.room.name == creep.memory.target_room && creep.memory.target_room != creep.memory.home_room.name 
+            && Game.getObjectById(creep.memory.source_id) != null && false) {
+            if (Game.time % 1004 == 0 || (Game.time % 57 == 0 && (creep.memory.source_path != undefined && creep.memory.source_path.incomplete == true)
+            || creep.memory.source_path==undefined) /*|| creep.memory.source_path==undefined */) {
 
                 var ret = PathFinder.search(Game.getObjectById(creep.memory.source_id).pos, spawn.pos, {
                     //maxCost: 300,
@@ -344,11 +352,15 @@ var roleFarmer = {
                 });
 
                 //if (ret.incomplete != true || true) 
-                if (ret != undefined && Game.time % 1004 == 0) {
+                if (ret != undefined && Game.time % 1004==0 && ret.incomplete!=true) {
                     //creep.say(creep.moveByPath(ret.path));
                     creep.memory.source_path = ret;
                     for (let i = 0; i < ret.path.length; i++) {
-                        Game.rooms[ret.path[i].roomName].createConstructionSite(ret.path[i].x, ret.path[i].y, STRUCTURE_ROAD);
+                        if(Game.rooms[ret.path[i].roomName]!=undefined)
+                        {
+                           Game.rooms[ret.path[i].roomName].createConstructionSite(ret.path[i].x, ret.path[i].y, STRUCTURE_ROAD); 
+                        }
+                        
 
                         /*
                         if ((ret.path[i].x != spawn.pos.x || ret.path[i].y != spawn.pos.y) && ret.path[i].roomName == creep.memory.target_room) {

@@ -1,5 +1,4 @@
 //var roleUpgrader = require('role.upgrader');
-const { move_avoid_hostile } = require('./move_avoid_hostile');
 
 var roleBuilder = {
 
@@ -13,28 +12,32 @@ var roleBuilder = {
         var targets = creep.room.find(FIND_CONSTRUCTION_SITES, {
             filter:
                 function (structure) {
-                    return structure.my==true;
+                    return structure.my == true || true;
                 }
         });
         if (targets.length == 0) // if no constructuin sites suicide
         {
-            if(creep.memory.role!='distanceRepairer')
-            {
-                spawn.memory.building=undefined;
-                creep.suicide();
+            if (creep.room.name == spawn.room.name) {
+                spawn.memory.req_builders = 0;
+                spawn.memory.building = false;
             }
-            
+
+            if (creep.memory.role != 'distanceRepairer') {
+                creep.memory.role = 'distanceRepairer';
+                creep.memory.target_room = creep.memory.home_room.name;
+            }
+
             if (creep.room.name == creep.memory.home_room.name && creep.memory.role != 'distanceCarrier') {
                 //roleUpgrader.run(creep, spawn);
             }
 
         }
 
-        if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) { // if building and no energy go harvest
+        if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.building = false;
             creep.memory.is_working = false;
         }
-        if (!creep.memory.building && creep.store[RESOURCE_ENERGY] > 0) { // if have energy and construstion site go build
+        if (!creep.memory.building && creep.store[RESOURCE_ENERGY] > 0) {
             creep.memory.building = true;
         }
 
@@ -50,11 +53,10 @@ var roleBuilder = {
                     && structure.store[RESOURCE_ENERGY] > 50;
             }
         }));
-        if(spawn.store[RESOURCE_ENERGY]>=300)
-        {
-            deposits=deposits.concat(spawn);
+        if (spawn.store[RESOURCE_ENERGY] >= 300 && deposits.length == 0 && creep.memory.target_room == creep.memory.home_room.name) {
+            deposits = deposits.concat(spawn);
         }
-        
+
         var closest_target = creep.pos.findClosestByRange(targets);
         for (let i = 0; i < targets.length; i++) {
             if (targets[i].structureType == STRUCTURE_SPAWN) {
@@ -65,11 +67,11 @@ var roleBuilder = {
         }
         //creep.say("A");
         if (creep.memory.building) { // if building go to construction site and build
-
+            //creep.say(creep.build(closest_target));
             if (targets.length) {
                 if (creep.build(closest_target) == ERR_NOT_IN_RANGE) {
                     //creep.say("NB");
-                    creep.moveTo(targets[0],{range:3});
+                    creep.moveTo(targets[0], { range: 2 });
                     //move_avoid_hostile(creep, closest_target.pos, 3, false);
                 }
                 else if (creep.build(closest_target) == OK) { creep.memory.is_working = true; }
@@ -85,8 +87,8 @@ var roleBuilder = {
             withdraw_amount = Math.min(creep.store.getFreeCapacity(), deposit.store[RESOURCE_ENERGY]);
             if (withdraw_amount > 0) {
                 if (creep.withdraw(deposit, RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {
-                    //creep.moveTo(deposit);
-                    move_avoid_hostile(creep, deposit.pos, 1, false);
+                    creep.moveTo(deposit);
+                    //move_avoid_hostile(creep, deposit.pos, 1, false);
                 }
             }
         }
@@ -98,8 +100,8 @@ var roleBuilder = {
             if (closestDroppedEnergy != undefined) {
                 if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                     // Move to it
-                    //creep.moveTo(closestDroppedEnergy);
-                    move_avoid_hostile(creep, closestDroppedEnergy.pos, 1, false);
+                    creep.moveTo(closestDroppedEnergy);
+                    //move_avoid_hostile(creep, closestDroppedEnergy.pos, 1, false);
                 }
             }
         }

@@ -55,11 +55,12 @@ const keeper_carrier = {
             }
             //closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy);
             //creep.say(closestDroppedEnergy.pos.x+" "+closestDroppedEnergy.pos.y);
-            if (creep.memory.closestDroppedEnergy != undefined && creep.memory.closestDroppedEnergy!=null/* && (droppedEnergy != undefined || droppedEnergy.length >= 1)*/) {//there is safe energy
+            if (creep.memory.closestDroppedEnergy != undefined && creep.memory.closestDroppedEnergy!=null && Game.getObjectById(creep.memory.closestDroppedEnergy)!=null){//there is safe energy
                 //creep.say('E');
                 if (creep.pickup(Game.getObjectById(creep.memory.closestDroppedEnergy)) == ERR_NOT_IN_RANGE) {
                     // Move to it
-                    move_avoid_hostile(creep, Game.getObjectById(creep.memory.closestDroppedEnergy).pos,0,false);
+                    //move_avoid_hostile(creep, Game.getObjectById(creep.memory.closestDroppedEnergy).pos,0,false);
+                    creep.moveTo(Game.getObjectById(creep.memory.closestDroppedEnergy),{avodidSk:true});
                     if(creep.memory.my_path==undefined)
                     {
                         creep.memory.closestDroppedEnergy=undefined;
@@ -78,21 +79,18 @@ const keeper_carrier = {
                     }
                 });
                 if (farmer != undefined && farmer.length > 0) {
-                    move_avoid_hostile(creep, farmer[0].pos, 3);
+                    creep.moveTo(farmer[0],{range: 3, avoidSk: true});
+                    //move_avoid_hostile(creep, farmer[0].pos, 3);
                 }
                 else {
                     var fighter = creep.room.find(FIND_MY_CREEPS, {
                         filter: function (fighter) {
-                            return fighter.memory.role == 'keeperKiller';
+                            return fighter.memory.role == 'keeperKiller' || fighter.memory.role=='keeperHealer';
                         }
                     });
-                    fighter = fighter.concat(creep.room.find(FIND_MY_CREEPS, {
-                        filter: function (healer) {
-                            return healer.memory.role == 'keeperHealer';
-                        }
-                    }));
                     if (fighter != undefined && fighter.length > 0) {
-                        move_avoid_hostile(creep, fighter[0].pos, 5, false);
+                        creep.moveTo(fighter[0],{range: 5, avoidSk:true});
+                        //move_avoid_hostile(creep, fighter[0].pos, 5, false);
                     }
                 }
             }
@@ -112,7 +110,8 @@ const keeper_carrier = {
             //creep.say("GH");
             //creep.say(creep.moveTo(25,25,creep.memory.home_room.name));
             //console.log("home: ", home);
-            move_avoid_hostile(creep, new RoomPosition(25, 25, creep.memory.home_room.name), 1);
+            creep.moveTo(new RoomPosition(25, 25, creep.memory.home_room.name),{range:10});
+            //move_avoid_hostile(creep, new RoomPosition(25, 25, creep.memory.home_room.name), 1);
         }
         else if (creep.room.name == creep.memory.home_room.name) {
             /*

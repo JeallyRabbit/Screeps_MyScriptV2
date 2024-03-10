@@ -1,5 +1,6 @@
-var roleBuilder = require('role.builder');
+
 const { move_avoid_hostile } = require("./move_avoid_hostile");
+const roleBuilder=require("./role.builder");
 //const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
 
 var roleRepairer = {
@@ -20,7 +21,7 @@ var roleRepairer = {
             }
         });
 
-        if (targets.length < 1) {
+        if (spawn.memory.building==true) {
             //creep.say("no repair");
             roleBuilder.run(creep, spawn);
         }
