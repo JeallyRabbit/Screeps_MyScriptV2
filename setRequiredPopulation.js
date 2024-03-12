@@ -114,7 +114,7 @@ function setRequiredPopulation(mySpawns) {
     if (mySpawns['Spawn1'].memory.building == true && mySpawns['Spawn1'].room.controller.level >2) {
         mySpawns['Spawn1'].memory.req_builders = 2;
     }
-    mySpawns['Spawn1'].memory.req_haulers = 2;// role num 4
+    mySpawns['Spawn1'].memory.req_haulers = 1;// role num 4
     mySpawns['Spawn1'].memory.req_berserk = 1;//role num 8
     mySpawns['Spawn1'].memory.req_transporters = 0;//role numm 9
     mySpawns['Spawn1'].memory.req_towerKeepers = 0;//role num 10

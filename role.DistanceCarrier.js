@@ -244,7 +244,7 @@ var roleDistanceCarrier = {
                                 creep.transfer(Game.getObjectById(creep.memory.home_container), resource);
                             }
                         }
-                        else{
+                        else {
                             creep.transfer(Game.getObjectById(creep.memory.home_container), RESOURCE_ENERGY);
                         }
 
@@ -259,8 +259,15 @@ var roleDistanceCarrier = {
                 //if(creep.memory.target_room==undefined){creep.suicide();}
                 //var extensions_in_home = spawn.room.find()
                 //creep.say("target");
-                const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
-                creep.moveTo(destination, { reUsePath: 25 });
+                if (creep.memory.max_container != undefined) {
+                    creep.moveTo(Game.getObjectById(creep.memory.max_container), { reusePath: 10 });
+                }
+                else {
+                    const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
+                    creep.moveTo(destination, { reUsePath: 25 });
+                }
+
+
                 //move_avoid_hostile(creep, destination, 1, false, 8000);
 
             }

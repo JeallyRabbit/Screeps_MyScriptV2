@@ -112,7 +112,7 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
             }
 
         }
-        else if (spawn.memory.manager_link_id!=undefined && Game.getObjectById(spawn.memory.manager_link_id)!=null && Game.getObjectById(spawn.memory.manager_link_id).store[RESOURCE_ENERGY]<750)
+        else if (spawn.memory.manager_link_id!=undefined && Game.getObjectById(spawn.memory.manager_link_id)!=null && Game.getObjectById(spawn.memory.manager_link_id).store[RESOURCE_ENERGY]<700) 
         {
             creep.say("link");
             if(creep.transfer(Game.getObjectById(spawn.memory.manager_link_id), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
