@@ -37,6 +37,7 @@ var roleSoldier = {
 	    if(creep.room.name == creep.memory.target_room) {
             //creep.say('at target');
             var pos = creep.pos;
+            /*
             if (pos.x > 48) {
                 creep.move(LEFT);
                 //return;
@@ -53,6 +54,7 @@ var roleSoldier = {
                 creep.move(BOTTOM);
                 //return;
             }
+            */
             var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
             
             var target_structure=creep.pos.findClosestByRange(FIND_STRUCTURES,{

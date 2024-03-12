@@ -44,20 +44,24 @@ var roleFiller = {
             }
 
         }
-        if (creep.memory.working_pos != undefined) {
+        if (creep.memory.working_pos != undefined && (creep.pos.x != creep.memory.working_pos.x || creep.pos.y != creep.memory.working_pos.y)) {
 
             //creep.say("moving");
-            var at_pos=creep.room.lookForAt(LOOK_CREEPS,creep.memory.working_pos.x,creep.memory.working_pos.y);
-            if(at_pos.length>0 && at_pos[0].name!=creep.name)
-            {
-                creep.memory.working_pos=undefined;
+            var at_pos = creep.room.lookForAt(LOOK_CREEPS, creep.memory.working_pos.x, creep.memory.working_pos.y, creep.room.name);
+            creep.memory.at_pos = at_pos;
+            if (at_pos.length > 0 && at_pos[0].id != creep.id) {
+                creep.memory.working_pos = undefined;
             }
-            
-            creep.moveTo(creep.memory.working_pos.x, creep.memory.working_pos.y);
+            else {
+                creep.say("Free");
+                creep.memory.at_pos = undefined;
+                creep.moveTo(new RoomPosition(creep.memory.working_pos.x, creep.memory.working_pos.y, creep.room.name), { range: 0 });
+            }
+
         }
         if ((creep.memory.working_pos != undefined) && creep.memory.working_pos.x == creep.pos.x && creep.memory.working_pos.y == creep.pos.y) {
             //creep.say('at pos');
-            creep.memory.is_working=true;
+            creep.memory.is_working = true;
             if (creep.memory.my_container != undefined && Game.getObjectById(creep.memory.my_container) == null) {
                 creep.memory.my_container = undefined;
                 creep.say("clearing");
@@ -74,6 +78,8 @@ var roleFiller = {
                 }
             }
 
+
+
             if (creep.memory.my_container != undefined) {
                 if (creep.memory.to_fill == undefined) {
                     var to_fill = creep.pos.findInRange(FIND_STRUCTURES, 2, {
@@ -82,7 +88,7 @@ var roleFiller = {
                         }
                     });
                     if (to_fill.length > 0) {
-                        creep.memory.to_fill=[];
+                        creep.memory.to_fill = [];
                         for (let i = 0; i < to_fill.length; i++) {
                             creep.memory.to_fill.push(to_fill[i].id);
                         }
@@ -90,12 +96,21 @@ var roleFiller = {
                     }
                 }
                 if (creep.memory.to_fill != undefined) {
+
                     if (creep.store[RESOURCE_ENERGY] == 0) {
-                        creep.withdraw(Game.getObjectById(creep.memory.my_container), RESOURCE_ENERGY); 
+                        if (spawn.memory.filler_link != undefined && Game.getObjectById(spawn.memory.filler_link) != null) {
+                            creep.withdraw(Game.getObjectById(spawn.memory.filler_link), RESOURCE_ENERGY);
+                        }
+                        else {
+                            creep.withdraw(Game.getObjectById(creep.memory.my_container), RESOURCE_ENERGY);
+                        }
                     }
                     else {
                         for (let i = 0; i < creep.memory.to_fill.length; i++) {
-                            creep.transfer(Game.getObjectById(creep.memory.to_fill[i]), RESOURCE_ENERGY);
+                            if (Game.getObjectById(creep.memory.to_fill[i]).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                                creep.transfer(Game.getObjectById(creep.memory.to_fill[i]), RESOURCE_ENERGY);
+                            }
+
                         }
                     }
                 }

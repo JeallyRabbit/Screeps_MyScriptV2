@@ -10,7 +10,6 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
         //creep.move(TOP);
         //creep.memory.cID_max=undefined;
 
-
         //creep.say("poq");
         if (creep.memory.filler_containers == undefined) {
             //creep.say("qwe");
@@ -60,14 +59,9 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
             return;
         }
 
-        var storages = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_STORAGE && structure.store[RESOURCE_ENERGY] > 0;
-            }
-        });
-
-        if (storages.length > 0) {
-            containers = storages;
+        if (spawn.room.storage!=undefined /* && creep.memory.cID_max==undefined */ /* && (creep.memory.cID_max!=undefined && Game.getObjectById(creep.memory.cID_max)==null)*/) {
+            containers = spawn.room.storage;
+            creep.memory.cID_max=spawn.room.storage.id;
         }
 
         if (creep.store[RESOURCE_ENERGY] == 0) {
@@ -83,7 +77,6 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
         //var cID=-1;
         //var cID_max = -1, cID_min = -1;
         var max_energy = 0;
-        var min_energy = 1;
         if (creep.memory.cID_max == -1 || creep.memory.cID_max == undefined) {
             for (let i = 0; i < containers.length; i++) {
                 //console.log(containers[i].store.getCapacity(RESOURCE_ENERGY));
@@ -103,9 +96,9 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 //creep.memory.cID_max=-1;
                 var withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, Game.getObjectById(creep.memory.cID_max).store[RESOURCE_ENERGY]);
                 if (creep.withdraw(Game.getObjectById(creep.memory.cID_max), RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
-                    //creep.moveTo(Game.getObjectById(creep.memory.cID_max));
+                    creep.moveTo(Game.getObjectById(creep.memory.cID_max));
                     //creep.say("M");
-                    move_avoid_hostile(creep, Game.getObjectById(creep.memory.cID_max).pos, 1, false);
+                    //move_avoid_hostile(creep, Game.getObjectById(creep.memory.cID_max).pos, 1, false);
                 }
                 else if (Game.getObjectById(creep.memory.cID_max).store[RESOURCE_ENERGY] == 0) {
                     creep.memory.cID_max = undefined;
@@ -119,20 +112,29 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
             }
 
         }
+        else if (spawn.memory.manager_link_id!=undefined && Game.getObjectById(spawn.memory.manager_link_id)!=null && Game.getObjectById(spawn.memory.manager_link_id).store[RESOURCE_ENERGY]<700) 
+        {
+            creep.say("link");
+            if(creep.transfer(Game.getObjectById(spawn.memory.manager_link_id), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
+            {
+                creep.moveTo(Game.getObjectById(spawn.memory.manager_link_id));
+            }
+        }
         else if (creep.memory.filler_containers!=undefined && creep.memory.filler_containers.length>0 
             && (Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store.getCapacity(RESOURCE_ENERGY)
-            || Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) >= 400)) {
+            || Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) >0)) {
             if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[0]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                creep.say("Q");
-                // creep.moveTo(spawn);
-                move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[0]).pos, 1, false);;
+                //creep.say("Q");
+                
+                creep.moveTo(Game.getObjectById(creep.memory.filler_containers[0]));
+                //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[0]).pos, 1, false);;
             }
         }
         else if ((creep.memory.filler_containers!=undefined  && creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[1]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                creep.say("P");
-                // creep.moveTo(spawn);
-                move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[1]).pos, 1, false);;
+                //creep.say("P");
+                creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]));
+                //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[1]).pos, 1, false);;
             }
         }
         else if (extensions_full == 1)// if all extensions are full go to spawn

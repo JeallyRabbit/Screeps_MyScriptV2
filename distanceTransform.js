@@ -76,7 +76,8 @@ Room.prototype.distanceTransform = function (
                 room.visual.rect(x - 0.5, y - 0.5, 1, 1, {
                     fill: `hsl(${200}${distanceCM.get(x, y) * 10}, 100%, 60%)`,
                     opacity: 0.4,
-                })
+                });
+                room.visual.text(distanceCM.get(x, y),x,y,{coloer:'white',font:0.8});
             }
         }
     }
@@ -147,6 +148,7 @@ Room.prototype.diagonalDistanceTransform = function (
                     fill: `hsl(${200}${distanceCM.get(x, y) * 10}, 100%, 60%)`,
                     opacity: 0.4,
                 })
+                room.visual.text(distanceCM.get(x, y),x,y,{coloer:'white',font:0.8});
             }
         }
     }

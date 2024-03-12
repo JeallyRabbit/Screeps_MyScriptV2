@@ -57,10 +57,12 @@ const keeper_farmer = {
         }
         else if (creep.room.name == creep.memory.target_room) {
             creep.memory.is_working = true;
-
-            if (creep.pos.findInRange(FIND_HOSTILE_CREEPS, 5).length > 0) {
-                //creep.say("RUN2");
-                goOutOfRange(creep, 5);
+            var closest_hostile=creep.pos.findInRange(FIND_HOSTILE_CREEPS,4);
+            if (closest_hostile!=undefined && closest_hostile.length>0) {
+                creep.say("RUN2");
+                //goOutOfRange(creep, 5);
+                creep.fleeFrom(closest_hostile,5);
+                return;
             }
 
 
@@ -101,33 +103,12 @@ const keeper_farmer = {
                 }
             }
 
-            /*
-            var sources = creep.room.find(FIND_SOURCES, {
-                filter: function (source) {
-                    return source.energy > 0 && source.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length < 1
-                        && source.pos.findInRange(FIND_STRUCTURES, 5, { // finding lairs that have spawning timer <20
-                            filter: function (structure) {
-                                return structure.structureType == STRUCTURE_KEEPER_LAIR
-                                    && structure.ticksToSpawn < 20;
-                            }
-                        }).length < 1;
-                }
-            });
-            */
-            /*
-            if(sources!=undefined && sources.length>0)
-            {
-                sources=sources.concat(creep.room.find(FIND_MINERALS));    
-            }
-            else
-            {
-                var sources=(creep.room.find(FIND_MINERALS));
-            }*/
 
             if (Game.getObjectById(creep.memory.closest_source) == undefined) {
                 delete creep.memory.my_path;
                 if (creep.pos.findInRange(FIND_HOSTILE_CREEPS, 5).length > 0) {
-                    goOutOfRange(creep, 5, creep.pos.findClosestByRange(FIND_SOURCES));
+                    //goOutOfRange(creep, 5, creep.pos.findClosestByRange(FIND_SOURCES));
+                    creep.fleeFrom(creep.pos.findClosestByRange(FIND_SOURCES),5);
                 }
                 else {
                     //creep.say("K1")
@@ -139,29 +120,13 @@ const keeper_farmer = {
                     if (healer != undefined) {
                         //creep.my_path=undefined;
                         //creep.say("K2");
-                        move_avoid_hostile(creep, healer.pos, 6, false);
+                        //move_avoid_hostile(creep, healer.pos, 6, false);
+                        creep.moveTo(healer,{range:3,avoidSk:true});
                         return;
                         //creep.moveTo(killer,{range:5});
                     }
                 }
             }
-            //var closest_source = creep.pos.findClosestByPath(creep.memory.sources);
-            //creep.memory.closest_src=closest_source;
-            /*
-            if (creep.memory.closest_src == undefined && closest_source != undefined) {
-                creep.memory.closest_src = closest_source;
-            }
-            else if (closest_source != undefined) {
-                if (creep.memory.closest_src.id != closest_source.id) {
-                    delete creep.memory.path;
-
-                }
-
-            }
-            */
-
-            //creep.say(closest_source.pos.x+" "+closest_source.pos.y);
-            //creep.memory.closest_src=closest_source;
 
             if (Game.getObjectById(creep.memory.closest_source) != undefined) {
                 if(Game.getObjectById(creep.memory.closest_source).energy==0)
@@ -169,7 +134,8 @@ const keeper_farmer = {
                     creep.memory.closest_source=undefined;
                 }
                 else if (creep.harvest(Game.getObjectById(creep.memory.closest_source)) == ERR_NOT_IN_RANGE) {
-                    move_avoid_hostile(creep, Game.getObjectById(creep.memory.closest_source).pos, 0);
+                    //move_avoid_hostile(creep, Game.getObjectById(creep.memory.closest_source).pos, 0);
+                    creep.moveTo(Game.getObjectById(creep.memory.closest_source));
                 }
                 else {
                     delete creep.memory.path;

@@ -282,7 +282,7 @@ var roleScout = {
                         }
 
                     }
-                    if (already_scanned == false && avg_distance<50) {
+                    if (already_scanned == false && avg_distance<100) {
                         spawn.memory.farming_rooms.push(new_farming);
                     }
                     // }
