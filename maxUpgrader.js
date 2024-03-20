@@ -1,4 +1,4 @@
-function maxUpgrader(cap,spawn)// return array with max possible work parts for upgrader
+function maxUpgrader(cap,spawn,max)// return array with max possible work parts for upgrader
 {
     var rcl=spawn.room.controller.level;
     
@@ -7,7 +7,10 @@ function maxUpgrader(cap,spawn)// return array with max possible work parts for 
     {
         cap=3200;
     }
-
+    if(max!=undefined && cap>max)
+    {
+        cap=max;
+    }
     //temporary
     /*
     if(cap>1000)

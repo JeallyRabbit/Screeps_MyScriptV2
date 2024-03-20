@@ -103,7 +103,7 @@ module.exports.loop = function () {
             }
         }
 
-        if (Memory.main_spawns.length + Memory.rooms_to_colonize.length < Math.floor((Game.gcl.level + 2) / 4)) {
+        if (Memory.main_spawns.length + Memory.rooms_to_colonize.length < Math.floor((Game.gcl.level + 2) / 2)) {
             Memory.colonizing = true;
         }
         else {
@@ -782,7 +782,7 @@ module.exports.loop = function () {
                 && spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power > 0
                 /* && pop_upgraders / spawn.memory.req_upgraders < spawn.memory.farming_rooms[0].carry_power / spawn.memory.farming_rooms[0].sources_num * 10 */) // spawning new upgrader
             {
-                if (spawn.spawnCreep(maxUpgrader(energyCap, spawn), 'Upgrader_' + spawn.room.name + '_' +Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {
+                if (spawn.spawnCreep(maxUpgrader(energyCap, spawn,spawn.memory.req_upgraders_parts*200), 'Upgrader_' + spawn.room.name + '_' +Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {
                     console.log('Spawning Upgrader');
                     continue;
                 }

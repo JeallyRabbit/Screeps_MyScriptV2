@@ -44,7 +44,7 @@ function generateAdjacentRooms(tileName) {
     for (let x = Number(numX) - 1; x <= Number(numX) + 1; x++) {
         for (let y = Number(numY) - 1; y <= Number(numY) + 1; y++) {
             if (x === Number(numX) && y === Number(numY) || x < 1 || y < 1) {
-                continue; // Skip the original tile and invalid coordinates.
+                //continue; // Skip the original tile and invalid coordinates.
             }
             adjacentTiles.push(`${letterA}${x}${letterB}${y}`);
         }
@@ -74,7 +74,11 @@ var roleScout = {
         
         creep.say("scout");
         //creep.memory.rooms_to_scan = generateAdjacentRooms(creep.room.name);
-
+        /*if(creep.memory.home_room.name=='W5N3')
+        {
+            spawn.memory.rooms_to_scan[0]='W5N3';
+        }*/
+        
         if (spawn.memory.rooms_to_scan == undefined) {
             spawn.memory.rooms_to_scan = [];
             spawn.memory.rooms_to_scan = generateAdjacentRooms(spawn.room.name);
@@ -255,11 +259,11 @@ var roleScout = {
                             for(let main_spawn_id in Memory.main_spawns)
                             {
                                 var other_spawn=Game.getObjectById(main_spawn_id);
-                                if(other_spawn!=null && other_spawn.room.name!=creep.memory.home_room.name)
+                                if(other_spawn!=null && other_spawn!=spawn && other_spawn.room.name!=creep.memory.home_room.name)
                                 {
                                     for(let other_farming in other_spawn.memory.farming_rooms)
                                     {
-                                        if(other_farming==creep.room.name)
+                                        if(other_farming==creep.room.name && creep.room.name!=creep.memory.home_room.name)
                                         {
                                             cconsole.log("room: ",creep.room.name," in use by: ",other_spawn.name);
                                             in_other_use=true;
@@ -272,7 +276,8 @@ var roleScout = {
                         }
 
                     }
-                    if (already_scanned == false && avg_distance<100 && in_other_use==false) {
+                    //console.log(already_scanned, " ",in_other_use)
+                    if (already_scanned == false && avg_distance<100 && in_other_use!=true) {
                         spawn.memory.farming_rooms.push(new_farming);
                     }
                     // }

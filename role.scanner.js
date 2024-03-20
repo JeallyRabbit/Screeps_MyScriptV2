@@ -11,8 +11,39 @@ class colonizeRoom {
     }
 }
 
+function generateAdjacentRooms(tileName) {
+    const [letterA, numX, letterB, numY] = tileName.match(/([a-zA-Z])(\d+)([a-zA-Z])(\d+)/).slice(1);
 
-function generateRoomsInRangeAndSort(tileName, range = 5) {
+    const adjacentTiles = [];
+    adjacentTiles.push(tileName);
+    for (let x = Number(numX) - 1; x <= Number(numX) + 1; x++) {
+        for (let y = Number(numY) - 1; y <= Number(numY) + 1; y++) {
+            if (x === Number(numX) && y === Number(numY) || x < 1 || y < 1) {
+                continue; // Skip the original tile and invalid coordinates.
+            }
+            adjacentTiles.push(`${letterA}${x}${letterB}${y}`);
+        }
+    }
+
+    return adjacentTiles;
+}
+
+function checkRoomNameEndsWith5(roomName) {
+    // Use a regular expression to extract the numbers from the room name
+    const numbers = roomName.match(/\d+/g);
+
+    // Check if there are exactly two numbers extracted
+    if (numbers && numbers.length === 2) {
+        // Check if both numbers end with '5'
+        return numbers.every(number => number.endsWith('5'));
+    }
+
+    // Return false if the format doesn't match or the condition is not met
+    return false;
+}
+
+
+function generateRoomsInRangeAndSort(tileName, range = 6) {
     const [letterA, numX, letterB, numY] = tileName.match(/([a-zA-Z])(\d+)([a-zA-Z])(\d+)/).slice(1);
     const roomsInRange = [];
 
@@ -26,14 +57,51 @@ function generateRoomsInRangeAndSort(tileName, range = 5) {
         }
     }
 
+    //console.log("scanner generating");
+    for (let i = 0; i < roomsInRange.length; i++) {
+        //console.log("room in range[",i,"]: ",roomsInRange[i].name);
+        for (let main_spawn_id of Memory.main_spawns) {
+            //console.log(main_spawn_id)
+            for (farming of Game.getObjectById(main_spawn_id).memory.farming_rooms) {
+                //console.log(farming.name, " ",roomsInRange[i].name);
+                if (roomsInRange[i].name == farming.name) {
+                    //console.log("removing my room; ", roomsInRange[i].name);
+                    roomsInRange.splice(i, 1)
+                    i--;
+                }
+
+            }
+
+            if (checkRoomNameEndsWith5(roomsInRange[i].name) == true) {
+                //console.log("center room: ", roomsInRange[i].name)
+                roomsInRange.splice(i, 1);
+                var keepers_rooms = generateAdjacentRooms(roomsInRange[i].name);
+                for (let keeper_room of keepers_rooms) {
+                    // console.log("generated keeper room: ",keeper_room);
+                    for (let j = 0; j < roomsInRange.length; j++) {
+                        if (roomsInRange[j].name == keeper_room) {
+                            //console.log("removing keeper room: ",keeper_room);
+                            roomsInRange.splice(j, 1);
+                            j--;
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+
     // Sort the rooms by distance from the initial room.
     roomsInRange.sort((a, b) => a.distance - b.distance);
+
+
 
     // If you only need the room names in sorted order:
     return roomsInRange.map(room => room.name);
 }
 
-const sortedRooms = generateRoomsInRangeAndSort('A1B2', 5);
+//const sortedRooms = generateRoomsInRangeAndSort('A1B2', 5);
 //console.log(sortedRooms);
 
 
@@ -49,11 +117,11 @@ var roleScanner = {
             creep.moveTo(creep.room.controller);
         }
         */
-
-        
+        //spawn.memory.scanner_rooms = undefined;
+        //spawn.memory.scanner_rooms.shift();
         creep.say("SCAN");
         console.log("scanner pos: ", creep.room.name, " heading to: ", creep.memory.target_room);
-        if (spawn.memory.scanner_rooms == undefined) {
+        if (spawn.memory.scanner_rooms == undefined || (spawn.memory.scanner_rooms != undefined && spawn.memory.scanner_rooms.length == 0)) {
             spawn.memory.scanner_rooms = []
             spawn.memory.scanner_rooms = generateRoomsInRangeAndSort(spawn.room.name);
 
@@ -150,7 +218,7 @@ var roleScanner = {
             }
 
             if (is_owned == false && is_reserved == false && is_farming_room == false && is_guarded == false && sources_num == 2
-                 /* && Math.abs(Game.map.getRoomLinearDistance(spawn.room.name, creep.room.name)) >=3 */ ) {
+                 /* && Math.abs(Game.map.getRoomLinearDistance(spawn.room.name, creep.room.name)) >=3 */) {
                 seeds = [];
                 seeds.push(creep.room.controller.pos);
                 //seeds.push(spawn.room.controller.pos);
@@ -177,7 +245,7 @@ var roleScanner = {
                 min_distance_from_controller = 100;
                 for (i = 0; i < 50; i++) {
                     for (let j = 0; j < 50; j++) {
-                        if (distanceCM.get(i, j) >=6 && floodCM.get(i, j) < min_distance_from_controller) {
+                        if (distanceCM.get(i, j) >= 6 && floodCM.get(i, j) < min_distance_from_controller) {
                             min_distance_from_controller = floodCM.get(i, j);
                             spawn_pos_x = i;
                             spawn_pos_y = j;
@@ -201,7 +269,7 @@ var roleScanner = {
 
         }
 
-        
+
 
 
     }
