@@ -70,52 +70,12 @@ var roleFarmer = {
             }
 
         }
-
-        /*
-        if (creep.room.name == creep.memory.target_room && creep.memory.building == true) {
-            //creep.drop(RESOURCE_ENERGY);
-            //creep.memory.building = false;
-            //creep.say('Building');
-
-            var closest_construction = creep.pos.findClosestByRange(construction_sites);
-            if (creep.build(closest_construction) == ERR_NOT_IN_RANGE) {
-                // /creep.moveTo(closest_construction);
-                creep.memory.is_working = false;
-                move_avoid_hostile(creep, closest_construction.pos, 1, false);
-            }
-            else if (creep.build(closest_construction) == OK) {
-                creep.memory.is_working = true;
-            }
-
-
-            //  }
-
-        }
-        */
         if (creep.room.name == creep.memory.target_room && creep.memory.repairing == true) {
             creep.repair(repair_sites[0]);
         }
         else if (creep.room.name == creep.memory.target_room && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
             // if have some free space and at destination room - go harvest
-            /*
-            var pos = creep.pos;
-                if (pos.x > 48) {
-                    creep.move(LEFT);
-                    return;
-                }
-                else if (pos.x < 2) {
-                    creep.move(RIGHT);
-                    return;
-                }
-                if (pos.y > 48) {
-                    creep.move(TOP);
-                    return;
-                }
-                else if (pos.y < 2) {
-                    creep.move(BOTTOM);
-                    return;
-                }
-                */
+            
             if (creep.memory.closest_container != undefined) {
 
                 creep.transfer(Game.getObjectById(creep.memory.closest_container), RESOURCE_ENERGY);
@@ -164,7 +124,7 @@ var roleFarmer = {
             }
             else {
                 if (creep.harvest(Game.getObjectById(creep.memory.source_id)) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(Game.getObjectById(creep.memory.source_id), { reusePath: 9 });
+                    creep.moveTo(Game.getObjectById(creep.memory.source_id), { reusePath: 17 });
                     //move_avoid_hostile(creep, Game.getObjectById(creep.memory.source_id).pos, 1, false);
                     creep.memory.is_working = false;
                 }
@@ -177,10 +137,10 @@ var roleFarmer = {
         else if (creep.room.name != creep.memory.target_room /*&& creep.store[RESOURCE_ENERGY] == 0*/) {// not in target room and have free space - go to target room
             const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
             if (creep.memory.source_id != undefined && Game.getObjectById(creep.memory.source_id) != null) {
-                creep.moveTo(Game.getObjectById(creep.memory.source_id));
+                creep.moveTo(Game.getObjectById(creep.memory.source_id),{reusePath: 17});
             }
             else {
-                creep.moveTo(destination);
+                creep.moveTo(destination,{reusePath: 17});
                 var if_avoid = false;
                 if (creep.pos.y >= 48 || creep.pos.x >= 48 || creep.pos.y <= 1 || creep.pos.x <= 1) {
                     if_avoid = true;
@@ -229,7 +189,7 @@ var roleFarmer = {
                 creep.say("tra");
                 //transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closestContainer.store[RESOURCE_ENERGY]);
                 if (creep.transfer(Game.getObjectById(creep.memory.closest_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(Game.getObjectById(creep.memory.closest_container));
+                    creep.moveTo(Game.getObjectById(creep.memory.closest_container),{reusePath:8});
                     //move_avoid_hostile(creep, closestContainer.pos, 1, true);
                 }
 

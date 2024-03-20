@@ -96,12 +96,16 @@ var roleFiller = {
                     }
                 }
                 if (creep.memory.to_fill != undefined) {
-
+                    //creep.say("WITH");
                     if (creep.store[RESOURCE_ENERGY] == 0) {
-                        if (spawn.memory.filler_link != undefined && Game.getObjectById(spawn.memory.filler_link) != null) {
+                        //creep.say("with2")
+                        if (spawn.memory.filler_link != undefined && Game.getObjectById(spawn.memory.filler_link) != null
+                        && Game.getObjectById(spawn.memory.filler_link).store[RESOURCE_ENERGY>0]) {
+                            //creep.say("with3");
                             creep.withdraw(Game.getObjectById(spawn.memory.filler_link), RESOURCE_ENERGY);
                         }
                         else {
+                            //creep.say("with4");
                             creep.withdraw(Game.getObjectById(creep.memory.my_container), RESOURCE_ENERGY);
                         }
                     }

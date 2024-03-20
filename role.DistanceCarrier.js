@@ -81,7 +81,7 @@ var roleDistanceCarrier = {
                         creep.memory.max_container = undefined;
                         if (creep.pickup(Game.getObjectById(creep.memory.energy_to_collect)) == ERR_NOT_IN_RANGE) {
                             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.energy_to_collect).pos, 1, true);
-                            creep.moveTo(Game.getObjectById(creep.memory.energy_to_collect), { reUsePath: 25 });
+                            creep.moveTo(Game.getObjectById(creep.memory.energy_to_collect), { reusePath: 17 });
                             //creep.say("E");
                         }
                     }
@@ -110,7 +110,7 @@ var roleDistanceCarrier = {
                             }
                         }
                         else if (Game.getObjectById(creep.memory.closest_source) != null) {
-                            creep.moveTo(Game.getObjectById(creep.memory.closest_source), { range: 6, reusePath: 12 });
+                            creep.moveTo(Game.getObjectById(creep.memory.closest_source), { range: 6, reusePath: 17 });
                         }
                     }
 
@@ -145,7 +145,7 @@ var roleDistanceCarrier = {
                         //creep.say("A");
                         withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]);
                         if (creep.withdraw(Game.getObjectById(creep.memory.max_container), RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have free space go colelct energy from containers
-                            creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reUsePath: 25 });
+                            creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 17 });
                             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.max_container).pos, 1, true);
                         }
                         else if (creep.withdraw(Game.getObjectById(creep.memory.max_container), RESOURCE_ENERGY, withdraw_amount) == OK) {
@@ -161,7 +161,7 @@ var roleDistanceCarrier = {
                 // not in home_room and no free space - go home_room
                 const destination = new RoomPosition(25, 25, creep.memory.home_room.name); // Replace with your destination coordinates and room name
 
-                creep.moveTo(destination, { reUsePath: 25, avoidCreeps: false });
+                creep.moveTo(destination, { reusePath: 17, avoidCreeps: false });
                 //move_avoid_hostile(creep,destination.pos,5,false,4000);
 
             }
@@ -237,7 +237,7 @@ var roleDistanceCarrier = {
                     if (creep.memory.home_container != undefined && Game.getObjectById(creep.memory.home_container) != null) {
                         if (creep.transfer(Game.getObjectById(creep.memory.home_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
 
-                            creep.moveTo(Game.getObjectById(creep.memory.home_container), { reUsePath: 25, avoidSk: true });
+                            creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 17, avoidSk: true });
                         }
                         if (Game.getObjectById(creep.memory.home_container).structureType == STRUCTURE_STORAGE) {
                             for (let resource in creep.store) {
@@ -260,11 +260,11 @@ var roleDistanceCarrier = {
                 //var extensions_in_home = spawn.room.find()
                 //creep.say("target");
                 if (creep.memory.max_container != undefined) {
-                    creep.moveTo(Game.getObjectById(creep.memory.max_container), { reusePath: 10 });
+                    creep.moveTo(Game.getObjectById(creep.memory.max_container), { reusePath: 17 });
                 }
                 else {
                     const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
-                    creep.moveTo(destination, { reUsePath: 25 });
+                    creep.moveTo(destination, { reusePath: 25 });
                 }
 
 

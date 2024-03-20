@@ -19,7 +19,7 @@ var towers = {
                 {
                     spawn.memory.damagedStructures=undefined;
                 }
-                console.log("most damaged Structure: ",mostDamagedStructure);
+                //console.log("most damaged Structure: ",mostDamagedStructure);
             }
             else{
                 //console.log("nothing to repair");
@@ -59,7 +59,7 @@ var towers = {
             }
 
             else if (mostDamagedStructure) {
-                console.log("tower most damaged str: ",mostDamagedStructure.pos);
+                //console.log("tower most damaged str: ",mostDamagedStructure.pos);
                 //console.log(tower.repair(mostDamagedStructure));
                 tower.repair(mostDamagedStructure)
             }

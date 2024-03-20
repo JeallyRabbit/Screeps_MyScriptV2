@@ -28,7 +28,7 @@ var roleUpgrader = {
                 creep.memory.upgrading = true;
                 //creep.say('🚧 upgrade');
             }
-            if((creep.memory.deposit!=undefined && Game.getObjectById(creep.memory.deposit).store[RESOURCE_ENERGY]<creep.store.getCapacity()) || Game.time%30==0)
+            if((creep.memory.deposit!=undefined && Game.getObjectById(creep.memory.deposit).store[RESOURCE_ENERGY]<creep.store.getCapacity()) || Game.time%76==0)
             {
                 creep.memory.deposit=undefined;
             }

@@ -1,106 +1,77 @@
 const { move_avoid_hostile } = require("./move_avoid_hostile");
 const { goOutOfRange } = require("./goOutOfRange");
 var roleSoldier = {
-    run: function(creep,spawn) {
-        
+    run: function (creep, spawn) {
+        //creep.suicide();
+        ////creep.say("A");
+        if (creep.memory.is_melee == undefined) {
+            //creep.say("def");
+            for (let part of creep.body) {
+                
+                if (part.type == ATTACK) {
+                    creep.memory.is_melee = true;
+                }
+            }
+            if (creep.memory.is_melee == undefined) {
+                creep.memory.is_melee = false;
+            }
+        }
         //creep.memory.target='E7S5';
         //creep.suicide();
-        if(creep.hits<creep.hitsMax)
-        {
+        if (creep.hits < creep.hitsMax) {
             creep.heal(creep);
         }
-        //creep.move(BOTTOM_LEFT);
-        //return;
-        /*
-        var pos = creep.pos;
-            if (pos.x > 48) {
-                creep.move(LEFT);
-                return;
-            }
-            else if (pos.x < 2) {
-                creep.move(RIGHT);
-                return;
-            }
-            if (pos.y > 48) {
-                creep.move(TOP);
-                return;
-            }
-            else if (pos.y < 2) {
-                creep.move(BOTTOM);
-                return;
-            }
-            */
+        if (creep.room.name == creep.memory.target_room) {
 
-        //creep.say("!");
-        //console.log("creep.room.name: ", creep.room.name);
-        //console.log("creep.memory.target_room: ", creep.memory.target_room);
-	    if(creep.room.name == creep.memory.target_room) {
-            //creep.say('at target');
-            var pos = creep.pos;
-            /*
-            if (pos.x > 48) {
-                creep.move(LEFT);
-                //return;
-            }
-            else if (pos.x < 2) {
-                creep.move(RIGHT);
-                //return;
-            }
-            if (pos.y > 48) {
-                creep.move(TOP);
-                //return;
-            }
-            else if (pos.y < 2) {
-                creep.move(BOTTOM);
-                //return;
-            }
-            */
             var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-            
-            var target_structure=creep.pos.findClosestByRange(FIND_STRUCTURES,{
-                filter: function (structure)
-                {
+
+            var target_structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: function (structure) {
                     //return structure.my==false && 
-                    return structure.room.name!=spawn.room.name
-                    && structure.structureType!=STRUCTURE_CONTROLLER
-                    //&& structure.structureType!=STRUCTURE_WALL
-                    && structure.structureType!=STRUCTURE_CONTAINER
-                    && structure.structureType!=STRUCTURE_ROAD;
-                }});
-                //console.log("structure: ",target_structure);
+                    return structure.room.name != spawn.room.name
+                        && structure.structureType != STRUCTURE_CONTROLLER
+                        //&& structure.structureType!=STRUCTURE_WALL
+                        && structure.structureType != STRUCTURE_CONTAINER
+                        && structure.structureType != STRUCTURE_ROAD;
+                }
+            });
+            //console.log("structure: ",target_structure);
             //if(!target) {
-              //  target_creep = creep.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES)
+            //  target_creep = creep.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES)
             //}
-            if(target_creep) {
-                creep.say("Fighting");
-                //console.log("fighting creeps");
-                //if(creep.attack(target_creep) == ERR_NOT_IN_RANGE){
-                //    creep.moveTo(target_creep);
-                //}
-                //else if(creep.attack(target_creep)==ERR_NO_BODYPART)
-                //{
-                    if(creep.rangedAttack(target_creep)==ERR_NOT_IN_RANGE)
-                    {
-                        creep.moveTo(target_creep);
-                    }
+            if (target_creep) {
+                //creep.say("Fighting");
+                if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(target_creep);
+                }
                 //}
 
-                
-                if(creep.pos.inRangeTo(target_creep,2))
-                {
-                    goOutOfRange(creep,3);
+                if (creep.memory.is_melee == false) {
+                    if (creep.pos.inRangeTo(target_creep, 2)) {
+                        goOutOfRange(creep, 3);
+                    }
                 }
-                
-            } 
-            else if(target_structure){
-                console.log(creep.room.name," ","fighting structures");
-                creep.say("STR");
+
+
+            }
+            else if (target_structure) {
+                //console.log(creep.room.name, " ", "fighting structures");
+                ////creep.say("STR");
                 //console.log("target_structure: ",target_structure);
-                if(creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(target_structure);
-                    //console.log("structure to far");
+                if (creep.memory.is_melee == true) {
+                    if (creep.attack(target_structure) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(target_structure);
+                        //console.log("structure to far");
+                    }
                 }
-                //creep.say(creep.rangedAttack(target_structure));
+                else {
+                    if (creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(target_structure);
+                        //console.log("structure to far");
+                    }
+                }
+
+                ////creep.say(creep.rangedAttack(target_structure));
                 /*
                 else if(creep.attack(target_structure)==ERR_NO_BODYPART)
                 {
@@ -109,27 +80,26 @@ var roleSoldier = {
                         creep.moveTo(target_structure);
                     }
                 }*/
-                if(creep.hits<creep.hitsMax)
-                {
+                if (creep.hits < creep.hitsMax) {
                     creep.heal(creep);
                 }
             }
-            else{
-                creep.moveTo(25,25,{range: 10});
+            else {
+                creep.moveTo(25, 25, { range: 10 });
             }
-        } 
+        }
         else {
             //move_avoid_hostile(creep,new RoomPosition(25,25,creep.memory.target_room),25,false,8000);
-            creep.moveTo(new RoomPosition(25,25,creep.memory.target_room));
-            
+            creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room));
+
         }
 
-        
-        if(creep.hits<creep.hitsMax){
-            //creep.say('heal');
+
+        if (creep.hits < creep.hitsMax) {
+            ////creep.say('heal');
             //creep.move(_.sample([TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT]))
             creep.heal(creep);
         }
-	}
+    }
 };
 module.exports = roleSoldier;
