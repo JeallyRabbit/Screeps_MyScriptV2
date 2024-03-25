@@ -22,6 +22,12 @@ var roleClaimer = {
                             //creep.say("QWE");
                             creep.moveTo(creep.room.controller,{reusePath:15,avoidSk:true});
                         }
+                        if(creep.claimController(creep.room.controller) == ERR_INVALID_TARGET) {
+                            //creep.say("QWE");
+                            //creep.say(creep.claimController(creep.room.controller));
+                            creep.attackController(creep.room.controller);
+                            
+                        }
                         creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x,creep.memory.to_colonize.spawn_pos_y+2,
                             STRUCTURE_SPAWN,creep.room.name+"_1");
                     }
@@ -29,7 +35,9 @@ var roleClaimer = {
                 }
                 else{ // not in target room - go claim
                     //creep.say(creep.moveTo(new RoomPosition(25,25, creep.memory.target_room), {visualizePathStyle: { stroke: '#ff00ff' } }));
-                    creep.moveTo(new RoomPosition(25,25, creep.memory.target_room,{reusePath:15,avoidSk:true}),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
+                    //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room,{reusePath:15,avoidSk:true}),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
+                
+                    creep.moveToRoom(creep.memory.target_room);
                 }
             }
             else{

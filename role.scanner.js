@@ -64,7 +64,7 @@ function generateRoomsInRangeAndSort(tileName, range = 6) {
             //console.log(main_spawn_id)
             for (farming of Game.getObjectById(main_spawn_id).memory.farming_rooms) {
                 //console.log(farming.name, " ",roomsInRange[i].name);
-                if (roomsInRange[i].name == farming.name) {
+                if (farming!=undefined && roomsInRange[i]!=undefined && roomsInRange[i].name == farming.name) {
                     //console.log("removing my room; ", roomsInRange[i].name);
                     roomsInRange.splice(i, 1)
                     i--;
@@ -72,7 +72,7 @@ function generateRoomsInRangeAndSort(tileName, range = 6) {
 
             }
 
-            if (checkRoomNameEndsWith5(roomsInRange[i].name) == true) {
+            if (roomsInRange[i]!=undefined && checkRoomNameEndsWith5(roomsInRange[i].name) == true) {
                 //console.log("center room: ", roomsInRange[i].name)
                 roomsInRange.splice(i, 1);
                 var keepers_rooms = generateAdjacentRooms(roomsInRange[i].name);
@@ -144,7 +144,7 @@ var roleScanner = {
 
             if (creep.memory.target_room != undefined) {
                 const destination = new RoomPosition(25, 25, creep.memory.target_room);
-                creep.moveTo(destination, { reusePath: 7, avoidSk: false, avoidHostileRooms: false });
+                creep.moveToRoom(creep.memory.target_room, { reusePath: 7, avoidSk: false, avoidHostileRooms: false });
                 creep.say(creep.memory.target_room);
             }
 

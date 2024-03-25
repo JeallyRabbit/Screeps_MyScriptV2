@@ -91,9 +91,10 @@ var roleScout = {
             if (creep.room.name != spawn.memory.rooms_to_scan[0]) {
                 creep.say("MOV");
                 const destination = new RoomPosition(25, 25, spawn.memory.rooms_to_scan[0]);
-                console.log("destination: ", destination);
-                creep.say(spawn.memory.rooms_to_scan[0]);
-                creep.moveTo(destination, { reusePath: 10 });
+                //console.log("destination: ", destination);
+                //creep.say(spawn.memory.rooms_to_scan[0]);
+                //creep.moveTo(destination, { reusePath: 10 });
+                creep.moveToRoom(spawn.memory.rooms_to_scan[0]);
                 //move_avoid_hostile(creep, destination, 1, true,4000);
             }
             else {

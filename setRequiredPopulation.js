@@ -94,7 +94,7 @@ function setRequiredPopulation(spawn) {
             spawn.memory.req_upgraders_parts = 10;
         }
 
-        spawn.memory.req_fillers = 1;
+        spawn.memory.req_fillers = 4;
     }
     else if (spawn.room.controller.level == 3) {
         spawn.memory.req_upgraders_parts = 10;
@@ -107,7 +107,7 @@ function setRequiredPopulation(spawn) {
             spawn.memory.req_upgraders_parts = spawn.room.storage.store[RESOURCE_ENERGY] / 20000;
         }
         else{
-            spawn,memory.req_upgraders_parts=1;
+            spawn.memory.req_upgraders_parts=1;
         }
     }
     if (spawn.memory.building == true) {
@@ -247,6 +247,7 @@ function setRequiredPopulation(spawn) {
     spawn.memory.need_distanceRepairer = undefined;
     spawn.memory.need_soldier = undefined;
     spawn.memory.need_melee_soldier = undefined;
+    //spawn.memory.need_melee_soldier = 'W41N15';
     spawn.memory.need_reserver = undefined;
     if (spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0 &&
         (spawn.memory.rooms_to_scan != undefined)) {
@@ -496,11 +497,17 @@ function setRequiredPopulation(spawn) {
         }
 
     }
-    if(Memory.rooms_to_scan!=undefined && Memory.rooms_to_scan.length>0 && spawn.room.controller.level>=5)
+    /*
+    if(Memory.rooms_to_scan!=undefined && Memory.rooms_to_scan.length>0 && spawn.room.controller.level>=4)
     {
         spawn.memory.to_colonize=Memory.rooms_to_scan[0];
     }
-    if (spawn.memory.to_colonize != undefined && spawn.room.controller.level>=5) {
+    */
+    if(Memory.rooms_to_colonize.length>0)
+    {
+        spawn.memory.to_colonize=Memory.rooms_to_colonize[0];
+    }
+    if (spawn.memory.to_colonize != undefined && spawn.room.controller.level>=4) {
         spawn.memory.req_claimers = 1;
         spawn.memory.req_colonizers = 8;
     }

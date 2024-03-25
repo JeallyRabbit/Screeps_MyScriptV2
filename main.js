@@ -69,7 +69,7 @@ class colonizeRoom {
 profiler.enable();
 module.exports.loop = function () {
     profiler.wrap(function () {
-
+        console.log("Bucket: ",Game.cpu.bucket);
         for (var i in Memory.creeps) {  //clearing data about dead creeps
             if (!Game.creeps[i]) {
                 delete Memory.creeps[i];
@@ -103,12 +103,13 @@ module.exports.loop = function () {
             }
         }
 
-        if (Memory.main_spawns.length + Memory.rooms_to_colonize.length < Math.floor((Game.gcl.level + 2) / 2)) {
+        if (Memory.main_spawns.length + Memory.rooms_to_colonize.length <= Math.floor((Game.gcl.level + 2) / 2)) {
             Memory.colonizing = true;
         }
         else {
             Memory.colonizing = false;
-            //console.log(Memory.main_spawns.length," + ",Memory.rooms_to_colonize.length," < ",(Game.gcl.level+2)/2);
+            
+           // console.log(Memory.main_spawns.length," + ",Memory.rooms_to_colonize.length," < ",(Game.gcl.level+2)/2);
         }
 
         if (Memory.rooms_to_colonize != undefined && Memory.rooms_to_colonize.length > 0) {
@@ -239,7 +240,7 @@ module.exports.loop = function () {
 
 
 
-            if ((Game.time % 600 == spawn_num && Game.cpu.bucket > 400)) {
+            if ((Game.time % 600 == spawn_num && Game.cpu.bucket > 400 )  ) {
                 setBaseLayout(spawn);
                 //return;
             }
@@ -546,7 +547,7 @@ module.exports.loop = function () {
                 " | Claimers: ", pop_claimers, "/", spawn.memory.req_claimers, " | DistanceBuilders: ", pop_distanceBuilders, "/", spawn.memory.req_distanceBuilders,
                 " | DistanceCarriers: ", pop_distanceCarriers, " | Doctors: ", pop_doctors, "/", spawn.memory.req_doctors, " | ",
                 "Scouts: ", pop_scouts, "/", spawn.memory.req_scouts, " | ", "Spawned Body parts: ", spawned_body_parts, "/500");
-            console.log("scanners: ", pop_scanners, " | Colonizers; ", pop_colonizers);
+            console.log("scanners: ", pop_scanners, " | Colonizers; ", pop_colonizers,"/",spawn.memory.req_colonizers);
             if (spawn.memory.progress != 0 && spawn.memory.progress_old != 0 &&
                 spawn.memory.progress_sum != 0 && spawn.memory.progress_counter > 4 &&
                 spawn.memory.progress != spawn.memory.progress_old) {
@@ -621,7 +622,7 @@ module.exports.loop = function () {
                         healer_body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL];
                     }
                     if (spawn.spawnCreep(healer_body, 'KeeperHealer_' + spawn.room.name + '_' +Game.time, { memory: { role: 'keeperHealer', target: spawn.memory.need_keeperHealer, home_room: spawn.room } }) == 0) {
-                        console.log("Spawning KeeperHealer");
+                        //console.log("Spawning KeeperHealer");
                         continue;
                     }
                 }
@@ -639,19 +640,19 @@ module.exports.loop = function () {
                             RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK];
                     }
                     if (spawn.spawnCreep(killer_body, 'KeeperKiller_' + spawn.room.name + '_' +Game.time, { memory: { role: 'keeperKiller', target: spawn.memory.need_keeperKiller, home_room: spawn.room } }) == 0) {
-                        console.log("Spawning KeeperKiller");
+                        //console.log("Spawning KeeperKiller");
                         continue;
                     }
                 }
                 if (spawn.memory.need_keeperCarrier != undefined) {
                     if (spawn.spawnCreep(maxHauler(energyCap, spawn, false), 'KeeperCarrier_' + spawn.room.name + '_' +Game.time, { memory: { role: 'keeperCarrier', target_room: spawn.memory.need_keeperCarrier, home_room: spawn.room } }) == 0) {
-                        console.log("Spawning KeeperCarrier");
+                        //console.log("Spawning KeeperCarrier");
                         continue;
                     }
                 }
                 if (spawn.memory.need_keeperFarmer != undefined) {
                     if (spawn.spawnCreep(maxKeeperFarmer(energyCap - 200, spawn), 'KeeperFarmer_' + spawn.room.name + '_' +Game.time, { memory: { role: 'keeperFarmer', target_room: spawn.memory.need_keeperFarmer, home_room: spawn.room, closest_source: undefined } }) == 0) {
-                        console.log("Spawning KeeperFarmer");
+                        //console.log("Spawning KeeperFarmer");
                         continue;
                     }
                 }
@@ -670,7 +671,7 @@ module.exports.loop = function () {
                 if (spawn.spawnCreep(body, 'Filler_' + spawn.room.name + '_' +Game.time, { memory: { role: 'filler', home_room: spawn.room } }) == OK) {
                     console.log("Spawning filler");
                 }
-                console.log(spawn.spawnCreep([MOVE, CARRY], 'Filler_' + spawn.room.name + '_' +Game.time, { memory: { role: 'filler', home_room: spawn.room } }));
+                //console.log(spawn.spawnCreep([MOVE, CARRY], 'Filler_' + spawn.room.name + '_' +Game.time, { memory: { role: 'filler', home_room: spawn.room } }));
                 continue;
             }
 
@@ -714,7 +715,7 @@ module.exports.loop = function () {
                 }
                 continue;
             }
-            if (pop_colonizers < spawn.memory.req_colonizers && pop_claimers>0) {
+            if (pop_colonizers < spawn.memory.req_colonizers && pop_claimers>0 && spawn.room.controller.level>=4) {
                 if (spawn.spawnCreep(maxColonizer(energyCap, spawn), 'Colonizer_' + spawn.room.name + '_' +Game.time, {
                     memory: {
                         role: 'colonizer',
@@ -797,7 +798,7 @@ module.exports.loop = function () {
             }
             if (pop_claimers < spawn.memory.req_claimers /* && spawn.memory.claiming_rooms.length > 0*/) {
                 //if(pop_claimers==0){pop_claimers=1;}
-                console.log("trying Claimer")
+                //console.log("trying Claimer")
                 if (spawn.spawnCreep(maxClaimer(energyCap), 'C_' + spawn.room.name + '_' +Game.time, {
                     memory: {
                         role: 'claimer',
@@ -809,14 +810,14 @@ module.exports.loop = function () {
                     console.log('Spawning Claimer');
                     continue;
                 }
-                console.log("claimer spawning reult: ", spawn.spawnCreep(maxClaimer(energyCap), 'C_' + spawn.room.name + '_' +Game.time, {
+                /* console.log("claimer spawning reult: ", spawn.spawnCreep(maxClaimer(energyCap), 'C_' + spawn.room.name + '_' +Game.time, {
                     memory: {
                         role: 'claimer',
                         target_room: spawn.memory.to_colonize.name,
                         to_colonize: spawn.memory.to_colonize,
                         home_room: spawn.room
                     }
-                }));
+                }));*/
 
                 continue;
             }

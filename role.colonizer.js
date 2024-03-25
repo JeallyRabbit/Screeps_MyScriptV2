@@ -5,8 +5,10 @@ var roleColonizer = {
 
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
-        creep.say("Colonize");
+        //creep.say("Colonize");
         //creep.suicide();
+        //creep.move(BOTTOM_LEFT);
+        //return;
         //creep.say(creep.memory.target_room==creep.room.name);
         //creep.say(creep.room.name==creep.memory.target_room.name);
         if (creep.memory.target_room) {
@@ -74,9 +76,9 @@ var roleColonizer = {
                 //creep.say(creep.moveTo(new RoomPosition(25,25, creep.memory.target_room), {visualizePathStyle: { stroke: '#ff00ff' } }));
                 if(creep.memory.harvesting!=true)
                 {
-                    console.log("coing to target_room");
-
-                    creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room, { reusePath: 15, avoidSk: true }),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
+                    //console.log("coing to target_room");
+                    creep.moveToRoom(creep.memory.target_room);
+                    //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room, { reusePath: 15, avoidSk: true }),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
                 }
                 //creep.moveTo(Game.rooms[creep.memory.target_room].controller.pos);
                 //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room, { reusePath: 15, avoidSk: true }),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
