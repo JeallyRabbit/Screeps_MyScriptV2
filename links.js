@@ -21,7 +21,7 @@ var links = {
         }
 
         if (spawn.memory.other_links != undefined) {
-            if (spawn.memory.other_links.length == 0 || spawn.memory.filler_link==undefined || Game.getObjectById(spawn.memory.filler_link)==null) {
+            if (spawn.memory.other_links.length == 0 || spawn.memory.filler_link == undefined || Game.getObjectById(spawn.memory.filler_link) == null) {
                 spawn.memory.other_links = undefined;
             }
             else {
@@ -41,7 +41,7 @@ var links = {
                 }
             }
         }
-        if (spawn.memory.other_links == undefined || spawn.memory.filler_link==undefined) {
+        if (spawn.memory.other_links == undefined || spawn.memory.filler_link == undefined || Game % 321 == 0) {
             var other_links = spawn.room.find(FIND_STRUCTURES, {
                 filter: function (str) {
                     return str.structureType == STRUCTURE_LINK && (str.pos.x != spawn.room.storage.pos.x - 2 || str.pos.y != spawn.room.storage.pos.y);
@@ -52,20 +52,22 @@ var links = {
                 for (let other_link of other_links) {
                     //console.log("other_link_id: ", other_link.id);
                     spawn.memory.other_links.push(other_link.id);
-                    if(other_link.pos.x==spawn.pos.x && other_link.pos.y==spawn.pos.y-2)
-                    {
-                        spawn.memory.filler_link=other_link.id;
+                    if (other_link.pos.x == spawn.pos.x && other_link.pos.y == spawn.pos.y - 2) {
+                        spawn.memory.filler_link = other_link.id;
                     }
                 }
 
             }
         }
-        if (Game.getObjectById(spawn.memory.manager_link_id) != null) {
+        if (Game.getObjectById(spawn.memory.manager_link_id) != null && ( spawn.memory.other_links!=undefined && spawn.memory.other_links.length>0)) {
             //console.log("looping almost");
             for (target of spawn.memory.other_links) {
-                if (Game.getObjectById(spawn.memory.manager_link_id).transferEnergy(Game.getObjectById(target)) == OK) {
-                    break;
+                if (Game.getObjectById(target).store[RESOURCE_ENERGY] < 600) {
+                    if (Game.getObjectById(spawn.memory.manager_link_id).transferEnergy(Game.getObjectById(target)) == OK) {
+                        break;
+                    }
                 }
+
             }
         }
         /*

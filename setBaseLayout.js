@@ -718,7 +718,22 @@ function build_from_lists(spawn) {
     var rcl = spawn.room.controller.level;
     for (let i = 0; i < spawn.memory.building_list.length; i++) {
         if (spawn.memory.building_list[i].min_rcl <= rcl || spawn.memory.building_list[i] == undefined) {
-            Game.rooms[spawn.memory.building_list[i].roomName].createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].structureType);
+            if( spawn.memory.building_list[i].structureType==STRUCTURE_SPAWN && spawn.memory.building_list[i].min_rcl==7 )
+            {
+                Game.rooms[spawn.memory.building_list[i].roomName].createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y,
+                     spawn.memory.building_list[i].structureType,spawn.room.name+"_2");
+            
+            }
+            else if( spawn.memory.building_list[i].structureType==STRUCTURE_SPAWN && spawn.memory.building_list[i].min_rcl==8 )
+            {
+                Game.rooms[spawn.memory.building_list[i].roomName].createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y,
+                     spawn.memory.building_list[i].structureType,spawn.room.name+"_3");
+            
+            }
+            else{
+                Game.rooms[spawn.memory.building_list[i].roomName].createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].structureType);
+            
+            }
             //spawn.room.createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].structureType);
         }
     }
@@ -840,7 +855,26 @@ function plan_controller_container(spawn) {
             spawn.memory.building_list.push(new building_list_element(position.x, position.y, spawn.room.name, STRUCTURE_CONTAINER, 2));
             break;
         }
+    }
 
+    for (let position of controller_pos) {
+        var structures_on_pos=spawn.room.lookAt(position.x,position.y);
+        var is_free=true;
+        for(let str of structures_on_pos)
+        {
+            if(str.structureType==STRUCTURE_CONTAINER || str.structureType==STRUCTURE_WALL || terrain.get(position.x, position.y) == TERRAIN_MASK_WALL
+            || spawn.memory.room_plan[position.x][position.y]==STRUCTURE_CONTAINER)
+            {
+                is_free=false;
+                break;
+            }
+        }
+        if(is_free)
+        {
+            spawn.memory.room_plan[position.x][position.y]=STRUCTURE_LINK;
+            spawn.memory.building_list.push(new building_list_element(position.x, position.y, spawn.room.name, STRUCTURE_LINK, 6));
+            break;
+        }
     }
 }
 
@@ -881,7 +915,7 @@ function setBaseLayout(spawn) {
 
     //copyinmg room structures data from planner to roomCM (this have to be done before planning every stamp)
     //var { seeds, distanceCM, floodCM, min_distance_from_spawn } = plan_extension_stamp(spawn, roomCM);
-    if (spawn.memory.room_plan == undefined || spawn.memory.building_list == undefined || (spawn.memory.building_list.length == 0) // ||  true
+    if (spawn.memory.room_plan == undefined || spawn.memory.building_list == undefined || (spawn.memory.building_list.length == 0)  ||  true
     ) {
 
         spawn.memory.room_plan = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
@@ -897,13 +931,14 @@ function setBaseLayout(spawn) {
         plan_manager_stamp(spawn, roomCM);
         plan_road_to_controller(spawn, roomCM);
         plan_tower(spawn, roomCM, 3);
-        plan_extension_stamp(spawn, roomCM, 5)
+        plan_extension_stamp(spawn, roomCM, 5);
         plan_tower(spawn, roomCM, 5);
-        plan_extension_stamp(spawn, roomCM, 5)
+        plan_extension_stamp(spawn, roomCM, 5);
         ////console.log("PLANING EX");
-        plan_extension_stamp(spawn, roomCM, 6)
+        plan_extension_stamp(spawn, roomCM, 6);
+        plan_extension_stamp(spawn, roomCM, 6);
         plan_tower(spawn, roomCM, 7);
-        plan_extension_stamp(spawn, roomCM, 7)
+        plan_extension_stamp(spawn, roomCM, 7);
         plan_tower(spawn, roomCM, 8);
         plan_tower(spawn, roomCM, 8);
         plan_tower(spawn, roomCM, 8);
@@ -981,6 +1016,9 @@ function setBaseLayout(spawn) {
                 }
                 else if (spawn.memory.room_plan[i][j] == STRUCTURE_WALL) {
                     spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'grey' });
+                }
+                else if (spawn.memory.room_plan[i][j] == STRUCTURE_LINK) {
+                    spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'yellow' });
                 }
             }
         }

@@ -1,6 +1,6 @@
 const roomDimensions = 50
 
-findPositionsInsideRect = function(rect) {
+findPositionsInsideRect = function (rect) {
 
     const positions = []
 
@@ -21,7 +21,7 @@ findPositionsInsideRect = function(rect) {
     return positions
 }
 
-Room.prototype.floodFill = function(seeds) {
+Room.prototype.floodFill = function (seeds) {
 
     const room = this
 
@@ -80,10 +80,13 @@ Room.prototype.floodFill = function(seeds) {
 
                 // If visuals are enabled, show the depth on the pos
 
-                if (Memory.roomVisuals) room.visual.rect(pos.x - 0.5, pos.y - 0.5, 1, 1, {
-                    fill: 'hsl(' + 200 + depth * 2 + ', 100%, 60%)',
-                    opacity: 0.4,
-                })
+                if (Memory.roomVisuals) {
+                    room.visual.rect(pos.x - 0.5, pos.y - 0.5, 1, 1, {
+                        fill: 'hsl(' + 200 + depth * 2 + ', 100%, 60%)',
+                        opacity: 0.4,
+                    })
+                    room.visual.text(depth,pos.x - 0.5, pos.y - 0.5);
+                }
             }
 
             // Construct a rect and get the positions in a range of 1

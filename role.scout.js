@@ -1,6 +1,6 @@
-const { goOutOfRange } = require("./goOutOfRange");
-const { move_avoid_hostile } = require('./move_avoid_hostile');
-var RoomPositionFunctions = require('roomPositionFunctions');
+//const { goOutOfRange } = require("./goOutOfRange");
+//const { move_avoid_hostile } = require('./move_avoid_hostile');
+//var RoomPositionFunctions = require('roomPositionFunctions');
 
 
 class farmingRoom {
@@ -44,7 +44,7 @@ function generateAdjacentRooms(tileName) {
     for (let x = Number(numX) - 1; x <= Number(numX) + 1; x++) {
         for (let y = Number(numY) - 1; y <= Number(numY) + 1; y++) {
             if (x === Number(numX) && y === Number(numY) || x < 1 || y < 1) {
-                continue; // Skip the original tile and invalid coordinates.
+                //continue; // Skip the original tile and invalid coordinates.
             }
             adjacentTiles.push(`${letterA}${x}${letterB}${y}`);
         }
@@ -71,19 +71,14 @@ var roleScout = {
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
         //creep.suicide();
-        /*
-        spawn.memory.rooms_to_scan=undefined;
-        spawn.memory.farming_rooms=undefined;
-        spawn.memory.keepers_rooms=undefined;
-        */
-        //spawn.memory.rooms_to_scan=undefined;
-        //spawn.memory.farming_rooms=undefined;
-
-        //delete spawn.memory.rooms_to_scan;
-        //delete spawn.memory.keepers_rooms;
+        
         creep.say("scout");
         //creep.memory.rooms_to_scan = generateAdjacentRooms(creep.room.name);
-
+        /*if(creep.memory.home_room.name=='W5N3')
+        {
+            spawn.memory.rooms_to_scan[0]='W5N3';
+        }*/
+        
         if (spawn.memory.rooms_to_scan == undefined) {
             spawn.memory.rooms_to_scan = [];
             spawn.memory.rooms_to_scan = generateAdjacentRooms(spawn.room.name);
@@ -91,33 +86,15 @@ var roleScout = {
         else if (spawn.memory.rooms_to_scan.length == 0) {
             creep.suicide();
         }
-        /*
-        var pos = creep.pos;
-        if (pos.x > 48) {
-            creep.move(LEFT);
-            return;
-        }
-        else if (pos.x < 2) {
-            creep.move(RIGHT);
-            return;
-        }
-        if (pos.y > 48) {
-            creep.move(TOP);
-            return;
-        }
-        else if (pos.y < 2) {
-            creep.move(BOTTOM);
-            return;
-        }
-        */
 
         if (spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length > 0) {
             if (creep.room.name != spawn.memory.rooms_to_scan[0]) {
                 creep.say("MOV");
                 const destination = new RoomPosition(25, 25, spawn.memory.rooms_to_scan[0]);
-                console.log("destination: ", destination);
-                creep.say(spawn.memory.rooms_to_scan[0]);
-                creep.moveTo(destination, { reusePath: 10 });
+                //console.log("destination: ", destination);
+                //creep.say(spawn.memory.rooms_to_scan[0]);
+                //creep.moveTo(destination, { reusePath: 10 });
+                creep.moveToRoom(spawn.memory.rooms_to_scan[0]);
                 //move_avoid_hostile(creep, destination, 1, true,4000);
             }
             else {
@@ -262,11 +239,10 @@ var roleScout = {
                             }*/
                             if (creep.room.controller.reservation != undefined) {
 
-                                if (creep.room.controller.reservation.username == 'JeallyRabbit' && already_scanned == false) {
-                                    already_scanned = false;
+                                if ((creep.room.controller.reservation.username == 'JeallyRabbit' || creep.room.controller.reservation.username == 'Jeally_Rabbit' ) && already_scanned == false) {
+                                    already_scanned = true;
                                 }
-
-                                if (creep.room.controller.reservation.username == 'Invader') {
+                                else if (creep.room.controller.reservation.username == 'Invader') {
                                     var invader_core = creep.room.find(FIND_STRUCTURES, {
                                         filter: function (hostile) {
                                             return hostile.structureType == STRUCTURE_INVADER_CORE;
@@ -279,10 +255,30 @@ var roleScout = {
 
                                 }
                             }
+
+                            var in_other_use=false;
+                            for(let main_spawn_id in Memory.main_spawns)
+                            {
+                                var other_spawn=Game.getObjectById(main_spawn_id);
+                                if(other_spawn!=null && other_spawn!=spawn && other_spawn.room.name!=creep.memory.home_room.name)
+                                {
+                                    for(let other_farming in other_spawn.memory.farming_rooms)
+                                    {
+                                        if(other_farming==creep.room.name && creep.room.name!=creep.memory.home_room.name)
+                                        {
+                                            cconsole.log("room: ",creep.room.name," in use by: ",other_spawn.name);
+                                            in_other_use=true;
+                                            break
+                                        }
+                                    }
+                                }
+                            }
+
                         }
 
                     }
-                    if (already_scanned == false && avg_distance<100) {
+                    //console.log(already_scanned, " ",in_other_use)
+                    if (already_scanned == false && avg_distance<100 && in_other_use!=true) {
                         spawn.memory.farming_rooms.push(new_farming);
                     }
                     // }
