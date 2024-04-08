@@ -14,10 +14,28 @@ class farmingRoom {
 
         this.farmers = 0;
 
-        var body_parts_cost=(sources_num*12);//parts for farmers (max farmer is made off 12 bodyparts);
-        body_parts_cost+=14;//maxRepairer
-        body_parts_cost+=Math.ceil((sources_num*10*distance*2*3)/100);//distanceCarriers
-        this.body_parts_cost=body_parts_cost;
+        var body_parts_cost = (sources_num * 12);//parts for farmers (max farmer is made off 12 bodyparts);
+        body_parts_cost += 14;//maxRepairer
+        body_parts_cost += Math.ceil((sources_num * 10 * distance * 2 * 3) / 100);//distanceCarriers
+        this.body_parts_cost = body_parts_cost;
+    }
+}
+
+class farmingSource {
+    constructor(id,name, harvesting_power, carry_power, distance, max_farmers) {
+        this.id=id;
+        this.name = name;
+        this.harvesting_power = harvesting_power;
+        this.carry_power = carry_power;
+        this.distance = distance;
+        this.max_farmers = max_farmers;
+        this.farmers = 0;
+        this.sources_num=1;
+        var sources_num=1;
+        var body_parts_cost = sources_num*12;//parts for farmers (max farmer is made off 12 bodyparts);
+        body_parts_cost += 14;//maxRepairer
+        body_parts_cost += Math.ceil((sources_num * 10 * distance * 2 * 3) / 100);//distanceCarriers
+        this.body_parts_cost = body_parts_cost;
     }
 }
 
@@ -71,14 +89,14 @@ var roleScout = {
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
         //creep.suicide();
-        
+
         creep.say("scout");
         //creep.memory.rooms_to_scan = generateAdjacentRooms(creep.room.name);
         /*if(creep.memory.home_room.name=='W5N3')
         {
             spawn.memory.rooms_to_scan[0]='W5N3';
         }*/
-        
+
         if (spawn.memory.rooms_to_scan == undefined) {
             spawn.memory.rooms_to_scan = [];
             spawn.memory.rooms_to_scan = generateAdjacentRooms(spawn.room.name);
@@ -94,7 +112,7 @@ var roleScout = {
                 //console.log("destination: ", destination);
                 //creep.say(spawn.memory.rooms_to_scan[0]);
                 //creep.moveTo(destination, { reusePath: 10 });
-                creep.moveToRoom(spawn.memory.rooms_to_scan[0]);
+                creep.moveToRoom(spawn.memory.rooms_to_scan[0],{reusePath:17});
                 //move_avoid_hostile(creep, destination, 1, true,4000);
             }
             else {
@@ -155,7 +173,7 @@ var roleScout = {
                     }
 
                     // }
-                    avg_distance=avg_distance/sources.length;
+                    avg_distance = avg_distance / sources.length;
                     var new_keeper = new keeperRoom(creep.room.name, 0, 0, sources_num, avg_distance, max_farmers);
                     var already_scanned = false;
 
@@ -188,7 +206,7 @@ var roleScout = {
                         var ret = PathFinder.search(spawn.pos,
                             new RoomPosition(sources[i].pos.x, sources[i].pos.y, creep.room.name),
                             {
-
+                                range:1,
                                 plainCost: 2,
                                 swampCost: 10,
                                 maxOps: 8000,
@@ -216,6 +234,75 @@ var roleScout = {
                                 }
                             });
                         avg_distance += ret.path.length;
+
+                        var new_farming_source = new farmingSource(sources[i].id,creep.room.name, 0, 0, ret.path.length, sources[i].pos.getOpenPositions().length)
+
+                        var already_scanned = false;
+                        for (let j = 0; j < spawn.memory.farming_sources.length; j++) {
+                            if (spawn.memory.farming_sources[j].id == sources[i].id) {
+                                already_scanned = true;
+                            }
+
+                            if (creep.room.controller != undefined) {
+                                /*if(Creep.room.controller.owner!=undefined)
+                                {
+                                    already_scanned=true;
+                                }*/
+                                if (creep.room.controller.reservation != undefined) {
+
+                                    if ((creep.room.controller.reservation.username == 'JeallyRabbit' || creep.room.controller.reservation.username == 'Jeally_Rabbit') && already_scanned == false) {
+                                        //already_scanned = true;
+                                    }
+                                    else if (creep.room.controller.reservation.username == 'Invader') {
+                                        var invader_core = creep.room.find(FIND_STRUCTURES, {
+                                            filter: function (hostile) {
+                                                return hostile.structureType == STRUCTURE_INVADER_CORE;
+                                            }
+                                        });
+                                        if (invader_core != undefined && invader_core.length > 0) {
+                                            //spawn.roms_to_clear.push(new_farming);
+                                            already_scanned = false;
+                                        }
+
+                                    }
+                                }
+
+                                var in_other_use = false;
+                                for (let main_spawn_id in Memory.main_spawns) {
+                                    var other_spawn = Game.getObjectById(main_spawn_id);
+                                    if (other_spawn != null && other_spawn != spawn && other_spawn.room.name != creep.memory.home_room.name) {
+                                        for (let other_farming_source in other_spawn.memory.farming_sources) {
+                                            if (other_farming_source.id == sources[i].id && creep.room.name != creep.memory.home_room.name) {
+                                                cconsole.log("source: ", sources[i].id, " in use by: ", other_spawn.name);
+                                                in_other_use = true;
+                                                break
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+
+                        }
+                        //console.log(already_scanned, " ",in_other_use)
+                        if (already_scanned == false && ret.path.length<100 && in_other_use != true) {
+                            spawn.memory.farming_sources.push(new_farming_source);
+                            console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+                            console.log("added source: ",sources[i].id," in ",creep.room.name);
+                            creep.say("ADD")
+                        }
+                        else{
+                            console.log("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLl")
+                            console.log("skipped source: ",sources[i].id," in ",creep.room.name);
+                            console.log("already scanned: ",already_scanned)
+                            console.log("ret.path.length: ",ret.path.length)
+                            console.log("in other use: ",in_other_use)
+                            creep.say("SKIP")
+                        }
+                        //spawn.memory.farming_sources.push(new_farming_source)
+
+
+
                     }
 
                     /*
@@ -223,7 +310,7 @@ var roleScout = {
                     {
                         console.log("distance: ", distance);
                     }*/
-                    avg_distance = avg_distance/ sources.length;
+                    avg_distance = avg_distance / sources.length;
                     var new_farming = new farmingRoom(creep.room.name, 0, 0, sources_num, avg_distance, max_farmers);
                     //creep.say(creep.room.controller.owner);
                     var already_scanned = false;
@@ -239,7 +326,7 @@ var roleScout = {
                             }*/
                             if (creep.room.controller.reservation != undefined) {
 
-                                if ((creep.room.controller.reservation.username == 'JeallyRabbit' || creep.room.controller.reservation.username == 'Jeally_Rabbit' ) && already_scanned == false) {
+                                if ((creep.room.controller.reservation.username == 'JeallyRabbit' || creep.room.controller.reservation.username == 'Jeally_Rabbit') && already_scanned == false) {
                                     already_scanned = true;
                                 }
                                 else if (creep.room.controller.reservation.username == 'Invader') {
@@ -256,18 +343,15 @@ var roleScout = {
                                 }
                             }
 
-                            var in_other_use=false;
-                            for(let main_spawn_id in Memory.main_spawns)
-                            {
-                                var other_spawn=Game.getObjectById(main_spawn_id);
-                                if(other_spawn!=null && other_spawn!=spawn && other_spawn.room.name!=creep.memory.home_room.name)
-                                {
-                                    for(let other_farming in other_spawn.memory.farming_rooms)
-                                    {
-                                        if(other_farming==creep.room.name && creep.room.name!=creep.memory.home_room.name)
-                                        {
-                                            cconsole.log("room: ",creep.room.name," in use by: ",other_spawn.name);
-                                            in_other_use=true;
+                            var in_other_use = false;
+                            for (let main_spawn_id in Memory.main_spawns) {
+                                var other_spawn = Game.getObjectById(main_spawn_id);
+                                if (other_spawn != null && other_spawn != spawn && other_spawn.room.name != creep.memory.home_room.name) {
+                                    for (let other_farming in other_spawn.memory.farming_rooms) {
+                                        
+                                        if (other_farming == creep.room.name && creep.room.name != creep.memory.home_room.name) {
+                                            cconsole.log("room: ", creep.room.name, " in use by: ", other_spawn.name);
+                                            in_other_use = true;
                                             break
                                         }
                                     }
@@ -277,10 +361,17 @@ var roleScout = {
                         }
 
                     }
+
+                    console.log(' ')
                     //console.log(already_scanned, " ",in_other_use)
-                    if (already_scanned == false && avg_distance<100 && in_other_use!=true) {
+                    if (already_scanned == false && avg_distance < 100 && in_other_use != true) {
                         spawn.memory.farming_rooms.push(new_farming);
+                        console.log("adding source from: ", creep.room.name)
                     }
+                    else{
+                        console.log("skipping source in room: ", creep.room.name)
+                    }
+                    console.log(" ")
                     // }
 
 

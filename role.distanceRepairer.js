@@ -15,7 +15,7 @@ var roleRepairer = {
             //return;
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: function (object) {
-                    return object.hits < object.hitsMax && ((object.structureType==STRUCTURE_RAMPART && object.hits<100000)
+                    return object.hits < object.hitsMax && ((object.structureType==STRUCTURE_RAMPART && object.hits<1000000)
                     || (object.structureType!=STRUCTURE_RAMPART && object.hits<300000))
                 }
             });
@@ -60,7 +60,7 @@ var roleRepairer = {
                     if (targets.length) {
                         var closest_target = creep.pos.findClosestByRange(targets);
                         if (creep.repair(closest_target) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(targets[0], { visualizePathStyle: { stroke: 'red' } });
+                            creep.moveTo(targets[0], { visualizePathStyle: { stroke: 'red' },reusePath: 17 });
                             //move_avoid_hostile(creep, closest_target.pos, 2, false);
                         }
                         
@@ -75,7 +75,7 @@ var roleRepairer = {
                         //console.log("energy");
                         if (creep.withdraw(source, RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {
                             //creep.say("Going to Cintainer");
-                            creep.moveTo(source);
+                            creep.moveTo(source,{reusePath: 17});
                             //move_avoid_hostile(creep, source.pos,1);
                         }
                     }
@@ -89,7 +89,7 @@ var roleRepairer = {
                     if (droppedEnergy.length > 0) {
                         if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                             // Move to it
-                            creep.moveTo(closestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' } });
+                            creep.moveTo(closestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' },reusePath:17 });
                             //move_avoid_hostile(creep, closestDroppedEnergy.pos)
                         }
                     }
@@ -99,7 +99,7 @@ var roleRepairer = {
         else {
             if(creep.memory.target_room!=undefined)
             {
-                creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room),{reUsePath: 10});
+                creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room),{reusePath: 17});
             }
             
             

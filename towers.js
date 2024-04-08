@@ -8,7 +8,7 @@ var towers = {
 
         if (spawn.memory.damagedStructures != undefined) {
             while (spawn.memory.damagedStructures.length > 0 && Game.getObjectById(spawn.memory.damagedStructures[0])!=null
-             && (Game.getObjectById(spawn.memory.damagedStructures[0]).hits > 30000 ||
+             && (Game.getObjectById(spawn.memory.damagedStructures[0]).hits > 5000 ||
               (Game.getObjectById(spawn.memory.damagedStructures[0]).hits==Game.getObjectById(spawn.memory.damagedStructures[0]).hitsMax))) {
                 spawn.memory.damagedStructures.shift();
             }

@@ -43,13 +43,13 @@ var roleTowerKeeper = {
             //creep.say("A");
             withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, deposit.store[RESOURCE_ENERGY]);
             if (creep.withdraw(deposit, RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
-                creep.moveTo(deposit);
+                creep.moveTo(deposit,{reusePath:17});
             }
         }
         else if (towers.length > 0) {
             //creep.say("tower");
             if (creep.transfer(towers[minID], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
-                creep.moveTo(towers[minID]);
+                creep.moveTo(towers[minID],{reusePath:17});
             }
         }
 

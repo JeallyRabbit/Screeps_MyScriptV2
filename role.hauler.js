@@ -2,6 +2,7 @@
 
 var roleTransporter = require('role.transporter');
 const { move_avoid_hostile } = require("./move_avoid_hostile");
+var roleDistanceCarrier = require('role.DistanceCarrier');
 
 var roleHauler = {//transfer energy grom containers (and storage) to extensions and spawn (if they are full equalize energy at containers)
 
@@ -11,6 +12,14 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
         //creep.memory.cID_max=undefined;
 
         //creep.say("poq");
+        if(spawn.room.controller.level<=2)
+        {
+            creep.memory.target_room=creep.room.name;
+            roleDistanceCarrier.run(creep,spawn);
+            return;
+        }
+
+
         if (creep.memory.filler_containers == undefined) {
             //creep.say("qwe");
             var filler_containers = creep.room.find(FIND_STRUCTURES, {
@@ -112,13 +121,15 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
             }
 
         }
-        else if (spawn.memory.manager_link_id!=undefined && Game.getObjectById(spawn.memory.manager_link_id)!=null && Game.getObjectById(spawn.memory.manager_link_id).store[RESOURCE_ENERGY]<700) 
+        else if (spawn.memory.manager_link_id!=undefined && Game.getObjectById(spawn.memory.manager_link_id)!=null &&
+         Game.getObjectById(spawn.memory.manager_link_id).store[RESOURCE_ENERGY]<700 && spawn.memory.merchant==undefined) 
         {
             creep.say("link");
+            //creep.say(spawn.memory.merchant);
             if(creep.transfer(Game.getObjectById(spawn.memory.manager_link_id), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) 
             {
-                creep.moveTo(Game.getObjectById(spawn.memory.manager_link_id));
-            }
+                creep.moveTo(Game.getObjectById(spawn.memory.manager_link_id),{reusePath:11});
+            } 
         }
         else if (creep.memory.filler_containers!=undefined && creep.memory.filler_containers.length>0 
             && (Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store.getCapacity(RESOURCE_ENERGY)
@@ -126,14 +137,14 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
             if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[0]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
                 //creep.say("Q");
                 
-                creep.moveTo(Game.getObjectById(creep.memory.filler_containers[0]));
+                creep.moveTo(Game.getObjectById(creep.memory.filler_containers[0]),{reusePath:11});
                 //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[0]).pos, 1, false);;
             }
         }
         else if ((creep.memory.filler_containers!=undefined  && creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
             if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[1]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
                 //creep.say("P");
-                creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]));
+                creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]),{reusePath:11});
                 //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[1]).pos, 1, false);;
             }
         }
@@ -149,8 +160,8 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], spawn.store[RESOURCE_ENERGY].getFreeCapacity);
                 if (creep.transfer(spawn, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
 
-                    // creep.moveTo(spawn);
-                    move_avoid_hostile(creep, spawn.pos, 1, false);;
+                    creep.moveTo(spawn,{reusePath:11});
+                    //move_avoid_hostile(creep, spawn.pos, 1, false);;
                 }
             }
         }
@@ -172,8 +183,8 @@ var roleHauler = {//transfer energy grom containers (and storage) to extensions 
                 var transfered_amount = 1;
                 transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
                 if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                    //creep.moveTo(closestExtension);
-                    move_avoid_hostile(creep, closestExtension.pos, 1, false);
+                    creep.moveTo(closestExtension,{reusePath:11});
+                    //move_avoid_hostile(creep, closestExtension.pos, 1, false);
                 }
                 else if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == OK) {
                     //creep.memory.is_working=true;
