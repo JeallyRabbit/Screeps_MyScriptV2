@@ -1,6 +1,6 @@
 function maxColonizer(cap,spawn)// return array with max possible work parts for upgrader
 {
-    var rcl=spawn.room.controller.level;
+    //var rcl=spawn.room.controller.level;
     
     
     if(cap>3200)

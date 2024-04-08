@@ -57,8 +57,8 @@ RoomPosition.prototype.getOpenPositions=function getOpenPositions(){ //returns o
         return !pos.lookFor(LOOK_CREEPS).length;
 
     });
-
-    return freePositions;
+    return walkablePositions;
+    //return freePositions;
 }
 
 RoomPosition.prototype.getOpenPositions2=function getOpenPositions2(){ //returns open nearby positions around (creep can be on such pos)

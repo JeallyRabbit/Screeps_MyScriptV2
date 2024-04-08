@@ -1,3 +1,9 @@
+const STATE_DEVELOPING = 'STATE_DEVELOPING'
+const STATE_UNDER_ATTACK = 'STATE_UNDER_ATTACK'
+const STATE_NEED_MILITARY_SUPPORT = 'STATE_NEED_MILITARY_SUPPORT'
+const STATE_NEED_ENERGY = 'STATE_NEED_ENERGY'
+const STATE_STATE_NEED_MILITARY_ENERGY = 'STATE_NEED_MILITARY_ENERGY'
+
 var terminal = {
 
     /** @param {Game} game **/
@@ -5,12 +11,51 @@ var terminal = {
         terminal = spawn.room.terminal;
 
         storage = spawn.room.storage;
-        if(storage.store[RESOURCE_ENERGY]<500000)
-        {
-            storage=undefined;
+
+
+        if (storage.store[RESOURCE_ENERGY] < 500000) {
+          //  storage = undefined;
         }
-        if (terminal != undefined && terminal.length > 0) {
-            if (terminal[0].cooldown == 0) {
+        if (terminal != undefined) {
+
+            if (terminal.cooldown == 0) {
+
+
+                //looking for rooms that need energy - chosing closest one
+                var amount = 5000;
+                closest_to_send_energy = undefined
+                min_distance = Infinity
+                if (spawn.memory.state.includes(STATE_NEED_ENERGY) == false && storage!=null && storage.store[RESOURCE_ENERGY]>200000
+            && terminal.store[RESOURCE_ENERGY]>amount) {
+                    
+
+                    for (main of Memory.main_spawns) {
+                        //console.log("main: ", main)
+                        main_spawn = Game.getObjectById(main)
+                        if (main_spawn == null || main_spawn.room.name == spawn.room.name) {
+                            continue
+                        }
+                        //console.log("main2: ", main_spawn.room.name)
+                        if (main_spawn != null && main_spawn.room.terminal != undefined && main_spawn.memory.state != undefined
+                            && main_spawn.memory.state.length > 0 && main_spawn.memory.state.includes(STATE_NEED_ENERGY)) {
+                            //console.log("room: ", main_spawn.room.name, " need energy - cost of sending: ", cost)
+                            var cost = Game.market.calcTransactionCost(amount, terminal.room.name, main_spawn.room.name)
+                            if (cost < min_distance) {
+                                min_distance = cost;
+                                closest_to_send_energy = main_spawn.room.name;
+                            }
+                        }
+                    }
+                    if (closest_to_send_energy != undefined) {
+                        console.log("sending energy to: ",closest_to_send_energy)
+                        terminal.send(RESOURCE_ENERGY, amount, closest_to_send_energy);
+                    }
+                }
+
+
+
+                /*
+
                 //console.log("cooldown=0");
                 //sell energy (actively)
                 if (storage != undefined && storage.length > 0) {
@@ -58,9 +103,11 @@ var terminal = {
 
                 }
 
+                
+
                 /// buy XGH2O (actively)
                 //buy KH (actively)
-                /*
+                
                 var lowest_price = 0;
                 var best_order_id = undefined
                 const orders = Game.market.getAllOrders({ type: ORDER_SELL, resourceType: "KH" }); // fast
@@ -103,9 +150,9 @@ var terminal = {
                     //console.log("trade_amount: ",trade_amount);
                     //console.log("cost: ",cost);
                 }
-                */
+                
 
-                /*
+                
                 //buy energy
                 var lowest_price = 0;
                 var best_order_id = undefined
@@ -149,9 +196,9 @@ var terminal = {
                     //console.log("trade_amount: ",trade_amount);
                     //console.log("cost: ",cost);
                 }
-                */
+                
 
-                /*
+                
                 const order=Game.market.getOrderById('657f199cd464650012ee6c7f');
 
                 if(order!=undefined)
@@ -161,7 +208,7 @@ var terminal = {
                     {
                         console.log(order.roomName);
                         console.log("COST: ",Game.market.calcTransactionCost(1000,order.roomName,spawn.room.name));
-                       /* if(Game.market.calcTransactionCost(1000,order.roomName,spawn.room.name)<10000)
+                        if(Game.market.calcTransactionCost(1000,order.roomName,spawn.room.name)<10000)
                         {
                             console.log("deal: ",Game.market.deal(order.id,1000,spawn.room.name));
                         }
@@ -169,9 +216,9 @@ var terminal = {
                 }
                 else{
                     console.log('order undefined');
-                }*/
+                }
 
-                /*
+                
                 var buy_GH20=false;
 
                 if(buy_GH20==true)
@@ -193,8 +240,8 @@ var terminal = {
                         }
                     }
                 }
-                */
-                /*
+                
+                
                 Game.market.createOrder({
                     type: ORDER_SELL,
                     resourceType: PIXEL,

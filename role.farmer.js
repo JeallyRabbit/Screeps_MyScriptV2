@@ -15,25 +15,8 @@ var roleFarmer = {
         //var x_source=25,y_source=25;
         if (creep.memory.target_room == creep.room.name) {
             
-            /*
-            creep.room.find(FIND_CONSTRUCTION_SITES).forEach(function (struct) {
-                struct.remove();
-            })
-            */
-
-
-            //console.log("full");
-            /*
-            if( creep.memory.target_room==creep.memory.home_room.name && spawn.room.controller.level <=2 && creep.store.getFreeCapacity()==0 )
-            {
-                console.log('droping');
-                creep.drop(RESOURCE_ENERGY);
-                //return;
-            }
-            */
-            if (creep.ticksToLive == 1200 && false) {
-                creep.memory.source_id = undefined;
-            }
+            
+            
 
             var construction_sites = creep.pos.findInRange(FIND_CONSTRUCTION_SITES, 3, {
                 filter: function (structure) {
@@ -189,7 +172,7 @@ var roleFarmer = {
                 creep.say("tra");
                 //transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closestContainer.store[RESOURCE_ENERGY]);
                 if (creep.transfer(Game.getObjectById(creep.memory.closest_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(Game.getObjectById(creep.memory.closest_container),{reusePath:8});
+                    creep.moveTo(Game.getObjectById(creep.memory.closest_container),{reusePath:13});
                     //move_avoid_hostile(creep, closestContainer.pos, 1, true);
                 }
 

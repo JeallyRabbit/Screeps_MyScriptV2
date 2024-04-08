@@ -1,4 +1,23 @@
 
+
+class farmingRoom {
+    constructor(name, harvesting_power, carry_power, sources_num, distance, max_farmers) {
+        this.name = name;
+        this.harvesting_power = harvesting_power;
+        this.carry_power = carry_power;
+        this.sources_num = sources_num;
+        this.distance = distance;
+        this.max_farmers = max_farmers;
+
+        this.farmers = 0;
+
+        var body_parts_cost = (sources_num * 12);//parts for farmers (max farmer is made off 12 bodyparts);
+        body_parts_cost += 14;//maxRepairer
+        body_parts_cost += Math.ceil((sources_num * 10 * distance * 2 * 3) / 100);//distanceCarriers
+        this.body_parts_cost = body_parts_cost;
+    }
+}
+
 function calculateDistance(point1, point2) {
     // Adjusted regular expression to match the new format
     const regex = /^([WE])(\d+)([NS])(\d+)$/;
@@ -29,6 +48,9 @@ function calculateDistance(point1, point2) {
 
 
 function setRequiredPopulation(spawn) {
+
+
+    //console.log("repairer for [0] in set pop: ",spawn.memory.farming_rooms[0].distanceRepairer)
 
     if (Memory.colonizing == true && spawn.room.controller.level>=5) {
         spawn.memory.req_scanners = 1
@@ -65,13 +87,14 @@ function setRequiredPopulation(spawn) {
     spawn.memory.req_upgraders_parts = 1;
     spawn.memory.req_fillers = 4;
     if ((spawn.memory.building != true && Game.time % 5 == 0) || Game.time % 15 == 0) {
-        if (spawn.memory.farming_rooms != undefined) {
+        if (spawn.memory.farming_sources != undefined) {
             //console.log("P");
-            var farming_rooms_num = Math.ceil(spawn.memory.farming_rooms.length);
-            if (farming_rooms_num > 0 && spawn.memory.farming_rooms[Math.floor(Math.floor(farming_rooms_num / 2))].carry_power > 0) {
+            var farming_sources_num = Math.ceil(spawn.memory.farming_sources.length);
+            if (farming_sources_num > 0 && spawn.memory.farming_sources[Math.floor(Math.floor(farming_sources_num / 2))].carry_power > 0) {
                 //console.log("Q");
                 var construction_sites = spawn.room.find(FIND_CONSTRUCTION_SITES);
                 if (construction_sites.length > 0) {
+                    //console.log("BUILING AAAAAT: ",construction_sites[0].pos)
                     spawn.memory.building = true;
                     spawn.memory.upgrading = undefined;
                 }
@@ -102,9 +125,11 @@ function setRequiredPopulation(spawn) {
     }
 
     if (spawn.room.storage != undefined && spawn.room.controller.level < 8 && spawn.room.controller.level > 3) {
-        
+        //console.log("dynamic upgraders")
         if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 0) {
+            //console.log("VERY DYNAMIC")
             spawn.memory.req_upgraders_parts = spawn.room.storage.store[RESOURCE_ENERGY] / 20000;
+
         }
         else{
             spawn.memory.req_upgraders_parts=1;
@@ -126,6 +151,7 @@ function setRequiredPopulation(spawn) {
     spawn.memory.req_berserk = 1;//role num 8
     spawn.memory.req_transporters = 0;//role numm 9
     spawn.memory.req_towerKeepers = 0;//role num 10
+    spawn.memory.req_rampart_repairers=1;
     if (spawn.memory.num_towers > 0 || spawn.room.controller.level >= 3) {
         spawn.memory.req_towerKeepers = 1;
     }
@@ -141,26 +167,30 @@ function setRequiredPopulation(spawn) {
         spawn.memory.farming_rooms = [];
 
     }
+    if (spawn.memory.farming_sources == undefined) {
+        spawn.memory.farming_sources = [];
+
+    }
     else {
-        for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
+        for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
 
-            if (spawn.memory.farming_rooms[i].body_parts_cost == undefined) {
+            if (spawn.memory.farming_sources[i].body_parts_cost == undefined) {
 
-                var body_parts_cost = (spawn.memory.farming_rooms[i].sources_num * 12);//parts for farmers (max farmer is made off 12 bodyparts);
+                var body_parts_cost = (spawn.memory.farming_sources[i].sources_num * 12);//parts for farmers (max farmer is made off 12 bodyparts);
                 body_parts_cost += 14;//maxRepairer
-                body_parts_cost += Math.ceil((spawn.memory.farming_rooms[i].sources_num * 10 * spawn.memory.farming_rooms[i].distance * 2 * 3) / 100);//distanceCarriers
-                spawn.memory.farming_rooms[i].body_parts_cost = body_parts_cost;
+                body_parts_cost += Math.ceil((spawn.memory.farming_sources[i].sources_num * 10 * spawn.memory.farming_sources[i].distance * 2 * 3) / 100);//distanceCarriers
+                spawn.memory.farming_sources[i].body_parts_cost = body_parts_cost;
             }
 
-            if (spawn.memory.farming_rooms[i].carry_power == undefined) {
-                spawn.memory.farming_rooms[i].carry_power = 0;
+            if (spawn.memory.farming_sources[i].carry_power == undefined) {
+                spawn.memory.farming_sources[i].carry_power = 0;
             }
-            if (spawn.memory.farming_rooms[i].harvesting_power == undefined) {
-                spawn.memory.farming_rooms[i].harvesting_power = 0;
+            if (spawn.memory.farming_sources[i].harvesting_power == undefined) {
+                spawn.memory.farming_sources[i].harvesting_power = 0;
             }
-            if (spawn.memory.farming_rooms[i].calculatedIncome == undefined || true) {
-                var sources_num = spawn.memory.farming_rooms[i].sources_num;
-                var distance = spawn.memory.farming_rooms[i].distance;
+            if (spawn.memory.farming_sources[i].calculatedIncome == undefined || true) {
+                var sources_num = spawn.memory.farming_sources[i].sources_num;
+                var distance = spawn.memory.farming_sources[i].distance;
                 //source_income = raw income from sources per CREEP_LIFE_TIME (1500 ticks)
                 var raw_source_income = (sources_num * (CREEP_LIFE_TIME / ENERGY_REGEN_TIME) * SOURCE_ENERGY_CAPACITY);
                 var farmers_cost = sources_num * 950;
@@ -169,12 +199,16 @@ function setRequiredPopulation(spawn) {
                 var distanceCarriers_cost = distanceCarrier_parts * 50;
                 var cost = farmers_cost + repairer_cost + distanceCarriers_cost;
                 var final_income = raw_source_income - cost;
-                spawn.memory.farming_rooms[i].calculatedIncome = final_income;
-                spawn.memory.farming_rooms[i].income_per_body_part = spawn.memory.farming_rooms[i].calculatedIncome / spawn.memory.farming_rooms[i].body_parts_cost;
+                spawn.memory.farming_sources[i].calculatedIncome = final_income;
+                spawn.memory.farming_sources[i].income_per_body_part = spawn.memory.farming_sources[i].calculatedIncome / spawn.memory.farming_sources[i].body_parts_cost;
 
             }
 
         }
+
+
+        ////////////FARMING_ROOMS
+        /*
         var farming_body_parts = 0;
         var farming_rooms_num = 0;
         spawn.memory.farming_rooms.sort((a, b) => b.income_per_body_part - a.income_per_body_part);
@@ -191,6 +225,62 @@ function setRequiredPopulation(spawn) {
                 spawn.memory.farming_rooms.pop();
             }
         }
+        */
+        
+
+
+        /////////////FARMING_SOURCES
+        var farming_body_parts=0;
+        var farming_sources_num=0;
+        spawn.memory.farming_sources.sort((a, b) => b.income_per_body_part - a.income_per_body_part);
+        while (farming_body_parts < 350 && farming_sources_num < spawn.memory.farming_sources.length) {
+            farming_body_parts += spawn.memory.farming_sources[farming_sources_num].body_parts_cost;
+            if (farming_body_parts < 350) {
+                farming_sources_num++;
+            }
+            else{
+                break;
+            }
+
+        }
+
+        if (spawn.memory.farming_sources.length > farming_sources_num && spawn.memory.farming_sources.length > 0) {
+            while (spawn.memory.farming_sources.length > farming_sources_num) {
+                spawn.memory.farming_sources.pop();
+            }
+        }
+
+        //console.log("setting farming_rooms based on farming-sources")
+
+        /*
+        spawn.memory.farming_rooms=[];
+        //console.log(spawn.memory.farming_rooms.length)
+        for(let i=0;i<spawn.memory.farming_sources.length;i++)
+        {
+            var found=false
+            //console.log(" ")
+            //console.log(spawn.memory.farming_sources[i].name)
+            for(let j=0;j<spawn.memory.farming_rooms.length;j++)
+            {
+                //console.log(spawn.memory.farming_rooms[j].name)
+                if(spawn.memory.farming_sources[i].name==spawn.memory.farming_rooms[j].name)
+                {
+                    spawn.memory.farming_rooms[j].sources_num++;
+                    spawn.memory.farming_rooms[j].max_farmers+=spawn.memory.farming_sources[i].max_farmers;
+                    found=true
+                    continue;
+                }
+                
+            }
+            if(found==false)
+            {
+                //console.log("pushing: ",spawn.memory.farming_sources[i].name," to list")
+                spawn.memory.farming_rooms.push(new farmingRoom(spawn.memory.farming_sources[i].name,0,0,1,spawn.memory.farming_sources[i].distance,
+                    spawn.memory.farming_sources[i].max_farmers));
+            }
+            //console.log(spawn.memory.farming_rooms[0].name)
+        }
+        */
 
     }
 
@@ -238,31 +328,34 @@ function setRequiredPopulation(spawn) {
     //console.log(spawn.memory.need_keeperKiller, "  ", spawn.memory.need_keeperHealer, "  ",
     //    spawn.memory.need_keeperCarrier, "  ", spawn.memory.need_keeperFarmer);
 
-
+    
 
     spawn.memory.req_repairers = 0;// 1 - (100 * spawn.memory.req_towerKeepers);
 
     spawn.memory.need_DistanceCarrier = undefined;
+    spawn.memory.need_ddistance_carrier_source_id=undefined
     spawn.memory.need_farmer = undefined;
+    spawn.memory.need_source_farmer=undefined;
+    spawn.memory.need_source_farmer_room=undefined;
     spawn.memory.need_distanceRepairer = undefined;
     spawn.memory.need_soldier = undefined;
     spawn.memory.need_melee_soldier = undefined;
     //spawn.memory.need_melee_soldier = 'W41N15';
     spawn.memory.need_reserver = undefined;
-    if (spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0 &&
+    if (spawn.memory.farming_sources != undefined && spawn.memory.farming_sources.length > 0 &&
         (spawn.memory.rooms_to_scan != undefined)) {
         //spawn.memory.need_DistanceCarrier = undefined;
         //  CARRIERS //
-        for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
-            if (spawn.memory.farming_rooms[i].carry_power < spawn.memory.farming_rooms[i].sources_num * 10
-                && spawn.memory.farming_rooms[i].carry_power < spawn.memory.farming_rooms[i].harvesting_power) {
-                if (Game.rooms[spawn.memory.farming_rooms[i].name] != undefined && Game.rooms[spawn.memory.farming_rooms[i].name].controller.reservation != undefined
-                    && Game.rooms[spawn.memory.farming_rooms[i].name].controller.reservation.username == 'Invader') {
-                    //console.log('ROom: ', spawn.memory.farming_rooms[i].name, ' reserved by invader');
+        for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
+            if (spawn.memory.farming_sources[i].carry_power < spawn.memory.farming_sources[i].sources_num * 10
+                && spawn.memory.farming_sources[i].carry_power < spawn.memory.farming_sources[i].harvesting_power) {
+                if (Game.rooms[spawn.memory.farming_sources[i].name] != undefined && Game.rooms[spawn.memory.farming_sources[i].name].controller.reservation != undefined
+                    && Game.rooms[spawn.memory.farming_sources[i].name].controller.reservation.username == 'Invader') {
+                    //console.log('ROom: ', spawn.memory.farming_sources[i].name, ' reserved by invader');
                     continue;
                 }
-                spawn.memory.need_DistanceCarrier = spawn.memory.farming_rooms[i].name;
-
+                spawn.memory.need_DistanceCarrier = spawn.memory.farming_sources[i].name;
+                spawn.memory.need_ddistance_carrier_source_id=spawn.memory.farming_sources[i].id;
                 break;
             }
         }
@@ -285,17 +378,39 @@ function setRequiredPopulation(spawn) {
             }
         }
 
+        // FARMERS AFTER UPGRADE //
+        for(let i=0;i<spawn.memory.farming_sources.length;i++)
+        {
+            if(spawn.memory.farming_sources[i].harvesting_power<SOURCE_ENERGY_CAPACITY/ENERGY_REGEN_TIME && 
+            spawn.memory.farming_sources[i].farmers<spawn.memory.farming_sources[i].max_farmers)
+            {
+                if (Game.rooms[spawn.memory.farming_sources[i].name] != undefined
+                    && Game.rooms[spawn.memory.farming_sources[i].name].controller.reservation != undefined
+                    && Game.rooms[spawn.memory.farming_sources[i].name].controller.reservation.username == 'Invader') {
+                    //console.log('ROom: ', spawn.memory.farming_rooms[i].name, ' reserved by invader');
+                    continue;
+                }
+                spawn.memory.need_source_farmer = spawn.memory.farming_sources[i].id;
+                spawn.memory.need_source_farmer_room = spawn.memory.farming_sources[i].name;
+                //consone.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                break;
+            }
+        }
+
         // REPAIRERS //
         for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
-            if (spawn.memory.farming_rooms[i].harvesting_power > 0 && spawn.memory.farming_rooms[i].distanceRepairer == undefined) {
-
+            //console.log(i)
+            //console.log(spawn.memory.farming_rooms[i].harvesting_power)
+            if (/* spawn.memory.farming_rooms[i].harvesting_power > 0 && */ spawn.memory.farming_rooms[i].distanceRepairer == undefined) {
+                //console.log(spawn.memory.farming_rooms[i].name," do not have repairer")
+                //console.log(spawn.memory.farming_rooms[i].distanceRepairer)
                 if (Game.rooms[spawn.memory.farming_rooms[i].name] != undefined && Game.rooms[spawn.memory.farming_rooms[i].name].controller.reservation != undefined
                     && Game.rooms[spawn.memory.farming_rooms[i].name].controller.reservation.username == 'Invader') {
                     //console.log('ROom: ', spawn.memory.farming_rooms[i].name, ' reserved by invader');
                     continue;
                 }
                 spawn.memory.need_distanceRepairer = spawn.memory.farming_rooms[i].name;
-
+                //console.log(spawn.memory.need_distanceRepairer);
                 break;
             }
         }
@@ -319,7 +434,16 @@ function setRequiredPopulation(spawn) {
                             break;
                         }
                     }
-                    if (is_farming_room == true) {
+
+                    for (let farmingRoom of spawn.memory.farming_sources) {
+                        if (myRoom == farmingRoom.name) {
+                            is_farming_room = true;
+                            break;
+                        }
+                    }
+
+                    if (is_farming_room == true || 
+                        (is_farming_room==false && Game.rooms[myRoom].controller!=undefined && Game.rooms[myRoom].my==true && Game.rooms[myRoom].controller.level<4)) {
                         if(Game.rooms[myRoom].soldier !=undefined || Game.rooms[myRoom].melee_soldier!=undefined)
                         {
                             continue loop1;
@@ -373,7 +497,8 @@ function setRequiredPopulation(spawn) {
                 break;
             }
         }
-        console.log('need DistanceCarrier: ', spawn.memory.need_DistanceCarrier, ' | need farmer: ', spawn.memory.need_farmer,
+        console.log('need DistanceCarrier: ', spawn.memory.need_DistanceCarrier, ' | need_distance_carrier_source_id: ',spawn.memory.need_ddistance_carrier_source_id,
+        ' | need source_farmer: ', spawn.memory.need_source_farmer,
             ' | need distanceRepairer ', spawn.memory.need_distanceRepairer, ' | need soldier: ', spawn.memory.need_soldier,
             ' | need reserver ', spawn.memory.need_reserver,' | need melee_soldier: ',spawn.memory.need_melee_soldier);
 
@@ -412,7 +537,8 @@ function setRequiredPopulation(spawn) {
 
 
     var terminal = spawn.room.terminal;
-    if (terminal != undefined && terminal.length > 0) {
+    //console.log(terminal);
+    if (spawn.room.terminal != undefined || spawn.room.storage!=undefined) {
         spawn.memory.req_merchants = 1;
     }
     else {

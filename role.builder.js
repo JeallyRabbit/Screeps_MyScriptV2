@@ -22,7 +22,7 @@ var roleBuilder = {
                 spawn.memory.building = false;
             }
 
-            if (creep.memory.role != 'distanceRepairer') {
+            if (creep.memory.role != 'distanceRepairer' && creep.memory.role!='colonizer') {
                 creep.memory.role = 'distanceRepairer';
                 creep.memory.target_room = creep.memory.home_room.name;
             }

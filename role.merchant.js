@@ -1,132 +1,71 @@
 //const getClosestEnergyDeposit = require("./getClosestEnergyDeposit");
-
+const FILL_TERMINAL_ENERGY = "FILL_TERMINAL_ENERGY"
+const FILL_STORAGE_ENERGY = "FILL_STORAGE_ENERGY"
+const FILL_LINK = "FILL_LINK"
 var roleMerchant = {//transfer energy grom containers to storage
 
     /** @param {Creep} creep **/
     run: function (creep, spawn) {
-        if (creep.pos.x != spawn.pos.x + 1 || creep.pos.y != spawn.pos.y - 2) {
-            creep.moveTo(spawn.pos.x + 1, spawn.pos.y - 2);
+
+        
+        //creep.suicide()
+        var terminal = spawn.room.terminal;
+        var storage = spawn.room.storage;
+        if (spawn.memory.manager_link_id != undefined) {
+            var link = Game.getObjectById(spawn.memory.manager_link_id);
+        }
+        //creep.say(creep.moveTo(terminal.pos.x + 1, terminal.pos.y - 1));
+        //return;
+        if (storage!=undefined && (creep.pos.x != storage.pos.x - 1 || creep.pos.y != storage.pos.y + 1)) {
+            creep.moveTo(new RoomPosition(storage.pos.x - 1, storage.pos.y + 1, spawn.room.name));
+            creep.say(spawn.room.name)
+            return;
         }
         else {
-            var terminal = creep.room.find(FIND_STRUCTURES, {
-                filter: function (structure) {
-                    return structure.structureType == STRUCTURE_TERMINAL;
-                }
-            });
-            if (terminal != undefined) {
 
-                //if(creep.memory.to_terminal==true)
-                //{
+            if (terminal != undefined && storage != undefined) {
 
-                var storage = creep.room.find(FIND_STRUCTURES, {
-                    filter: function (structure) {
-                        return structure.structureType == STRUCTURE_STORAGE;
-                    }
-                });
 
-                var lab = creep.room.find(FIND_STRUCTURES, {
-                    filter: function (structure) {
-                        return structure.structureType == STRUCTURE_LAB;
-                        //&& structure.store.getFreeCapacity()>0;
-                    }
-                });
 
-                if (terminal[0].store[RESOURCE_ENERGY] < 30000) {
+                if (terminal.store[RESOURCE_ENERGY] < 30000 && storage.store[RESOURCE_ENERGY] > 40000) {
+                    creep.memory.task = FILL_TERMINAL_ENERGY;
                     creep.memory.energy_to_terminal = true;
-                    creep.memory.energy_from_terminal=false;
+                    creep.memory.energy_from_terminal = false;
                 }
-                if (terminal[0].store[RESOURCE_ENERGY] > 40000) {
+                else if (terminal.store[RESOURCE_ENERGY] > 35000) {
+                    creep.memory.task = FILL_STORAGE_ENERGY;
                     creep.memory.energy_from_terminal = true;
-                    creep.memory.energy_to_terminal=false;
+                    creep.memory.energy_to_terminal = false;
                 }
-                else if(terminal[0].store[RESOURCE_ENERGY]>=30000 && 
-                    terminal[0].store[RESOURCE_ENERGY]<=40000){
+                else if (terminal.store[RESOURCE_ENERGY] > 30000 && terminal.store[RESOURCE_ENERGY] < 40000) {
+                    creep.memory.task = undefined;
                     creep.memory.energy_from_terminal = -1;
                     creep.memory.energy_to_terminal = -1;
                 }
-                if (terminal[0].store[RESOURCE_ENERGY] == 0) {
-                    if (creep.store[RESOURCE_ENERGY] == 0) {
-                        if (creep.withdraw(storage[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(storage[0]);
-                        }
-                    }
-                    else {
-                        if (creep.transfer(terminal[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            creep.mpveTo(terminal[0]);
-                        }
+            }
+            if (storage != undefined) {
+                if (link != undefined) {
+                    if (link.store[RESOURCE_ENERGY] < 700 && storage != undefined) {
+                        //creep.say("LINK")
+                        creep.memory.task = FILL_LINK;
                     }
                 }
+            }
 
-                for (const resource in terminal[0].store) {
 
-                    if(creep.memory.energy_to_terminal==true && creep.memory.energy_from_terminal==false)
-                    {
-                        if(creep.store[RESOURCE_ENERGY]==0)
-                        {
-                            creep.withdraw(storage[0],RESOURCE_ENERGY);
-                        }
-                        else{
-                            creep.transfer(terminal[0],RESOURCE_ENERGY);
-                        }
-                    }
-                    else if(creep.memory.energy_from_terminal==true && creep.memory.energy_to_terminal==false)
-                    {
-                        if(creep.store[RESOURCE_ENERGY]==0)
-                        {
-                            creep.withdraw(terminal[0],RESOURCE_ENERGY);
-                        }
-                        else{
-                            creep.transfer(storage[0],RESOURCE_ENERGY);
-                        }
-                    }
-                    else if(creep.memory.energy_from_terminal==-1 && creep.memory.energy_to_terminal==-1)
-                    {
-                        
-                        for(const resource in terminal[0].store)
-                        {
-                            
-                            if(resource!=RESOURCE_ENERGY)
-                            {
-                                if(creep.store.getUsedCapacity(resource)==0)
-                                {
-                                    creep.withdraw(terminal[0],resource);
-                                }
-                                
-                            }
-                            
-                        } 
-                        for(const resource in creep.store)
-                        {
-                            if(resource=="XGHO2")
-                            {
-                                //creep.say("B");
-                                if(creep.store.getUsedCapacity(resource)>0)
-                                {
-                                    //creep.say("A");
-                                    creep.transfer(terminal[0],resource);
-                                }
-                            }
-                            else if(resource!=RESOURCE_ENERGY)
-                            {
-                                if(creep.store.getUsedCapacity(resource)>0)
-                                {
-                                    creep.transfer(storage[0],resource)
-                                }
-                            }
-                        }
-                        for(const resource in storage[0].store)
-                        {
-                            if(resource=="XGHO2")
-                            {
-                                if(creep.store.getUsedCapacity(resource)==0)
-                                {
-                                    creep.withdraw(storage[0],resource);
-                                }
-                            }
-                        }
-                    }
-                }
 
+
+            if (creep.memory.task == FILL_LINK) {
+                creep.withdraw(storage, RESOURCE_ENERGY)
+                creep.transfer(link, RESOURCE_ENERGY)
+            }
+            if (creep.memory.task == FILL_TERMINAL_ENERGY) {
+                creep.withdraw(storage, RESOURCE_ENERGY);
+                creep.transfer(terminal, RESOURCE_ENERGY);
+            }
+            else if (creep.memory.task == FILL_STORAGE_ENERGY) {
+                creep.withdraw(terminal, RESOURCE_ENERGY);
+                creep.transfer(storage, RESOURCE_ENERGY);
             }
         }
 

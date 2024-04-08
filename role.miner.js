@@ -18,14 +18,14 @@ var roleMiner = {
             {
                 if(creep.harvest(mineral[0])==ERR_NOT_IN_RANGE)
                 {
-                    creep.say(creep.moveTo(mineral[0]));
+                    creep.say(creep.moveTo(mineral[0]),{reusePath:11});
                 }
             }
             else{
                 if(creep.transfer(storage[0],mineral[0].mineralType)==ERR_NOT_IN_RANGE)
                 {
-                    move_avoid_hostile(creep,storage[0].pos,1,false);
-                    //creep.moveTo(storage[0]);
+                    //move_avoid_hostile(creep,storage[0].pos,1,false);
+                    creep.moveTo(storage[0],{reusePath:11});
                 }
             }
         }
