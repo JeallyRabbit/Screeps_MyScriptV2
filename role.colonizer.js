@@ -1,10 +1,7 @@
-var roleFarmer = require('role.farmer');
-var roleBuilder = require('role.builder');
 
-var roleColonizer = {
 
-    /** @param {Creep} creep **/
-    run: function (creep, spawn) {
+Creep.prototype.roleColonizer = function roleColonizer(creep,spawn){
+
         //creep.say("Colonize");
         //creep.suicide();
         //creep.move(BOTTOM_LEFT);
@@ -27,7 +24,8 @@ var roleColonizer = {
 
                     //creep.moveTo(Game.rooms[creep.memory.target_room].controller.pos);
 
-                    roleFarmer.run(creep, spawn);
+                    //roleFarmer.run(creep, spawn);
+                    creep.roleFarmer(creep,spawn)
                     // /return;
 
                     /*
@@ -42,7 +40,7 @@ var roleColonizer = {
 
                 }
                 else {
-                    roleBuilder.run(creep, spawn);
+                    creep.roleBuilder(creep, spawn);
                 }
 
                 var colonize_room_spawn = creep.room.find(FIND_STRUCTURES, {
@@ -53,7 +51,7 @@ var roleColonizer = {
                 });
                 if (colonize_room_spawn != undefined && colonize_room_spawn.length > 0) {
                     if (creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                        roleFarmer.run(creep, spawn)
+                        creep.roleFarmer(creep, spawn)
                         return;
                     }
                     else {
@@ -78,6 +76,5 @@ var roleColonizer = {
             creep.say("No Target");
 
         }
-    }
+    
 };
-module.exports = roleColonizer;

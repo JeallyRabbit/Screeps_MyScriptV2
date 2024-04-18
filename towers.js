@@ -41,7 +41,11 @@ var towers = {
             }
         }
 
-        _.forEach(towers, function (tower) {
+        //_.forEach(towers, function (tower) 
+        for(tower_id of spawn.memory.towers_id)
+        {
+            var tower=Game.getObjectById(tower_id);
+            if(tower==null){continue;}
             var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
 
 
@@ -66,7 +70,7 @@ var towers = {
             else if (damagedCreeps) {
                 tower.heal(damagedCreeps[0]);
             }
-        })
+        }
     }
 };
 

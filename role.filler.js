@@ -1,9 +1,7 @@
 
 
-var roleFiller = {
+Creep.prototype.roleFiller = function(creep,spawn)  {
 
-    /** @param {Creep} creep **/
-    run: function (creep, spawn) {
         //creep.say("F");
         if (creep.memory.working_pos == undefined) {
             var at_first_pos = creep.room.lookAt(spawn.pos.x + 1, spawn.pos.y - 1);
@@ -122,6 +120,5 @@ var roleFiller = {
 
             }
         }
-    }
-};
-module.exports = roleFiller;
+    
+}

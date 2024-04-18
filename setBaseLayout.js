@@ -577,10 +577,16 @@ function plan_manager_stamp(spawn, roomCM) {
     var pos_for_manager = new RoomPosition(0, 0, spawn.room.name);
     seeds = [];
     seeds.push(spawn.pos);
-    //seeds.push(spawn.room.controller.pos);
+    //TESTING
+    seeds.push(spawn.room.controller.pos);
+    //TESTING
+
     distanceCM = spawn.room.diagonalDistanceTransform(roomCM, false);
-    //Memory.roomVisuals=false;
+
+
+    Memory.roomVisuals=false;
     floodCM = spawn.room.floodFill(seeds);
+    Memory.roomVisuals=false
 
     min_distance_from_spawn = 100;
     for (i = 0; i < 50; i++) {
@@ -683,19 +689,19 @@ function plan_main_spawn_stamp(spawn, roomCM) {
 
     // }
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 5; i++) {
         //bottom edge
-        spawn.memory.room_plan[spawn.pos.x - 3 + i][spawn.pos.y + 1] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 3 + i, spawn.pos.y + 1, spawn.room.name, STRUCTURE_ROAD, 2));
+        spawn.memory.room_plan[spawn.pos.x - 2 + i][spawn.pos.y + 1] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2 + i, spawn.pos.y + 1, spawn.room.name, STRUCTURE_ROAD, 2));
         //top edge
-        spawn.memory.room_plan[spawn.pos.x - 3 + i][spawn.pos.y - 5] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 3 + i, spawn.pos.y - 5, spawn.room.name, STRUCTURE_ROAD, 2));
+        spawn.memory.room_plan[spawn.pos.x - 2 + i][spawn.pos.y - 5] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 2 + i, spawn.pos.y - 5, spawn.room.name, STRUCTURE_ROAD, 2));
         //left edge
-        spawn.memory.room_plan[spawn.pos.x - 3][spawn.pos.y + 1 - i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 3, spawn.pos.y + 1 - i, spawn.room.name, STRUCTURE_ROAD, 2));
+        spawn.memory.room_plan[spawn.pos.x - 3][spawn.pos.y - i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(spawn.pos.x - 3, spawn.pos.y - i, spawn.room.name, STRUCTURE_ROAD, 2));
         //right edge
-        spawn.memory.room_plan[spawn.pos.x + 3][spawn.pos.y + 1 - i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 3, spawn.pos.y + 1 - i, spawn.room.name, STRUCTURE_ROAD, 2));
+        spawn.memory.room_plan[spawn.pos.x + 3][spawn.pos.y - i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(spawn.pos.x + 3, spawn.pos.y - i, spawn.room.name, STRUCTURE_ROAD, 2));
     }
 
     for (let i = 0; i < 50; i++) {
@@ -768,7 +774,7 @@ function build_from_plan(spawn) {
 function build_from_lists(spawn) {
     var rcl = spawn.room.controller.level;
     for (let i = 0; i < spawn.memory.building_list.length; i++) {
-        if (spawn.memory.building_list[i].min_rcl <= rcl || spawn.memory.building_list[i] == undefined) {
+        if (Game.rooms[spawn.memory.building_list[i].roomName]!=undefined && (spawn.memory.building_list[i].min_rcl <= rcl || spawn.memory.building_list[i] == undefined)) {
             if (spawn.memory.building_list[i].structureType == STRUCTURE_SPAWN && spawn.memory.building_list[i].min_rcl == 7) {
                 Game.rooms[spawn.memory.building_list[i].roomName].createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y,
                     spawn.memory.building_list[i].structureType, spawn.room.name + "_2");
@@ -796,7 +802,7 @@ function build_from_lists(spawn) {
         Game.rooms[spawn.memory.road_building_list[i].roomName].visual.circle(spawn.memory.road_building_list[i].x,
             spawn.memory.road_building_list[i].y, { fill: '#666666', radius: 0.5, stroke: 'blue' });
             */
-        if (spawn.memory.road_building_list[i].min_rcl <= rcl /* || spawn.memory.road_building_list[i] == undefined */) {
+        if (spawn.memory.road_building_list[i].min_rcl <= rcl && Game.rooms[spawn.memory.road_building_list[i].roomName]!=undefined) {
             Game.rooms[spawn.memory.road_building_list[i].roomName].createConstructionSite(spawn.memory.road_building_list[i].x, spawn.memory.road_building_list[i].y, spawn.memory.road_building_list[i].structureType);
             //spawn.room.createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].structureType);
         }
@@ -1036,7 +1042,7 @@ function setBaseLayout(spawn) {
 
             }
             var mineral = spawn.room.find(FIND_MINERALS);
-            plan_road_to_target(spawn, roomCM, mineral[0], 2);
+            plan_road_to_target(spawn, roomCM, mineral[0], 6);
 
         }
     }
@@ -1059,7 +1065,7 @@ function setBaseLayout(spawn) {
 
 
     // //console.log("VISUALS");
-    var if_visualize = true;
+    var if_visualize = false;
     if (if_visualize) {
         for (let i = 0; i < 50; i++) {
             for (let j = 0; j < 50; j++) {
