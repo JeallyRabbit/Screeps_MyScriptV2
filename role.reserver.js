@@ -1,10 +1,8 @@
 
 
-var roleReserver = {
+Creep.prototype.roleReserver = function roleReserver(creep,spawn) {
 
-    /** @param {Creep} creep **/
-    run: function(creep) 
-    {
+
         //creep.memory.target_room='E7S5';
             if(creep.memory.target_room)
             {
@@ -36,6 +34,5 @@ var roleReserver = {
             else{
                 creep.say("No Target");
             }
-	}
+	
 };
-module.exports = roleReserver;

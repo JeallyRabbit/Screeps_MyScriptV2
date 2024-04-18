@@ -1,15 +1,13 @@
 function maxFarmer(cap,spawn,limit)// return array with max possible work parts for builder
 {
-    var rcl=spawn.room.controller.level;
-    var rcl=0;
     var parts=[];
     if(limit==undefined)
     {
         limit=false;
     }
-    if(cap>1000 && limit==true)
+    if(cap>2000 && limit==true)
     {
-        cap=1000;
+        cap=2000;
     }
     if(cap>1100)
     {

@@ -72,15 +72,7 @@ function setRequiredPopulation(spawn) {
         spawn.memory.req_scouts = 0;
     }
 
-    if (spawn.memory.num_towers == undefined || Game.time % 2003 == 0) {
-        spawn.memory.num_towers = spawn.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_TOWER;
-            }
-        });
-
-        spawn.memory.num_towers = spawn.memory.num_towers.length;
-    }
+   
 
     spawn.memory.req_harvesters = 0;// role num 0
     //spawn.memory.req_c
@@ -89,8 +81,8 @@ function setRequiredPopulation(spawn) {
     if ((spawn.memory.building != true && Game.time % 5 == 0) || Game.time % 15 == 0) {
         if (spawn.memory.farming_sources != undefined) {
             //console.log("P");
-            var farming_sources_num = Math.ceil(spawn.memory.farming_sources.length);
-            if (farming_sources_num > 0 && spawn.memory.farming_sources[Math.floor(Math.floor(farming_sources_num / 2))].carry_power > 0) {
+            var farming_sources_num = spawn.memory.farming_sources.length;
+            if (farming_sources_num > 0 && spawn.memory.farming_sources[Math.floor(farming_sources_num / 2)].carry_power >=spawn.memory.farming_sources[Math.floor(farming_sources_num / 2)].harvesting_power) {
                 //console.log("Q");
                 var construction_sites = spawn.room.find(FIND_CONSTRUCTION_SITES);
                 if (construction_sites.length > 0) {
@@ -113,7 +105,7 @@ function setRequiredPopulation(spawn) {
     }
     else if (spawn.room.controller.level == 2) {
         //spawn.memory.req_harvesters = 4;
-        if (spawn.memory.upgrading) {
+        if (spawn.memory.upgrading || spawn.memory.building==undefined || spawn.memory.building==false) {
             spawn.memory.req_upgraders_parts = 10;
         }
 
@@ -152,8 +144,55 @@ function setRequiredPopulation(spawn) {
     spawn.memory.req_transporters = 0;//role numm 9
     spawn.memory.req_towerKeepers = 0;//role num 10
     spawn.memory.req_rampart_repairers=1;
-    if (spawn.memory.num_towers > 0 || spawn.room.controller.level >= 3) {
+
+    if(spawn.room.controller.level>=3)
+    {
+        if(spawn.memory.towers_id!=undefined && spawn.memory.towers_id.length>0)
+        {
+            for(tower_id of spawn.memory.towers_id)
+            {
+                if(Game.getObjectById(tower_id)==null)
+                {
+                    spawn.memory.towers_id=undefined;
+                    break;
+                }
+            }
+        }
+        if(spawn.memory.tower_id==undefined)
+        {
+            var towers=spawn.room.find(FIND_MY_STRUCTURES,{
+                filter: function(str)
+                {
+                    return str.structureType==STRUCTURE_TOWER;
+                }
+            });
+            if(towers!=undefined && towers.length>0)
+            {
+                spawn.memory.towers_id=[];
+                for(tower of towers)
+                {
+                    spawn.memory.towers_id.push(tower.id);
+                }
+            }
+        }
+    }
+    /*
+    if (spawn.memory.num_towers == undefined || Game.time % 2003 == 0) {
+        spawn.memory.num_towers = spawn.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_TOWER;
+            }
+        });
+
+        spawn.memory.num_towers = spawn.memory.num_towers.length;
+    }
+    */
+
+    if (spawn.memory.towers_id!=undefined && spawn.memory.towers_id.length>0) {
         spawn.memory.req_towerKeepers = 1;
+    }
+    else{
+        spawn.memory.req_towerKeepers=0;
     }
     /*
     spawn.memory.req_keeperKillers = 0;//role num 15
