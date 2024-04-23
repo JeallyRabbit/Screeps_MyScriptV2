@@ -8,7 +8,7 @@ var towers = {
 
         if (spawn.memory.damagedStructures != undefined) {
             while (spawn.memory.damagedStructures.length > 0 && Game.getObjectById(spawn.memory.damagedStructures[0])!=null
-             && (Game.getObjectById(spawn.memory.damagedStructures[0]).hits > 5000 ||
+             && (Game.getObjectById(spawn.memory.damagedStructures[0]).hits > 3000 ||
               (Game.getObjectById(spawn.memory.damagedStructures[0]).hits==Game.getObjectById(spawn.memory.damagedStructures[0]).hitsMax))) {
                 spawn.memory.damagedStructures.shift();
             }
@@ -29,8 +29,8 @@ var towers = {
         }
         if (spawn.memory.damagedStructures == undefined && Game.time%1==0) {
             var damagedStructures = spawn.room.find(FIND_STRUCTURES, {
-                filter: (structure) => structure.hits < structure.hitsMax
-                    && structure.hits < 50000
+                filter: (structure) => (structure.hits < structure.hitsMax && structure.hits<3000 && structure.structureType!=STRUCTURE_RAMPART)
+                    || (structure.hits < 50000 && structure.structureType==STRUCTURE_RAMPART)
             });
             damagedStructures.sort((a, b) => b.hits - a.hits);
 

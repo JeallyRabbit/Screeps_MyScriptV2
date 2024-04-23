@@ -49,7 +49,7 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
 
 
         if (targets.length < 3 && creep.name.startsWith('Builder') == false) {
-            //creep.move(TOP);
+           //creep.move(LEFT)
             creep.roleBuilder(creep, spawn);
         }
         else {
