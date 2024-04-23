@@ -5,9 +5,9 @@ function maxFarmer(cap,spawn,limit)// return array with max possible work parts 
     {
         limit=false;
     }
-    if(cap>2000 && limit==true)
+    if(cap>1500 && limit==true)
     {
-        cap=2000;
+        cap=1500;
     }
     if(cap>1100)
     {

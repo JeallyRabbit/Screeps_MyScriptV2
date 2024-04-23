@@ -17,7 +17,7 @@ function maxRepairer(cap, if_limit)// return array with max possible work parts 
             parts.push(WORK);
             cap -= 250
         }
-        cap = cap % 2500
+        cap = cap % 1350
     }
     //console.log("avaliable work parts: ", Math.floor(cap/100));
     for (let i = 0; i < Math.floor(cap / 150); i++) {

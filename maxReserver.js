@@ -1,7 +1,7 @@
 function maxReserver(cap)// return array with max possible work parts for hauler
 {
-    if (cap > 1800) {
-        cap = 1800;
+    if (cap > 1950) {
+        cap = 1950;
     }
     var parts = [];
     parts.push(CLAIM)

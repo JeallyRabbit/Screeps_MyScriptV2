@@ -9,10 +9,8 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
     // else 
     if (boosting_driver(creep, spawn, creep.memory.boosting_list, WORK) == -1) {
         //creep.say(creep.store[RESOURCE_ENERGY], "energy");
-        if (spawn.memory.building == true) {
-            //roleBuilder.run(creep,spawn);
-            //return;
-        }
+        //creep.suicide()
+
         if (creep.memory.upgrading == undefined) {
             creep.memory.upgrading = false;
         }
@@ -28,42 +26,30 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
             creep.memory.deposit = undefined;
         }
         if (creep.memory.deposit == undefined && Game.time % 4 == 0) {
-            var deposits = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_STORAGE &&
-                        structure.store[RESOURCE_ENERGY] > 5000;
-                }
-            });
-            deposits = deposits.concat(creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_CONTAINER
-                        && structure.store[RESOURCE_ENERGY] >= creep.store.getCapacity();
-                }
-            }));
 
-            var link = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_LINK
-                        && structure.pos.inRangeTo(spawn.room.controller.pos, 3) /* && structure.store[RESOURCE_ENERGY]>0;*/
-                }
-            })
-            if (link.length > 0) {
-                creep.memory.deposit = link[0].id
+            if (spawn.memory.controller_link_id != undefined && Game.getObjectById(spawn.memory.controller_link_id) != null) {
+                creep.memory.deposit = spawn.memory.controller_link_id
             }
-            /*
-            deposits = deposits.concat(creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_LINK
-                        && structure.pos.inRangeTo(spawn.room.controller.pos,3)
-                }
-            }));
-            */
             else {
+                var deposits = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType === STRUCTURE_STORAGE &&
+                            structure.store[RESOURCE_ENERGY] > 5000;
+                    }
+                });
+                deposits = deposits.concat(creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType === STRUCTURE_CONTAINER
+                            && structure.store[RESOURCE_ENERGY] >= creep.store.getCapacity();
+                    }
+                }));
                 var deposit = creep.room.controller.pos.findClosestByRange(deposits);
                 if (deposit != null) {
                     creep.memory.deposit = deposit.id;
                 }
             }
+
+
 
 
         }
