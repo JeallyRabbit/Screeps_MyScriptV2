@@ -22,10 +22,11 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
             creep.memory.upgrading = true;
             //creep.say('🚧 upgrade');
         }
-        if ((creep.memory.deposit != undefined && Game.getObjectById(creep.memory.deposit).store[RESOURCE_ENERGY] == 0) /*|| Game.time%76==0*/) {
+        if ((creep.memory.deposit != undefined && Game.getObjectById(creep.memory.deposit).store[RESOURCE_ENERGY] == 0
+    &&  Game.getObjectById(creep.memory.deposit).structureType!=STRUCTURE_LINK) /*|| Game.time%76==0*/) {
             creep.memory.deposit = undefined;
         }
-        if (creep.memory.deposit == undefined && Game.time % 4 == 0) {
+        if (creep.memory.deposit == undefined /*&& Game.time % 4 == 0*/ ) {
 
             if (spawn.memory.controller_link_id != undefined && Game.getObjectById(spawn.memory.controller_link_id) != null) {
                 creep.memory.deposit = spawn.memory.controller_link_id

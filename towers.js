@@ -1,7 +1,7 @@
-var towers = {
+Spawn.prototype.towers = function towers(spawn){
 
-    /** @param {Game} game **/
-    tick: function (spawn) {
+   // /** @param {Game} game **/
+    //tick: function (spawn) {
         towers = spawn.room.find(FIND_MY_STRUCTURES, {
             filter: { structureType: STRUCTURE_TOWER }
         });
@@ -29,7 +29,7 @@ var towers = {
         }
         if (spawn.memory.damagedStructures == undefined && Game.time%1==0) {
             var damagedStructures = spawn.room.find(FIND_STRUCTURES, {
-                filter: (structure) => (structure.hits < structure.hitsMax && structure.hits<3000 && structure.structureType!=STRUCTURE_RAMPART)
+                filter: (structure) => (structure.hits < structure.hitsMax && structure.hits<1000 && structure.structureType!=STRUCTURE_RAMPART)
                     || (structure.hits < 50000 && structure.structureType==STRUCTURE_RAMPART)
             });
             damagedStructures.sort((a, b) => b.hits - a.hits);
@@ -71,7 +71,7 @@ var towers = {
                 tower.heal(damagedCreeps[0]);
             }
         }
-    }
-};
+   // }
+}//;
 
-module.exports = towers;
+//module.exports = towers;

@@ -219,7 +219,6 @@ module.exports.loop = function () {
 
 
             var pop_builders = 0;
-            var pop_upgraders = 0;
             var upgraders_parts = 0;
             var pop_haulers = 0;
             var pop_towerKeepers = 0;
@@ -241,35 +240,14 @@ module.exports.loop = function () {
 
 
 
-            //var spawn = Game.spawns[spawnName];
-
-            /*
-            if (spawnName != 'Spawn1') {
-                if (spawn.room.controller < 7) {
-                    spawn.destroy();
-                }
-                spawn.memory = Game.spawns['Spawn1'].memory;
-                continue;
-                //return;
-            }
             
-            else {
-                if (Game.time % 10== 0) {
-                    setRequiredPopulation(spawn);
-                    if (Game.cpu.bucket == 10000) {
-                        //Game.cpu.generatePixel();
-                    }
-
-                }
-            }
-            */
             console.log("----------------------------------------------", spawn, "----------------------------------------------");
             //CONSTRUCTION_COST.extension=300;
             //console.log(CONTROLLER_LEVELS[1]) 
             //console.log(TEST_CONSTANT)
             //console.log("repairer for [0]: ", spawn.memory.farming_rooms[0].distanceRepairer)
-            setBaseState(spawn);
-            setRequiredPopulation(spawn);
+            spawn.setBaseState(spawn);
+            spawn.setRequiredPopulation(spawn);
             if (Game.cpu.bucket == 10000) {
                 //Game.cpu.generatePixel();
             }
@@ -286,8 +264,8 @@ module.exports.loop = function () {
             if ((Game.time % 600 == spawn_num * 2 && Game.cpu.bucket > 500) // || spawn.room.name == 'W2N5'
             ) {
 
-                setBaseLayout(spawn);
-
+                //setBaseLayout(spawn);
+                spawn.setBaseLayout(spawn);
                 //return;
             }
 
@@ -300,13 +278,17 @@ module.exports.loop = function () {
 
 
             if (spawn.room.controller.level >= 3) {
-                towers.tick(spawn);
+                //towers.tick(spawn);
+                spawn.towers(spawn);
 
                 if (spawn.room.controller.level >= 5) {
-                    links.tick(spawn);
+                    //links.tick(spawn);
+                    spawn.links(spawn);
                     if (spawn.room.controller.level >= 6) {
-                        terminal.tick(spawn);
-                        lab.tick(spawn);
+                        //terminal.tick(spawn);
+                        spawn.terminal(spawn);
+                        spawn.lab(spawn);
+                        //lab.tick(spawn);
                     }
                 }
             }
@@ -388,9 +370,8 @@ module.exports.loop = function () {
                     spawned_body_parts += creep.body.length;
                     if (creep.memory.role == 'upgrader') {
                         creep.roleUpgrader(creep, spawn);
-                        if (creep.ticksToLive > 50) {
+                        if (creep.ticksToLive > 20) {
                             upgraders_parts += _.filter(creep.body, { type: WORK }).length;
-                            pop_upgraders++;
 
                         }
                     }
@@ -623,12 +604,12 @@ module.exports.loop = function () {
 
             ///////it is also in setRequiredPOpulation(spawn) but reseting rooms farming_powers,carry_powers etc is before reseting those values
             if (spawn.memory.sources_links_id != undefined && spawn.memory.sources_links_id.length > 0) {
-                console.log("no need for distanceCarrier")
+                //console.log("no need for distanceCarrier")
                 for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
                     if (spawn.memory.farming_rooms[i].name == spawn.room.name) {
                         spawn.memory.farming_rooms[i].carry_power = 99999999999999;
                         //spawn.memory.farming_rooms[i].carry_power = 99999999999
-                        console.log("infiniging: ", spawn.memory.farming_rooms[i].name);
+                        //console.log("infiniging: ", spawn.memory.farming_rooms[i].name);
                         //break
                     }
                 }
@@ -677,7 +658,7 @@ module.exports.loop = function () {
                 if (aux_spawn.spawning) {
                     var aux_role = Game.creeps[aux_spawn.spawning.name].memory.role;
                     console.log('spawning role: ', aux_role);
-                    if (aux_role == "upgrader") { pop_upgraders++; upgraders_parts += _.filter(creep.body, { type: WORK }).length; }
+                    if (aux_role == "upgrader") {  upgraders_parts += _.filter(creep.body, { type: WORK }).length; }
                     else if (aux_role == "builder") { pop_builders++; }
                     else if (aux_role == "hauler") { pop_haulers++; }
                     else if (aux_role == "soldier") { pop_soldiers++; }
@@ -873,7 +854,7 @@ module.exports.loop = function () {
                 }
             }
             //console.log("need_distanceRepairer in main: ",spawn.memory.need_distanceRepairer)
-            if (pop_builders < spawn.memory.req_builders && pop_upgraders > 0) // spawning new builder
+            if (pop_builders < spawn.memory.req_builders && upgraders_parts > 0) // spawning new builder
             {
                 spawn.spawnCreep(maxBuilder(energyCap, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } });
                 if (spawn.spawnCreep(maxBuilder(energyCap / 2, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } }) == 0) {
@@ -892,7 +873,7 @@ module.exports.loop = function () {
             if (//pop_upgraders < spawn.memory.req_upgraders 
                 upgraders_parts < spawn.memory.req_upgraders_parts
                 && spawn.memory.farming_rooms != undefined && (spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power > 0)
-                /* && pop_upgraders / spawn.memory.req_upgraders < spawn.memory.farming_rooms[0].carry_power / spawn.memory.farming_rooms[0].sources_num * 10 */) // spawning new upgrader
+                ) // spawning new upgrader
             {
                 console.log("trying to spawn upgrader")
                 if (spawn.spawnCreep(maxUpgrader(energyCap, spawn, spawn.memory.req_upgraders_parts * 200), 'Upgrader_' + spawn.room.name + '_' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {

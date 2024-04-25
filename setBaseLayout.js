@@ -420,7 +420,7 @@ function create_extension_stamp(spawn, x, y, rcl) { // need min 3's from distanc
 function create_manager_stamp(spawn, x, y, rcl) {
     spawn.memory.room_plan[x - 1][y - 1] = STRUCTURE_LINK;
     spawn.memory.building_list.push(new building_list_element(x - 1, y - 1, spawn.room.name, STRUCTURE_LINK, 5));
-    spawn.memory.manager_link_pos=new RoomPosition(x - 1, y - 1, spawn.room.name);
+    spawn.memory.manager_link_pos = new RoomPosition(x - 1, y - 1, spawn.room.name);
     spawn.memory.room_plan[x - 1][y] = STRUCTURE_NUKER;
     spawn.memory.building_list.push(new building_list_element(x - 1, y, spawn.room.name, STRUCTURE_NUKER, 8));
     spawn.memory.room_plan[x - 1][y + 1] = STRUCTURE_TERMINAL;
@@ -680,7 +680,7 @@ function plan_main_spawn_stamp(spawn, roomCM) {
     //if (spawn.room.controller.level >= 5) {
     spawn.memory.room_plan[spawn.pos.x][spawn.pos.y - 2] = STRUCTURE_LINK;
     spawn.memory.building_list.push(new building_list_element(spawn.pos.x, spawn.pos.y - 2, spawn.room.name, STRUCTURE_LINK, 3));
-    spawn.memory.filler_link_pos=new RoomPosition(spawn.pos.x, spawn.pos.y - 2, spawn.room.name)
+    spawn.memory.filler_link_pos = new RoomPosition(spawn.pos.x, spawn.pos.y - 2, spawn.room.name)
 
     //}
     // }
@@ -922,7 +922,7 @@ function plan_controller_ramparts(spawn) {
 }
 
 function plan_controller_container(spawn) {
-    spawn.memory.controller_link_pos=undefined;
+    spawn.memory.controller_link_pos = undefined;
     var controller_pos = spawn.room.controller.pos.getN_NearbyPositions(2);
     const terrain = spawn.room.getTerrain();
     for (let position of controller_pos) {
@@ -946,7 +946,7 @@ function plan_controller_container(spawn) {
         if (is_free) {
             spawn.memory.room_plan[position.x][position.y] = STRUCTURE_LINK;
             spawn.memory.building_list.push(new building_list_element(position.x, position.y, spawn.room.name, STRUCTURE_LINK, 6));
-            spawn.memory.controller_link_pos=new RoomPosition(position.x, position.y, spawn.room.name);
+            spawn.memory.controller_link_pos = new RoomPosition(position.x, position.y, spawn.room.name);
             break;
         }
     }
@@ -956,7 +956,7 @@ function plan_controller_container(spawn) {
 
 function plan_sources_containers(spawn, roomCM, rcl) {
 
-    spawn.memory.sources_links_pos=[]
+    spawn.memory.sources_links_pos = []
 
     for (source_id of spawn.memory.farming_sources) {
 
@@ -989,7 +989,7 @@ function plan_sources_containers(spawn, roomCM, rcl) {
                     if (is_free) {
                         spawn.memory.room_plan[position.x][position.y] = STRUCTURE_LINK;
                         spawn.memory.building_list.push(new building_list_element(position.x, position.y, spawn.room.name, STRUCTURE_LINK, 8));
-                        spawn.memory.sources_links_pos.push(new RoomPosition(position.x, position.y,spawn.room.name))
+                        spawn.memory.sources_links_pos.push(new RoomPosition(position.x, position.y, spawn.room.name))
 
                         break;
                     }
@@ -1005,7 +1005,8 @@ function plan_sources_containers(spawn, roomCM, rcl) {
 }
 
 
-function setBaseLayout(spawn) {
+//function setBaseLayout(spawn) {
+Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
 
     // if (Game.time % 200 != 1) { return; }
     //var myStructures = spawn.room.find(FIND_MY_STRUCTURES);
@@ -1173,7 +1174,7 @@ function setBaseLayout(spawn) {
 
 
 }
-module.exports = setBaseLayout;
+//module.exports = setBaseLayout;
 
 
 

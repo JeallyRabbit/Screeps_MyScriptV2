@@ -47,7 +47,8 @@ function calculateDistance(point1, point2) {
 
 
 
-function setRequiredPopulation(spawn) {
+//function setRequiredPopulation(spawn) {
+Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn){
 
 
     //console.log("repairer for [0] in set pop: ",spawn.memory.farming_rooms[0].distanceRepairer)
@@ -119,6 +120,36 @@ function setRequiredPopulation(spawn) {
         }
         else{
             spawn.memory.req_upgraders_parts=1;
+        }
+    }
+
+    if(spawn.room.controller.level==8)
+    {
+        var are_rooms_developing=false;
+        for(id of Memory.main_spawns)
+        {
+            if(Game.getObjectById(id)!=null && Game.getObjectById(id).room.controller.level<8)
+            {
+                are_rooms_developing=true;
+                break;
+            }
+        }
+        if(are_rooms_developing)
+        {
+            if(spawn.room.controller.ticksToDowngrade<CONTROLLER_DOWNGRADE[spawn.room.controller.level]*0.5)
+            {
+                //console.log("minimal upgraders")
+                spawn.memory.req_upgraders_parts=1;
+            }
+            else if(spawn.room.controller.ticksToDowngrade>=CONTROLLER_DOWNGRADE[spawn.room.controller.level]*0.9)
+            {
+                //console.log("no upgraders")
+                spawn.memory.req_upgraders_parts=0;
+            }
+        }
+        else{
+            //console.log("upgrading for gcl")
+            spawn.memory.req_upgraders_parts=10;
         }
     }
     if (spawn.memory.building == true) {
@@ -327,14 +358,14 @@ function setRequiredPopulation(spawn) {
     }
     if(spawn.memory.sources_links_id!=undefined && spawn.memory.sources_links_id.length>0)
     {
-        console.log("no need for distanceCarrier")
+        //console.log("no need for distanceCarrier")
         for(let i=0;i<spawn.memory.farming_rooms.length;i++)
         {
             if(spawn.memory.farming_rooms[i].name==spawn.room.name)
             {
                 spawn.memory.farming_rooms[i].carry_power=Infinity;
                 spawn.memory.farming_rooms[i].carry_power=99999999999
-                console.log("infiniging: ",spawn.memory.farming_rooms[i].name);
+                //console.log("infiniging: ",spawn.memory.farming_rooms[i].name);
                 //break
             }
         }
@@ -651,4 +682,4 @@ function setRequiredPopulation(spawn) {
 
 
 }
-module.exports = setRequiredPopulation;
+//module.exports = setRequiredPopulation;

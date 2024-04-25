@@ -4,13 +4,13 @@ const STATE_NEED_MILITARY_SUPPORT = 'STATE_NEED_MILITARY_SUPPORT'
 const STATE_NEED_ENERGY = 'STATE_NEED_ENERGY'
 const STATE_STATE_NEED_MILITARY_ENERGY = 'STATE_NEED_MILITARY_ENERGY'
 
-var terminal = {
+Spawn.prototype.terminal = function terminal(spawn){
 
-    /** @param {Game} game **/
-    tick: function (spawn) {
-        terminal = spawn.room.terminal;
+   // /** @param {Game} game **/
+    //tick: function (spawn) {
+        var terminal = spawn.room.terminal;
 
-        storage = spawn.room.storage;
+        var storage = spawn.room.storage;
 
 
         if (storage.store[RESOURCE_ENERGY] < 500000) {
@@ -18,9 +18,24 @@ var terminal = {
         }
         if (terminal != undefined) {
 
+            /*
+            var orders = Game.market.getAllOrders();
+            if(orders!=undefined && orders.length>0)
+            {
+                var order=orders[0];
+                console.log(order.id)
+                console.log(order.type)
+                copnsole.log(order.resourceType)
+                console.log(order.price)
+            }
+            else{
+                console.log("no orders")
+            }
+            */
+           
             if (terminal.cooldown == 0) {
 
-
+                //console.log("term")
                 //looking for rooms that need energy - chosing closest one
                 var amount = 5000;
                 closest_to_send_energy = undefined
@@ -259,7 +274,7 @@ var terminal = {
         }
 
 
-    }
-};
+    //}
+}//;
 
-module.exports = terminal
+//module.exports = terminal
