@@ -1,7 +1,7 @@
-var links = {
+Spawn.prototype.links=function links (spawn){
 
-    /** @param {Game} game **/
-    tick: function (spawn) {
+   // /** @param {Game} game **/
+    //tick: function (spawn) {
 
         if (spawn.room.storage == undefined) {
             return;
@@ -166,7 +166,7 @@ var links = {
                 }
             }
         }
-    }
-};
+    //}
+}//;
 
-module.exports = links;
+//module.exports = links;

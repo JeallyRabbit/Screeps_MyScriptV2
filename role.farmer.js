@@ -37,6 +37,7 @@ Creep.prototype.roleFarmer = function roleFarmer(creep, spawn) {
         creep.repair(repair_sites[0]);
     }
     */
+    //creep.suicide();
 
     //else 
     if (creep.room.name == creep.memory.target_room /* && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0*/) {
@@ -66,7 +67,7 @@ Creep.prototype.roleFarmer = function roleFarmer(creep, spawn) {
                     });
                 }
             }
-            if (closest_container.length > 0) {
+            if (closest_container!=undefined && closest_container.length > 0) {
                 closest_container =  Game.getObjectById(creep.memory.source_id).pos.findClosestByRange(closest_container);
                 if (closest_container != null) {
                     creep.memory.closest_container = closest_container.id;
@@ -78,7 +79,7 @@ Creep.prototype.roleFarmer = function roleFarmer(creep, spawn) {
 
         if (Game.getObjectById(creep.memory.closest_container) != null &&
             Game.getObjectById(creep.memory.closest_container).hits < Game.getObjectById(creep.memory.closest_container).hitsMax) {
-            creep.say("repair")
+            //creep.say("repair")
             creep.repair(Game.getObjectById(creep.memory.closest_container))
         }
         else if (creep.memory.closest_container != undefined && creep.store.getFreeCapacity(RESOURCE_ENERGY) < creep.memory.harvesting_power) {
@@ -89,9 +90,10 @@ Creep.prototype.roleFarmer = function roleFarmer(creep, spawn) {
             };
 
         }
-        if (Game.getObjectById(creep.memory.source_id).energy > 0) {
+        if (Game.getObjectById(creep.memory.source_id)!=null && Game.getObjectById(creep.memory.source_id).energy > 0) {
             if (creep.harvest(Game.getObjectById(creep.memory.source_id)) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(Game.getObjectById(creep.memory.source_id), { reusePath: 17 });
+                creep.moveTo(Game.getObjectById(creep.memory.source_id), { reusePath: 17, range:1 });
+                //creep.say(Game.getObjectById(creep.memory.source_id).pos.y)
                 //move_avoid_hostile(creep, Game.getObjectById(creep.memory.source_id).pos, 1, false);
                 creep.memory.is_working = false;
             }

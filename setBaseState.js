@@ -4,7 +4,7 @@ const STATE_NEED_MILITARY_SUPPORT='STATE_NEED_MILITARY_SUPPORT'
 const STATE_NEED_ENERGY = 'STATE_NEED_ENERGY'
 const STATE_STATE_NEED_MILITARY_ENERGY = 'STATE_NEED_MILITARY_ENERGY'
 
-function setBaseState(spawn)
+Spawn.prototype.setBaseState = function setBaseState(spawn)
 {
     spawn.memory.state=[];
     if(spawn.room.controller.level<=7)
@@ -14,4 +14,4 @@ function setBaseState(spawn)
     }
 }
 
-module.exports = setBaseState;
+//module.exports = setBaseState;

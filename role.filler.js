@@ -2,7 +2,7 @@
 
 Creep.prototype.roleFiller = function (creep, spawn) {
 
-    //creep.say("F");
+    ////creep.say("F");
     if (creep.memory.working_pos == undefined) {
         var at_first_pos = creep.room.lookAt(spawn.pos.x + 1, spawn.pos.y - 1);
         if (at_first_pos.length == 0 ||
@@ -12,7 +12,7 @@ Creep.prototype.roleFiller = function (creep, spawn) {
 
         }
         else {
-            //creep.say(2);
+            ////creep.say(2);
             var at_second_pos = creep.room.lookAt(spawn.pos.x + 1, spawn.pos.y - 3);
             if (at_second_pos.length == 0 ||
                 (at_second_pos.length > 0 && at_second_pos[0].type != 'creep')
@@ -51,7 +51,7 @@ Creep.prototype.roleFiller = function (creep, spawn) {
             creep.memory.working_pos = undefined;
         }
         else {
-            creep.say("Free");
+            //creep.say("Free");
             creep.memory.at_pos = undefined;
             creep.moveTo(new RoomPosition(creep.memory.working_pos.x, creep.memory.working_pos.y, creep.room.name), { range: 0 });
         }
@@ -62,11 +62,12 @@ Creep.prototype.roleFiller = function (creep, spawn) {
         creep.memory.is_working = true;
         if (creep.memory.my_container != undefined && Game.getObjectById(creep.memory.my_container) == null) {
             creep.memory.my_container = undefined;
-            creep.say("clearing");
+            //creep.say("clearing");
         }
 
         if (creep.memory.my_container == undefined) {
-            if (spawn.memory.filler_link_id != undefined && Game.getObjectById(spawn.memory.filler_link_id) != null) {
+            if (spawn.memory.filler_link_id != undefined && Game.getObjectById(spawn.memory.filler_link_id) != null
+        && Game.getObjectById(spawn.memory.filler_link_id).store[RESOURCE_ENERGY]>0) {
                 creep.memory.my_container = spawn.memory.filler_link_id;
             }
             else {
@@ -100,16 +101,16 @@ Creep.prototype.roleFiller = function (creep, spawn) {
                 }
             }
             if (creep.memory.to_fill != undefined) {
-                //creep.say("WITH");
+                ////creep.say("WITH");
                 if (creep.store[RESOURCE_ENERGY] == 0) {
-                    //creep.say("with2")
+                    ////creep.say("with2")
                     if (Game.getObjectById(creep.memory.my_container) != null && Game.getObjectById(creep.memory.my_container).store[RESOURCE_ENERGY] > 0) {
-                        //creep.say("with3");
+                        ////creep.say("with3");
                         creep.withdraw(Game.getObjectById(creep.memory.my_container), RESOURCE_ENERGY);
                     }
                     else {
-                        //creep.say("with4");
-                        //creep.say(Game.getObjectById(spawn.memory.filler_link).store[RESOURCE_ENERGY>0 )
+                        ////creep.say("with4");
+                        ////creep.say(Game.getObjectById(spawn.memory.filler_link).store[RESOURCE_ENERGY>0 )
                         creep.withdraw(Game.getObjectById(creep.memory.my_container), RESOURCE_ENERGY);
                     }
                 }

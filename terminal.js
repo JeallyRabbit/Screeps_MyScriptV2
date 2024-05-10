@@ -4,23 +4,54 @@ const STATE_NEED_MILITARY_SUPPORT = 'STATE_NEED_MILITARY_SUPPORT'
 const STATE_NEED_ENERGY = 'STATE_NEED_ENERGY'
 const STATE_STATE_NEED_MILITARY_ENERGY = 'STATE_NEED_MILITARY_ENERGY'
 
-var terminal = {
+Spawn.prototype.terminal = function terminal(spawn){
 
-    /** @param {Game} game **/
-    tick: function (spawn) {
-        terminal = spawn.room.terminal;
+   // /** @param {Game} game **/
+    //tick: function (spawn) {
+        var terminal = spawn.room.terminal;
 
-        storage = spawn.room.storage;
+        var storage = spawn.room.storage;
+        //console.log("orders num: ",Game.market.getAllOrders().length)
+        //console.log("creditas: ",Game.market.credits)
+        if(spawn.memory.order==undefined)
+            {
+                //console.log("creating order; ",Game.market.createOrder(ORDER_SELL,RESOURCE_ENERGY,10,100,terminal.room.name))
+                spawn.memory.order=true;
+            }
+        var orders=Game.market.getAllOrders();
+        if(orders.length>0)
+            {
+                var order=orders[0];
+                //console.log("order type: ", order.type)
+                //console.log("resource type: ", order.resourceType)
+            }
 
+            var test=Game.market.getOrderById('5ee78f4b10ddc99');
+            //console.log("test order: ", test)
 
         if (storage.store[RESOURCE_ENERGY] < 500000) {
           //  storage = undefined;
         }
         if (terminal != undefined) {
 
+            /*
+            var orders = Game.market.getAllOrders();
+            if(orders!=undefined && orders.length>0)
+            {
+                var order=orders[0];
+                console.log(order.id)
+                console.log(order.type)
+                copnsole.log(order.resourceType)
+                console.log(order.price)
+            }
+            else{
+                console.log("no orders")
+            }
+            */
+           
             if (terminal.cooldown == 0) {
 
-
+                //console.log("term")
                 //looking for rooms that need energy - chosing closest one
                 var amount = 5000;
                 closest_to_send_energy = undefined
@@ -259,7 +290,7 @@ var terminal = {
         }
 
 
-    }
-};
+    //}
+}//;
 
-module.exports = terminal
+//module.exports = terminal
