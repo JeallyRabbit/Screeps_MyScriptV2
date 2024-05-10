@@ -1,7 +1,8 @@
 
 
 
-const { move_avoid_hostile } = require("./move_avoid_hostile");
+//const { move_avoid_hostile } = require("./move_avoid_hostile");
+var sleep = require('creep.sleep');
 var roleDistanceCarrier = require('role.DistanceCarrier');
 
 
@@ -12,15 +13,21 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
     //creep.memory.cID_max=undefined;
 
     //creep.say("poq");
-    if (spawn.room.controller.level <= 2) {
+    if (spawn.room.controller.level <= 2 || (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] == 0)) {
         creep.memory.target_room = creep.room.name;
-        roleDistanceCarrier.run(creep, spawn);
+        creep.roleDistanceCarrier(creep, spawn);
         return;
     }
 
 
     if (creep.memory.filler_containers == undefined) {
         //creep.say("qwe");
+        if (creep.memory.filler_containers_renew == undefined) {
+            creep.memory.filler_containers_renew = 1;
+        }
+        else {
+            creep.memory.filler_containers_renew++;
+        }
         var filler_containers = creep.room.find(FIND_STRUCTURES, {
             filter: function (structure) {
                 return structure.structureType == STRUCTURE_CONTAINER &&
@@ -39,8 +46,34 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
 
     }
 
+    if (creep.memory.extensions_id != undefined) {
+        for (let id of creep.memory.extensions_id) {
+            if (Game.getObjectById(id) == null) {
+                creep.memory.extensions_id = undefined;
+                break;
+            }
+        }
+    }
 
-
+    if (creep.memory.extensions_id == undefined) {
+        if (creep.memory.extensions_renew == undefined) {
+            creep.memory.extensions_renew = 1;
+        }
+        else {
+            creep.memory.extensions_renew++;
+        }
+        var extensions = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_EXTENSION;
+            }
+        });
+        if (extensions != undefined && extensions.length > 0) {
+            creep.memory.extensions_id = [];
+            for (ext of extensions) {
+                creep.memory.extensions_id.push(ext.id);
+            }
+        }
+    }
 
     var extensions = creep.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
@@ -49,27 +82,75 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
         }
     });
     var extensions_full = 0;// 1 when tyey are all full
-    if (extensions == undefined || extensions.length < 1) {
+
+
+
+
+    if (creep.memory.extensions_id == undefined || creep.memory.extensions_id < 1) {
         //creep.say("EX");
         extensions_full = 1;
     }
+
+
+
+
+    if (spawn.room.storage != undefined /* && creep.memory.cID_max==undefined */ /* && (creep.memory.cID_max!=undefined && Game.getObjectById(creep.memory.cID_max)==null)*/) {
+        var containers = spawn.room.storage;
+        creep.memory.cID_max = spawn.room.storage.id;
+    }
+    else {
+
+        if (creep.memory.containers_id != undefined && creep.memory.containers_id.length > 0) {
+            for (id of creep.memory.containers_id) {
+                if (Game.getObjectById(creep.memory.containers_id) == null) {
+                    creep.memory.containers_id = undefined;
+                    break;
+                }
+            }
+        }
+
+        if (creep.memory.containers_id == undefined) {
+            if (creep.memory.containers_renew == undefined) {
+                creep.memory.containers_renew = 1;
+            }
+            else {
+                creep.memory.containers_renew++;
+            }
+            var containers = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType === STRUCTURE_CONTAINER;
+                }
+            });
+            if (containers != undefined && containers.length > 0) {
+                creep.memory.containers_id = [];
+                for (cont of contaienrs) {
+                    creep.memory.containers_id.push(cont.id)
+                }
+            }
+        }
+
+        if (creep.memory.containers_id != undefined && creep.memory.containers_id.length > 0) {
+            var containers = [];
+            for (id of creep.memory.containers_id) {
+                containers.push(Game.getObjectById(creep.memory.containers_id))
+            }
+        }
+    }
+
+    /*
+    //do i really need it ? yes
     var containers = creep.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
             return structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 0;
-            /*&& structure.store[RESOURCE_ENERGY]>creep.store.getCapacity(RESOURCE_ENERGY)/2;*/
         }
     });
+    */
     //if(full_containers!=undefined && full_containers.length>0)
 
     if (extensions_full == 1 && spawn.store[RESOURCE_ENERGY] == 300) {
         //creep.say("T");
         //roleTransporter.run(creep,spawn);
         return;
-    }
-
-    if (spawn.room.storage != undefined /* && creep.memory.cID_max==undefined */ /* && (creep.memory.cID_max!=undefined && Game.getObjectById(creep.memory.cID_max)==null)*/) {
-        containers = spawn.room.storage;
-        creep.memory.cID_max = spawn.room.storage.id;
     }
 
     if (creep.store[RESOURCE_ENERGY] == 0) {
@@ -125,7 +206,7 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
         creep.say("link");
         //creep.say(spawn.memory.merchant);
         if (creep.transfer(Game.getObjectById(spawn.memory.manager_link_id), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(Game.getObjectById(spawn.memory.manager_link_id), { reusePath: 11 });
+            creep.moveTo(Game.getObjectById(spawn.memory.manager_link_id), { reusePath: 21 });
         }
     }
     else if (creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 0
@@ -134,14 +215,14 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
         if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[0]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
             //creep.say("Q");
 
-            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[0]), { reusePath: 11 });
+            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[0]), { reusePath: 21 });
             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[0]).pos, 1, false);;
         }
     }
     else if ((creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
         if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[1]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
             //creep.say("P");
-            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]), { reusePath: 11 });
+            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]), { reusePath: 21 });
             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[1]).pos, 1, false);;
         }
     }
@@ -165,28 +246,43 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
     else // go to extension and put all energy to extension ( if have some energy)
     {
         // creep.say("ext");
+        /*
         var extensions = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType === STRUCTURE_EXTENSION
                     && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
             }
         });
-        if (extensions.length != undefined) {
+        */
+        if (creep.memory.extensions_id != undefined && creep.memory.extensions_id.length > 0) {
+            //creep.say("ext")
+            var extensions = [];
+            for (id of creep.memory.extensions_id) {
+                if (Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    extensions.push(Game.getObjectById(id));
+                }
 
+            }
+
+            if (extensions.length > 0) {
+                var closestExtension = creep.pos.findClosestByRange(extensions);
+                //creep.say(closestExtension.id)
+                if (closestExtension) {
+                    if (creep.transfer(closestExtension, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
+                        creep.moveTo(closestExtension, { reusePath: 11 });
+                        //move_avoid_hostile(creep, closestExtension.pos, 1, false);
+                    }
+                }
+
+            }
+            else
+            {
+                creep.say("Sleep?")
+                creep.sleep(20)
+            }
         }
         //creep.say(extensions.length);
-        var closestExtension = creep.pos.findClosestByPath(extensions);
-        if (closestExtension) {
-            var transfered_amount = 1;
-            transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], closestExtension.store[RESOURCE_ENERGY].getFreeCapacity);
-            if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                creep.moveTo(closestExtension, { reusePath: 11 });
-                //move_avoid_hostile(creep, closestExtension.pos, 1, false);
-            }
-            else if (creep.transfer(closestExtension, RESOURCE_ENERGY, transfered_amount) == OK) {
-                //creep.memory.is_working=true;
-            }
-        }
+
     }
 
 };

@@ -11,7 +11,23 @@ Spawn.prototype.terminal = function terminal(spawn){
         var terminal = spawn.room.terminal;
 
         var storage = spawn.room.storage;
+        //console.log("orders num: ",Game.market.getAllOrders().length)
+        //console.log("creditas: ",Game.market.credits)
+        if(spawn.memory.order==undefined)
+            {
+                //console.log("creating order; ",Game.market.createOrder(ORDER_SELL,RESOURCE_ENERGY,10,100,terminal.room.name))
+                spawn.memory.order=true;
+            }
+        var orders=Game.market.getAllOrders();
+        if(orders.length>0)
+            {
+                var order=orders[0];
+                //console.log("order type: ", order.type)
+                //console.log("resource type: ", order.resourceType)
+            }
 
+            var test=Game.market.getOrderById('5ee78f4b10ddc99');
+            //console.log("test order: ", test)
 
         if (storage.store[RESOURCE_ENERGY] < 500000) {
           //  storage = undefined;

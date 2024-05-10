@@ -11,6 +11,7 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
     if (creep.memory.target_room) {
         if (creep.room.name == creep.memory.target_room) {// if in target room - go claim 
             creep.say("C");
+            //creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 15, avoidSk: true });
             //creep.moveTo(Game.rooms[creep.memory.target_room].controller,{reusePath:15,avoidSk:true});
             if (Game.rooms[creep.memory.target_room]) {
                 //creep.say(creep.claimController(creep.room.controller));
@@ -28,6 +29,8 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
                 }
                 creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y + 2,
                     STRUCTURE_SPAWN, creep.room.name + "_1");
+                    creep.say(creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y + 2,
+                        STRUCTURE_SPAWN, creep.room.name + "_1"))
             }
 
         }

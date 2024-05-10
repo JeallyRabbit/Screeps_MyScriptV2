@@ -24,6 +24,23 @@ Creep.prototype.roleColonizer = function roleColonizer(creep,spawn){
 
                     //creep.moveTo(Game.rooms[creep.memory.target_room].controller.pos);
 
+                    if (creep.memory.source_id != undefined) {
+                        if(Game.getObjectById(creep.memory.source_id)!=null && Game.getObjectById(creep.memory.source_id).energy==0)
+                            {
+                                creep.memory.source_id=undefined
+                            }
+                    }
+                    if (creep.memory.source_id == undefined) {
+                        var sources = creep.room.find(FIND_SOURCES, {
+                            filter: function (src) {
+                                return src.energy > 0
+                            }
+                        });
+                        if (sources.length > 0) {
+                            creep.memory.source_id = sources[0].id
+                        }
+                    }
+                    
                     //roleFarmer.run(creep, spawn);
                     creep.roleFarmer(creep,spawn)
                     // /return;

@@ -3,6 +3,7 @@ const { boosting_driver } = require('boosting_driver');
 
 Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
 
+    //creep.suicide();
     if (creep.memory.boosting_list == undefined) {
         creep.memory.boosting_list = ["GH", "XGH2O", "GH2O"];//boost types that creep accepts
     }
@@ -23,15 +24,21 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
             //creep.say('🚧 upgrade');
         }
         if ((creep.memory.deposit != undefined && Game.getObjectById(creep.memory.deposit).store[RESOURCE_ENERGY] == 0
-    &&  Game.getObjectById(creep.memory.deposit).structureType!=STRUCTURE_LINK) /*|| Game.time%76==0*/) {
+            && Game.getObjectById(creep.memory.deposit).structureType != STRUCTURE_LINK) /*|| Game.time%76==0*/) {
             creep.memory.deposit = undefined;
         }
-        if (creep.memory.deposit == undefined /*&& Game.time % 4 == 0*/ ) {
+        if (creep.memory.deposit == undefined /*&& Game.time % 4 == 0*/) {
 
             if (spawn.memory.controller_link_id != undefined && Game.getObjectById(spawn.memory.controller_link_id) != null) {
                 creep.memory.deposit = spawn.memory.controller_link_id
             }
             else {
+                if (creep.memory.deposits_renew_counter == undefined) {
+                    creep.memory.deposits_renew_counter = 1;
+                }
+                else {
+                    creep.memory.deposits_renew_counter++;
+                }
                 var deposits = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return structure.structureType === STRUCTURE_STORAGE &&
@@ -66,9 +73,9 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
                 creep.moveTo(creep.room.controller, { reusePath: 17 });
                 //move_avoid_hostile(creep,creep.room.controller.pos,1,true);
             }
-            else if (upgrade_result == 0 && creep.store.getFreeCapacity(RESOURCE_ENERGY) > creep.store.getCapacity() * 0.5) {
+            else if (upgrade_result == 0 && creep.store[RESOURCE_ENERGY] <=_.filter(creep.body, { type: WORK }).length) {
                 //creep.say("e")
-                creep.withdraw(Game.getObjectById(creep.memory.deposit), RESOURCE_ENERGY, withdraw_amount);
+                creep.withdraw(Game.getObjectById(creep.memory.deposit), RESOURCE_ENERGY);
             }
             //creep.say(creep.store.getFreeCapacity(RESOURCE_ENERGY)>creep.store.getCapacity()*0.5)
             //creep.moveTo(creep.room.controller, { range: 1 ,reusePath:17});
@@ -78,14 +85,11 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
             //creep.say("depo");
 
             //var deposit = creep.pos.findClosestByRange(deposits);
-            var withdraw_amount = 0;
             if (creep.memory.deposit != undefined) {
-                withdraw_amount = Math.min(creep.store.getFreeCapacity(), Game.getObjectById(creep.memory.deposit).store[RESOURCE_ENERGY]);
-                if (withdraw_amount > 0) {
-                    if (creep.withdraw(Game.getObjectById(creep.memory.deposit), RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(Game.getObjectById(creep.memory.deposit), { reusePath: 17 });
-                        //move_avoid_hostile(creep,Game.getObjectById(creep.memory.deposit).pos,1);
-                    }
+                if (creep.withdraw(Game.getObjectById(creep.memory.deposit), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(Game.getObjectById(creep.memory.deposit), { reusePath: 17 });
+                    //move_avoid_hostile(creep,Game.getObjectById(creep.memory.deposit).pos,1);
+
                 }
             }
 

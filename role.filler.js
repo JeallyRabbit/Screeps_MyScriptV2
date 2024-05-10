@@ -66,7 +66,8 @@ Creep.prototype.roleFiller = function (creep, spawn) {
         }
 
         if (creep.memory.my_container == undefined) {
-            if (spawn.memory.filler_link_id != undefined && Game.getObjectById(spawn.memory.filler_link_id) != null) {
+            if (spawn.memory.filler_link_id != undefined && Game.getObjectById(spawn.memory.filler_link_id) != null
+        && Game.getObjectById(spawn.memory.filler_link_id).store[RESOURCE_ENERGY]>0) {
                 creep.memory.my_container = spawn.memory.filler_link_id;
             }
             else {

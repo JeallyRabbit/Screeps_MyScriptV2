@@ -42,6 +42,7 @@ const Movement = require("screeps-movement");
 const profiler = require('screeps-profiler');
 const setRequiredPopulation = require('setRequiredPopulation');
 const setBaseState = require('setBaseState')
+const baseDefense = require('baseDefense')
 
 
 const maxRepairer = require('maxRepairer');
@@ -97,6 +98,17 @@ module.exports.loop = function () {
     profiler.wrap(function () {
         console.log("Bucket: ", Game.cpu.bucket);
         console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
+
+        /* REMOVE ALL CONSTRUCTION SITES
+        for (room in Game.rooms) {
+            var rom = Game.rooms[room];
+            var construction_sites = rom.find(FIND_CONSTRUCTION_SITES);
+            for (a of construction_sites) {
+                a.remove();
+            }
+        }
+        */
+
 
         //chartCPU()
 
@@ -183,32 +195,23 @@ module.exports.loop = function () {
         //for (let spawn_id of Memory.main_spawns) 
         console.log("i have: ", Memory.main_spawns.length, " rooms");
         for (spawn_num; spawn_num < Memory.main_spawns.length; spawn_num++) {
-            /*
-            console.log("spawn debugging:")
-            console.log(spawn_num);
-            console.log("id: ",Memory.main_spawns[spawn_num]);
-            console.log(Game.getObjectById(Memory.main_spawns[spawn_num]));
-            */
-
 
 
             var spawn = Game.getObjectById(Memory.main_spawns[spawn_num]);
             //console.log(spawn);
-
-            /*
-            if(spawn.room.name=='W8N3')
-            {
-                console.log("destroying");
-                console.log(spawn.destroy());
-
-            }
-            */
-
-
             if (spawn == null) {
                 console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
                 console.log("spawn: ", Memory.main_spawns[spawn_num], " is null");
                 //continue;
+            }
+
+
+
+
+
+
+            if (Memory.colonizing == undefined || Memory.colonizing != true) {
+                spawn.memory.to_colonize = undefined
             }
 
             for (let other_spawn in Game.spawns) {
@@ -240,7 +243,7 @@ module.exports.loop = function () {
 
 
 
-            
+
             console.log("----------------------------------------------", spawn, "----------------------------------------------");
             //CONSTRUCTION_COST.extension=300;
             //console.log(CONTROLLER_LEVELS[1]) 
@@ -248,6 +251,10 @@ module.exports.loop = function () {
             //console.log("repairer for [0]: ", spawn.memory.farming_rooms[0].distanceRepairer)
             spawn.setBaseState(spawn);
             spawn.setRequiredPopulation(spawn);
+
+            spawn.baseDefense();
+
+
             if (Game.cpu.bucket == 10000) {
                 //Game.cpu.generatePixel();
             }
@@ -261,7 +268,7 @@ module.exports.loop = function () {
             }
 
 
-            if ((Game.time % 600 == spawn_num * 2 && Game.cpu.bucket > 500) // || spawn.room.name == 'W2N5'
+            if ((Game.time % 600 == spawn_num * 2 && Game.cpu.bucket > 500)  //  || spawn.room.name == 'W9N9'
             ) {
 
                 //setBaseLayout(spawn);
@@ -384,11 +391,16 @@ module.exports.loop = function () {
                     */
                     else if (creep.memory.role == 'hauler') {
                         //creep.suicide();
-
-                        creep.roleHauler(creep, spawn);
                         if (creep.ticksToLive > 50) {
                             pop_haulers++;
                         }
+                        if(creep.ticksToLive>creep.memory.time_to_sleep)
+                            {
+                                creep.say('sleep')
+                                continue;
+                            }
+                        creep.roleHauler(creep, spawn);
+
 
                     }
                     else if (creep.memory.role == 'builder') {
@@ -658,7 +670,7 @@ module.exports.loop = function () {
                 if (aux_spawn.spawning) {
                     var aux_role = Game.creeps[aux_spawn.spawning.name].memory.role;
                     console.log('spawning role: ', aux_role);
-                    if (aux_role == "upgrader") {  upgraders_parts += _.filter(creep.body, { type: WORK }).length; }
+                    if (aux_role == "upgrader") { upgraders_parts += _.filter(creep.body, { type: WORK }).length; }
                     else if (aux_role == "builder") { pop_builders++; }
                     else if (aux_role == "hauler") { pop_haulers++; }
                     else if (aux_role == "soldier") { pop_soldiers++; }
@@ -860,12 +872,17 @@ module.exports.loop = function () {
                 if (spawn.spawnCreep(maxBuilder(energyCap / 2, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } }) == 0) {
                     console.log('Spawning Builder');
                     continue;
+
                 }
                 continue;
             }
             if (pop_haulers < spawn.memory.req_haulers)//spawning new hauler
             {
-                if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn), 'hauler_' + spawn.room.name + '_' + Game.time, { memory: { role: 'hauler', home_room: spawn.room } }) == 0) {
+                var limit = false;
+                if (spawn.room.controller.level == 8) {
+                    limit = true;
+                }
+                if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, limit), 'hauler_' + spawn.room.name + '_' + Game.time, { memory: { role: 'hauler', home_room: spawn.room } }) == 0) {
                     console.log("Spawning hauler");
                     continue;
                 }
@@ -873,7 +890,7 @@ module.exports.loop = function () {
             if (//pop_upgraders < spawn.memory.req_upgraders 
                 upgraders_parts < spawn.memory.req_upgraders_parts
                 && spawn.memory.farming_rooms != undefined && (spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power > 0)
-                ) // spawning new upgrader
+            ) // spawning new upgrader
             {
                 console.log("trying to spawn upgrader")
                 if (spawn.spawnCreep(maxUpgrader(energyCap, spawn, spawn.memory.req_upgraders_parts * 200), 'Upgrader_' + spawn.room.name + '_' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {
@@ -964,7 +981,11 @@ module.exports.loop = function () {
                 }
             }
             if (pop_rampart_repairers < spawn.memory.req_rampart_repairers) {
-                if (spawn.spawnCreep(maxColonizer(energyCap, spawn), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) == 0) {
+                var limit = 3200;
+                if (spawn.room.controller.level == 8) {
+                    limit = 1500;
+                }
+                if (spawn.spawnCreep(maxColonizer(energyCap, spawn, limit), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) == 0) {
                     console.log("Spawning RampartRepairer");
                     continue;
                 }
@@ -985,5 +1006,6 @@ module.exports.loop = function () {
     if (CPU.length > 500) {
         CPU.shift()
     }
+    console.log("Used CPU: ", Game.cpu.getUsed())
 
 }
