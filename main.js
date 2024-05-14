@@ -268,7 +268,7 @@ module.exports.loop = function () {
             }
 
 
-            if ((Game.time % 600 == spawn_num * 2 && Game.cpu.bucket > 500)  //  || spawn.room.name == 'W9N9'
+            if ((Game.time % 1800 == spawn_num * 2 && Game.cpu.bucket > 500) //   || spawn.room.name == 'W9N8'
             ) {
 
                 //setBaseLayout(spawn);
@@ -394,11 +394,10 @@ module.exports.loop = function () {
                         if (creep.ticksToLive > 50) {
                             pop_haulers++;
                         }
-                        if(creep.ticksToLive>creep.memory.time_to_sleep)
-                            {
-                                creep.say('sleep')
-                                continue;
-                            }
+                        if (creep.ticksToLive > creep.memory.time_to_sleep) {
+                            creep.say('sleep')
+                            continue;
+                        }
                         creep.roleHauler(creep, spawn);
 
 
@@ -491,8 +490,6 @@ module.exports.loop = function () {
                     }
                     else if (creep.memory.role == 'distanceCarrier') {
                         //creep.suicide();
-                        creep.roleDistanceCarrier(creep, spawn)
-                        //roleDistanceCarrier.run(creep, spawn);
 
                         for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
                             if (spawn.memory.farming_rooms[i].name == creep.memory.target_room) {
@@ -509,6 +506,15 @@ module.exports.loop = function () {
                                 creep.memory.carry_power = creep.store.getCapacity() / (spawn.memory.farming_sources[i].distance * 2);
                             }
                         }
+                        if (creep.ticksToLive > creep.memory.time_to_sleep) {
+                            creep.say('Dsleep')
+                            continue;
+                        }
+
+                        creep.roleDistanceCarrier(creep, spawn)
+                        //roleDistanceCarrier.run(creep, spawn);
+
+
                         pop_distanceCarriers++;
                     }
                     else if (creep.memory.role == 'distanceRepairer') {

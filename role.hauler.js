@@ -207,9 +207,9 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
         //creep.say(spawn.memory.merchant);
         if (creep.transfer(Game.getObjectById(spawn.memory.manager_link_id), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             creep.moveTo(Game.getObjectById(spawn.memory.manager_link_id), { reusePath: 21 });
-        }
+        } 
     }
-    else if (creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 0
+    else if (creep.memory.filler_containers != undefined && Game.getObjectById(creep.memory.filler_containers[0]) != null &&  creep.memory.filler_containers.length > 0
         && (Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store.getCapacity(RESOURCE_ENERGY)
             || Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
         if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[0]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
@@ -275,8 +275,7 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
                 }
 
             }
-            else
-            {
+            else {
                 creep.say("Sleep?")
                 creep.sleep(20)
             }

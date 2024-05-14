@@ -50,15 +50,15 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
                 }
                 if (spawn.memory.sources_links_id != undefined && spawn.memory.sources_links_id.length > 0) {
                     var energy_at_source_link = 0;
-                    var can_they_transfer=false
+                    var can_they_transfer = false
                     for (let id of spawn.memory.sources_links_id) {
                         var src_link = Game.getObjectById(id)
                         if (src_link != null) {
                             energy_at_source_link += src_link.store[RESOURCE_ENERGY]
-                            if(src_link.cooldown==0){can_they_transfer=true}
+                            if (src_link.cooldown == 0) { can_they_transfer = true }
                         }
                     }
-                    if (energy_at_source_link > 600 && can_they_transfer==true) {
+                    if (energy_at_source_link > 600 && can_they_transfer == true) {
                         creep.memory.task = TAKE_FROM_LINK
                         //creep.say("Take from link")
                     }
@@ -75,7 +75,13 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
 
 
         if (creep.memory.task == FILL_LINK) {
-            creep.withdraw(storage, RESOURCE_ENERGY)
+            if (storage.store[RESOURCE_ENERGY] > 0) {
+                creep.withdraw(storage, RESOURCE_ENERGY)
+            }
+            else if (terminal.store[RESOURCE_ENERGY] > 0) {
+                creep.withdraw(terminal, RESOURCE_ENERGY)
+            }
+
             creep.transfer(manager_link, RESOURCE_ENERGY)
             //creep.say(manager_link.pos.x)
         }

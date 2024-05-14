@@ -6,7 +6,7 @@ function maxColonizer(cap, spawn, limit)// return array with max possible work p
     if (cap > 3200) {
         cap = 3200;
     }
-    if (limit != undefined) {
+    if (limit != undefined && cap>limit) {
         cap = limit
     }
     //temporary

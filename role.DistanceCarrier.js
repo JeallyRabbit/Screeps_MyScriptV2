@@ -139,15 +139,19 @@ Creep.prototype.roleDistanceCarrier = function roleDistanceCarrier(creep, spawn)
                     creep.memory.max_container = undefined;
                     creep.memory.target_room_containers = undefined;
                 }
-                var withdraw_amount = 1;
+                //var withdraw_amount = 1;
                 if (creep.memory.max_container != undefined) {
                     //creep.say("A");
-                    withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]);
-                    if (creep.withdraw(Game.getObjectById(creep.memory.max_container), RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have free space go colelct energy from containers
+                    //withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]);
+                    if(Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]<creep.store.getFreeCapacity(RESOURCE_ENERGY) && Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]<2000)
+                        {
+                            creep.sleep((creep.store.getFreeCapacity(RESOURCE_ENERGY)-Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY])/14);
+                        }
+                    if (creep.withdraw(Game.getObjectById(creep.memory.max_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have free space go colelct energy from containers
                         creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 21 });
                         //move_avoid_hostile(creep, Game.getObjectById(creep.memory.max_container).pos, 1, true);
                     }
-                    else if (creep.withdraw(Game.getObjectById(creep.memory.max_container), RESOURCE_ENERGY, withdraw_amount) == OK) {
+                    else if (creep.withdraw(Game.getObjectById(creep.memory.max_container), RESOURCE_ENERGY) == OK) {
                         creep.memory.max_container = undefined;
                         delete creep.memory.my_path;
                     }
