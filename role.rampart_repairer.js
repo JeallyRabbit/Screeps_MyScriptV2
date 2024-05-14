@@ -1,5 +1,6 @@
 Creep.prototype.roleRampartRepairer = function roleRampartRepairer(creep, spawn) {
 
+    //creep.suicide();
 
     if (creep.store[RESOURCE_ENERGY] == 0 || creep.memory.target_rampart == undefined) {
         creep.memory.target_rampart = undefined;

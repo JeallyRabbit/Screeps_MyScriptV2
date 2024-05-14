@@ -2,9 +2,11 @@ Spawn.prototype.towers = function towers(spawn) {
 
     // /** @param {Game} game **/
     //tick: function (spawn) {
+        /*
     towers = spawn.room.find(FIND_MY_STRUCTURES, {
         filter: { structureType: STRUCTURE_TOWER }
     });
+    */
 
     if (spawn.memory.damagedStructures != undefined) {
         while (spawn.memory.damagedStructures.length > 0 && Game.getObjectById(spawn.memory.damagedStructures[0]) != null
@@ -25,7 +27,7 @@ Spawn.prototype.towers = function towers(spawn) {
         }
 
     }
-    if (spawn.memory.damagedStructures == undefined && Game.time % 1 == 0) {
+    if (spawn.memory.damagedStructures == undefined && Game.time % 5 == 0) {
         var damagedStructures = spawn.room.find(FIND_STRUCTURES, {
             filter: (structure) => (structure.hits < structure.hitsMax && structure.hits < 1000 && structure.structureType != STRUCTURE_RAMPART)
                 || (structure.hits < 50000 && structure.structureType == STRUCTURE_RAMPART)

@@ -49,7 +49,7 @@ Spawn.prototype.terminal = function terminal(spawn){
             }
             */
            
-            if (terminal.cooldown == 0) {
+            if (terminal.cooldown == 0 && terminal.room.controller.level==8) {
 
                 //console.log("term")
                 //looking for rooms that need energy - chosing closest one

@@ -60,7 +60,7 @@ function is_wall_in_room(spawn, x, y) {
     return false;
 }
 
-function plan_road_to_target(spawn, roomCM, target, rcl) {
+function plan_road_to_target(spawn, roomCM, target, rcl, my_range) {
 
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
@@ -72,13 +72,15 @@ function plan_road_to_target(spawn, roomCM, target, rcl) {
             }
         }
     }
-
+    if (my_range == undefined) {
+        my_range = 1;
+    }
 
     //console.log("target: ", target);
     destination = target;
     var ret = PathFinder.search(spawn.pos, destination, {
         //maxRooms: 64,
-        range: 1,
+        range: my_range,
         plainCost: 2,
         swampCost: 2,
         maxOps: 8000,
@@ -167,13 +169,15 @@ function plan_road_to_target(spawn, roomCM, target, rcl) {
 
             //ignore walls
             if (roomName == spawn.room.name) {
+                /*
                 for (let i = 0; i < 50; i++) {
                     for (let j = 0; j < 50; j++) {
-                        if (spawn.memory.room_plan[i][j] == STRUCTURE_WALL /*|| spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART*/) {
+                        if (spawn.memory.room_plan[i][j] == STRUCTURE_WALL ) {
                             costs.set(i, j, 1);
                         }
                     }
                 }
+                */
 
                 for (let i = 0; i < 50; i++) {
                     for (let j = 0; j < 50; j++) {
@@ -195,7 +199,7 @@ function plan_road_to_target(spawn, roomCM, target, rcl) {
             });
             */
 
-            costs.set(destination.x, destination.y, 255);
+            costs.set(destination.x, destination.y, 1);
 
             return costs;
         }
@@ -420,7 +424,7 @@ function create_extension_stamp(spawn, x, y, rcl) { // need min 3's from distanc
 function create_manager_stamp(spawn, x, y, rcl) {
     spawn.memory.room_plan[x - 1][y - 1] = STRUCTURE_LINK;
     spawn.memory.building_list.push(new building_list_element(x - 1, y - 1, spawn.room.name, STRUCTURE_LINK, 5));
-    spawn.memory.manager_link_pos=new RoomPosition(x - 1, y - 1, spawn.room.name);
+    spawn.memory.manager_link_pos = new RoomPosition(x - 1, y - 1, spawn.room.name);
     spawn.memory.room_plan[x - 1][y] = STRUCTURE_NUKER;
     spawn.memory.building_list.push(new building_list_element(x - 1, y, spawn.room.name, STRUCTURE_NUKER, 8));
     spawn.memory.room_plan[x - 1][y + 1] = STRUCTURE_TERMINAL;
@@ -493,7 +497,7 @@ function plan_extension_stamp(spawn, roomCM, rcl) {
         for (i = 0; i < 50; i++) {
             for (let j = 0; j < 50; j++) {
                 if (distanceCM.get(i, j) >= 3 && floodCM.get(i, j) < min_distance_from_spawn
-            && (i>5 && i<45) && (j>5 && j<45)) {
+                    && (i > 5 && i < 45) && (j > 5 && j < 45)) {
                     min_distance_from_spawn = floodCM.get(i, j);
                     pos_for_stamp.x = i;
                     pos_for_stamp.y = j;
@@ -633,7 +637,7 @@ function plan_main_spawn_stamp(spawn, roomCM) {
     //if (spawn.room.controller.level >= 5) {
     spawn.memory.room_plan[spawn.pos.x][spawn.pos.y - 2] = STRUCTURE_LINK;
     spawn.memory.building_list.push(new building_list_element(spawn.pos.x, spawn.pos.y - 2, spawn.room.name, STRUCTURE_LINK, 3));
-    spawn.memory.filler_link_pos=new RoomPosition(spawn.pos.x, spawn.pos.y - 2, spawn.room.name)
+    spawn.memory.filler_link_pos = new RoomPosition(spawn.pos.x, spawn.pos.y - 2, spawn.room.name)
 
     //}
     // }
@@ -785,7 +789,7 @@ function plan_borders(spawn, roomCM, rcl) {
     // Set high cost on building tiles
     for (let building of buildings) {
         if (building.structureType != STRUCTURE_ROAD && building.structureType != STRUCTURE_RAMPART && building.structureType != STRUCTURE_WALL
-            && building.structureType!=STRUCTURE_CONTAINER && building.structureType!=STRUCTURE_LINK && building.structureType!=STRUCTURE_EXTRACTOR
+            && building.structureType != STRUCTURE_CONTAINER && building.structureType != STRUCTURE_LINK && building.structureType != STRUCTURE_EXTRACTOR
             && building.x > 4 && building.x < 46 && building.y > 4 && building.y < 46) {
             sources2.push({ x: building.x, y: building.y });
             costMap.set(building.x, building.y, 200);
@@ -832,7 +836,7 @@ function plan_borders(spawn, roomCM, rcl) {
             spawn.memory.room_plan[pos.x][pos.y] = STRUCTURE_RAMPART;
             buildings.push({ x: pos.x, y: pos.y, structureType: STRUCTURE_RAMPART, rcl });
             spawn.memory.building_list.push(new building_list_element(pos.x, pos.y, spawn.room.name, STRUCTURE_RAMPART, rcl));
-            
+
         }
     });
 }
@@ -847,7 +851,7 @@ function plan_controller_ramparts(spawn) {
 }
 
 function plan_controller_container(spawn) {
-    spawn.memory.controller_link_pos=undefined;
+    spawn.memory.controller_link_pos = undefined;
     var controller_pos = spawn.room.controller.pos.getN_NearbyPositions(2);
     const terrain = spawn.room.getTerrain();
     for (let position of controller_pos) {
@@ -871,7 +875,7 @@ function plan_controller_container(spawn) {
         if (is_free) {
             spawn.memory.room_plan[position.x][position.y] = STRUCTURE_LINK;
             spawn.memory.building_list.push(new building_list_element(position.x, position.y, spawn.room.name, STRUCTURE_LINK, 6));
-            spawn.memory.controller_link_pos=new RoomPosition(position.x, position.y, spawn.room.name);
+            spawn.memory.controller_link_pos = new RoomPosition(position.x, position.y, spawn.room.name);
             break;
         }
     }
@@ -881,7 +885,7 @@ function plan_controller_container(spawn) {
 
 function plan_sources_containers(spawn, roomCM, rcl) {
 
-    spawn.memory.sources_links_pos=[]
+    spawn.memory.sources_links_pos = []
 
     for (source_id of spawn.memory.farming_sources) {
 
@@ -914,7 +918,7 @@ function plan_sources_containers(spawn, roomCM, rcl) {
                     if (is_free) {
                         spawn.memory.room_plan[position.x][position.y] = STRUCTURE_LINK;
                         spawn.memory.building_list.push(new building_list_element(position.x, position.y, spawn.room.name, STRUCTURE_LINK, 8));
-                        spawn.memory.sources_links_pos.push(new RoomPosition(position.x, position.y,spawn.room.name))
+                        spawn.memory.sources_links_pos.push(new RoomPosition(position.x, position.y, spawn.room.name))
 
                         break;
                     }
@@ -1005,6 +1009,8 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
 
 
         plan_road_to_target(spawn, roomCM, spawn.room.controller.pos, 2);
+        var mineral = spawn.room.find(FIND_MINERALS);
+        plan_road_to_target(spawn, roomCM, mineral[0].pos, 6);
         plan_controller_ramparts(spawn);
         plan_controller_container(spawn)
 
@@ -1026,8 +1032,8 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
                 }
 
             }
-            var mineral = spawn.room.find(FIND_MINERALS);
-            plan_road_to_target(spawn, roomCM, mineral[0], 6);
+
+
 
         }
     }
