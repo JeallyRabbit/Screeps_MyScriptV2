@@ -68,10 +68,11 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
     //creep.say("A");
     if (creep.memory.building) { // if building go to construction site and build
         //creep.say(creep.build(closest_target));
+
         if (targets.length) {
             if (creep.build(closest_target) == ERR_NOT_IN_RANGE) {
                 //creep.say("NB");
-                creep.moveTo(targets[0], { range: 2 });
+                creep.moveTo(closest_target, { range: 2 });
                 //move_avoid_hostile(creep, closest_target.pos, 3, false);
             }
             else if (creep.build(closest_target) == OK) { creep.memory.is_working = true; }

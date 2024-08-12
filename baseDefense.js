@@ -3,10 +3,13 @@ const STATE_UNDER_ATTACK = 'STATE_UNDER_ATTACK'
 Spawn.prototype.baseDefense = function baseDefense(spawn) {
     //console.log("Base test: ", this.room.name)
     var hostiles = this.room.find(FIND_HOSTILE_CREEPS);
+
+    this.memory.weakest_any=undefined;
     this.memory.weakest_healer = undefined;
     this.memory.weakest_attacker=undefined;
     this.memory.weakest_ranged=undefined;
     if (hostiles != undefined && hostiles.length > 0) {
+        this.memory.weakest_any=hostiles[0].id;
         if (this.memory.state.includes(STATE_UNDER_ATTACK) == false) {
             this.memory.state.push(STATE_UNDER_ATTACK)
         }
@@ -30,9 +33,12 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
         findWeakestMele.call(this,mele_invaders);
         findWeakestRanged.call(this,ranged_invaders)
 
+        
+
     }
     else {
         this.memory.state = this.memory.state.filter(function (e) { return e !== STATE_UNDER_ATTACK })
+        this.memory.weakest_any=undefined;
     }
 }
 function findWeakestRanged(ranged_invaders)
@@ -70,6 +76,7 @@ function findWeakestRanged(ranged_invaders)
     }
     if (weakest_ranged != undefined) {
         this.memory.weakest_ranged = weakest_ranged;
+        
     }
     //console.log("weakest ranged: ",this.memory.weakest_ranged)
 

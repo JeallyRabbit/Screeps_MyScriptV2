@@ -88,8 +88,8 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
 
     //creep.suicide();
-
-    creep.say("scout");
+    //console.log(creep.pos," -> ",spawn.memory.rooms_to_scan[0])
+    //creep.say("scout");
     //creep.memory.rooms_to_scan = generateAdjacentRooms(creep.room.name);
     /*if(creep.memory.home_room.name=='W5N3')
     {
@@ -106,12 +106,34 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
     if (spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length > 0) {
         if (creep.room.name != spawn.memory.rooms_to_scan[0]) {
-            creep.say("MOV");
-            const destination = new RoomPosition(25, 25, spawn.memory.rooms_to_scan[0]);
+            //creep.say("MOV");
+            
+            creep.say(creep.room.findExitTo(spawn.memory.rooms_to_scan[0])+" "+spawn.memory.rooms_to_scan[0])
+            var exits=creep.room.find(creep.room.findExitTo(spawn.memory.rooms_to_scan[0]))
+            
+            if(exits!=undefined && exits.length>0)
+            {
+                var closest_exit=creep.pos.findClosestByRange(exits)
+                if(closest_exit!=null)
+                {
+                    /*
+                    for(a of exits)
+                    {
+                        console.log(a)
+                    }
+                        */
+                    creep.moveTo(closest_exit,{maxRooms:1})
+                }
+                else{
+                    creep.moveTo(exits[0],{maxRooms: 1})
+                }
+                
+            }
+            
             //console.log("destination: ", destination);
             //creep.say(spawn.memory.rooms_to_scan[0]);
             //creep.moveTo(destination, { reusePath: 10 });
-            creep.moveToRoom(spawn.memory.rooms_to_scan[0], { reusePath: 17 });
+            //creep.moveToRoom(spawn.memory.rooms_to_scan[0], { reusePath: 17});
             //move_avoid_hostile(creep, destination, 1, true,4000);
         }
         else {
@@ -259,7 +281,6 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                                         }
                                     });
                                     if (invader_core != undefined && invader_core.length > 0) {
-                                        //spawn.roms_to_clear.push(new_farming);
                                         already_scanned = false;
                                     }
 
@@ -267,26 +288,34 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                             }
 
                             var in_other_use = false;
-                            for (let main_spawn_id in Memory.main_spawns) {
+                            console.log("BEFORE OTHER SPAWNS FARMING SOURCES LOOP")
+                            for (let main_spawn_id of Memory.main_spawns) {
+                                console.log("main spawn id: ",main_spawn_id)
                                 var other_spawn = Game.getObjectById(main_spawn_id);
                                 if (other_spawn != null && other_spawn != spawn && other_spawn.room.name != creep.memory.home_room.name) {
-                                    for (let other_farming_source in other_spawn.memory.farming_sources) {
-                                        if (other_farming_source.id == sources[i].id && creep.room.name != creep.memory.home_room.name) {
+                                    for (let other_farming_source of other_spawn.memory.farming_sources) {
+                                        console.log(other_farming_source.id," ",other_farming_source.name)
+                                        if ((other_farming_source.id == sources[i].id || other_farming_source.name==sources[i].name)&& other_farming_source.name!=spawn.room.name) {
                                             cconsole.log("source: ", sources[i].id, " in use by: ", other_spawn.name);
+                                            console.log("SKIIIIIIIIIIIPING")
                                             in_other_use = true;
                                             break
                                         }
                                     }
                                 }
                             }
+                            console.log("AFTER THE LOOP")
 
                         }
 
                     }
                     //console.log(already_scanned, " ",in_other_use)
-                    if (already_scanned == false && ret.path.length < 100 && in_other_use != true) {
+                    if (already_scanned == false && ret.path.length < 100 && in_other_use != true
+                        // next condition need testing
+                        //&& ret.incomplete==false
+                    ) {
                         spawn.memory.farming_sources.push(new_farming_source);
-                        console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+                        //console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
                         console.log("added source: ", sources[i].id, " in ", creep.room.name);
                         creep.say("ADD")
                     }
@@ -335,7 +364,6 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                                     }
                                 });
                                 if (invader_core != undefined && invader_core.length > 0) {
-                                    //spawn.roms_to_clear.push(new_farming);
                                     already_scanned = false;
                                 }
 

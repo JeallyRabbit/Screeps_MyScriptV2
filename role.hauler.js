@@ -123,7 +123,7 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
             });
             if (containers != undefined && containers.length > 0) {
                 creep.memory.containers_id = [];
-                for (cont of contaienrs) {
+                for (cont of containers) {
                     creep.memory.containers_id.push(cont.id)
                 }
             }
@@ -166,9 +166,10 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
     //var cID=-1;
     //var cID_max = -1, cID_min = -1;
     var max_energy = 0;
-    if (creep.memory.cID_max == -1 || creep.memory.cID_max == undefined) {
+    if ((creep.memory.cID_max == -1 || creep.memory.cID_max == undefined) && containers!=undefined) {
         for (let i = 0; i < containers.length; i++) {
             //console.log(containers[i].store.getCapacity(RESOURCE_ENERGY));
+            if(containers[i]==undefined){continue;}
             if (containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY) > max_energy) {
                 max_energy = containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY);
                 //creep.memory.cID_max = i;
@@ -219,7 +220,7 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[0]).pos, 1, false);;
         }
     }
-    else if ((creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+    else if ((creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1])!= null &&  Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
         if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[1]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
             //creep.say("P");
             creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]), { reusePath: 21 });
@@ -276,7 +277,7 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
 
             }
             else {
-                creep.say("Sleep?")
+                //creep.say("Sleep?")
                 creep.sleep(20)
             }
         }

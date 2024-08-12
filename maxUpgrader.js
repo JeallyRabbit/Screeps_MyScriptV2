@@ -16,13 +16,6 @@ function maxUpgrader(cap, spawn, max)// return array with max possible work part
     if (max != undefined && cap > max) {
         cap = max;
     }
-    //temporary
-    /*
-    if(cap>1000)
-    {
-        cap=1000;
-    }
-    */
     var parts = [];
     parts.push(MOVE);
     parts.push(CARRY);
@@ -35,8 +28,9 @@ function maxUpgrader(cap, spawn, max)// return array with max possible work part
         cap -= 150;
     }
     //console.log("avaliable work parts: ", Math.floor(cap/100));
-    for (let i = 0; i < Math.floor(cap / 100); i++) {
+    for (let i = 0; i < Math.floor(cap / 150); i++) {
         parts.push(WORK);
+        parts.push(MOVE);
     }
 
     return parts;

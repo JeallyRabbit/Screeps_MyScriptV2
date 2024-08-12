@@ -29,8 +29,8 @@ Spawn.prototype.towers = function towers(spawn) {
     }
     if (spawn.memory.damagedStructures == undefined && Game.time % 5 == 0) {
         var damagedStructures = spawn.room.find(FIND_STRUCTURES, {
-            filter: (structure) => (structure.hits < structure.hitsMax && structure.hits < 1000 && structure.structureType != STRUCTURE_RAMPART)
-                || (structure.hits < 50000 && structure.structureType == STRUCTURE_RAMPART)
+            filter: (structure) => (structure.hits < structure.hitsMax && structure.hits < 2000 && structure.structureType != STRUCTURE_RAMPART)
+                 || (structure.hits < 2000 && structure.structureType == STRUCTURE_RAMPART)
         });
         damagedStructures.sort((a, b) => b.hits - a.hits);
 
@@ -90,6 +90,12 @@ Spawn.prototype.towers = function towers(spawn) {
             //console.log("tower most damaged str: ",mostDamagedStructure.pos);
             //console.log(tower.repair(mostDamagedStructure));
             tower.repair(mostDamagedStructure)
+        }
+        else if(spawn.memory.weakest_any!=undefined)
+        {
+            if (Game.getObjectById(spawn.memory.weakest_any) != null) {
+                tower.attack(Game.getObjectById(spawn.memory.weakest_any))
+            }
         }
         /*
         else if (damagedCreeps) {
