@@ -143,9 +143,22 @@ Creep.prototype.roleDistanceCarrier = function roleDistanceCarrier(creep, spawn)
                 if (creep.memory.max_container != undefined) {
                     //creep.say("A");
                     //withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]);
-                    if(Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]<creep.store.getFreeCapacity(RESOURCE_ENERGY) && Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]<2000)
+                    
+                    
+                    // TEMPORARY CODE
+                    for(let resource in Game.getObjectById(creep.memory.max_container).store)
+                    {
+                       if(creep.withdraw(Game.getObjectById(creep.memory.max_container), resource)==ERR_NOT_IN_RANGE)
+                       {
+                           creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 21 });
+                           break;
+                       }
+                    }
+                    // END OF TEMPIORARY CODE
+                    if(Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]<creep.store.getFreeCapacity(RESOURCE_ENERGY)*0.8 && Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY]<2000)
                         {
-                            creep.sleep((creep.store.getFreeCapacity(RESOURCE_ENERGY)-Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY])/14);
+                            creep.sleep((creep.store.getFreeCapacity(RESOURCE_ENERGY)-Game.getObjectById(creep.memory.max_container).store[RESOURCE_ENERGY])/(25));
+
                         }
                     if (creep.withdraw(Game.getObjectById(creep.memory.max_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have free space go colelct energy from containers
                         creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 21 });
@@ -165,6 +178,7 @@ Creep.prototype.roleDistanceCarrier = function roleDistanceCarrier(creep, spawn)
             const destination = new RoomPosition(25, 25, creep.memory.home_room.name); // Replace with your destination coordinates and room name
 
             creep.moveTo(destination, { reusePath: 21, avoidCreeps: false });
+            //creep.moveTo(Game.getObjectById(creep.memory.max_container), { reusePath: 21 });
             //move_avoid_hostile(creep,destination.pos,5,false,4000);
 
         }
@@ -223,8 +237,15 @@ Creep.prototype.roleDistanceCarrier = function roleDistanceCarrier(creep, spawn)
                                 });
                                 if (container == null) {
                                     container = spawn;
-                                    if (spawn.store[RESOURCE_ENERGY] == 300) {
-                                        creep.drop(RESOURCE_ENERGY);
+                                    if (spawn.store[RESOURCE_ENERGY] == 300 ) {
+                                        if(creep.pos.isNearTo(spawn))
+                                        {
+                                            creep.drop(RESOURCE_ENERGY);
+                                        }
+                                        else{
+                                            creep.moveTo(spawn,{reusePath: 21})
+                                        }
+                                        
                                     }
                                 }
                             }
@@ -266,7 +287,7 @@ Creep.prototype.roleDistanceCarrier = function roleDistanceCarrier(creep, spawn)
                 creep.moveTo(Game.getObjectById(creep.memory.max_container), { reusePath: 21 });
             }
             else {
-                const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
+                const destination = new RoomPosition(25, 25, creep.memory.target_room);
                 creep.moveTo(destination, { reusePath: 25 });
             }
 

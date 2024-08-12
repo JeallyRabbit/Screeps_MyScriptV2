@@ -1,0 +1,271 @@
+//var RoomPositionFunctions = require('roomPositionFunctions');
+const { boosting_driver } = require('boosting_driver');
+//const { move_avoid_hostile } = require("./move_avoid_hostile");
+//var roleHauler = require('role.hauler');
+Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spawn) {
+
+    //run: function (creep, spawn) {
+    //creep.say(creep.memory.home_room);
+    //creep.move(RIGHT);
+    //return;
+    //creep.drop(RESOURCE_ENERGY);
+    //creep.suicide();
+
+
+    //creep.move(TOP);
+    if (creep.memory.boosting_list == undefined) {
+        creep.memory.boosting_list = ["KH", "KH2O", "XKH2O"];//boost types that creep accepts
+    }
+    if (boosting_driver(creep, spawn, creep.memory.boosting_list, CARRY) == -1) {
+
+        if (creep.memory.target_room_containers != undefined && creep.memory.target_room_containers.length > 0) {
+            for (let i = 0; i < creep.memory.target_room_containers.length; i++) {
+                if (Game.getObjectById(creep.memory.target_room_containers[i]) == null) {
+                    creep.memory.target_room_containers = undefined;
+                    break;
+                }
+            }
+        }
+
+        if (creep.store.getFreeCapacity() == 0) {
+            creep.memory.collecting = false;
+        }
+        else if (creep.store.getUsedCapacity() == 0 || creep.memory.collecting == undefined) {
+            creep.memory.collecting = true;
+            creep.memory.closest_home_container=undefined;
+        }
+
+
+
+        // define containers from which creep should withdraw resources
+        if (creep.memory.target_room_containers == undefined ||
+            (creep.memory.target_room_containers != undefined && creep.memory.target_room_containers.length == 0)) {
+               
+           if (creep.memory.target_room == creep.memory.home_room.name) {
+               //if creep.target_room is creep.home_room
+                var containers = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType === STRUCTURE_CONTAINER
+                            && ((structure.pos.x != spawn.pos.x - 2 || structure.pos.y != spawn.pos.y - 2) &&
+                                (structure.pos.x != spawn.pos.x + 2 || structure.pos.y != spawn.pos.y - 2))
+                            && (structure.pos.inRangeTo(spawn.room.controller.pos, 4) == false);
+                    }
+                });
+                creep.memory.target_room_containers = [];
+                for (let i = 0; i < containers.length; i++) {
+                    creep.memory.target_room_containers.push(containers[i].id);
+                }
+
+           }
+           else {
+               //get containers of target_room
+               if(Game.rooms[creep.memory.target_room]!=undefined)
+               {
+                    var containers = Game.rooms[creep.memory.target_room].find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType === STRUCTURE_CONTAINER;
+                        }
+                    });
+                    creep.memory.target_room_containers = [];
+                    for (let i = 0; i < containers.length; i++) {
+                        creep.memory.target_room_containers.push(containers[i].id);
+                    }
+               }
+               
+           }
+       }
+
+
+       if(creep.memory.collecting)
+       {// if creep have free space
+        /*
+            if(creep.memory.target_room==spawn.room.name)
+            {
+                creep.say("empty")
+            }
+                */
+            
+            if(Game.rooms[creep.memory.target_room]==undefined && spawn.memory.need_soldier!=creep.memory.target_room)
+            {
+                const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
+                creep.moveTo(destination, { reusePath: 25 });
+            }
+            if(creep.memory.target_room_containers!=undefined && creep.memory.target_room_containers.length>0)
+            {// find max_container and take resources from it or go sleep
+
+                //finding max_container
+                if (creep.memory.max_container == undefined) {
+                    var biggest_resource = 0;
+                    for (let i = 0; i < creep.memory.target_room_containers.length; i++) {
+                        var container = Game.getObjectById(creep.memory.target_room_containers[i]);
+                        if (container.store.getUsedCapacity() > biggest_resource) {
+                            creep.memory.max_container = container.id;
+                            biggest_resource = container.store.getUsedCapacity();
+                        }
+                    }
+                }
+                else if (Game.getObjectById(creep.memory.max_container) != null) {
+                    if (Game.getObjectById(creep.memory.max_container).store.getUsedCapacity() == 0) {
+                        creep.memory.max_container = undefined;
+                    }
+                }
+                else{
+                    creep.memory.max_container=undefined;
+                }
+
+
+                if (creep.memory.max_container != undefined && Game.getObjectById(creep.memory.max_container)!=null) {
+                    // take all resources from container
+                    for(let resource in Game.getObjectById(creep.memory.max_container).store)
+                    {
+                       if(creep.withdraw(Game.getObjectById(creep.memory.max_container), resource)==ERR_NOT_IN_RANGE)
+                       {
+                           creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 21 });
+                           break;
+                       }
+                    }
+                    
+                    if(Game.getObjectById(creep.memory.max_container).store.getUsedCapacity()<(creep.store.getCapacity()-creep.store.getUsedCapacity())*0.8 && Game.getObjectById(creep.memory.max_container).store.getUsedCapacity()<2000)
+                        {
+                            creep.sleep(((creep.store.getCapacity()-creep.store.getUsedCapacity())-Game.getObjectById(creep.memory.max_container).store.getUsedCapacity())/20);
+                        }
+                }
+
+
+            }
+            else
+            {// no containers - look for dropped resources, if no resource go sleep
+
+                if (creep.memory.reource_to_collect == undefined && creep.memory.target_room!=undefined && Game.rooms[creep.memory.target_room]!=undefined) {
+
+                    const dropped_resource =Game.rooms[creep.memory.target_room].find(FIND_DROPPED_RESOURCES, {
+                        filter: resource => resource.amount >=creep.store.getCapacity()-creep.store.getUsedCapacity()
+                    });
+                    if (dropped_resource != undefined && dropped_resource != null && dropped_resource.length > 0) {
+                       // var closest_resource = creep.pos.findClosestByPath(dropped_resource);
+                        var max_res_amount=0;
+                        var max_res_id=undefined;
+                        for(let a of dropped_resource)
+                        {
+                            //creep.say(a.amount)
+                            if(a.amount>max_res_amount)
+                            {
+                                max_res_amount=a.amount;
+                                max_res_id=a.id;
+                            }
+                        }
+                        if (max_res_id != null) {
+                            creep.memory.reource_to_collect = max_res_id;
+                        }
+                        else{
+                            creep.sleep(20);
+                        }
+    
+                    }
+    
+                }
+
+
+                if (creep.memory.reource_to_collect != undefined) {
+                    if (Game.getObjectById(creep.memory.reource_to_collect) != null) {
+                        creep.memory.max_container = undefined;
+                        if (creep.pickup(Game.getObjectById(creep.memory.reource_to_collect)) == ERR_NOT_IN_RANGE) {
+                            //move_avoid_hostile(creep, Game.getObjectById(creep.memory.reource_to_collect).pos, 1, true);
+                            creep.moveTo(Game.getObjectById(creep.memory.reource_to_collect), { reusePath: 21 });
+                            //creep.say("E");
+                        }
+                    }
+                    else {
+                        delete creep.memory.reource_to_collect;
+                    }
+                    return;
+                }
+
+            }
+       }
+       else
+       {//creep is full - go home_room_container
+            if(spawn.room.storage!=undefined /* && creep.memory.target_room!=creep.memory.home_room.name*/)
+            {
+                // if home_room have storage
+                creep.memory.home_container=spawn.room.storage.id;
+            }
+            else{
+                //if(creep.memory.target_room!=creep.memory.home_room.name)
+                //{
+                    if (creep.memory.home_container != undefined && Game.getObjectById(creep.memory.home_container) == null
+                        || (creep.memory.home_container != undefined && 
+                            Game.getObjectById(creep.memory.home_container).store.getCapacity() -  Game.getObjectById(creep.memory.home_container).store.getUsedCapacity() == 0)) {
+                            creep.memory.home_container = undefined
+                        }
+
+                        //find containers that are fillers containers or controller container
+                    var container = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.store != undefined && structure.store.getCapacity()-structure.store.getUsedCapacity() > 0
+                            && structure.structureType != STRUCTURE_TERMINAL &&
+                            ((structure.structureType == STRUCTURE_CONTAINER && structure.pos.x == spawn.pos.x + 2 && structure.pos.y == spawn.pos.y - 2)
+                                || (structure.structureType == STRUCTURE_CONTAINER && structure.pos.x == spawn.pos.x - 2 && structure.pos.y == spawn.pos.y - 2)
+                                || structure.structureType == STRUCTURE_CONTAINER && structure.pos.inRangeTo(spawn.room.controller, 4));
+                    }
+                    });
+                    if (container != null) {
+                        creep.memory.home_container = container.id;
+                    }
+                    else{
+                        //target room do not have containers - store in spawn
+                        creep.memory.home_container=spawn.id;
+                    }
+                //}
+            }
+            if(creep.memory.home_container!=undefined && Game.getObjectById(creep.memory.home_container)!=null)
+            {
+                if(Game.getObjectById(creep.memory.home_container).structureType==STRUCTURE_STORAGE)
+                {
+                    for(let res in creep.store)
+                    {
+                        var transfer_result=creep.transfer(Game.getObjectById(creep.memory.home_container), res);
+                        if(transfer_result==ERR_NOT_IN_RANGE)
+                        {
+                                creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true });
+                                break;
+                        }
+                        else if(transfer_result==OK)
+                        {
+                            creep.memory.max_container=undefined;
+                        }
+                    }
+                }
+                else{
+                    for(let res in creep.store)
+                        {
+                            var transfer_result=creep.transfer(Game.getObjectById(creep.memory.home_container), res);
+                            if(transfer_result==ERR_NOT_IN_RANGE)
+                            {
+                                    creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true });
+                                    break;
+                            }
+                            else if(transfer_result==ERR_FULL)
+                            {
+                                creep.drop(res);
+                                creep.memory.max_container=undefined;
+                            }
+                            else if(transfer_result==OK)
+                            {
+                                creep.memory.max_container=undefined;
+                            }
+
+                        }
+                }
+            }
+       }
+
+
+       //////////////////////////////////////////////////////////////////////
+
+
+        
+
+    }
+
+};

@@ -87,12 +87,14 @@ Creep.prototype.roleFarmer = function roleFarmer(creep, spawn) {
             if(creep.transfer(Game.getObjectById(creep.memory.closest_container), RESOURCE_ENERGY)==ERR_NOT_IN_RANGE)
             {
                 creep.moveTo(Game.getObjectById(creep.memory.closest_container))
+                //creep.say("C");
             };
 
         }
         if (Game.getObjectById(creep.memory.source_id)!=null && Game.getObjectById(creep.memory.source_id).energy > 0) {
             if (creep.harvest(Game.getObjectById(creep.memory.source_id)) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.getObjectById(creep.memory.source_id), { reusePath: 17, range:1 });
+                //creep.say("B");
                 //creep.say(Game.getObjectById(creep.memory.source_id).pos.y)
                 //move_avoid_hostile(creep, Game.getObjectById(creep.memory.source_id).pos, 1, false);
                 creep.memory.is_working = false;
@@ -101,22 +103,22 @@ Creep.prototype.roleFarmer = function roleFarmer(creep, spawn) {
                 creep.memory.is_working = true;
             }
         }
-        else {
-            //  creep.say("Zzz")
+        else if(Game.getObjectById(creep.memory.source_id)!=null && Game.getObjectById(creep.memory.source_id).energy == 0 && creep.room.name==creep.memory.target_room
+    && creep.pos.isNearTo(Game.getObjectById(creep.memory.source_id))){
+            creep.sleep(Game.getObjectById(creep.memory.source_id).ticksToRegeneration)
         }
 
     }
     else if (creep.room.name != creep.memory.target_room /*&& creep.store[RESOURCE_ENERGY] == 0*/) {// not in target room and have free space - go to target room
-        const destination = new RoomPosition(25, 25, creep.memory.target_room); 
+        //const destination = new RoomPosition(25, 25, creep.memory.target_room); 
         if (creep.memory.source_id != undefined && Game.getObjectById(creep.memory.source_id) != null) {
             creep.moveTo(Game.getObjectById(creep.memory.source_id), { reusePath: 17 });
+            //creep.say("A");
         }
-        else {
-            creep.moveTo(destination, { reusePath: 17 });
-            var if_avoid = false;
-            if (creep.pos.y >= 48 || creep.pos.x >= 48 || creep.pos.y <= 1 || creep.pos.x <= 1) {
-                if_avoid = true;
-            }
+        if(Game.rooms[creep.memory.target_room]==undefined)
+        {
+            const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
+            creep.moveTo(destination, { reusePath: 25 });
         }
 
         //move_avoid_hostile(creep, destination, 1, if_avoid,5000);

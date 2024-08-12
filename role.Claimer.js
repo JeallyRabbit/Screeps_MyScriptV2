@@ -21,7 +21,8 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
                     //creep.say("QWE");
                     creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 15, avoidSk: true });
                 }
-                if (creep.claimController(Game.rooms[creep.memory.target_room].controller) == ERR_INVALID_TARGET) {
+                if (creep.claimController(Game.rooms[creep.memory.target_room].controller) == ERR_INVALID_TARGET && 
+            (Game.rooms[creep.memory.target_room].controller.owner!='JeallyRabbit' && Game.rooms[creep.memory.target_room].controller.owner!='Jeally_Rabbit' )) {
                     //creep.say("QWE");
                     //creep.say(creep.claimController(creep.room.controller));
                     creep.attackController(Game.rooms[creep.memory.target_room].controller);
@@ -29,8 +30,8 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
                 }
                 creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y + 2,
                     STRUCTURE_SPAWN, creep.room.name + "_1");
-                    creep.say(creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y + 2,
-                        STRUCTURE_SPAWN, creep.room.name + "_1"))
+                //creep.say(creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y + 2,
+                //STRUCTURE_SPAWN, creep.room.name + "_1"))
             }
 
         }

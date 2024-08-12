@@ -9,6 +9,8 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
     //var targets=creep.room.find(FIND_CONSTRUCTION_SITES)
     if (creep.room.name == creep.memory.target_room) {
 
+        //creep.roleBuilder(creep, spawn);
+        //return;
         //creep.move(TOP);
         //return;
         // FINDING ALL STRUCTURES
@@ -87,8 +89,9 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
 
 
 
-        if (creep.memory.damaged_structures_id != undefined && creep.memory.damaged_structures_id.length < 3 && creep.name.startsWith('Builder') == false) {
-            //creep.move(LEFT)
+        if (((creep.memory.damaged_structures_id != undefined && creep.memory.damaged_structures_id.length < 3) || creep.memory.damaged_structures_id==undefined) && creep.name.startsWith('Builder') == false) {
+            //creep.move(BOTTOM)
+            //creep.say("b");
             creep.memory.damaged_structures_id = undefined
             creep.roleBuilder(creep, spawn);
         }

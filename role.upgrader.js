@@ -23,13 +23,15 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
             creep.memory.upgrading = true;
             //creep.say('🚧 upgrade');
         }
-        if ((creep.memory.deposit != undefined && Game.getObjectById(creep.memory.deposit).store[RESOURCE_ENERGY] == 0
-            && Game.getObjectById(creep.memory.deposit).structureType != STRUCTURE_LINK) /*|| Game.time%76==0*/) {
+        if ((creep.memory.deposit != undefined &&  Game.getObjectById(creep.memory.deposit)!=null && Game.getObjectById(creep.memory.deposit).store[RESOURCE_ENERGY] == 0
+           /* && Game.getObjectById(creep.memory.deposit).structureType != STRUCTURE_LINK*/)
+           ||  (  Game.getObjectById(spawn.memory.controller_link_id)!=null && spawn.memory.controller_link_id!=creep.memory.deposit &&  Game.getObjectById(spawn.memory.controller_link_id).store[RESOURCE_ENERGY] >0)/*|| Game.time%76==0*/) {
             creep.memory.deposit = undefined;
         }
         if (creep.memory.deposit == undefined /*&& Game.time % 4 == 0*/) {
 
-            if (spawn.memory.controller_link_id != undefined && Game.getObjectById(spawn.memory.controller_link_id) != null) {
+            if (spawn.memory.controller_link_id != undefined && Game.getObjectById(spawn.memory.controller_link_id) != null
+            && Game.getObjectById(spawn.memory.controller_link_id).store[RESOURCE_ENERGY]>0) {
                 creep.memory.deposit = spawn.memory.controller_link_id
             }
             else {
@@ -66,10 +68,10 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
         if (creep.memory.upgrading) // if upgrading go upgrade
         {
             //creep.say(creep.pos.getRangeTo(creep.room.controller));
-            //console.log(creep.name," ",creep.upgradeController(creep.room.controller));
+            //creep.say(creep.upgradeController(creep.room.controller));
             var upgrade_result = creep.upgradeController(creep.room.controller);
             if (upgrade_result == ERR_NOT_IN_RANGE || upgrade_result == -9) {
-
+                //creep.say("A");
                 creep.moveTo(creep.room.controller, { reusePath: 17 });
                 //move_avoid_hostile(creep,creep.room.controller.pos,1,true);
             }

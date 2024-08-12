@@ -2,7 +2,7 @@
 
 Creep.prototype.roleFiller = function (creep, spawn) {
 
-    ////creep.say("F");
+    //creep.say("F");
     if (creep.memory.working_pos == undefined) {
         var at_first_pos = creep.room.lookAt(spawn.pos.x + 1, spawn.pos.y - 1);
         if (at_first_pos.length == 0 ||
@@ -87,7 +87,7 @@ Creep.prototype.roleFiller = function (creep, spawn) {
 
         if (creep.memory.my_container != undefined) {
             if (creep.memory.to_fill == undefined) {
-                var to_fill = creep.pos.findInRange(FIND_STRUCTURES, 2, {
+                var to_fill = creep.pos.findInRange(FIND_STRUCTURES, 1.7, {
                     filter: function (structure) {
                         return structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN;
                     }
@@ -116,9 +116,11 @@ Creep.prototype.roleFiller = function (creep, spawn) {
                 }
                 else {
                     for (let i = 0; i < creep.memory.to_fill.length; i++) {
-                        if (Game.getObjectById(creep.memory.to_fill[i]).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                            creep.transfer(Game.getObjectById(creep.memory.to_fill[i]), RESOURCE_ENERGY);
-                        }
+                        var result=creep.transfer(Game.getObjectById(creep.memory.to_fill[i]), RESOURCE_ENERGY);
+                        //if (Game.getObjectById(creep.memory.to_fill[i]).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                        //    var result=creep.transfer(Game.getObjectById(creep.memory.to_fill[i]), RESOURCE_ENERGY);
+                            if(result==OK && creep.store[RESOURCE_ENERGY]==0){break;}
+                        //}
 
                     }
                 }

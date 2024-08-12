@@ -108,10 +108,7 @@ function generateRoomsInRangeAndSort(tileName, range = 8) {
 Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
     //creep.suicide();
     console.log("scanner from: ", creep.memory.home_room.name, " is at: ", creep.room.name)
-    //spawn.memory.scanner_rooms = undefined;
-    //spawn.memory.scanner_rooms.shift();
-    //creep.say("SCAN");
-    //creep.say(Game.rooms[creep.memory.target_room]);
+    //creep.memory.target_room='W19N13'
     console.log("scanner pos: ", creep.room.name, " heading to: ", creep.memory.target_room);
     if (spawn.memory.scanner_rooms == undefined || (spawn.memory.scanner_rooms != undefined && spawn.memory.scanner_rooms.length == 0)) {
         spawn.memory.scanner_rooms = []
@@ -121,7 +118,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
     }
     else {
         if (creep.memory.target_room == undefined && spawn.memory.scanner_rooms != undefined && spawn.memory.scanner_rooms.length > 0
-            && Game.map.getRoomStatus(spawn.memory.scanner_rooms[0]).status == "normal") {
+            && Game.map.getRoomStatus(spawn.memory.scanner_rooms[0]).status == 'normal') {
             creep.say("assign");
 
             creep.memory.target_room = spawn.memory.scanner_rooms[0];
@@ -140,6 +137,12 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             creep.say("removing home_room");
             return;
         }
+        if (Game.map.findRoute(creep.room.name, creep.memory.target_room) == ERR_NO_PATH || Game.map.getRoomStatus(creep.memory.target_room!='normal')) {
+            console.log("removing: ", creep.memory.target_room);
+            creep.say("A")
+            spawn.memory.scanner_rooms.shift()
+            creep.memory.target_room = undefined;
+        }
 
         if (creep.memory.target_room != undefined && creep.room.name != creep.memory.target_room) {
             const destination = new RoomPosition(25, 25, creep.memory.target_room);
@@ -148,11 +151,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             creep.say(creep.memory.target_room);
         }
 
-        if (Game.map.findRoute(creep.room.name, creep.memory.target_room) == ERR_NO_PATH) {
-            console.log("removing: ", creep.memory.target_room);
-            spawn.memory.scanner_rooms.shift()
-            creep.memory.target_room = undefined;
-        }
+        
 
 
     }

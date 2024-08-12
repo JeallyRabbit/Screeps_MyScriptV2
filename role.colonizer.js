@@ -2,12 +2,7 @@
 
 Creep.prototype.roleColonizer = function roleColonizer(creep,spawn){
 
-        //creep.say("Colonize");
-        //creep.suicide();
-        //creep.move(BOTTOM_LEFT);
-        //return;
-        //creep.say(creep.memory.target_room==creep.room.name);
-        //creep.say(creep.room.name==creep.memory.target_room.name);
+        //creep.memory.target_room='W19N13'
         if (creep.memory.target_room) {
             if (creep.room.name == creep.memory.target_room) {// if in target room - go claim 
 
@@ -72,7 +67,10 @@ Creep.prototype.roleColonizer = function roleColonizer(creep,spawn){
                         return;
                     }
                     else {
-                        creep.drop(RESOURCE_ENERGY)
+                        creep.memory.home_room.name=creep.memory.target_room;
+                        creep.roleHauler(creep,spawn)
+                        creep.say("hauling")
+                        //creep.drop(RESOURCE_ENERGY)
                         return
                     }
                     //return

@@ -41,10 +41,13 @@ Creep.prototype.roleReserver = function roleReserver(creep, spawn) {
             //creep.say(creep.moveTo(new RoomPosition(25,25, creep.memory.target_room), {visualizePathStyle: { stroke: '#ff00ff' } }));
             if(Game.rooms[creep.memory.target_room]!=undefined)
             {
-                creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 19 });
+                creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 8 });
+                //creep.move(BOTTOM)
             }
+            
             else{
-                creep.moveToRoom(creep.memory.target_room)
+                //creep.moveTo(Game.rooms[creep.memory.target_room], { reusePath: 19 });
+                //creep.moveToRoom(creep.memory.target_room)
             }
             
         }
