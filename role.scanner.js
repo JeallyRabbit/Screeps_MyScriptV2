@@ -107,6 +107,16 @@ function generateRoomsInRangeAndSort(tileName, range = 8) {
 
 Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
     //creep.suicide();
+    if(Memory.colonizing==false)
+    {
+        creep.suicide()
+    }
+
+    if(spawn.memory.manual_colonize!=undefined)
+    {
+        creep.memory.target_room=spawn.memory.manual_colonize;
+    }
+
     console.log("scanner from: ", creep.memory.home_room.name, " is at: ", creep.room.name)
     //creep.memory.target_room='W19N13'
     console.log("scanner pos: ", creep.room.name, " heading to: ", creep.memory.target_room);
@@ -146,9 +156,30 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
         if (creep.memory.target_room != undefined && creep.room.name != creep.memory.target_room) {
             const destination = new RoomPosition(25, 25, creep.memory.target_room);
-            creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidSk: true, avoidHostileRooms: false });
+            //creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidSk: true, avoidHostileRooms: false });
             //creep.moveTo(new RoomPosition(25,25,creep.memory.target_room),{reusePath:23,range:10}) 
             creep.say(creep.memory.target_room);
+
+
+            var exits = creep.room.find(creep.room.findExitTo(creep.memory.target_room))
+
+            if (exits != undefined && exits.length > 0) {
+                var closest_exit = creep.pos.findClosestByRange(exits)
+                if (closest_exit != null) {
+                    /*
+                    for(a of exits)
+                    {
+                        console.log(a)
+                    }
+                        */
+                    creep.moveTo(closest_exit, { maxRooms: 1 })
+                }
+                else {
+                    creep.moveTo(exits[0], { maxRooms: 1 })
+                }
+
+            }
+
         }
 
         
@@ -270,7 +301,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
                         break;
                     }
                 }
-                if (is_to_close == false || true) {
+                if (is_to_close == false /* || true */) {
                     if (Memory.colonizing == true) {
                         Memory.rooms_to_colonize.push(new colonizeRoom(creep.room.name, spawn_pos_x, spawn_pos_y - 2));
                     }

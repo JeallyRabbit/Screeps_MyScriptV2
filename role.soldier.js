@@ -33,7 +33,8 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
                     && structure.structureType != STRUCTURE_CONTROLLER
                     //&& structure.structureType!=STRUCTURE_WALL
                     && structure.structureType != STRUCTURE_CONTAINER
-                    && structure.structureType != STRUCTURE_ROAD;
+                    && structure.structureType != STRUCTURE_ROAD
+                    && structure.my==false
             }
         });
         //console.log("structure: ",target_structure);
@@ -49,7 +50,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
 
             if (creep.memory.is_melee == false) {
                 if (creep.pos.inRangeTo(target_creep, 2)) {
-                    goOutOfRange(creep, 2);
+                    goOutOfRange(creep, 3);
                 }
             }
 
@@ -86,7 +87,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             }
         }
         else {
-            creep.moveTo(25, 25, { range: 10 });
+            creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room),{reusePath:11, maxRooms:1,range:22});
         }
     }
     else {
@@ -101,5 +102,8 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
         //creep.move(_.sample([TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT]))
         creep.heal(creep);
     }
+
+    
+
 
 };

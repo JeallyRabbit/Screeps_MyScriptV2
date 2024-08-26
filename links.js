@@ -3,7 +3,7 @@ Spawn.prototype.links=function links (spawn){
    // /** @param {Game} game **/
     //tick: function (spawn) {
 
-        if (spawn.room.storage == undefined) {
+        if (spawn.room.storage == undefined ) {
             return;
         }
 
@@ -46,7 +46,7 @@ Spawn.prototype.links=function links (spawn){
 
         // FIND SOURCES LINKS
 
-        if (spawn.memory.sources_links_id != undefined) {
+        if (spawn.memory.sources_links_id != undefined && spawn.memory.farming_rooms!=undefined && spawn.memory.farming_rooms.length>0) {
             if(spawn.memory.sources_links_id.length<spawn.memory.farming_rooms[0].sources_num)
             {
                 spawn.memory.sources_links_id = undefined

@@ -1,5 +1,4 @@
 var roleBuilder = require('role.builder');
-const { move_avoid_hostile } = require("./move_avoid_hostile");
 //const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
 
 Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spawn) {

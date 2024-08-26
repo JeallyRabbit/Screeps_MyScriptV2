@@ -93,6 +93,7 @@ Creep.prototype.roleDistanceCarrier = function roleDistanceCarrier(creep, spawn)
             if (creep.memory.energy_to_collect == undefined && (Game.time % 12 == 0 || Game.time % 13 == 0)) {
                 const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
                     filter: resource => resource.amount >=creep.store.getFreeCapacity(RESOURCE_ENERGY)
+                    && resource.pos.isNearTo(spawn)==false
                 });
                 if (droppedEnergy != undefined && droppedEnergy != null && droppedEnergy.length > 0) {
                     var closestEnergy = creep.pos.findClosestByPath(droppedEnergy);

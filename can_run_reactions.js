@@ -4,7 +4,7 @@ function can_run_lvl_0_reaction(storage) {
         return ["O", "H"];
     }
     else if (storage.store["Z"] > 0 && storage.store["K"] > 0) {
-        console.log("ZKZKZKZKZKZKKZZKZK");
+        //console.log("ZKZKZKZKZKZKKZZKZK");
         return ["Z", "K"];
     }
     else if (storage.store["U"] > 0 && storage.store["L"] > 0) {

@@ -1,11 +1,27 @@
-const { toArray } = require("lodash");
-var RoomPositionFunctions = require('roomPositionFunctions');
-const { goOutOfRange } = require("./goOutOfRange");
-const { move_avoid_hostile } = require("./move_avoid_hostile");
 
-Creep.prototype.keeper_carrier = function keeper_carrier(creep, spawn) {
 
-    //creep.suicide();
+Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
+
+    /// creep.memory.tareget_room
+    // creep.memory.target_source
+    //creep.suicide()
+    //creep.say("🚚")
+    if (creep.memory.home_container != undefined && Game.getObjectById(creep.memory.home_container) == null) {
+        creep.memory.home_container = undefined
+        //delete creep.memory.home_container
+    }
+    if (creep.memory.home_container == undefined) {
+        creep.memory.home_container = spawn.room.storage.id
+    }
+
+    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+        creep.memory.collecting = true
+
+    }
+    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+        creep.memory.collecting = false
+    }
+
 
     //creep.say("!");
     // Check if the creep has a target room
@@ -13,137 +29,147 @@ Creep.prototype.keeper_carrier = function keeper_carrier(creep, spawn) {
         //console.log(" 2");
         return 0;
     }
-    // Check if the creep is in the target room
-    if (creep.room.name !== creep.memory.target_room
-        && creep.store[RESOURCE_ENERGY] == 0) {
-        // If not, move to the target room
-        const destination = new RoomPosition(25, 25, creep.memory.target_room);
-        creep.moveTo(destination);
+
+    if (creep.memory.collecting == false) {
+        //creep.say("bac")
+        var transfer_result=creep.transfer(spawn.room.storage, RESOURCE_ENERGY) 
+        if (transfer_result== ERR_NOT_IN_RANGE) {
+            //creep.say("bac")
+            if ((Game.getObjectById(creep.memory.lair) != null && creep.pos.inRangeTo(Game.getObjectById(creep.memory.lair).pos, 7))
+                || creep.memory.target_container == undefined) {
+                creep.say("whatever")
+                creep.moveTo(Game.getObjectById(creep.memory.home_container).pos, { reusePath: 21, avoidCreeps: true })
+            }
+            else {
+                creep.say("careful")
+                creep.moveTo(Game.getObjectById(creep.memory.home_container).pos, { reusePath: 15, avoidSk: true,avoidCreeps: true })
+            }
+
+        }
+        else if(transfer_result==OK){
+            if(creep.memory.succesfull_transfers==undefined)
+            {
+                creep.memory.succesfull_transfers=1;
+            }
+            else{
+                creep.memory.succesfull_transfers++;
+            }
+        }
+
     }
-    else if (creep.room.name == creep.memory.target_room
-        && creep.store.getFreeCapacity() > 0) {// in target room and is collecting
+    else { // creep is collecting
+        if (creep.room.name == creep.memory.target_room) {
+            if (creep.memory.target_container != undefined && Game.getObjectById(creep.memory.target_container) == null) {
+                creep.memory.target_container = undefined
+            }
 
-        creep.memory.is_working = true;
-
-        if (creep.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length > 0) {
-            goOutOfRange(creep, 4);
-            delete creep.memory.my_path;
-        }
-
-        if (creep.memory.closestDroppedEnergy != undefined && creep.memory.closestDroppedEnergy.length > 0) {
-            for (let i = 0; i < creep.memory.closestDroppedEnergy.length; i++) {
-                if (Game.getObjectById(creep.memory.closestDroppedEnergy) == undefined) {
-                    creep.say("del energy");
-                    creep.memory.closestDroppedEnergy = undefined;
-                    break;
+            if (creep.memory.target_container == undefined) {
+                //console.log("renewing target_container")
+                var container = Game.getObjectById(creep.memory.target_source).pos.findClosestByRange(FIND_STRUCTURES, {
+                    filter:
+                        function (str) {
+                            return str.structureType == STRUCTURE_CONTAINER
+                        }
+                })
+                //console.log("target_source: ", Game.getObjectById(creep.memory.target_source).pos)
+                //console.log(container.pos)
+                if (container != null && container.pos.inRangeTo(Game.getObjectById(creep.memory.target_source), 4)) {
+                    creep.memory.target_container = container.id
                 }
             }
-        }
-        else if (creep.memory.closestDroppedEnergy == undefined) {
-            var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: resource => resource.pos.findInRange(FIND_HOSTILE_CREEPS, 4).length < 1
-                    && resource.amount > 50
-            });
-            closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy);
-            if (closestDroppedEnergy != null) {
-                creep.memory.closestDroppedEnergy = closestDroppedEnergy.id;
-            }
-        }
-        //closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy);
-        //creep.say(closestDroppedEnergy.pos.x+" "+closestDroppedEnergy.pos.y);
-        if (creep.memory.closestDroppedEnergy != undefined && creep.memory.closestDroppedEnergy != null && Game.getObjectById(creep.memory.closestDroppedEnergy) != null) {//there is safe energy
-            //creep.say('E');
-            if (creep.pickup(Game.getObjectById(creep.memory.closestDroppedEnergy)) == ERR_NOT_IN_RANGE) {
-                // Move to it
-                //move_avoid_hostile(creep, Game.getObjectById(creep.memory.closestDroppedEnergy).pos,0,false);
-                creep.moveTo(Game.getObjectById(creep.memory.closestDroppedEnergy), { avodidSk: true });
-                if (creep.memory.my_path == undefined) {
-                    creep.memory.closestDroppedEnergy = undefined;
-                }
-            }
-            else {
-                creep.memory.my_path = undefined;
-            }
 
-        }
-        else {// go to farmers
-
-            var farmer = creep.room.find(FIND_MY_CREEPS, {
-                filter: function (farmer) {
-                    return farmer.memory.role == 'keeperFarmer';
+            if (creep.memory.target_container != undefined) {
+                if (creep.memory.lair != undefined && Game.getObjectById(creep.memory.lair) == null) {
+                    //console.log("resetting lair")
+                    creep.memory.lair = undefined;
                 }
-            });
-            if (farmer != undefined && farmer.length > 0) {
-                creep.moveTo(farmer[0], { range: 3, avoidSk: true });
-                //move_avoid_hostile(creep, farmer[0].pos, 3);
-            }
-            else {
-                var fighter = creep.room.find(FIND_MY_CREEPS, {
-                    filter: function (fighter) {
-                        return fighter.memory.role == 'keeperKiller' || fighter.memory.role == 'keeperHealer';
+
+                if (creep.memory.lair == undefined && Game.getObjectById(creep.memory.target_source) != null) {
+                    var temp_lair = Game.getObjectById(creep.memory.target_source).pos.findClosestByRange(FIND_STRUCTURES, {
+                        filter:
+                            function (str) {
+                                return str.structureType == STRUCTURE_KEEPER_LAIR
+                            }
+                    })
+
+                    if (temp_lair != null && temp_lair.pos.inRangeTo(Game.getObjectById(creep.memory.target_source), 7)) {
+                        //console.log("saving lair")
+                        creep.memory.lair = temp_lair.id;
                     }
-                });
-                if (fighter != undefined && fighter.length > 0) {
-                    creep.moveTo(fighter[0], { range: 5, avoidSk: true });
-                    //move_avoid_hostile(creep, fighter[0].pos, 5, false);
+                }
+                var lair = Game.getObjectById(creep.memory.lair)
+                //creep.say(lair)
+                if (lair != null) {
+                    //creep.say("!null")
+                    if (lair.ticksToSpawn > 10 && lair.ticksToSpawn < 285 &&
+                        Game.getObjectById(creep.memory.target_container).store[RESOURCE_ENERGY] >= CARRY_CAPACITY
+                    ) {
+                        //creep.say("1")
+                        if (creep.withdraw(Game.getObjectById(creep.memory.target_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                            var if_avoid_sk = true
+                            if (creep.pos.inRangeTo(Game.getObjectById(creep.memory.target_container), 8)) {
+                                if_avoid_sk = false
+                            }
+                            creep.moveTo(Game.getObjectById(creep.memory.target_container), { reusePath: 21, maxRooms: 1, avoidSk: if_avoid_sk,avoidCreeps: true })
+                            //creep.say('2')
+                        }
+                    }
+                    else {
+                        if (creep.pos.inRangeTo(lair, 7)) {
+                            creep.fleeFrom({ lair }, 7, 1)
+                        }
+                        else {
+                            creep.moveTo(lair, { reusePath: 21, range: 8,avoidCreeps: true})
+                        }
+                    }
+                }
+
+
+            }
+            else { // collect cropped energy
+                if (creep.memory.dropped_energy != undefined && Game.getObjectById(creep.memory.dropped_energy) == null) {
+                    creep.memory.dropped_energy = undefined;
+                }
+
+                if (creep.memory.dropped_energy == undefined) {
+                    var dropped_energy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+                        filter: function (res) {
+                            return res.resourceType == RESOURCE_ENERGY
+                        }
+
+                    })
+                    if (dropped_energy != null) {
+                        creep.memory.dropped_energy = dropped_energy.id;
+                    }
+                }
+
+                if (creep.memory.dropped_energy != undefined) {
+                    var energy = Game.getObjectById(creep.memory.dropped_energy)
+                    if (creep.pickup(energy) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(energy, { reusePath: 17, maxRooms: 1,avoidCreeps: true})
+                    }
                 }
             }
+
+            var hostiles = [];
+            if (Game.rooms[creep.room.name].memory.keepers != undefined && Game.rooms[creep.room.name].memory.keepers.length > 0) {
+                for (a of Game.rooms[creep.room.name].memory.keepers) {
+                    if(Game.getObjectById(a)!=null)
+                    {
+                        hostiles.push(Game.getObjectById(a))
+                    }
+                    
+                }
+
+            }
+            creep.fleeFrom(hostiles, 6)
+
         }
-        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {
-            filter: function (hostile) {
-                return hostile.pos.inRangeTo(creep, 3) == true;
-            }
-        });
-        if (hostileCreeps != undefined && hostileCreeps.length > 0) {
-            //creep.say("RUN");
-            goOutOfRange(creep, 4);
+        else {
+            creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 21,avoidCreeps: true })
         }
-
     }
-    else if (creep.room.name != creep.memory.home_room.name
-        && creep.store[RESOURCE_ENERGY] >= creep.store.getCapacity() * 0.9) {// not in home_room and no free space - go home_room
-        //creep.say("GH");
-        //creep.say(creep.moveTo(25,25,creep.memory.home_room.name));
-        //console.log("home: ", home);
-        creep.moveTo(new RoomPosition(25, 25, creep.memory.home_room.name), { range: 10 });
-        //move_avoid_hostile(creep, new RoomPosition(25, 25, creep.memory.home_room.name), 1);
-    }
-    else if (creep.room.name == creep.memory.home_room.name) {
-        /*
-        var containers = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_CONTAINER &&
-                    structure.store[RESOURCE_ENERGY] < 2000;
-            }
-        });
-        */
-        var containers = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_STORAGE;
-            }
-        });
 
-        containers = containers.concat(creep.room.find(FIND_MY_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_LINK
-                    && structure.pos.x != spawn.pos.x + 3 && structure.pos.y != spawn.pos.y - 3
-                    && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-            }
-        }));
-
-        if (containers.length > 0) {
-            //console.log(6.1);
-            var closest_container = creep.pos.findClosestByRange(containers);
-            //console.log(closest_container.pos);
-            var transfer_amount = 1;
-            transfer_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, closest_container.store[RESOURCE_ENERGY]);
-            if (creep.transfer(closest_container, RESOURCE_ENERGY, transfer_amount) == ERR_NOT_IN_RANGE) {// if creep have energy go to container and store
-                creep.moveTo(closest_container);
-            }
-        }
-
-
-    }
 
 };
 

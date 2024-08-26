@@ -12,6 +12,10 @@ Spawn.prototype.setBaseState = function setBaseState(spawn)
         spawn.memory.state.push(STATE_DEVELOPING);
         spawn.memory.state.push(STATE_NEED_ENERGY)
     }
+    if(spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]<200000 && spawn.room.controller.level>7)
+    {
+        spawn.memory.state.push(STATE_NEED_ENERGY)
+    }
 }
 
 //module.exports = setBaseState;

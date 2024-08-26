@@ -18,9 +18,9 @@ function maxDistanceCarrier(cap,spawn,limit,min)// return array with max possibl
         }
     }
     else{
-        if(cap>2200)
+        if(cap>1950)
         {
-            cap=2200;
+            cap=1950;
         }
     }
     

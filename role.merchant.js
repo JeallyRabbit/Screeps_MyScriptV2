@@ -107,7 +107,7 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
             creep.withdraw(manager_link, RESOURCE_ENERGY)
             creep.transfer(storage, RESOURCE_ENERGY)
         }
-        else {
+        else if(storage!=undefined){
             //return;
             //withdrawing from storage
             for (let res in storage.store) {

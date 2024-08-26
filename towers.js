@@ -40,18 +40,35 @@ Spawn.prototype.towers = function towers(spawn) {
         }
     }
 
+    var ramparts=spawn.room.find(FIND_MY_STRUCTURES,{filter:
+        function(str)
+        {
+            return str.structureType==STRUCTURE_RAMPART && str.hits<str.hitsMax && str.hits<5000
+        }
+    })
+    var mostDamagedRampart=undefined;
+    if(ramparts.length>0){
+        mostDamagedRampart=ramparts[0]
+    }
+    for(r of ramparts)
+    {
+        if(r.hits<mostDamagedRampart.hits-RAMPART_DECAY_AMOUNT)
+        {
+            mostDamagedRampart=r;
+        }
+    }
     //_.forEach(towers, function (tower) 
     if (spawn.memory.towers_id == undefined) {
         return;
     }
-    /*
+    
     var damagedCreeps = spawn.room.find(FIND_MY_CREEPS, {
         filter:
             function (myCreep) {
                 return myCreep.hits < myCreep.hitsMax;
             }
     });
-    */
+    
 
     for (tower_id of spawn.memory.towers_id) {
         var tower = Game.getObjectById(tower_id);
@@ -68,6 +85,10 @@ Spawn.prototype.towers = function towers(spawn) {
             //tower.attack(closestHostile);
         }
         */
+        if (damagedCreeps) {
+            tower.heal(damagedCreeps[0]);
+        }
+
         //return;
         if (spawn.memory.weakest_healer != undefined) {
             if (Game.getObjectById(spawn.memory.weakest_healer) != null) {
@@ -85,6 +106,16 @@ Spawn.prototype.towers = function towers(spawn) {
                 tower.attack(Game.getObjectById(spawn.memory.weakest_ranged))
             }
         }
+        else if (spawn.memory.weakest_any != undefined) {
+            if (Game.getObjectById(spawn.memory.weakest_any) != null) {
+                tower.attack(Game.getObjectById(spawn.memory.weakest_any))
+            }
+        }
+        else if(mostDamagedRampart!=undefined)
+        {
+            //spawn.room.visual.text(mostDamagedRampart.pos.x+" "+mostDamagedRampart.pos.y,tower.pos.x,tower.pos.y-1)
+            tower.repair(mostDamagedRampart)
+        }
 
         else if (mostDamagedStructure) {
             //console.log("tower most damaged str: ",mostDamagedStructure.pos);
@@ -97,11 +128,11 @@ Spawn.prototype.towers = function towers(spawn) {
                 tower.attack(Game.getObjectById(spawn.memory.weakest_any))
             }
         }
-        /*
+        
         else if (damagedCreeps) {
             tower.heal(damagedCreeps[0]);
         }
-        */
+        
     }
     // }
 }//;
