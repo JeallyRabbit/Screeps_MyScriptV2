@@ -28,6 +28,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
             */
             
             
+            
 
 
         if (terminal.room.controller.level == 8 && terminal.cooldown == 0) {
@@ -71,7 +72,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
  
 
         var cost = sell_everything_except_energy(terminal, cost, spawn)
- 
+        //console.log(terminal.room.name," cost: ",cost)
         
         if (spawn.memory.state.includes(STATE_NEED_ENERGY) && terminal.cooldown==0 ) {
             //console.log("---------------------------")
@@ -124,14 +125,15 @@ function sell_everything_except_energy(terminal, cost, spawn) {
 
             //console.log("best offer2: ",best_order_id);
             var trade_amount = Math.min(terminal.store[res], Game.market.getOrderById(best_order_id).amount)
+            trade_amount/=2
             var cost = Game.market.calcTransactionCost(trade_amount, Game.market.getOrderById(best_order_id).roomName,
                 spawn.room.name)
             var profit = (Game.market.getOrderById(best_order_id).price * trade_amount) - cost
             var profit_per_unit = profit / trade_amount
             //console.log("profit per unit: ",profit_per_unit)
-            if (profit_per_unit > 10) {
+            if (profit_per_unit > 10 || true) {
                 //console.log("profit_per_unit: ",profit_per_unit)
-                //console.log(res, " selling result: ", Game.market.deal(best_order_id, trade_amount, spawn.room.name))
+                console.log(res, " selling result: ", Game.market.deal(best_order_id, trade_amount, spawn.room.name))
                 //console.log(Game.market.outgoingTransactions);
 
                 //console.log("trade_amount: ",trade_amount);
@@ -140,7 +142,13 @@ function sell_everything_except_energy(terminal, cost, spawn) {
 
         }
 
-
+        /*
+        console.log("outgoing transactions")
+        for(a of Game.market.outgoingTransactions)
+        {
+            console.log(a.amount," ",a.resourceType," ",a.from," ",a.to)
+        }
+        */
     }
     return cost
 }

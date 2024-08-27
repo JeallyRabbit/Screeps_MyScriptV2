@@ -147,8 +147,8 @@ Creep.prototype.roleKeeperRepairer = function roleKeeperRepairer(creep, spawn) {
         }
 
         var hostiles = [];
-        if (Game.rooms[creep.room.name].memory.keepers != undefined && Game.rooms[creep.room.name].memory.keepers.length > 0) {
-            for (a of Game.rooms[creep.room.name].memory.keepers) {
+        if (Game.rooms[creep.room.name].memory.hostiles != undefined && Game.rooms[creep.room.name].memory.hostiles.length > 0) {
+            for (a of Game.rooms[creep.room.name].memory.hostiles) {
                 if (Game.getObjectById(a) != null) {
                     hostiles.push(Game.getObjectById(a))
                 }
@@ -156,7 +156,7 @@ Creep.prototype.roleKeeperRepairer = function roleKeeperRepairer(creep, spawn) {
             }
 
         }
-        creep.fleeFrom(hostiles, 6)
+        creep.fleeFrom(hostiles, 7)
 
     }
     else {

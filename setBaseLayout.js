@@ -788,8 +788,11 @@ function plan_borders(spawn, roomCM, rcl) {
 
     // Determine the bounding box around buildings
     buildings.forEach(building => {
-        if (building.structureType != STRUCTURE_ROAD && building.structureType != STRUCTURE_RAMPART && building.structureType != STRUCTURE_WALL
+        /*if (building.structureType != STRUCTURE_ROAD && building.structureType != STRUCTURE_RAMPART && building.structureType != STRUCTURE_WALL
             && building.structureType != STRUCTURE_CONTAINER
+        )*/
+        if(building.structureType==STRUCTURE_EXTENSION || building.structureType==STRUCTURE_TOWER || building.structureType==STRUCTURE_SPAWN
+            || building.structureType==STRUCTURE_STORAGE
         ) {
             max_x = Math.max(max_x, building.x);
             min_x = Math.min(min_x, building.x);

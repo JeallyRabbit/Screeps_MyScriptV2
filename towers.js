@@ -85,12 +85,13 @@ Spawn.prototype.towers = function towers(spawn) {
             //tower.attack(closestHostile);
         }
         */
-        if (damagedCreeps) {
+        if (damagedCreeps.length>0 && damagedCreeps[0].hitsMax-damagedCreeps[0].hits>=spawn.memory.towers_id*
+            TOWER_POWER_HEAL*TOWER_FALLOFF*TOWER_FALLOFF_RANGE) {
             tower.heal(damagedCreeps[0]);
         }
 
         //return;
-        if (spawn.memory.weakest_healer != undefined) {
+        if (spawn.memory.weakest_healer != undefined && false) {
             if (Game.getObjectById(spawn.memory.weakest_healer) != null) {
                 tower.attack(Game.getObjectById(spawn.memory.weakest_healer))
             }

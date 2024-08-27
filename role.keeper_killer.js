@@ -11,36 +11,22 @@ Creep.prototype.roleKeeperKiller = function roleKeeperKiller(creep, spawn) {
 
     if (creep.room.name == creep.memory.target_room) {
 
-        if (Game.rooms[creep.memory.target_room] != undefined && Game.rooms[creep.memory.target_room].memory.lairs == undefined) {
-            var lairs = Game.rooms[creep.memory.target_room].find(FIND_STRUCTURES, {
-                filter:
-                    function (str) {
-                        return str.structureType == STRUCTURE_KEEPER_LAIR
-                    }
-            })
-            if (lairs.length > 0) {
-                creep.memory.lairs = [];
-                Game.rooms[creep.memory.target_room].memory.lairs=[];
-                for (a of lairs) {
-                    Game.rooms[creep.memory.target_room].memory.lairs.push(a.id)
-                }
-            }
-        }
+        
 
         // there are keepers to attack
-        var keepers = creep.room.find(FIND_HOSTILE_CREEPS, {
-            filter:
-                function (enemy) {
-                    return enemy.owner.username == 'Source Keeper';
-                }
-        })
+        var keepers = []
+        for(keeper_id of Game.rooms[creep.room.name].memory.hostiles)
+        {
+            //creep.say(keeper_id)
+            var keeper=Game.getObjectById(keeper_id)
+            if(keeper!=null)
+            {
+                keepers.push(keeper)
+            }
+        }
         if (keepers.length > 0) {
 
-            Game.rooms[creep.room.name].memory.keepers=[]
-            for(a of keepers)
-            {
-                Game.rooms[creep.room.name].memory.keepers.push(a.id)
-            }
+            
             var closest_enemy = creep.pos.findClosestByRange(keepers)
             if (closest_enemy != null) {
                 if (creep.attack(closest_enemy) == ERR_NOT_IN_RANGE) {

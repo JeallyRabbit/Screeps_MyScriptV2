@@ -48,7 +48,7 @@ const profiler = require('screeps-profiler');
 const setRequiredPopulation = require('setRequiredPopulation');
 const setBaseState = require('setBaseState')
 const baseDefense = require('baseDefense')
-
+const operateKeepersRooms=require('operateKeepersRooms')
 
 const maxRepairer = require('maxRepairer');
 const maxBuilder = require('maxBuilder');
@@ -119,7 +119,7 @@ module.exports.loop = function () {
         }
             */
 
-        var step = 300
+        var step = 1500
         if (Game.time % step == 0 && false) {
             //console.log("rooms: ")
             for (var roomName in Game.rooms) {
@@ -139,14 +139,23 @@ module.exports.loop = function () {
                     room.memory.raw_energy_income = 0;
                     
                 }
+
+                if(room.memory.raw_keepers_energy_income!=undefined)
+                {
+                    room.memory.raw_last_mean_keepers_energy_income=room.memory.raw_keepers_energy_income/step
+                    room.memory.raw_keepers_energy_income=0
+                }
             }
 
         }
         for (var roomName in Game.rooms) {
             var room = Game.rooms[roomName]
             room.visual.text("raw_energy_income: " + room.memory.raw_energy_income, 41, 1, { color: '#fc03b6' })
-            room.visual.text("raw_last_mean_energy_income/300t: " + Math.round(room.memory.raw_last_mean_energy_income*100)/100, 41, 2, { color: '#fc03b6' })
+            room.visual.text("raw_last_mean_energy_income/t: " + Math.round(room.memory.raw_last_mean_energy_income*100)/100, 41, 2, { color: '#fc03b6' })
             room.visual.text("timer: "+(Game.time%300), 41, 3, { color: '#fc03b6' })
+
+            room.visual.text("raw_keepers_income: "+room.memory.raw_keepers_energy_income,41,10, { color: '#fc03b6' })
+            room.visual.text("raw_last_mean_keepers_income/t: "+Math.round(room.memory.raw_last_mean_keepers_energy_income*100)/100,41,11, { color: '#fc03b6' })
         }
 
 
@@ -346,6 +355,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.setBaseState(spawn);
             spawn.baseDefense();
             spawn.setRequiredPopulation(spawn);
+            spawn.operateKeepersRooms()
 
             spawn.memory.farming_rooms = [];
             if (spawn.memory.farming_sources != undefined) {
@@ -727,7 +737,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         for (let i = 0; i < spawn.memory.keepers_sources.length; i++) {
                             if (spawn.memory.keepers_sources[i].id == creep.memory.target_source) {
 
-                                spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance * 2);
+                                //spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance * 2);
+                                spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance );
                                 spawn.memory.keepers_sources[i].carriers++;
                                 break;
                             }
@@ -1186,16 +1197,16 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             var spawn_end_cpu=Game.cpu.getUsed()
             if(spawn.memory.mean_cpu_sum==undefined)
             {
-                spawn.memory.mean_cpu_sum=pawn_end_cpu-spawn_start_cpu
+                spawn.memory.mean_cpu_sum=spawn_end_cpu-spawn_start_cpu
                 //spawn.memory.mean_cpu=spawn_end_cpu-spawn_start_cpu
             }
             else{
                 spawn.memory.mean_cpu_sum+=spawn_end_cpu-spawn_start_cpu
             }
 
-            if(Game.time%1500==0)
+            if(Game.time%step==0)
             {
-                spawn.memory.mean_cpu=spawn.memory.mean_cpu_sum/1500
+                spawn.memory.mean_cpu=spawn.memory.mean_cpu_sum/step
                 spawn.memory.mean_cpu_sum=0
             }
             
