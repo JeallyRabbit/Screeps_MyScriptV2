@@ -438,6 +438,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_keeperFarmer_room = undefined
     spawn.memory.need_keeperRepairer=undefined;
 
+    //keeper repairers
     if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0
         && spawn.room.controller.level >= 8) {
         for (let keeper_room of spawn.memory.keepers_rooms) {
@@ -594,6 +595,8 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                         continue loop1;
                     }
                 }
+
+                
                 if (Game.rooms[myRoom].name != spawn.room.name) {
                     var is_farming_room = false;
                     for (let farmingRoom of spawn.memory.farming_rooms) {
@@ -645,7 +648,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 }
             }
 
-            //console.log("1 ",spawn.memory.need_soldier," ",spawn.memory.to_colonize)
+            // soldiers for colonization
             if (spawn.memory.need_soldier == undefined && spawn.memory.to_colonize != undefined) {
 
                 //console.log("2")

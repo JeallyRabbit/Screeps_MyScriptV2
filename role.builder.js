@@ -93,7 +93,7 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
             var build_result=creep.build(closest_target)
             if (build_result == ERR_NOT_IN_RANGE) {
                 //creep.say("NB");
-                creep.moveTo(closest_target, { range: 2 });
+                creep.moveTo(closest_target, { range: 2,maxRooms:1 });
                 //move_avoid_hostile(creep, closest_target.pos, 3, false);
             }
             else if (build_result == OK) { 
@@ -104,8 +104,6 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
                     spawn.memory.damagedStructures=undefined;
                 }
             }
-            //move_avoid_hostile(creep, closest_target.pos, 3, false);
-            //creep.moveTo(targets[0],{range:3});
         }
     }
     else if (!creep.memory.building && creep.pos.findClosestByRange(deposits) != null)// not building and there are deposits
@@ -127,7 +125,7 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
         if (closestDroppedEnergy != undefined) {
             if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                 // Move to it
-                creep.moveTo(closestDroppedEnergy);
+                creep.moveTo(closestDroppedEnergy,{maxRooms:1});
                 //move_avoid_hostile(creep, closestDroppedEnergy.pos, 1, false);
             }
         }

@@ -80,7 +80,7 @@ function plan_road_to_target(spawn, roomCM, target, rcl, my_range, start) {
     //console.log("target: ", target);
     destination = target;
     var starting_pos = new RoomPosition(spawn.pos.x, spawn.pos.y, spawn.room.name)
-    if (start != undefined) { starting_pos = start.pos }
+    if (start != undefined) { starting_pos = start }
     //var ret = PathFinder.search(spawn.pos, destination, {
     var ret = PathFinder.search(starting_pos, destination, {
         //maxRooms: 64,
@@ -157,34 +157,20 @@ function plan_road_to_target(spawn, roomCM, target, rcl, my_range, start) {
                 costs.set(struct.pos.x, struct.pos.y, 1);
             });
 
-            //ignore walls
-            if (roomName == spawn.room.name) {
 
-                for (let i = 0; i < 50; i++) {
-                    for (let j = 0; j < 50; j++) {
-                        if (spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART && costs.get(i, j) < 255 /*|| spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART*/) {
-                            costs.set(i, j, 1);
-                        }
-                    }
-                }
-            }
+           
 
-            /*
-            //spawn.
-            room.find(FIND_STRUCTURES, {
-                filter: function (construction) {
-                    return construction.structureType == STRUCTURE_WALL;
-                }
-            }).forEach(function (struct) {
-                costs.set(struct.pos.x, struct.pos.y, 1);
-            });
-            */
 
-            costs.set(destination.x, destination.y, 255);
+            //costs.set(destination.x, destination.y, 255);
 
             return costs;
         }
     });
+
+
+
+
+    ////////////////////////////////////
 
     if (ret.incomplete != true || true) {
 
@@ -195,85 +181,34 @@ function plan_road_to_target(spawn, roomCM, target, rcl, my_range, start) {
                 console.log(ret.path[i].x, " ", ret.path[i].y)
             }
             */
-            if (ret.path[i].x != destination.x || ret.path[i].y != destination.y || ret.path[i].roomName != destination.roomName
-                // && roomCM.get(ret.path[i].x,ret.path[i].y)<255
-            ) {
+            //if (ret.path[i].x != destination.x || ret.path[i].y != destination.y || ret.path[i].roomName != destination.roomName
+            // && roomCM.get(ret.path[i].x,ret.path[i].y)<255
+            // ) {
 
-                spawn.memory.road_building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, ret.path[i].roomName, STRUCTURE_ROAD, rcl));
-                if (ret.path[i].roomName == spawn.room.name && roomCM.get(ret.path[i].x, ret.path[i].y) < 255) {
+            spawn.memory.road_building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, ret.path[i].roomName, STRUCTURE_ROAD, rcl));
+            if (ret.path[i].roomName == spawn.room.name && roomCM.get(ret.path[i].x, ret.path[i].y) < 255) {
+                spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
+
+                //const terrain = spawn.room.getTerrain();
+
+                //Game.rooms[ret.path[i].roomName].visual.circle(ret.path[i].x, ret.path[i].y, { fill: '#666666', radius: 0.5, stroke: 'pink' });
+
+                //console.log(ret.path[i].x, " ", ret.path[i].y);
+                if ((spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] == 0 || spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] == STRUCTURE_ROAD)
+                    && is_pos_free(ret.path[i].x, ret.path[i].y, ret.path[i].roomName) == true && roomCM.get(ret.path[i].x, ret.path[i].y) < 255
+
+                ) { // tile is empty on plan and in room
                     spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
-
-                    //const terrain = spawn.room.getTerrain();
-
-                    //Game.rooms[ret.path[i].roomName].visual.circle(ret.path[i].x, ret.path[i].y, { fill: '#666666', radius: 0.5, stroke: 'pink' });
-
-                    //console.log(ret.path[i].x, " ", ret.path[i].y);
-                    if ((spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] == 0 || spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] == STRUCTURE_ROAD)
-                        && is_pos_free(ret.path[i].x, ret.path[i].y, ret.path[i].roomName) == true && roomCM.get(ret.path[i].x, ret.path[i].y) < 255
-
-                    ) { // tile is empty on plan and in room
-                        spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
-                        //roomCM.set(ret.path[i].x, ret.path[i].y, 1);
-                    }
-                    /*
-                    else //if (spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] == STRUCTURE_WALL ) {
-                    {//going through wall
-                        //console.log("going through wall at: ", ret.path[i].x, " ", ret.path[i].y, " ", ret.path[i].roomName)
-                        //console.log("on plan; ", spawn.memory.room_plan[ret.path[i].x][ret.path[i].y])
-                        var is_wall_on_list2 = is_wall_on_list(spawn, ret.path[i].x, ret.path[i].y)
-                        var is_wall_in_room2 = is_wall_in_room(spawn, ret.path[i].x, ret.path[i].y)
-                        if (is_wall_on_plan(spawn, ret.path[i].x, ret.path[i].y) == true || is_wall_on_list2 >= 0 || is_wall_in_room2 == true) {
-                            //console.log("FOUND WALL AT: ", ret.path[i].x, " ", ret.path[i].y);
-                            //console.log(spawn.memory.room_plan[ret.path[i].x][ret.path[i].y]);
-                            //console.log(target)
-
-                            spawn.memory.room_plan[ret.path[i].x][ret.path[i].y] = STRUCTURE_RAMPART;
-                            spawn.memory.building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, ret.path[i].roomName,
-                                STRUCTURE_RAMPART, rcl));
-                            spawn.memory.road_building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, ret.path[i].roomName,
-                                STRUCTURE_RAMPART, rcl));
-                            if (is_wall_on_list2 >= 0) {
-                                spawn.memory.building_list.splice(is_wall_on_list2, 1);
-                            }
-
-                            if (is_wall_in_room2) {
-                                var structures_in_room = spawn.room.lookForAt(LOOK_STRUCTURES, ret.path[i].x, ret.path[i].y);
-                                for (a of structures_in_room) {
-                                    if (a.structureType == STRUCTURE_WALL) {
-                                        a.destroy();
-                                    }
-                                }
-                            }
-                        }
-                        /*
-                        for (let structure of spawn.memory.building_list) {
-                            if ((Math.abs(structure.x - ret.path[i].x) < 2 || Math.abs(structure.y - ret.path[i].y) < 2) &&
-                                structure.structureType == STRUCTURE_WALL && structure.roomName == spawn.room.name) {
-                                structure.structureType = STRUCTURE_RAMPART;
-                                spawn.memory.room_plan[structure.x][structure.y] = STRUCTURE_RAMPART;
-                            }
-                        }
-                            
-
-
-                    }
-                    */
+                    //roomCM.set(ret.path[i].x, ret.path[i].y, 1);
                 }
-
-
-                //spawn.room.createConstructionSite(ret.path[i], STRUCTURE_ROAD);
             }
+
+
+            //spawn.room.createConstructionSite(ret.path[i], STRUCTURE_ROAD);
+            // }
 
         }
     }
-    /*
-    else {
-        //console.log("not found  route for: ", destination)
-        //console.log("route is: ", ret.path.length, " long")
-        //console.log("ret.path[last]: ", ret.path[ret.path.length - 1])
-        //console.log(ret.incomplete)
-    }
-    */
 }
 
 
@@ -791,8 +726,8 @@ function plan_borders(spawn, roomCM, rcl) {
         /*if (building.structureType != STRUCTURE_ROAD && building.structureType != STRUCTURE_RAMPART && building.structureType != STRUCTURE_WALL
             && building.structureType != STRUCTURE_CONTAINER
         )*/
-        if(building.structureType==STRUCTURE_EXTENSION || building.structureType==STRUCTURE_TOWER || building.structureType==STRUCTURE_SPAWN
-            || building.structureType==STRUCTURE_STORAGE
+        if (building.structureType == STRUCTURE_EXTENSION || building.structureType == STRUCTURE_TOWER || building.structureType == STRUCTURE_SPAWN
+            || building.structureType == STRUCTURE_STORAGE
         ) {
             max_x = Math.max(max_x, building.x);
             min_x = Math.min(min_x, building.x);
@@ -1121,9 +1056,9 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     {
         var cpu_before = Game.cpu.getUsed()
         let roomCM_2 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
-        plan_road_to_target(spawn, roomCM_2, spawn.room.controller.pos, 2);
+        plan_road_to_target(spawn, roomCM_2, spawn.room.controller.pos.getNearbyPositions(), 2);
         var mineral = spawn.room.find(FIND_MINERALS);
-        plan_road_to_target(spawn, roomCM_2, mineral[0].pos, 6);
+        plan_road_to_target(spawn, roomCM_2, mineral[0].pos.getNearbyPositions(), 6);
         if (Game.shard.name != 'shard3') {
             plan_controller_ramparts(spawn);
         }
@@ -1141,20 +1076,21 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
                     //console.log("src: ",src)
                     if (Game.getObjectById(src.id) != null) {
                         //console.log("planning to: ", Game.getObjectById(src.id).pos);
-                        plan_road_to_target(spawn, roomCM_2, Game.getObjectById(src.id).pos, 2)
+                        plan_road_to_target(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2)
                         //console.log(" ");
                     }
 
                 }
             }
 
+            /* moved to stage 3
             //planning roads to keepers_sources
             if (spawn.memory.keepers_sources != undefined && spawn.memory.keepers_sources.length > 0) {
                 for (let src of spawn.memory.keepers_sources) {
                     //console.log("src: ",src)
                     if (Game.getObjectById(src.id) != null) {
                         //console.log("planning to: ", Game.getObjectById(src.id).pos);
-                        plan_road_to_target(spawn, roomCM_2, Game.getObjectById(src.id).pos, 2)
+                        plan_road_to_target(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2)
 
 
                         // planning road between sources
@@ -1169,7 +1105,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
                     }
 
                 }
-            }
+            }*/
 
         }
 
@@ -1191,15 +1127,16 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
                     //console.log("src: ",src)
                     if (Game.getObjectById(src.id) != null) {
                         //console.log("planning to: ", Game.getObjectById(src.id).pos);
-                        plan_road_to_target(spawn, roomCM_2, Game.getObjectById(src.id).pos, 2)
+                        plan_road_to_target(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2)
 
 
                         // planning road between sources
                         for (let other_src of spawn.memory.keepers_sources) {
-                            if (Game.getObjectById(other_src.id) != null && other_src.id != src.id) {
+                            if (Game.getObjectById(other_src.id) != null && other_src.id != src.id
+                        && Game.getObjectById(other_src.id).pos!=undefined ) {
                                 plan_road_to_target(spawn, roomCM_2,
-                                    Game.getObjectById(src.id).pos, 2, 2,
-                                    Game.getObjectById(other_src.id))
+                                    Game.getObjectById(src.id).pos.getNearbyPositions(), 2, 2,
+                                    Game.getObjectById(other_src.id).pos)
                             }
                         }
                         //console.log(" ");

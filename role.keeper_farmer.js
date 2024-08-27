@@ -159,7 +159,7 @@ Creep.prototype.roleKeeperFarmer = function roleKeeperFarmer(creep, spawn) {
 
                     }
                     else {
-                        creep.moveTo(Game.getObjectById(creep.memory.target_source), { reusePath: 17, range: 1, maxRooms: 1 });
+                        creep.moveTo(Game.getObjectById(creep.memory.target_source), { reusePath: 17, range: 1, maxRooms: 1,avoidCreeps: true });
                     }
 
 

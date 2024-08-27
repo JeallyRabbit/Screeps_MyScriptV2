@@ -86,7 +86,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
 
             if (Game.rooms[creep.memory.target_room] == undefined && spawn.memory.need_soldier != creep.memory.target_room) {
                 const destination = new RoomPosition(25, 25, creep.memory.target_room); // Replace with your destination coordinates and room name
-                creep.moveTo(destination, { reusePath: 25 });
+                creep.moveTo(destination, { reusePath: 25,avoidCreeps: true  });
             }
             if (creep.memory.target_room_containers != undefined && creep.memory.target_room_containers.length > 0) {// find max_container and take resources from it or go sleep
 
@@ -115,7 +115,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                     // take all resources from container
                     for (let resource in Game.getObjectById(creep.memory.max_container).store) {
                         if (creep.withdraw(Game.getObjectById(creep.memory.max_container), resource) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 21 });
+                            creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 21,avoidCreeps: true });
                             break;
                         }
                     }
@@ -200,7 +200,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                         creep.memory.max_container = undefined;
                         if (creep.pickup(Game.getObjectById(creep.memory.reource_to_collect)) == ERR_NOT_IN_RANGE) {
                             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.reource_to_collect).pos, 1, true);
-                            creep.moveTo(Game.getObjectById(creep.memory.reource_to_collect), { reusePath: 21 });
+                            creep.moveTo(Game.getObjectById(creep.memory.reource_to_collect), { reusePath: 21,avoidCreeps: true  });
                             //creep.say("E");
                         }
                     }
@@ -271,7 +271,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                     for (let res in creep.store) {
                         var transfer_result = creep.transfer(Game.getObjectById(creep.memory.home_container), res);
                         if (transfer_result == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true });
+                            creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true,avoidCreeps: true });
                             break;
                         }
                         else if (transfer_result == OK) {
@@ -283,7 +283,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                     for (let res in creep.store) {
                         var transfer_result = creep.transfer(Game.getObjectById(creep.memory.home_container), res);
                         if (transfer_result == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true });
+                            creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true,avoidCreeps: true  });
                             break;
                         }
                         else if (transfer_result == ERR_FULL) {

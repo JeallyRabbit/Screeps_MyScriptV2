@@ -95,7 +95,7 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
                     for(energy_id of Game.rooms[creep.room.name].memory.droppedEnergy)
                     {
                         var res=Game.getObjectById(energy_id)
-                        if(res!=null && res.amount>100)
+                        if(res!=null && res.amount>300)
                         {
                             dropped_energy.push(res)
                         }

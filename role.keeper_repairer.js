@@ -49,7 +49,7 @@ Creep.prototype.roleKeeperRepairer = function roleKeeperRepairer(creep, spawn) {
                 })
                 if (construction_sites.length > 0) {
                     creep.memory.construction_sites = []
-                    for (constr of construction_sites) {
+                    for (let constr of construction_sites) {
                         creep.memory.construction_sites.push(constr.id)
                     }
                 }
@@ -64,6 +64,8 @@ Creep.prototype.roleKeeperRepairer = function roleKeeperRepairer(creep, spawn) {
                 }
                 var target_construction = creep.pos.findClosestByRange(construction_sites)
                 if (target_construction != null) {
+                    creep.say("build")
+                    creep.say(creep.build(target_construction) )
                     if (creep.build(target_construction) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(target_construction, { maxRooms: 1, reusePath: 21 })
                     }

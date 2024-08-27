@@ -54,6 +54,7 @@ const maxRepairer = require('maxRepairer');
 const maxBuilder = require('maxBuilder');
 const maxUpgrader = require('maxUpgrader');
 const maxColonizer = require('maxColonizer');
+const maxRampartRepairer=require('maxRampartRepairer')
 const maxDistanceCarrier = require('maxDistanceCarrier');
 const maxFarmer = require('maxFarmer');
 const maxClaimer = require('maxClaimer');
@@ -65,6 +66,8 @@ const maxReserver = require('./maxReserver');
 const setBaseLayout = require('./setBaseLayout');
 const maxKeeperFarmer = require('./maxKeeperFarmer');
 const { pos_exchange } = require('./pos_exchange');
+const findRouteTest = require('./findRouteTest');
+
 
 
 class colonizeRoom {
@@ -105,8 +108,9 @@ module.exports.loop = function () {
         console.log()
         console.log(Game.shard.name, " Bucket: ", Game.cpu.bucket);
         console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
+        console.log("grunt test")
 
-
+        
         
         /*
         //REMOVE ALL CONSTRUCTION SITES
@@ -275,6 +279,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
         }
 
         /*
+        start=new RoomPosition(21,32,'W3N4')
+        dest =new RoomPosition(15,8,'W4N4')
+        dest2=dest.getNearbyPositions()
+        //findRouteTest(start,dest2,spawn)
+        */
+        /*
         var spawn_num = 0;
         console.log("spawn debuging")
         for (spawn_num; spawn_num < Memory.main_spawns.length; spawn_num++) {
@@ -392,7 +402,9 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
 
-            if ((Game.time % 1800 == spawn_num * 7 && Game.cpu.bucket > 200) // || spawn.room.name == 'W5N3'
+            if ((Game.time % 1800 == spawn_num * 7 && Game.cpu.bucket > 200
+                && Object.keys(Game.constructionSites).length<50)
+                 // || spawn.room.name == 'W3N4'
             ) {
 
 
@@ -737,8 +749,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         for (let i = 0; i < spawn.memory.keepers_sources.length; i++) {
                             if (spawn.memory.keepers_sources[i].id == creep.memory.target_source) {
 
-                                //spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance * 2);
-                                spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance );
+                                spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance * 2);
+                                //spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance );
                                 spawn.memory.keepers_sources[i].carriers++;
                                 break;
                             }
@@ -1184,7 +1196,9 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 if (spawn.room.controller.level == 8) {
                     limit = 3000;
                 }
-                if (spawn.spawnCreep(maxColonizer(energyCap, limit), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) == 0) {
+                var spawn_result=spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) 
+                console.log("rampart_repairer spawning_result: ",spawn_result)
+                if (spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) == 0) {
                     continue;
                 }
             }

@@ -80,7 +80,11 @@ Creep.prototype.roleFarmer = function roleFarmer(creep, spawn) {
         if (Game.getObjectById(creep.memory.closest_container) != null &&
             Game.getObjectById(creep.memory.closest_container).hits < Game.getObjectById(creep.memory.closest_container).hitsMax) {
             //creep.say("repair")
-            creep.repair(Game.getObjectById(creep.memory.closest_container))
+            var repair_result=creep.repair(Game.getObjectById(creep.memory.closest_container))
+            if(repair_result==ERR_NOT_IN_RANGE)
+            {
+                creep.moveTo(Game.getObjectById(creep.memory.closest_container),{reusePath:11,maxRooms:1})
+            }
         }
         else if (creep.memory.closest_container != undefined && creep.store.getFreeCapacity(RESOURCE_ENERGY) <= creep.memory.harvesting_power) {
 
