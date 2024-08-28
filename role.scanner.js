@@ -175,7 +175,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
                     creep.moveTo(closest_exit, { maxRooms: 1 })
                 }
                 else {
-                    creep.moveTo(exits[0], { maxRooms: 1 })
+                    creep.moveTo(exits[0], { maxRooms: 1,avoidSk: true, reusePath: 21 })
                 }
 
             }

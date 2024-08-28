@@ -400,7 +400,8 @@ function plan_manager_stamp(spawn, roomCM) {
     min_distance_from_spawn = 100;
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j) < min_distance_from_spawn) {
+            if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j) < min_distance_from_spawn
+        && i>6 && i<44 && j>6 && j<44) {
                 min_distance_from_spawn = floodCM.get(i, j);
                 pos_for_manager.x = i;
                 pos_for_manager.y = j;

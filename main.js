@@ -123,7 +123,7 @@ module.exports.loop = function () {
         }
             */
 
-        var step = 90000
+        var step = 6000
         if (Game.time % step == 0 && false) {
             //console.log("rooms: ")
             for (var roomName in Game.rooms) {
@@ -242,7 +242,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
         if (Game.shard.name != 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15 && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.gcl.level) {
             Memory.colonizing = true;
-            Memory.colonizing = false;
+            //Memory.colonizing = false;
         }
 
 
@@ -300,7 +300,6 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             var spawn_start_cpu=Game.cpu.getUsed()
             var spawn = Game.getObjectById(Memory.main_spawns[spawn_num]);
 
-            //manuall colonizing room //w25N13
             if (spawn.memory.manual_colonize != undefined) {
                 for (let main_spawn_id of Memory.main_spawns) {
                     var main = Game.getObjectById(main_spawn_id)
@@ -327,7 +326,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
 
-            if (Memory.colonizing == undefined || Memory.colonizing != true) {
+            if (Memory.colonizing == undefined || Memory.colonizing != true && spawn.memory.manual_colonize==undefined) {
                 spawn.memory.to_colonize = undefined
             }
 
@@ -404,7 +403,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 1800 == spawn_num * 7 && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length<50)
-                 // || spawn.room.name == 'W5N3'
+                //  || spawn.room.name == 'W3N7'
             ) {
 
 
@@ -818,6 +817,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         pop_melee_defenders += workParts
                         creep.roleMeleeDefender(creep, spawn);
                     }
+
                     else {
                         //creep.say('no role');
                     }
@@ -869,6 +869,10 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.room.visual.text("RampartRepairers: " + pop_rampart_repairers + "/" + spawn.memory.req_rampart_repairers, 20, 2, { color: '#fc03b6' })
             spawn.room.visual.text("MeleeDefenders: " + pop_melee_defenders + "/" + spawn.memory.need_melee_defenders, 20, 3, { color: '#fc03b6' })
             spawn.room.visual.text("Building stage: " + spawn.memory.building_stage, 20, 4, { color: '#fc03b6' })
+            
+            spawn.room.visual.text("Time: " + Game.time, 20, 0, { color: '#fc03b6' })
+            
+            
             /*
             console.log("Upgraders: ", upgraders_parts, "/", spawn.memory.req_upgraders_parts, " | ",
                 "Builders: ", pop_builders, "/", spawn.memory.req_builders, " | fillers:", pop_fillers, "/", spawn.memory.req_fillers,
@@ -910,8 +914,9 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     else if (aux_role == "distanceCarrier") { pop_distanceCarriers++; }
                     else if (aux_role == "scout") { pop_scouts++; }
                     else if (aux_role == "colonizer") { pop_colonizers++; }
-                    else if (aux_role == "rampartRepairer") { pop_rampart_repairers++; }
+                    else if (aux_role == "rampartRepairer") { pop_rampart_repairers+= _.filter(creep.body, { type: WORK }).length;  }
                     else if (aux_role == "meleeDefender") { pop_melee_defenders += _.filter(creep.body, { type: ATTACK }).length; }
+                    else if (aux_role == 'keeperKiller'){ pop_keeperKillers++}
                 }
 
             }
@@ -941,9 +946,6 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     }
                 }
 
-            }
-            else if (Game.spawns['Spawn2'] != undefined) {
-                Game.spawns['Spawn2'].memory = Game.spawns['Spawn1'].memory;
             }
 
 
@@ -1192,10 +1194,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
             if (pop_rampart_repairers < spawn.memory.req_rampart_repairers) {
-                var limit = 3000;
-                if (spawn.room.controller.level == 8) {
-                    limit = 3000;
-                }
+                
                 //var spawn_result=spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) 
                 //console.log("rampart_repairer spawning_result: ",spawn_result)
                 if (spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) == 0) {
