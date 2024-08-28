@@ -38,6 +38,36 @@ Spawn.prototype.operateKeepersRooms = function operateKeepersRooms() {
                 }
             }
 
+            //invaders
+
+            if (room.memory.invaders != undefined && room.memory.invaders.length > 0) {
+                for (hostile_id of room.memory.invaders) {
+                    if (Game.getObjectById(hostile_id) == null) {
+                        room.memory.invaders = undefined;
+                        break;
+                    }
+                }
+            }
+
+            if (room.memory.invaders == undefined || room.memory.invaders.length==0) {
+                room.memory.invaders = [];
+                var invaders = room.find(FIND_HOSTILE_CREEPS,{filter: 
+                    function(hostile)
+                    {
+                        return hostile.owner.username=='Invader'
+                    }
+                })
+                if (invaders.length > 0) {
+                    room.memory.inavded=true
+                    for (a of invaders) {
+                        room.memory.invaders.push(a.id)
+                    }
+                }
+                else{
+                    room.memory.inavded=false
+                }
+            }
+
 
             //hostiles
             if (room.memory.hostiles != undefined && room.memory.hostiles.length > 0) {

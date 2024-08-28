@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "IDE Autocomplete for Screeps",
   "dependencies": {
+    "@types/lodash": "^4.17.7",
+    "@types/screeps": "^3.3.8"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

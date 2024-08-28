@@ -247,7 +247,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                                     }
                                 }
                             }
-                        }e
+                        }
                         if (!is_already_scanned && !in_other_use) {
                             spawn.memory.keepers_sources.push(new_keeper_source)
                         }

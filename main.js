@@ -108,7 +108,7 @@ module.exports.loop = function () {
         console.log()
         console.log(Game.shard.name, " Bucket: ", Game.cpu.bucket);
         console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
-        console.log("grunt test")
+        console.log("GCL: ",Game.gcl.level, Math.round((Game.gcl.progress/Game.gcl.progressTotal)*100)/100,"% to next")
 
         
         
@@ -123,7 +123,7 @@ module.exports.loop = function () {
         }
             */
 
-        var step = 1500
+        var step = 90000
         if (Game.time % step == 0 && false) {
             //console.log("rooms: ")
             for (var roomName in Game.rooms) {
@@ -399,12 +399,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             if ((Game.shard.name == 'shard2' || Game.shard.name == 'shard1') && Game.cpu.bucket == 10000) {
                 Game.cpu.generatePixel();
             }
-
+ 
 
 
             if ((Game.time % 1800 == spawn_num * 7 && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length<50)
-                 // || spawn.room.name == 'W3N4'
+                 // || spawn.room.name == 'W5N3'
             ) {
 
 
@@ -1196,8 +1196,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 if (spawn.room.controller.level == 8) {
                     limit = 3000;
                 }
-                var spawn_result=spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) 
-                console.log("rampart_repairer spawning_result: ",spawn_result)
+                //var spawn_result=spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) 
+                //console.log("rampart_repairer spawning_result: ",spawn_result)
                 if (spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) == 0) {
                     continue;
                 }
