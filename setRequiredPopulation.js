@@ -657,10 +657,15 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 // if there are towers do not send soldiers
                 //console.log(invaders.length > 0, " ", cores.length > 0, " ", Game.rooms[myRoom].memory.soldiers < 3)
                 //console.log("invaders: ", invaders.length)
-                if(inFarmingRooms && !inKeepersRooms && cores.length>0 && Game.rooms[myRoom].memory.soldiers < 3)
+                if(inFarmingRooms && !inKeepersRooms && (invaders.length>0) && Game.rooms[myRoom].memory.soldiers < 3)
                 {
                     spawn.memory.need_soldier = myRoom;
                 }
+                else if(inFarmingRooms && !inKeepersRooms && (cores.length>0) && Game.rooms[myRoom].memory.soldiers < 3)
+                {
+                    spawn.memory.need_melee_soldier = myRoom;
+                }
+
 
                 else if(!inFarmingRooms && inKeepersRooms && cores.length>0 )
                 {

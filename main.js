@@ -39,7 +39,7 @@ var roleIntershardCarrier = require('role.intershardCarrier')
 var roleIntershardUpgrader = require('role.intershardUpgrader')
 var _ = require('lodash');
 
-const Movement = require("screeps-movement");
+const Movement = require('screeps-movement');
 
 const movementConfig={
     visualize:true,
@@ -245,7 +245,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
         if (Game.shard.name != 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15 && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.gcl.level) {
             Memory.colonizing = true;
-            //Memory.colonizing = false;
+            Memory.colonizing = false;
         }
 
 
@@ -602,13 +602,17 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     else if (creep.memory.role == 'soldier') {
                         creep.roleSoldier(creep, spawn);
 
-
+                        if(Game.rooms[creep.memory.target_room]!=undefined)
+                        {
+                            Game.rooms[creep.memory.target_room].memory.soldiers++;
+                        }
+                        /*
                         for (let myRoom in Game.rooms) {
                             if (myRoom == creep.memory.target_room) {
                                 Game.rooms[myRoom].memory.soldiers++;
                                 break;
                             }
-                        }
+                        }*/
 
 
 
