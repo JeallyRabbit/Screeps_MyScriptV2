@@ -156,8 +156,6 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
         if (creep.memory.target_room != undefined && creep.room.name != creep.memory.target_room) {
             const destination = new RoomPosition(25, 25, creep.memory.target_room);
-            //creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidSk: true, avoidHostileRooms: false });
-            //creep.moveTo(new RoomPosition(25,25,creep.memory.target_room),{reusePath:23,range:10}) 
             creep.say(creep.memory.target_room);
 
 
@@ -175,7 +173,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
                     creep.moveTo(closest_exit, { maxRooms: 1 })
                 }
                 else {
-                    creep.moveTo(exits[0], { maxRooms: 1,avoidSk: true, reusePath: 21 })
+                    creep.moveTo(exits[0], { maxRooms: 1,avoidSk: true, reusePath: 21,avoidHostileRooms: true })
                 }
 
             }

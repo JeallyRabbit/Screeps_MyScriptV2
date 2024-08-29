@@ -17,7 +17,6 @@ Creep.prototype.roleColonizer = function roleColonizer(creep,spawn){
 
                 if (creep.memory.harvesting == true) {
 
-                    //creep.moveTo(Game.rooms[creep.memory.target_room].controller.pos);
 
                     if (creep.memory.source_id != undefined) {
                         if(Game.getObjectById(creep.memory.source_id)!=null && Game.getObjectById(creep.memory.source_id).energy==0)
@@ -132,7 +131,7 @@ Creep.prototype.roleColonizer = function roleColonizer(creep,spawn){
                 //creep.say(creep.moveTo(new RoomPosition(25,25, creep.memory.target_room), {visualizePathStyle: { stroke: '#ff00ff' } }));
                 if (creep.memory.harvesting != true) {
                     //console.log("coing to target_room");
-                    creep.moveToRoom(creep.memory.target_room);
+                    creep.moveToRoom(creep.memory.target_room,{reusePath: 11, avoidSk: true,avoidHostileRooms: true});
                     //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room, { reusePath: 15, avoidSk: true }),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
                 }
                 //creep.moveTo(Game.rooms[creep.memory.target_room].controller.pos);

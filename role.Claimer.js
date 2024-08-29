@@ -46,7 +46,7 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
             //creep.say(creep.moveTo(new RoomPosition(25,25, creep.memory.target_room), {visualizePathStyle: { stroke: '#ff00ff' } }));
             //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room,{reusePath:15,avoidSk:true}),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
             //creep.say("mov")
-            creep.moveToRoom(creep.memory.target_room);
+            creep.moveToRoom(creep.memory.target_room,{avoidSk: true,avoidHostileRooms: true, reusePath: 21});
         }
     }
     else {

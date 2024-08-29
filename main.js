@@ -41,7 +41,11 @@ var _ = require('lodash');
 
 const Movement = require("screeps-movement");
 
-
+const movementConfig={
+    visualize:true,
+    trackHostileRooms: true
+}
+Movement.setConfig(movementConfig)
 
 
 const profiler = require('screeps-profiler');

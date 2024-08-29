@@ -23,6 +23,15 @@ class farmingRoom {
     }
 }
 
+class keeperQuad
+{
+    constructor(roomName,strongholdLevel)
+    {
+        this.roomName=roomName;
+        this.strongholdLevel=lestrongholdLevelvel;
+    }
+}
+
 function calculateDistance(point1, point2) {
     // Adjusted regular expression to match the new format
     const regex = /^([WE])(\d+)([NS])(\d+)$/;
@@ -452,7 +461,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_keeperFarmer = undefined;
     spawn.memory.need_keeperFarmer_room = undefined
     spawn.memory.need_keeperRepairer = undefined;
-
+    spawn.memory.need_keeper_quad=undefined;
     if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 20000) {
         //keeper repairers and killers
         if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0
@@ -643,16 +652,27 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                         }
                 })
 
-                var towers = Game.rooms[myRoom].find(FIND_HOSTILE_STRUCTURES, {
-                    filter:
-                        function (str) {
-                            return str.structureType == STRUCTURE_TOWER
-                        }
-                })
+                
                 //console.log("towers at : ",myRoom," : ", towers.length)
                 // if there are towers do not send soldiers
                 //console.log(invaders.length > 0, " ", cores.length > 0, " ", Game.rooms[myRoom].memory.soldiers < 3)
                 //console.log("invaders: ", invaders.length)
+                if(inFarmingRooms && !inKeepersRooms && cores.length>0 && Game.rooms[myRoom].memory.soldiers < 3)
+                {
+                    spawn.memory.need_soldier = myRoom;
+                }
+
+                else if(!inFarmingRooms && inKeepersRooms && cores.length>0 )
+                {
+                    var towers = Game.rooms[myRoom].find(FIND_HOSTILE_STRUCTURES, {
+                        filter:
+                            function (str) {
+                                return str.structureType == STRUCTURE_TOWER
+                            }
+                    })
+                    spawn.memory.need_keeper_quad=new keeperQuad(myRoom,towers.length)
+                }
+                /*
                 if ((invaders.length > 0 || cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 3
                     && towers.length == 0) {
                     if (myRoom != spawn.room.name) {
@@ -669,7 +689,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     && towers.length > 0) {
                     spawn.memory.need_invader_quad = myRoom
                     // towers amount matches stronghold level except stronghold lvl 5 which have 6 towers
-                }
+                }*/
             }
         }
 
