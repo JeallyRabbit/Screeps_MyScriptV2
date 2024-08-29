@@ -13,23 +13,35 @@ Creep.prototype.roleReserver = function roleReserver(creep, spawn) {
                 //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room));
                 if ((creep.room.controller.reservation != undefined && creep.room.controller.reservation.username != undefined
                     && creep.room.controller.reservation.username == 'Jeally_Rabbit' && creep.room.controller.reservation.ticksToEnd < 4990)
-                || creep.room.controller.reservation == undefined ) {
+                    || creep.room.controller.reservation == undefined) {
                     //creep.say("res")
                     //creep.move(RIGHT)
                     if (creep.reserveController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                         //creep.say("QWE");
-                        creep.moveTo(creep.room.controller, { reusePath: 11,range:1 });
+                        creep.moveTo(creep.room.controller, { reusePath: 11, range: 1 });
                     }
                     //creep.say(creep.reserveController(creep.room.controller))
                 }
                 else {
-                    if (creep.room.controller.reservation != undefined && creep.room.controller.reservation.username != undefined
-                        && creep.room.controller.reservation.username != 'Jeally_Rabbit') {
+                    if (!creep.pos.isNearTo(creep.room.controller.pos)) {
+                        creep.moveTo(creep.room.controller, { reusePath: 15, maxRooms: 1 })
+                    }
+                    else  /* if (creep.room.controller.reservation != undefined && creep.room.controller.reservation.username != undefined
+                        && creep.room.controller.reservation.username != 'Jeally_Rabbit') */ {
+
+
                         if (creep.reserveController(creep.room.controller) == ERR_INVALID_TARGET) {
-                            if (creep.attackController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                                creep.moveTo(creep.room.controller, { reusePath: 19 });
-                            }
+                            creep.attackController(creep.room.controller)
                         }
+                        //creep.say(creep.reserveController(creep.room.controller))
+                    }
+
+                    if (creep.room.controller.reservation != undefined && creep.room.controller.reservation.username != undefined
+                        && creep.room.controller.reservation.username == 'Invader') {
+                        if (creep.attackController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(creep.room.controller, { reusePath: 19 });
+                        }
+
                     }
 
 
@@ -39,17 +51,16 @@ Creep.prototype.roleReserver = function roleReserver(creep, spawn) {
         }
         else { // not in target room - go claim
             //creep.say(creep.moveTo(new RoomPosition(25,25, creep.memory.target_room), {visualizePathStyle: { stroke: '#ff00ff' } }));
-            if(Game.rooms[creep.memory.target_room]!=undefined)
-            {
+            if (Game.rooms[creep.memory.target_room] != undefined) {
                 creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 8 });
                 //creep.move(BOTTOM)
             }
-            
-            else{
+
+            else {
                 //creep.moveTo(Game.rooms[creep.memory.target_room], { reusePath: 19 });
                 //creep.moveToRoom(creep.memory.target_room)
             }
-            
+
         }
     }
     else {

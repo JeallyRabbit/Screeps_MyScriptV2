@@ -312,6 +312,16 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
         }
 
+        if (Game.shard.name != 'shard3') {
+            if (spawn.room.controller.level == 7 && spawn.memory.lvl7_scan == undefined) {
+                spawn.memory.rooms_to_scan = undefined;
+                spawn.memory.lvl7_scan = true
+            }
+            else if (spawn.room.controller.level == 8 && spawn.memory.lvl8_scan == undefined) {
+                spawn.memory.rooms_to_scan = undefined;
+                spawn.memory.lvl8_scan = true
+            }
+        }
 
 
 
@@ -320,9 +330,12 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         var farming_body_parts = 0;
         var farming_sources_num = 0;
         spawn.memory.farming_sources.sort((a, b) => b.income_per_body_part - a.income_per_body_part);
-        while (farming_body_parts < 350 && farming_sources_num < spawn.memory.farming_sources.length) {
+        var spawn_num = 1
+        if (Game.spawns[spawn.room.name + '_2'] != undefined) { spawn_num++; }
+        if (Game.spawns[spawn.room.name + '_3'] != undefined) { spawn_num++; }
+        while (farming_body_parts < spawn_num * 350 && farming_sources_num < spawn.memory.farming_sources.length) {
             farming_body_parts += spawn.memory.farming_sources[farming_sources_num].body_parts_cost;
-            if (farming_body_parts < 350) {
+            if (farming_body_parts < spawn_num * 350) {
                 farming_sources_num++;
             }
             else {
@@ -441,10 +454,13 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_keeperRepairer = undefined;
 
     if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 20000) {
-        //keeper repairers
+        //keeper repairers and killers
         if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0
             && spawn.room.controller.level >= 8) {
             for (let keeper_room of spawn.memory.keepers_rooms) {
+                if (spawn.memory.need_invader_quad == keeper_room.name) {
+                    continue
+                }
                 if (keeper_room.keeperKiller == undefined && spawn.memory.need_keeperKiller == undefined) {
                     spawn.memory.need_keeperKiller = keeper_room.name;
                 }
@@ -607,7 +623,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
         for (let myRoom in Game.rooms) {
             //console.log("myRoom: ", myRoom)
-            const inFarmingRooms=spawn.memory.farming_rooms.some(room => room.name === myRoom);
+            const inFarmingRooms = spawn.memory.farming_rooms.some(room => room.name === myRoom);
 
             const inKeepersRooms = spawn.memory.keepers_rooms.some(room => room.name === myRoom);
 
@@ -627,21 +643,32 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                         }
                 })
 
+                var towers = Game.rooms[myRoom].find(FIND_HOSTILE_STRUCTURES, {
+                    filter:
+                        function (str) {
+                            return str.structureType == STRUCTURE_TOWER
+                        }
+                })
+                //console.log("towers at : ",myRoom," : ", towers.length)
+                // if there are towers do not send soldiers
                 //console.log(invaders.length > 0, " ", cores.length > 0, " ", Game.rooms[myRoom].memory.soldiers < 3)
                 //console.log("invaders: ", invaders.length)
                 if ((invaders.length > 0 || cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 3
-            ) {
-                if(myRoom!=spawn.room.name)
-                {
-                    spawn.memory.need_soldier = myRoom;
-                    break;
+                    && towers.length == 0) {
+                    if (myRoom != spawn.room.name) {
+                        spawn.memory.need_soldier = myRoom;
+                        break;
+                    }
+                    else if (spawn.room.controller.level < 4) {//need for spawnRoom
+
+                        spawn.memory.need_soldier = myRoom;
+                        break;
+                    }
                 }
-                else if(spawn.room.controller.level<4){//need for spawnRoom
-                    
-                    spawn.memory.need_soldier = myRoom;
-                    break;
-                }
-                    
+                else if ((invaders.length > 0 || cores.length > 0)
+                    && towers.length > 0) {
+                    spawn.memory.need_invader_quad = myRoom
+                    // towers amount matches stronghold level except stronghold lvl 5 which have 6 towers
                 }
             }
         }
