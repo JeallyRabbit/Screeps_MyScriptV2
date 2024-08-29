@@ -187,7 +187,7 @@ Creep.prototype.roleKeeperFarmer = function roleKeeperFarmer(creep, spawn) {
             }
 
         }
-        creep.fleeFrom(hostiles, 7)
+        creep.fleeFrom(hostiles, 6)
 
     }
     else {

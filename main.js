@@ -108,7 +108,7 @@ module.exports.loop = function () {
         console.log()
         console.log(Game.shard.name, " Bucket: ", Game.cpu.bucket);
         console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
-        console.log("GCL: ",Game.gcl.level, Math.round((Game.gcl.progress/Game.gcl.progressTotal)*100)/100,"% to next")
+        console.log("GCL: ",Game.gcl.level, Math.round((Game.gcl.progress/Game.gcl.progressTotal)*100),"% to next")
 
         
         
@@ -452,6 +452,15 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     spawn.memory.farming_rooms[i].distanceRepairer = undefined;
                     spawn.memory.farming_rooms[i].soldier = undefined;
                     spawn.memory.farming_rooms[i].reserver = undefined;
+
+                    //console.log("farming room name: ",spawn.memory.farming_rooms[i].name, 
+                    //    Game.rooms[spawn.memory.farming_rooms[i].name]!=undefined)
+
+                    if(Game.rooms[spawn.memory.farming_rooms[i].name]!=undefined)
+                    {
+                        //console.log("resseting soldiers for: ",spawn.memory.farming_rooms[i].name)
+                        Game.rooms[spawn.memory.farming_rooms[i].name].memory.soldiers=0;
+                    }
                 }
             }
 
@@ -467,11 +476,20 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
                     spawn.memory.keepers_rooms[i].harvesting_power = 0;
                     spawn.memory.keepers_rooms[i].carry_power = 0;
-                    spawn.memory.keepers_rooms[i].farmers = 0;
+                    spawn.memory.keepers_rooms[i].farmers = 0; 
                     spawn.memory.keepers_rooms[i].carriers = 0;
                     spawn.memory.keepers_rooms[i].keeperHealer = undefined;
                     spawn.memory.keepers_rooms[i].keeperRepairer = undefined;
                     spawn.memory.keepers_rooms[i].keeperKiller = undefined;
+
+                    //console.log("keeper room nameL: ",spawn.memory.keepers_rooms[i].name,
+                    //    Game.rooms[spawn.memory.keepers_rooms[i].name]!=undefined)
+                    if(Game.rooms[spawn.memory.keepers_rooms[i].name]!=undefined)
+                    {
+                        //console.log("resseting soldiers for: ",spawn.memory.keepers_rooms[i].name)
+                        Game.rooms[spawn.memory.keepers_rooms[i].name].memory.soldiers=0;
+                    }
+                    //Game.rooms[myRoom].memory.soldiers
                 }
             }
 
@@ -553,6 +571,20 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     else if (creep.memory.role == 'soldier') {
                         creep.roleSoldier(creep, spawn);
 
+
+                        for(let myRoom in Game.rooms )
+                        {
+                            if(myRoom==creep.memory.target_room)
+                            {
+                                Game.rooms[myRoom].memory.soldiers++;
+                                break;
+                            }
+                        }
+
+
+
+
+                        /*
                         for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
                             if (creep.memory.target_room == spawn.memory.farming_rooms[i].name) {
                                 if (creep.memory.is_melee == false) {
@@ -572,10 +604,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
                             }
                         }
+                            */
 
                         if (spawn.memory.to_colonize != undefined && creep.memory.target_room == spawn.memory.to_colonize.name) {
                             spawn.memory.to_colonize.soldier = creep.id
                         }
+                            
 
                     }
                     else if (creep.memory.role == 'farmer') {

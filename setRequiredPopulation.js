@@ -60,7 +60,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.to_colonize = Memory.rooms_to_colonize[0];
     }
     if (spawn.memory.to_colonize != undefined && spawn.room.controller.level >= 4
-        && spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]>30000
+        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 30000
     ) {
         spawn.memory.req_claimers = 1;
         spawn.memory.req_colonizers = 8;
@@ -604,15 +604,75 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
         //  SOLDIERS //
 
+
+        for (let myRoom in Game.rooms) {
+            //console.log("myRoom: ", myRoom)
+            const inFarmingRooms=spawn.memory.farming_rooms.some(room => room.name === myRoom);
+
+            const inKeepersRooms = spawn.memory.keepers_rooms.some(room => room.name === myRoom);
+
+            if (Game.rooms[myRoom] != undefined && (inFarmingRooms || inKeepersRooms)) {
+                //console.log("room is definied")
+                //console.log(" my creeps: ",Game.rooms[myRoom].find(FIND_MY_CREEPS).length)
+                var invaders = Game.rooms[myRoom].find(FIND_CREEPS, {
+                    filter:
+                        function (hostile) {
+                            return hostile.owner.username == 'Invader'
+                        }
+                })
+                var cores = Game.rooms[myRoom].find(FIND_STRUCTURES, {
+                    filter:
+                        function (str) {
+                            return str.structureType == STRUCTURE_INVADER_CORE
+                        }
+                })
+
+                //console.log(invaders.length > 0, " ", cores.length > 0, " ", Game.rooms[myRoom].memory.soldiers < 3)
+                //console.log("invaders: ", invaders.length)
+                if ((invaders.length > 0 || cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 3
+            ) {
+                if(myRoom!=spawn.room.name)
+                {
+                    spawn.memory.need_soldier = myRoom;
+                    break;
+                }
+                else if(spawn.room.controller.level<4){//need for spawnRoom
+                    
+                    spawn.memory.need_soldier = myRoom;
+                    break;
+                }
+                    
+                }
+            }
+        }
+
+        // soldiers for colonization
+        if (spawn.memory.need_soldier == undefined && spawn.memory.to_colonize != undefined
+            && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 30000
+        ) {
+
+            //console.log("2")
+            if (spawn.memory.to_colonize.soldier != undefined && Game.getObjectById(spawn.memory.to_colonize.soldier) == null) {
+                spawn.memory.to_colonize.soldier = undefined
+            }
+
+            if (spawn.memory.to_colonize.soldier == undefined) {
+                spawn.memory.need_soldier = spawn.memory.to_colonize.name
+            }
+
+        }
+
+        spawn.room.visual.text("spawn.memory.need_soldier: " + spawn.memory.need_soldier, 22, 8, { color: '#fc03b6' })
+
+
+
+        /*
         if (Game.time % 1 == 0) {
+            
             loop1:
             for (let myRoom in Game.rooms) {
-                for (let keeperRoom of spawn.memory.keepers_rooms) {
-                    if (myRoom == keeperRoom.name) {
-                        //console.log("ignoring hostile at: ", keeperRoom.name);
-                        //continue loop1;
-                    }
-                }
+
+                
 
 
                 if (Game.rooms[myRoom].name != spawn.room.name) {
@@ -670,26 +730,14 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
                 }
             }
+            
 
-            // soldiers for colonization
-            if (spawn.memory.need_soldier == undefined && spawn.memory.to_colonize != undefined
-                && spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]>30000
-            ) {
-
-                //console.log("2")
-                if (spawn.memory.to_colonize.soldier != undefined && Game.getObjectById(spawn.memory.to_colonize.soldier) == null) {
-                    spawn.memory.to_colonize.soldier = undefined
-                }
-
-                if (spawn.memory.to_colonize.soldier == undefined) {
-                    spawn.memory.need_soldier = spawn.memory.to_colonize.name
-                }
-
-            }
+            
 
             //console.log("spawn.memory.need_soldier: ",spawn.memory.need_soldier)
 
         }
+            */
 
         // RESERVERS //
 

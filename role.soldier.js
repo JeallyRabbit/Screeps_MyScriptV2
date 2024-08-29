@@ -44,13 +44,14 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
         if (target_creep) {
             //creep.say("Fighting");
             if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target_creep);
+                creep.moveTo(target_creep,{maxRooms: 1});
             }
             //}
 
             if (creep.memory.is_melee == false) {
                 if (creep.pos.inRangeTo(target_creep, 2)) {
-                    goOutOfRange(creep, 3);
+                    creep.fleeFrom({target_creep},3)
+                   // goOutOfRange(creep, 3);
                 }
             }
 
