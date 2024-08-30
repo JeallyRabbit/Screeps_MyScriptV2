@@ -23,7 +23,7 @@ class farmingRoom {
     }
 }
 
-class keeperQuad
+class invaderQuad
 {
     constructor(roomName,strongholdLevel)
     {
@@ -442,7 +442,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_keeperFarmer = undefined;
     spawn.memory.need_keeperFarmer_room = undefined
     spawn.memory.need_keeperRepairer = undefined;
-    spawn.memory.need_keeper_quad=undefined;
+    spawn.memory.need_invader_quad=undefined;
     if(spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]>30000)
     {
         spawn.memory.spawning_keepers=true
@@ -478,7 +478,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
             }
         }
-        console.log("need Keeper Killer: ",spawn.memory.need_keeperKiller)
+        //console.log("need Keeper Killer: ",spawn.memory.need_keeperKiller)
         //keeper farmers and keeper Carriers
         if (spawn.memory.keepers_sources != undefined && spawn.memory.keepers_sources.length > 0 && spawn.room.controller.level >= 8) {
             // Finding keeper farmers
@@ -673,7 +673,17 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                                 return str.structureType == STRUCTURE_TOWER
                             }
                     })
-                    spawn.memory.need_keeper_quad=new keeperQuad(myRoom,towers.length)
+                    if(towers.length>0)
+                    {
+                        spawn.memory.need_invader_quad=new invaderQuad(myRoom,towers.length)
+                    }
+                    else{
+                        delete spawn.memory.need_invader_quad
+                    }
+                    
+                }
+                else{
+                    delete spawn.memory.need_invader_quad
                 }
                 /*
                 if ((invaders.length > 0 || cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 3
