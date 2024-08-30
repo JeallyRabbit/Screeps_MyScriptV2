@@ -462,7 +462,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_keeperFarmer_room = undefined
     spawn.memory.need_keeperRepairer = undefined;
     spawn.memory.need_keeper_quad=undefined;
-    if(spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]>20000)
+    if(spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]>30000)
     {
         spawn.memory.spawning_keepers=true
     }
@@ -498,16 +498,22 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             // Finding keeper farmers
             for (let keeper_source of spawn.memory.keepers_sources) {
 
+                //console.log()
+                //console.log(keeper_source.id," Aharvesting power: ",keeper_source.harvesting_power)
+                //9fd707735d6e03d
+                //e04307735d6abc5
+                //fa090773c620675
                 if (Game.rooms[keeper_source.name] != undefined && Game.rooms[keeper_source.name].memory.invaded == true) {
                     
-                    console.log("room: ",keeper_source.name," is invaded")
-                    continue;
+                    //console.log("room: ",keeper_source.name," is invaded")
+                    continue
                 }
+                    
 
-                if (keeper_source.harvesting_power < SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME
-                    && keeper_source.keeperKiller != undefined
-                ) {
-                    console.log("need keeperFarmer for: ",keeper_source.name," ",keeper_source.id)
+                if (keeper_source.harvesting_power <= (SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME)-1
+                    && keeper_source.keeperKiller != undefined) {
+                    //console.log("need keeperFarmer for: ",keeper_source.name," ",keeper_source.id)
+                    //console.log(keeper_source.harvesting_power,"\\",SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME)
                     spawn.memory.need_keeperFarmer = keeper_source.id
                     spawn.memory.need_keeperFarmer_room = keeper_source.name
                     break;
