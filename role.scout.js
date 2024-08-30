@@ -136,31 +136,28 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
         if (creep.room.name != spawn.memory.rooms_to_scan[0]) {
             //creep.say("MOV");
 
-            //creep.say(creep.room.findExitTo(spawn.memory.rooms_to_scan[0]) + " " + spawn.memory.rooms_to_scan[0])
-            var exits = creep.room.find(creep.room.findExitTo(spawn.memory.rooms_to_scan[0]))
 
-            if (exits != undefined && exits.length > 0) {
-                var closest_exit = creep.pos.findClosestByRange(exits)
-                if (closest_exit != null) {
-                    /*
-                    for(a of exits)
+
+
+            if(creep.memory.destination==undefined)
+                {
+                    creep.say("destination unknown")
+                    var destination=[];
+                    for(var i=1;i<50;i++)
                     {
-                        console.log(a)
+                        for(var j=1;j<50;j++)
+                        {
+                            destination.push(new RoomPosition(i,j,spawn.memory.rooms_to_scan[0]))
+                        }
                     }
-                        */
-                    creep.moveTo(closest_exit, { maxRooms: 1 })
+                    creep.memory.destination=destination;
                 }
-                else {
-                    creep.moveTo(exits[0], { maxRooms: 1 })
+    
+                if(creep.memory.destination!=undefined)
+                {
+                    creep.move_avoid_hostile(creep,creep.memory.destination,30,true)
                 }
 
-            }
-
-            //console.log("destination: ", destination);
-            //creep.say(spawn.memory.rooms_to_scan[0]);
-            //creep.moveTo(destination, { reusePath: 10 });
-            //creep.moveToRoom(spawn.memory.rooms_to_scan[0], { reusePath: 17});
-            //move_avoid_hostile(creep, destination, 1, true,4000);
         }
         else {
             spawn.memory.rooms_to_scan.shift();
