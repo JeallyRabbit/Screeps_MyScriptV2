@@ -100,8 +100,12 @@ function findRouteTest(starting_pos, destination) {
     
 
     for (a of ret.path) {
-        console.log(a)
-        Game.rooms[a.roomName].visual.circle(a.x, a.y, { fill: 'white', radius: 0.5, stroke: 'red' });
+        //console.log(a)
+        if( Game.rooms[a.roomName]!=undefined)
+        {
+            Game.rooms[a.roomName].visual.circle(a.x, a.y, { fill: 'white', radius: 0.5, stroke: 'red' });
+        }
+        
     }
 
     console.log("Route from: ", starting_pos, " to: ", destination, " incomplete: ", ret.incomplete," length: ",ret.path.length)

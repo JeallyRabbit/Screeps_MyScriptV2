@@ -252,31 +252,12 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
     }
-    /*
-    if (spawn.memory.num_towers == undefined || Game.time % 2003 == 0) {
-        spawn.memory.num_towers = spawn.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType === STRUCTURE_TOWER;
-            }
-        });
-
-        spawn.memory.num_towers = spawn.memory.num_towers.length;
-    }
-    */
-
     if (spawn.memory.towers_id != undefined && spawn.memory.towers_id.length > 0) {
         spawn.memory.req_towerKeepers = 1;
     }
     else {
         spawn.memory.req_towerKeepers = 0;
     }
-    /*
-    spawn.memory.req_keeperKillers = 0;//role num 15
-    spawn.memory.req_keeperHealers = 0;//role num 16
-    spawn.memory.req_keeperCarriers = 0;//role num 17
-    spawn.memory.req_keeperFarmers = 0;//role num 17
-    */
-    //spawn.memory.req_claimers = 0;//role num 11
     spawn.memory.req_doctors = 0;
     if (spawn.memory.farming_rooms == undefined) {
         spawn.memory.farming_rooms = [];
@@ -475,6 +456,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0
             && spawn.room.controller.level >= 8) {
             for (let keeper_room of spawn.memory.keepers_rooms) {
+                console.log(keeper_room.name)
                 if (spawn.memory.need_invader_quad == keeper_room.name) {
                     continue
                 }
@@ -498,11 +480,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             // Finding keeper farmers
             for (let keeper_source of spawn.memory.keepers_sources) {
 
-                //console.log()
-                //console.log(keeper_source.id," Aharvesting power: ",keeper_source.harvesting_power)
-                //9fd707735d6e03d
-                //e04307735d6abc5
-                //fa090773c620675
                 if (Game.rooms[keeper_source.name] != undefined && Game.rooms[keeper_source.name].memory.invaded == true) {
                     
                     //console.log("room: ",keeper_source.name," is invaded")

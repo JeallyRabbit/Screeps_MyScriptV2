@@ -281,7 +281,7 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
             transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], spawn.store[RESOURCE_ENERGY].getFreeCapacity);
             if (creep.transfer(spawn, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
 
-                creep.moveTo(spawn, { reusePath: 11 });
+                creep.moveTo(spawn, { reusePath: 11,avoidCreeps: true });
                 //move_avoid_hostile(creep, spawn.pos, 1, false);;
             }
         }

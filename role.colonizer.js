@@ -24,7 +24,7 @@ Creep.prototype.roleColonizer = function roleColonizer(creep,spawn){
                                 creep.memory.source_id=undefined
                             }
                     }
-                    if (creep.memory.source_id == undefined) {
+                    if (creep.memory.source_id == undefined || creep.memory.source_id.length==0) {
                         var sources = creep.room.find(FIND_SOURCES, {
                             filter: function (src) {
                                 return src.energy > 0
@@ -98,7 +98,7 @@ Creep.prototype.roleColonizer = function roleColonizer(creep,spawn){
                     else
                     {
                         creep.roleBuilder(creep, spawn);
-
+                        return
                         var colonize_room_spawn = creep.room.find(FIND_STRUCTURES, {
                             filter:
                                 function (str) {

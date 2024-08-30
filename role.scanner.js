@@ -445,7 +445,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
                         && i > 4 && i < 46 && j > 4 && j < 46) {
                         min_distance_from_controller = floodCM.get(i, j);
                         spawn_pos_x = i;
-                        spawn_pos_y = j;
+                        spawn_pos_y = j-2;
                     }
                 }
             }
