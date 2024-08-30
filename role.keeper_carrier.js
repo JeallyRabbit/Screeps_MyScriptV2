@@ -85,7 +85,7 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
                 }
             }
             if (Game.rooms[creep.room.name].memory.droppedEnergy!=undefined && Game.rooms[creep.room.name].memory.droppedEnergy.length > 0
-                && false
+                && creep.memory.target_container == undefined
             ) { // collect cropped energy
                 if (creep.memory.dropped_energy != undefined && Game.getObjectById(creep.memory.dropped_energy) == null) {
                     creep.memory.dropped_energy = undefined;

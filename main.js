@@ -830,14 +830,14 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         const workParts = _.filter(creep.body, { type: WORK }).length;
                         //creep.say(workParts);
                         creep.memory.harvesting_power = workParts * 2;
-                        /*
+                        
                         for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
                             if (spawn.memory.keepers_rooms[i].name == creep.memory.target_room) {
                                 spawn.memory.keepers_rooms[i].harvesting_power += creep.memory.harvesting_power;
                                 spawn.memory.keepers_rooms[i].farmers++;
                                 break;
                             }
-                        }*/
+                        }
                         for (let i = 0; i < spawn.memory.keepers_sources.length; i++) {
                             if (spawn.memory.keepers_sources[i].id == creep.memory.target_source) {
                                 spawn.memory.keepers_sources[i].harvesting_power += creep.memory.harvesting_power;
