@@ -457,11 +457,14 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             && spawn.room.controller.level >= 8) {
             for (let keeper_room of spawn.memory.keepers_rooms) {
                 console.log(keeper_room.name)
-                if (spawn.memory.need_invader_quad == keeper_room.name) {
-                    continue
-                }
+                
                 if (keeper_room.keeperKiller == undefined && spawn.memory.need_keeperKiller == undefined) {
                     spawn.memory.need_keeperKiller = keeper_room.name;
+                }
+
+                if (spawn.memory.need_invader_quad == keeper_room.name) {
+                    console.log("need quad")
+                    continue
                 }
 
                 if (keeper_room.keeperRepairer == undefined && spawn.memory.need_keeperRepairer == undefined
@@ -475,6 +478,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
             }
         }
+        console.log("need Keeper Killer: ",spawn.memory.need_keeperKiller)
         //keeper farmers and keeper Carriers
         if (spawn.memory.keepers_sources != undefined && spawn.memory.keepers_sources.length > 0 && spawn.room.controller.level >= 8) {
             // Finding keeper farmers
