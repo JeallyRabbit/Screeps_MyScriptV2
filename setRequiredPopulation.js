@@ -23,7 +23,7 @@ class farmingRoom {
     }
 }
 
-class invaderQuad
+class keeperQuad
 {
     constructor(roomName,strongholdLevel)
     {
@@ -252,12 +252,31 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
     }
+    /*
+    if (spawn.memory.num_towers == undefined || Game.time % 2003 == 0) {
+        spawn.memory.num_towers = spawn.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType === STRUCTURE_TOWER;
+            }
+        });
+
+        spawn.memory.num_towers = spawn.memory.num_towers.length;
+    }
+    */
+
     if (spawn.memory.towers_id != undefined && spawn.memory.towers_id.length > 0) {
         spawn.memory.req_towerKeepers = 1;
     }
     else {
         spawn.memory.req_towerKeepers = 0;
     }
+    /*
+    spawn.memory.req_keeperKillers = 0;//role num 15
+    spawn.memory.req_keeperHealers = 0;//role num 16
+    spawn.memory.req_keeperCarriers = 0;//role num 17
+    spawn.memory.req_keeperFarmers = 0;//role num 17
+    */
+    spawn.memory.req_claimers = 0;//role num 11
     spawn.memory.req_doctors = 0;
     if (spawn.memory.farming_rooms == undefined) {
         spawn.memory.farming_rooms = [];
@@ -442,7 +461,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_keeperFarmer = undefined;
     spawn.memory.need_keeperFarmer_room = undefined
     spawn.memory.need_keeperRepairer = undefined;
-    spawn.memory.need_invader_quad=undefined;
+    spawn.memory.need_keeper_quad=undefined;
     if(spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]>30000)
     {
         spawn.memory.spawning_keepers=true
@@ -456,15 +475,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0
             && spawn.room.controller.level >= 8) {
             for (let keeper_room of spawn.memory.keepers_rooms) {
-                console.log(keeper_room.name)
-                
+                if (spawn.memory.need_invader_quad == keeper_room.name) {
+                    continue
+                }
                 if (keeper_room.keeperKiller == undefined && spawn.memory.need_keeperKiller == undefined) {
                     spawn.memory.need_keeperKiller = keeper_room.name;
-                }
-
-                if (spawn.memory.need_invader_quad == keeper_room.name) {
-                    console.log("need quad")
-                    continue
                 }
 
                 if (keeper_room.keeperRepairer == undefined && spawn.memory.need_keeperRepairer == undefined
@@ -478,7 +493,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
             }
         }
-        //console.log("need Keeper Killer: ",spawn.memory.need_keeperKiller)
         //keeper farmers and keeper Carriers
         if (spawn.memory.keepers_sources != undefined && spawn.memory.keepers_sources.length > 0 && spawn.room.controller.level >= 8) {
             // Finding keeper farmers
@@ -491,7 +505,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 }
                     
 
-                if (keeper_source.harvesting_power <= (SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME)-1
+                if (keeper_source.harvesting_power <= (SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME)
                     && keeper_source.keeperKiller != undefined) {
                     //console.log("need keeperFarmer for: ",keeper_source.name," ",keeper_source.id)
                     //console.log(keeper_source.harvesting_power,"\\",SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME)
@@ -673,17 +687,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                                 return str.structureType == STRUCTURE_TOWER
                             }
                     })
-                    if(towers.length>0)
-                    {
-                        spawn.memory.need_invader_quad=new invaderQuad(myRoom,towers.length)
-                    }
-                    else{
-                        delete spawn.memory.need_invader_quad
-                    }
-                    
-                }
-                else{
-                    delete spawn.memory.need_invader_quad
+                    spawn.memory.need_keeper_quad=new keeperQuad(myRoom,towers.length)
                 }
                 /*
                 if ((invaders.length > 0 || cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 3
@@ -834,7 +838,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.req_soldiers = 0;
     }
 
-    /*
     if (spawn.memory.claiming_rooms == undefined && spawn.memory.claiming_rooms.length > 0) {
         spawn.memory.req_claimers = spawn.memory.claiming_rooms.length;
         //spawn.memory.claiming_rooms.push('E3N59');
@@ -846,7 +849,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         //spawn.memory.req_berserk =0;
         spawn.memory.req_distanceBuilders = 0;
     }
-        */
 
 
 

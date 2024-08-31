@@ -973,10 +973,10 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     }
         */
 
-    if (spawn.memory.if_success_planing_base == false) {
+    if (spawn.memory.if_success_planing_stage == false) {
         spawn.memory.building_stage = undefined
     }
-    spawn.memory.if_success_planing_base = false;
+    spawn.memory.if_success_planing_stage = false;
 
     if (spawn.memory.building_stage == undefined || (spawn.memory.building_stage != undefined && spawn.memory.building_stage > 40)) { // if stage is out of bounds
         spawn.memory.building_stage = 0;
@@ -986,15 +986,20 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
 
 
 
-    if (spawn.memory.building_stage != undefined && spawn.memory.building_stage < 0 || spawn.memory.building_stage > 4) {
+    if (spawn.memory.building_stage != undefined && spawn.memory.building_stage < 0 || spawn.memory.building_stage > 5) {
         console.log("stage out of bounds")
-        if (spawn.memory.building_stage > 4) {
+        if (spawn.memory.building_stage > 5) {
             //stage++
             spawn.memory.building_stage++;
         }
         return;
     }
 
+    if(spawn.memory.if_success_planing_base==true)
+    {
+        build_from_lists(spawn)
+        return;
+    }
     stage = spawn.memory.building_stage;
 
     //stage=0;
@@ -1041,7 +1046,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         var cpu_after = Game.cpu.getUsed();
         spawn.memory.cpu_spent_for_stamps = cpu_after - cpu_before;
     }
-    else if (stage == 1) // planning borders
+    else if (stage == 1 && spawn.memory.if_success_planing_base!=true) // planning borders
     {
         var cpu_before = Game.cpu.getUsed()
         let roomCM_1 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
@@ -1053,7 +1058,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         var cpu_after = Game.cpu.getUsed()
         spawn.memory.cpu_for_borders = cpu_after - cpu_before
     }
-    else if (stage == 2) // planing roads
+    else if (stage == 2 && spawn.memory.if_success_planing_base!=true) // planing roads
     {
         var cpu_before = Game.cpu.getUsed()
         let roomCM_2 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
@@ -1084,29 +1089,6 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
                 }
             }
 
-            /* moved to stage 3
-            //planning roads to keepers_sources
-            if (spawn.memory.keepers_sources != undefined && spawn.memory.keepers_sources.length > 0) {
-                for (let src of spawn.memory.keepers_sources) {
-                    //console.log("src: ",src)
-                    if (Game.getObjectById(src.id) != null) {
-                        //console.log("planning to: ", Game.getObjectById(src.id).pos);
-                        plan_road_to_target(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2)
-
-
-                        // planning road between sources
-                        for (let other_src of spawn.memory.keepers_sources) {
-                            if (Game.getObjectById(other_src.id) != null && other_src.id != src.id) {
-                                plan_road_to_target(spawn, roomCM_2,
-                                    Game.getObjectById(src.id).pos, 2, 2,
-                                    Game.getObjectById(other_src.id))
-                            }
-                        }
-                        //console.log(" ");
-                    }
-
-                }
-            }*/
 
         }
 
@@ -1116,7 +1098,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         var cpu_after = Game.cpu.getUsed()
         spawn.memory.cpu_for_roads1 = cpu_after - cpu_before
     }
-    else if (stage == 3) {
+    else if (stage == 3 && spawn.memory.if_success_planing_base!=true) {
 
         var cpu_before = Game.cpu.getUsed()
         let roomCM_2 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
@@ -1166,9 +1148,12 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         ////console.log("mineral pos: ", mineral[0].pos);
         spawn.room.createConstructionSite(mineral[0].pos, STRUCTURE_EXTRACTOR);
         spawn.memory.building_stage++;
+        spawn.memory.if_success_planing_base=true
+        console.log("success plannig base: ",spawn.memory.if_success_planing_base)
     }
 
-    spawn.memory.if_success_planing_base = true;
+    spawn.memory.if_success_planing_stage = true;
+    
 
     // //console.log("VISUALS");
     var if_visualize = true;

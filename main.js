@@ -41,8 +41,8 @@ var _ = require('lodash');
 
 const Movement = require('screeps-movement');
 
-const movementConfig={
-    visualize:true,
+const movementConfig = {
+    visualize: true,
     trackHostileRooms: true
 }
 Movement.setConfig(movementConfig)
@@ -160,7 +160,7 @@ module.exports.loop = function () {
             var room = Game.rooms[roomName]
             room.visual.text("raw_energy_income: " + room.memory.raw_energy_income, 41, 1, { color: '#fc03b6' })
             room.visual.text("raw_last_mean_energy_income/t: " + Math.round(room.memory.raw_last_mean_energy_income * 100) / 100, 41, 2, { color: '#fc03b6' })
-            room.visual.text("timer: " + (Game.time % step)+"/"+step, 41, 3, { color: '#fc03b6' })
+            room.visual.text("timer: " + (Game.time % step) + "/" + step, 41, 3, { color: '#fc03b6' })
 
             room.visual.text("raw_keepers_income: " + room.memory.raw_keepers_energy_income, 41, 10, { color: '#fc03b6' })
             room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 11, { color: '#fc03b6' })
@@ -248,7 +248,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             Memory.colonizing = true;
             //Memory.colonizing = false;
         }
-       // console.log(Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15)
+        // console.log(Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15)
 
 
         /*
@@ -309,25 +309,25 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 spawn.memory.lvl_1_time = Game.time;
             }
             if (spawn.memory.lvl_2_time == undefined && spawn.room.controller.level == 2) {
-                spawn.memory.lvl_2_time = Game.time-spawn.memory.lvl_1_time;
+                spawn.memory.lvl_2_time = Game.time - spawn.memory.lvl_1_time;
             }
             if (spawn.memory.lvl_3_time == undefined && spawn.room.controller.level == 3) {
-                spawn.memory.lvl_3_time = Game.time-spawn.memory.lvl_2_time;
+                spawn.memory.lvl_3_time = Game.time - spawn.memory.lvl_2_time;
             }
             if (spawn.memory.lvl_4_time == undefined && spawn.room.controller.level == 4) {
-                spawn.memory.lvl_4_time = Game.time-spawn.memory.lvl_3_time;
+                spawn.memory.lvl_4_time = Game.time - spawn.memory.lvl_3_time;
             }
             if (spawn.memory.lvl_5_time == undefined && spawn.room.controller.level == 5) {
-                spawn.memory.lvl_5_time = Game.time-spawn.memory.lvl_4_time;;
+                spawn.memory.lvl_5_time = Game.time - spawn.memory.lvl_4_time;;
             }
             if (spawn.memory.lvl_6_time == undefined && spawn.room.controller.level == 6) {
-                spawn.memory.lvl_6_time = Game.time-spawn.memory.lvl_5_time;;
+                spawn.memory.lvl_6_time = Game.time - spawn.memory.lvl_5_time;;
             }
             if (spawn.memory.lvl_7_time == undefined && spawn.room.controller.level == 7) {
-                spawn.memory.lvl_7_time = Game.time-spawn.memory.lvl_6_time;;
+                spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_6_time;;
             }
             if (spawn.memory.lvl_8_time == undefined && spawn.room.controller.level == 8) {
-                spawn.memory.lvl_8_time = Game.time-spawn.memory.lvl_7_time;;
+                spawn.memory.lvl_8_time = Game.time - spawn.memory.lvl_7_time;;
             }
             if (spawn.memory.manual_colonize != undefined) {
                 for (let main_spawn_id of Memory.main_spawns) {
@@ -422,6 +422,29 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
 
+            //////////////////////////////
+            console.log("reactions ")
+            //
+            var req_resources_amount = 10000
+
+            function getMaxLevelResources() {
+                const maxLevelResources = [];
+            
+                // Iterate over the reactions object of 'X'
+                for (const key in REACTIONS.X) {
+                    if (REACTIONS.X.hasOwnProperty(key)) {
+                        maxLevelResources.push(REACTIONS.X[key]);
+                    }
+                }
+            
+                return maxLevelResources;
+            }
+            
+            // Get and log the array of max level resources
+            const maxLevelResources = getMaxLevelResources();
+            console.log(maxLevelResources);
+
+
 
 
             if ((Game.shard.name == 'shard2' || Game.shard.name == 'shard1') && Game.cpu.bucket == 10000) {
@@ -432,7 +455,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 5000 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                //  || spawn.room.name == 'W4N3'
+                //  || spawn.room.name == 'W5N3'
             ) {
 
 
@@ -440,18 +463,15 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 //return;
             }
 
-            if(spawn.memory.forced_upgrades==undefined)
-            {
-                spawn.memory.forced_upgrades=[]
-                for(var i=0;i<7;i++)
-                {
+            if (spawn.memory.forced_upgrades == undefined) {
+                spawn.memory.forced_upgrades = []
+                for (var i = 0; i < 7; i++) {
                     spawn.memory.forced_upgrades.push(0)
                 }
             }
-            if(Game.cpu.bucket>200 && spawn.memory.forced_upgrades[spawn.room.controller.level-1]<=5)
-            {
+            if (Game.cpu.bucket > 200 && spawn.memory.forced_upgrades[spawn.room.controller.level - 1] <= 5) {
                 spawn.setBaseLayout(spawn)
-                spawn.memory.forced_upgrades[spawn.room.controller.level-1]++;
+                spawn.memory.forced_upgrades[spawn.room.controller.level - 1]++;
             }
 
             spawn.memory.progress_old = spawn.memory.progress;
@@ -461,7 +481,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
             spawn.memory.progress_counter += 1;
 
-           
+
 
             if (spawn.room.controller.level >= 3) {
                 //towers.tick(spawn);
@@ -604,8 +624,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     else if (creep.memory.role == 'soldier') {
                         creep.roleSoldier(creep, spawn);
 
-                        if(Game.rooms[creep.memory.target_room]!=undefined)
-                        {
+                        if (Game.rooms[creep.memory.target_room] != undefined) {
                             Game.rooms[creep.memory.target_room].memory.soldiers++;
                         }
                         /*
@@ -832,7 +851,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         const workParts = _.filter(creep.body, { type: WORK }).length;
                         //creep.say(workParts);
                         creep.memory.harvesting_power = workParts * 2;
-                        
+
                         for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
                             if (spawn.memory.keepers_rooms[i].name == creep.memory.target_room) {
                                 spawn.memory.keepers_rooms[i].harvesting_power += creep.memory.harvesting_power;
@@ -1246,7 +1265,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
 
             }
-            if (pop_merchants < spawn.memory.req_merchants /* && spawn.room.terminal != undefined*/ ) {
+            if (pop_merchants < spawn.memory.req_merchants /* && spawn.room.terminal != undefined*/) {
                 if (spawn.spawnCreep([MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
                     CARRY, CARRY, CARRY, CARRY], 'Merchant_' + spawn.room.name + '_' + Game.time, { memory: { role: 'merchant', home_room: spawn.room } }) == 0) {
                     continue;

@@ -182,39 +182,8 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 var avg_distance = 0;
                 for (let i = 0; i < sources.length; i++) {
                     var ret = findRouteTest(spawn.pos, sources[i].pos.getNearbyPositions())
-                    /*
-                    PathFinder.search(spawn.pos,
-                        new RoomPosition(avg_source_x, avg_source_y, creep.room.name),
-                        {
-
-                            plainCost: 2,
-                            swampCost: 10,
-                            maxOps: 8000,
-                            roomCallback: function (roomName) {
-
-                                let room = Game.rooms[roomName];
-                                // In this example `room` will always exist, but since 
-                                // PathFinder supports searches which span multiple rooms 
-                                // you should be careful!
-                                if (!room) return;
-                                let costs = new PathFinder.CostMatrix;
-
-                                creep.room.find(FIND_STRUCTURES).forEach(function (struct) {
-                                    if (struct.structureType === STRUCTURE_ROAD) {
-                                        // Favor roads over plain tiles
-                                        costs.set(struct.pos.x, struct.pos.y, 1);
-                                    } else if (struct.structureType !== STRUCTURE_CONTAINER &&
-                                        (struct.structureType !== STRUCTURE_RAMPART ||
-                                            !struct.my)) {
-                                        // Can't walk through non-walkable buildings
-                                        costs.set(struct.pos.x, struct.pos.y, 255);
-                                    }
-                                });
-                                return costs;
-                            }
-                        });
-                    */
-                   // if (ret.incomplete == false) {
+                    
+                   if (ret.incomplete == false) {
                         avg_distance += ret.path.length;
 
                         var new_keeper_source = new keeperSource(sources[i].id, creep.room.name, 0, 0, ret.path.length, sources[i].pos.getOpenPositions().length)
@@ -245,11 +214,11 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                                 }
                             }
                         }
-                        if (!is_already_scanned && !in_other_use) {
+                        if (!is_already_scanned && !in_other_use && ret.path.length<100) {
                             spawn.memory.keepers_sources.push(new_keeper_source)
                         }
 
-                   // }
+                    }
 
                 }
                 var new_keeper_room = new keeperRoom(creep.room.name, 0, 0, sources_num, avg_distance, max_farmers);
@@ -287,7 +256,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 spawn.memory.keeper_room_already_scanned = already_scanned;
                 spawn.memory.keeper_room_in_other_use = in_other_use;
                 
-                if (already_scanned == false && in_other_use == false) {
+                if (already_scanned == false && in_other_use == false && ret.path.length<100) {
                     spawn.memory.keepers_rooms.push(new_keeper_room);
 
                 }
@@ -306,38 +275,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 var avg_distance = 0;
                 for (let i = 0; i < sources.length; i++) {
                     var ret = findRouteTest(spawn.pos, sources[i].pos.getNearbyPositions())
-                    /*
-                    PathFinder.search(spawn.pos,
-                        new RoomPosition(sources[i].pos.x, sources[i].pos.y, creep.room.name),
-                        {
-                            range: 1,
-                            plainCost: 2,
-                            swampCost: 10,
-                            maxOps: 8000,
-                            roomCallback: function (roomName) {
-
-                                let room = Game.rooms[roomName];
-                                // In this example `room` will always exist, but since 
-                                // PathFinder supports searches which span multiple rooms 
-                                // you should be careful!
-                                if (!room) return;
-                                let costs = new PathFinder.CostMatrix;
-
-                                creep.room.find(FIND_STRUCTURES).forEach(function (struct) {
-                                    if (struct.structureType === STRUCTURE_ROAD) {
-                                        // Favor roads over plain tiles
-                                        costs.set(struct.pos.x, struct.pos.y, 1);
-                                    } else if (struct.structureType !== STRUCTURE_CONTAINER &&
-                                        (struct.structureType !== STRUCTURE_RAMPART ||
-                                            !struct.my)) {
-                                        // Can't walk through non-walkable buildings
-                                        costs.set(struct.pos.x, struct.pos.y, 255);
-                                    }
-                                });
-                                return costs;
-                            }
-                        });
-                        */
+                    
                     avg_distance += ret.path.length;
 
                     var new_farming_source = new farmingSource(sources[i].id, creep.room.name, 0, 0, ret.path.length, sources[i].pos.getOpenPositions().length)

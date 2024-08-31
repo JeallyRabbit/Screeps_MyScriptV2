@@ -1,5 +1,5 @@
 
-function findRouteTest(starting_pos, destination) {
+function findRoute(starting_pos, destination) {
 
     var ret = PathFinder.search(starting_pos, destination, {
         //maxRooms: 64,
@@ -114,4 +114,4 @@ function findRouteTest(starting_pos, destination) {
 }
 
 
-module.exports = findRouteTest
+module.exports = findRoute
