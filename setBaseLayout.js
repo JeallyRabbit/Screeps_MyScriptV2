@@ -1036,8 +1036,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
 
 
     if (spawn.memory.if_success_planing_base == true) {
-        let roomCM_1 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
-        plan_borders(spawn, roomCM_1, 4);
+        
 
 
 
