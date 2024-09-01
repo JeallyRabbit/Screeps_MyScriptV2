@@ -12,14 +12,14 @@ Creep.prototype.move_avoid_hostile= function move_avoid_hostile(creep,destinatio
         creep.memory.myPath=undefined
     }
     
-    if(creep.memory.myPath==undefined && creep.spawning==false )//&& Game.cpu.tickLimit-Game.cpu.getUsed()>50)
+    if(creep.memory.myPath==undefined && creep.spawning==false && Game.cpu.bucket>1000 && Game.cpu.getUsed()<100)//&& Game.cpu.tickLimit-Game.cpu.getUsed()>50)
     {
         creep.say("renew path")
         var ret = PathFinder.search(this.pos, destination, {
             //maxRooms: 64,
             plainCost: 1,
             range: 5 ,
-            swampCost: 2,
+            swampCost: 5,
             maxOps: 8000,
     
             roomCallback: function (roomName) {

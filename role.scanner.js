@@ -312,7 +312,15 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
             if(creep.memory.destination!=undefined)
             {
-                creep.move_avoid_hostile(creep,creep.memory.destination,reusePath,false)
+                //creep.move_avoid_hostile(creep,creep.memory.destination,reusePath,false)
+                hostiles=creep.room.find(FIND_HOSTILE_CREEPS)
+                {
+                    if(hostiles.length>0)
+                    {
+                        creep.fleeFrom(hostiles,7,{maxRooms: 1})
+                    }
+                }
+                creep.moveTo(new RoomPosition(25,25,creep.memory.target_room))
             }
             
 

@@ -236,12 +236,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
         Memory.colonizing = false;
         if (Game.shard.name == 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < 4) {
-            Memory.colonizing = true;
+            Memory.colonizing = false;
         }
 
         if (Game.shard.name != 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15 && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.gcl.level) {
             Memory.colonizing = true;
-            //Memory.colonizing = false;
+            Memory.colonizing = false;
         }
         // console.log(Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15)
 
