@@ -28,14 +28,6 @@ function maxFarmer(cap,spawn,limit)// return array with max possible work parts 
         parts.push(MOVE);
         cap-=100;
     }
-    /*
-    for(let i=0;i<rcl-1;i++)
-    {
-        parts.push(WORK);
-        parts.push(MOVE);
-        cap-=150;
-    }*/
-    //console.log("avaliable work parts: ", Math.floor(cap/100));
     for(let i=0;i<Math.floor(cap/150);i++)
     {
         parts.push(MOVE);

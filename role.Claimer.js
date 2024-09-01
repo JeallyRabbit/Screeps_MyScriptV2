@@ -11,9 +11,16 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
     if (creep.memory.target_room) {
         if (creep.room.name == creep.memory.target_room) {// if in target room - go claim 
             creep.say("C");
+            var colonizers = [];
+            colonizers = creep.room.find(FIND_MY_CREEPS, {
+                filter:
+                    function (cr) {
+                        return cr.memory.role != undefined && cr.memory.role == 'colonizer'
+                    }
+            })
             //creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 15, avoidSk: true });
             //creep.moveTo(Game.rooms[creep.memory.target_room].controller,{reusePath:15,avoidSk:true});
-            if (Game.rooms[creep.memory.target_room]) {
+            if (Game.rooms[creep.memory.target_room] && colonizers.length > 0) {
                 //creep.say(creep.claimController(creep.room.controller));
                 //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room));
                 //creep.say(creep.claimController(Game.rooms[creep.memory.target_room].controller))
@@ -21,25 +28,41 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
                     //creep.say("QWE");
                     creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 15, avoidSk: true });
                 }
-                if (creep.claimController(Game.rooms[creep.memory.target_room].controller) == ERR_INVALID_TARGET && 
-            (Game.rooms[creep.memory.target_room].controller.owner!='JeallyRabbit' && Game.rooms[creep.memory.target_room].controller.owner!='Jeally_Rabbit' )) {
+                if (creep.claimController(Game.rooms[creep.memory.target_room].controller) == ERR_INVALID_TARGET &&
+                    (Game.rooms[creep.memory.target_room].controller.owner.username != 'JeallyRabbit' && Game.rooms[creep.memory.target_room].controller.owner.username != 'Jeally_Rabbit')) {
                     //creep.say("QWE");
                     //creep.say(creep.claimController(creep.room.controller));
                     creep.attackController(Game.rooms[creep.memory.target_room].controller);
 
                 }
-                creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y + 2,
+                creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y,
                     STRUCTURE_SPAWN, creep.room.name + "_1");
                 //creep.say(creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y + 2,
                 //STRUCTURE_SPAWN, creep.room.name + "_1"))
             }
-
+            creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 15, maxRooms: 1 });
         }
         else { // not in target room - go claim
             //creep.say(creep.moveTo(new RoomPosition(25,25, creep.memory.target_room), {visualizePathStyle: { stroke: '#ff00ff' } }));
             //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room,{reusePath:15,avoidSk:true}),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
             //creep.say("mov")
-            creep.moveToRoom(creep.memory.target_room);
+            //creep.moveToRoom(creep.memory.target_room,{avoidSk: true,avoidHostileRooms: true, reusePath: 21});
+            var reusePath = 100;
+
+            if (creep.memory.destination == undefined) {
+                creep.say("destination unknown")
+                var destination = [];
+                for (var i = 1; i < 50; i++) {
+                    for (var j = 1; j < 50; j++) {
+                        destination.push(new RoomPosition(i, j, creep.memory.target_room))
+                    }
+                }
+                creep.memory.destination = destination;
+            }
+
+            if (creep.memory.destination != undefined) {
+                creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
+            }
         }
     }
     else {

@@ -48,7 +48,7 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
                 creep.memory.energy_from_terminal = -1;
                 creep.memory.energy_to_terminal = -1;
             }
-
+        }
             if (manager_link != undefined) {
                 if (manager_link.store[RESOURCE_ENERGY] < 700 && storage != undefined) {
                     //creep.say(FILL_LINK)
@@ -72,7 +72,7 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
                 }
             }
 
-        }
+        //}
 
 
 
@@ -107,7 +107,7 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
             creep.withdraw(manager_link, RESOURCE_ENERGY)
             creep.transfer(storage, RESOURCE_ENERGY)
         }
-        else {
+        else if(storage!=undefined){
             //return;
             //withdrawing from storage
             for (let res in storage.store) {

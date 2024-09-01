@@ -1,5 +1,4 @@
 var roleBuilder = require('role.builder');
-const { move_avoid_hostile } = require("./move_avoid_hostile");
 //const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
 
 Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spawn) {
@@ -134,7 +133,7 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
                         if (target_structure_id != null && target_structure_id.hits < target_structure_id.hitsMax) {
                             //creep.say("rep")
                             if (creep.repair(target_structure_id) == ERR_NOT_IN_RANGE) {
-                                creep.moveTo(target_structure_id, { visualizePathStyle: { stroke: 'red' }, reusePath: 17 });
+                                creep.moveTo(target_structure_id, { visualizePathStyle: { stroke: 'red' }, reusePath: 17,maxRooms:1 });
                                 //move_avoid_hostile(creep, closest_target.pos, 2, false);
                             }
                         }
@@ -161,7 +160,7 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
                 var source = creep.pos.findClosestByRange(containers);
                 if (creep.withdraw(source, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     //creep.say("Going to Cintainer");
-                    creep.moveTo(source, { reusePath: 17 });
+                    creep.moveTo(source, { reusePath: 17,maxRooms:1 });
                     //move_avoid_hostile(creep, source.pos,1);
                 }
 
@@ -175,7 +174,7 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
                 if (droppedEnergy.length > 0) {
                     if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                         // Move to it
-                        creep.moveTo(closestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 17 });
+                        creep.moveTo(closestDroppedEnergy, { visualizePathStyle: { stroke: '#ffaa00' }, reusePath: 17,maxRooms:1 });
                         //move_avoid_hostile(creep, closestDroppedEnergy.pos)
                     }
                 }

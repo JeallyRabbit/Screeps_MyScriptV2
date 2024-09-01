@@ -1,7 +1,7 @@
 function maxMeleeSoldier(cap)// return array with max possible work parts for hauler
 {
     var parts=[];
-    if(cap>3250)
+    if(cap==undefined || cap>3250)
     {
         cap=3250;
     }

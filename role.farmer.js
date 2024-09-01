@@ -80,18 +80,38 @@ Creep.prototype.roleFarmer = function roleFarmer(creep, spawn) {
         if (Game.getObjectById(creep.memory.closest_container) != null &&
             Game.getObjectById(creep.memory.closest_container).hits < Game.getObjectById(creep.memory.closest_container).hitsMax) {
             //creep.say("repair")
-            creep.repair(Game.getObjectById(creep.memory.closest_container))
+            var repair_result=creep.repair(Game.getObjectById(creep.memory.closest_container))
+            if(repair_result==ERR_NOT_IN_RANGE)
+            {
+                creep.moveTo(Game.getObjectById(creep.memory.closest_container),{reusePath:11,maxRooms:1})
+            }
         }
-        else if (creep.memory.closest_container != undefined && creep.store.getFreeCapacity(RESOURCE_ENERGY) < creep.memory.harvesting_power) {
+        else if (creep.memory.closest_container != undefined && creep.store.getFreeCapacity(RESOURCE_ENERGY) <= creep.memory.harvesting_power) {
 
-            if(creep.transfer(Game.getObjectById(creep.memory.closest_container), RESOURCE_ENERGY)==ERR_NOT_IN_RANGE)
+            //creep.say("transfer")
+            var energy_amount=creep.store[RESOURCE_ENERGY]
+            var transfer_result=creep.transfer(Game.getObjectById(creep.memory.closest_container), RESOURCE_ENERGY)
+            if(transfer_result==ERR_NOT_IN_RANGE)
             {
                 creep.moveTo(Game.getObjectById(creep.memory.closest_container))
-                //creep.say("C");
-            };
+                creep.say("C");
+            }
+            else if(transfer_result==OK){
+                if(Game.rooms[creep.room.name].memory.raw_energy_income==undefined)
+                {
+                    Game.rooms[creep.room.name].memory.raw_energy_income=energy_amount
+                }
+                else{
+                    Game.rooms[creep.room.name].memory.raw_energy_income+=energy_amount
+                }
+            }
 
         }
-        if (Game.getObjectById(creep.memory.source_id)!=null && Game.getObjectById(creep.memory.source_id).energy > 0) {
+        else if(creep.store.getFreeCapacity(RESOURCE_ENERGY) < creep.memory.harvesting_power){
+            creep.drop(RESOURCE_ENERGY)
+        }
+        if (Game.getObjectById(creep.memory.source_id)!=null && Game.getObjectById(creep.memory.source_id).energy > 0
+    && creep.store.getFreeCapacity(RESOURCE_ENERGY)>creep.memory.harvesting_power) {
             if (creep.harvest(Game.getObjectById(creep.memory.source_id)) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.getObjectById(creep.memory.source_id), { reusePath: 17, range:1 });
                 //creep.say("B");

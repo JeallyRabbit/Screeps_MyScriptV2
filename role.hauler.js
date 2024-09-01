@@ -42,6 +42,18 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
             for (let i = 0; i < filler_containers.length; i++) {
                 creep.memory.filler_containers.push(filler_containers[i].id)
             }
+            if(spawn.room.storage!=undefined && creep.memory.filler_containers.length>1)
+            {
+                var closer_container=spawn.room.storage.pos.findClosestByPath(filler_containers)
+                if(closer_container.id!=creep.memory.filler_containers[0])
+                {
+                    var aux=creep.memory.filler_containers[0]
+                    creep.memory.filler_containers[0]=creep.memory.filler_containers[1]
+                    creep.memory.filler_containers[1]=aux;
+                }
+            }
+            
+
         }
 
     }
@@ -121,6 +133,11 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
                     return structure.structureType === STRUCTURE_CONTAINER;
                 }
             });
+            containers = containers.concat(creep.room.find(FIND_RUINS, {
+                filter: (structure) => {
+                    return structure.store[RESOURCE_ENERGY] > 50;
+                }
+            }));
             if (containers != undefined && containers.length > 0) {
                 creep.memory.containers_id = [];
                 for (cont of containers) {
@@ -166,10 +183,10 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
     //var cID=-1;
     //var cID_max = -1, cID_min = -1;
     var max_energy = 0;
-    if ((creep.memory.cID_max == -1 || creep.memory.cID_max == undefined) && containers!=undefined) {
+    if ((creep.memory.cID_max == -1 || creep.memory.cID_max == undefined) && containers != undefined) {
         for (let i = 0; i < containers.length; i++) {
             //console.log(containers[i].store.getCapacity(RESOURCE_ENERGY));
-            if(containers[i]==undefined){continue;}
+            if (containers[i] == undefined) { continue; }
             if (containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY) > max_energy) {
                 max_energy = containers[i].store[RESOURCE_ENERGY] / containers[i].store.getCapacity(RESOURCE_ENERGY);
                 //creep.memory.cID_max = i;
@@ -181,11 +198,10 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
     if (creep.memory.collecting == true) // if is empty go to container
     {// go to container
         //creep.say("A");
-        var withdraw_amount = 1;
         if (creep.memory.cID_max != undefined && Game.getObjectById(creep.memory.cID_max) != null) {
             //creep.memory.cID_max=-1;
-            var withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, Game.getObjectById(creep.memory.cID_max).store[RESOURCE_ENERGY]);
-            if (creep.withdraw(Game.getObjectById(creep.memory.cID_max), RESOURCE_ENERGY, withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
+            //var withdraw_amount = Math.min(creep.store[RESOURCE_ENERGY].getFreeCapacity, Game.getObjectById(creep.memory.cID_max).store[RESOURCE_ENERGY]);
+            if (creep.withdraw(Game.getObjectById(creep.memory.cID_max), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
                 creep.moveTo(Game.getObjectById(creep.memory.cID_max));
                 //creep.say("M");
                 //move_avoid_hostile(creep, Game.getObjectById(creep.memory.cID_max).pos, 1, false);
@@ -198,8 +214,33 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
             }
         }
         else {
+            if (creep.store[RESOURCE_ENERGY] == 0) {
+                var avoid = [];
+
+                if (creep.pos.inRangeTo(spawn, 3)) {
+                    avoid.push(spawn)
+                }
+                if (creep.room.storage != undefined && creep.pos.inRangeTo(creep.room.storage, 3)) {
+                    avoid.push(creep.room.storage)
+                }
+                //creep.say(spawn.pos)
+                if (avoid.length > 0) {
+                    creep.fleeFrom(avoid, 3);
+                }
+                else {
+                    creep.sleep( 20);
+
+                }
+
+            }
             creep.memory.cID_max = undefined;
         }
+        /*
+        if(creep.store[RESOURCE_ENERGY]==0 && creep.pos.inRangeTo(spawn,2))
+        {
+            //creep.say(spawn.pos)
+            creep.fleeFrom([spawn],2);
+        }*/
 
     }
     else if (spawn.memory.manager_link_id != undefined && Game.getObjectById(spawn.memory.manager_link_id) != null &&
@@ -207,23 +248,24 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
         creep.say("link");
         //creep.say(spawn.memory.merchant);
         if (creep.transfer(Game.getObjectById(spawn.memory.manager_link_id), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(Game.getObjectById(spawn.memory.manager_link_id), { reusePath: 21 });
-        } 
+            creep.moveTo(Game.getObjectById(spawn.memory.manager_link_id), { reusePath: 21, avoidCreeps: true});
+        }
     }
-    else if (creep.memory.filler_containers != undefined && Game.getObjectById(creep.memory.filler_containers[0]) != null &&  creep.memory.filler_containers.length > 0
+    else if (creep.memory.filler_containers != undefined && Game.getObjectById(creep.memory.filler_containers[0]) != null && creep.memory.filler_containers.length > 0
         && (Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store.getCapacity(RESOURCE_ENERGY)
             || Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+
         if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[0]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
             //creep.say("Q");
 
-            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[0]), { reusePath: 21 });
+            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[0]), { reusePath: 21, avoidCreeps: true });
             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[0]).pos, 1, false);;
         }
     }
-    else if ((creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1])!= null &&  Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
+    else if ((creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1]) != null && Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
         if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[1]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
             //creep.say("P");
-            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]), { reusePath: 21 });
+            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]), { reusePath: 21 , avoidCreeps: true});
             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[1]).pos, 1, false);;
         }
     }
@@ -239,7 +281,7 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
             transfered_amount = Math.min(creep.store[RESOURCE_ENERGY], spawn.store[RESOURCE_ENERGY].getFreeCapacity);
             if (creep.transfer(spawn, RESOURCE_ENERGY, transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
 
-                creep.moveTo(spawn, { reusePath: 11 });
+                creep.moveTo(spawn, { reusePath: 11,avoidCreeps: true });
                 //move_avoid_hostile(creep, spawn.pos, 1, false);;
             }
         }
@@ -277,8 +319,27 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
 
             }
             else {
-                //creep.say("Sleep?")
-                creep.sleep(20)
+
+                if (creep.store[RESOURCE_ENERGY] == 0) {
+                    var avoid = [];
+
+                    if (creep.pos.inRangeTo(spawn, 3)) {
+                        avoid.push(spawn)
+                    }
+                    if (creep.room.storage != undefined && creep.pos.inRangeTo(creep.room.storage, 3)) {
+                        avoid.push(creep.room.storage)
+                    }
+                    //creep.say(spawn.pos)
+                    if (avoid.length > 0) {
+                        creep.fleeFrom(avoid, 3);
+                    }
+                    else {
+                        creep.sleep(20);
+
+                    }
+
+                }
+                //creep.sleep(20)
             }
         }
         //creep.say(extensions.length);

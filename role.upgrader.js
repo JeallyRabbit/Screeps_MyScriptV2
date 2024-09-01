@@ -4,6 +4,7 @@ const { boosting_driver } = require('boosting_driver');
 Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
 
     //creep.suicide();
+    
     if (creep.memory.boosting_list == undefined) {
         creep.memory.boosting_list = ["GH", "XGH2O", "GH2O"];//boost types that creep accepts
     }
@@ -53,6 +54,7 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
                             && structure.store[RESOURCE_ENERGY] >= creep.store.getCapacity();
                     }
                 }));
+                if(creep.room.controller==undefined){creep.suicide()}
                 var deposit = creep.room.controller.pos.findClosestByRange(deposits);
                 if (deposit != null) {
                     creep.memory.deposit = deposit.id;

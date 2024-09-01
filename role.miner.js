@@ -2,23 +2,18 @@
 Creep.prototype.roleMiner = function roleMiner(creep, spawn) {
 
 
-    var mineral = creep.room.find(FIND_MINERALS);
-    var storage = creep.room.find(FIND_STRUCTURES, {
-        filter: function (structure) {
-            return structure.structureType == STRUCTURE_STORAGE
-                && structure.store.getFreeCapacity() > 0;
-        }
-    })
-    if (mineral != undefined && mineral.length > 0) {
+    var mineral = Game.getObjectById(spawn.memory.mineral);
+    var storage = creep.room.storage;
+    if (mineral != null) {
         if (creep.store.getFreeCapacity() > 0) {
-            if (creep.harvest(mineral[0]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(mineral[0]), { reusePath: 11 };
+            if (creep.harvest(mineral) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(mineral), { reusePath: 11 };
             }
         }
-        else {
-            if (creep.transfer(storage[0], mineral[0].mineralType) == ERR_NOT_IN_RANGE) {
+        else if(storage!=undefined){
+            if (creep.transfer(storage, mineral.mineralType) == ERR_NOT_IN_RANGE) {
                 //move_avoid_hostile(creep,storage[0].pos,1,false);
-                creep.moveTo(storage[0], { reusePath: 11 });
+                creep.moveTo(storage, { reusePath: 11 });
             }
         }
     }

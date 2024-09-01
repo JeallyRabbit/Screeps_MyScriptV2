@@ -1,24 +1,23 @@
-function maxColonizer(cap, spawn, limit)// return array with max possible work parts for upgrader
+function maxColonizer(cap, limit, min)// return array with max possible work parts for upgrader
 {
-    //var rcl=spawn.room.controller.level;
-    if(limit!=undefined && limit>3200)
-    {
-        limit=3200
+
+    if (min != undefined && cap < min) {
+        return []
     }
 
-    if (cap!=undefined && cap > 3200) {
+    //var rcl=spawn.room.controller.level;
+    if (limit != undefined && limit > 3200) {
+        limit = 3200
+    }
+
+    if (cap != undefined && cap > 3200) {
         cap = 3200;
     }
-    if (limit != undefined && cap>limit) {
+    if (limit != undefined && cap > limit) {
         cap = limit
     }
-    //temporary
-    /*
-    if(cap>1000)
-    {
-        cap=1000;
-    }
-    */
+
+
     var parts = [];
     parts.push(MOVE);
     parts.push(MOVE);
