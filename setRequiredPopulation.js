@@ -79,7 +79,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.req_colonizers = 0;
     }
 
-    if (Memory.colonizing == true && spawn.room.controller.level >= 5) {
+    if (Memory.colonizing == true && spawn.room.controller.level >= 6) {
         spawn.memory.req_scanners = 1
     }
     else {
@@ -385,11 +385,12 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
 
 
-
+    /*
 
     if (spawn.memory.claiming_rooms == undefined) {
         spawn.memory.claiming_rooms = [];
     }
+        */
 
 
 
@@ -565,6 +566,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_source_farmer_room = undefined;
     spawn.memory.need_distanceRepairer = undefined;
     spawn.memory.need_soldier = undefined;
+    spawn.memory.need_claimer=undefined;
     spawn.memory.need_melee_soldier = undefined;
     spawn.memory.need_melee_defenders = undefined;
 
@@ -724,6 +726,15 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 spawn.memory.need_soldier = spawn.memory.to_colonize.name
             }
 
+            
+            if (spawn.memory.to_colonize.claimer != undefined && Game.getObjectById(spawn.memory.to_colonize.claimer) == null) {
+                spawn.memory.to_colonize.claimer = undefined
+            }
+
+            if (spawn.memory.to_colonize.claimer == undefined) {
+                spawn.memory.need_claimer = spawn.memory.to_colonize.name
+            }
+
         }
 
 
@@ -836,6 +847,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.req_soldiers = 0;
     }
 
+    /*
     if (spawn.memory.claiming_rooms == undefined && spawn.memory.claiming_rooms.length > 0) {
         spawn.memory.req_claimers = spawn.memory.claiming_rooms.length;
         //spawn.memory.claiming_rooms.push('E3N59');
@@ -847,6 +859,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         //spawn.memory.req_berserk =0;
         spawn.memory.req_distanceBuilders = 0;
     }
+        */
 
 
 

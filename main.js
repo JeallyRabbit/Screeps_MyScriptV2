@@ -711,6 +711,10 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         if (creep.ticksToLive > 200 || creep.spawning) {
                             pop_claimers++;
                         }
+                        if(spawn.memory.to_colonize!=undefined && creep.memory.target_room==spawn.memory.to_colonize.name)
+                        {
+                            spawn.memory.to_colonize.claimer=creep.id
+                        }
                     }
                     else if (creep.memory.role == 'reserver') {
                         creep.roleReserver(creep);
@@ -1221,7 +1225,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
             }
-            if (pop_claimers < spawn.memory.req_claimers /* && spawn.memory.claiming_rooms.length > 0*/) {
+            if (spawn.memory.to_colonize!=undefined && spawn.memory.to_colonize.claimer==undefined/* && spawn.memory.claiming_rooms.length > 0*/) {
                 //if(pop_claimers==0){pop_claimers=1;}
                 if (spawn.spawnCreep(maxClaimer(energyCap), 'C_' + spawn.room.name + '_' + Game.time, {
                     memory: {

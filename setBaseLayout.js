@@ -1163,7 +1163,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
                             if (Game.getObjectById(other_src.id) != null && other_src.id != src.id
                                 && Game.getObjectById(other_src.id).pos != undefined) {
                                 plan_road_to_target(spawn, roomCM_2,
-                                    Game.getObjectById(src.id).pos.getNearbyPositions(), 2, 2,
+                                    Game.getObjectById(src.id).pos.getNearbyPositions(), 7, 2,
                                     Game.getObjectById(other_src.id).pos)
                             }
                         }

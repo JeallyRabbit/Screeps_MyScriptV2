@@ -122,6 +122,7 @@ function findRouteTestScanner(starting_pos, destination) {
 
     
 
+    /*
     for (a of ret.path) {
         //console.log(a)
         if(Game.rooms[a.roomName]!=undefined)
@@ -129,6 +130,7 @@ function findRouteTestScanner(starting_pos, destination) {
             Game.rooms[a.roomName].visual.circle(a.x, a.y, { fill: 'white', radius: 0.5, stroke: 'red' });
         }
     }
+        */
 
     //console.log("Route from: ", starting_pos, " to: ", destination, " incomplete: ", ret.incomplete," length: ",ret.path.length)
 
@@ -310,37 +312,13 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
             if(creep.memory.destination!=undefined)
             {
-                creep.move_avoid_hostile(creep,creep.memory.destination,reusePath,true)
+                creep.move_avoid_hostile(creep,creep.memory.destination,reusePath,false)
             }
             
 
             
             
             
-            
-            
-            
-            
-            /*
-            //const destination = new RoomPosition(25, 25, creep.memory.target_room);
-
-            creep.say(creep.memory.target_room);
-
-
-            var exits = creep.room.find(creep.room.findExitTo(creep.memory.target_room))
-
-            if (exits != undefined && exits.length > 0) {
-                var closest_exit = creep.pos.findClosestByRange(exits)
-                if (closest_exit != null) {
-                   
-                    creep.moveTo(closest_exit, { maxRooms: 1 })
-                }
-                else {
-                    creep.moveTo(exits[0], { maxRooms: 1,avoidSk: true, reusePath: 21,avoidHostileRooms: true })
-                }
-
-            }
-            */
 
         }
 
@@ -441,7 +419,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             min_distance_from_controller = 100;
             for (i = 0; i < 50; i++) {
                 for (let j = 0; j < 50; j++) {
-                    if (distanceCM.get(i, j) > 4 && floodCM.get(i, j) < min_distance_from_controller
+                    if (distanceCM.get(i, j) > 6 && floodCM.get(i, j) < min_distance_from_controller
                         && i > 4 && i < 46 && j > 4 && j < 46) {
                         min_distance_from_controller = floodCM.get(i, j);
                         spawn_pos_x = i;
@@ -463,9 +441,12 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
                         break;
                     }
                 }
-                if (is_to_close == false /* || true */) {
+                if (is_to_close == false  || true ) {
                     if (Memory.colonizing == true) {
-                        Memory.rooms_to_colonize.push(new colonizeRoom(creep.room.name, spawn_pos_x, spawn_pos_y - 2));
+                        //creep.move(LEFT)
+                        creep.room.visual.circle(spawn_pos_x, spawn_pos_y, { fill: '#666666', radius: 0.5, stroke: 'green' });
+
+                        Memory.rooms_to_colonize.push(new colonizeRoom(creep.room.name, spawn_pos_x, spawn_pos_y));
                     }
 
                 }

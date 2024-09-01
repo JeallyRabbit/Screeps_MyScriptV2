@@ -12,7 +12,7 @@ Creep.prototype.move_avoid_hostile= function move_avoid_hostile(creep,destinatio
         creep.memory.myPath=undefined
     }
     
-    if(creep.memory.myPath==undefined && creep.spawning==false)
+    if(creep.memory.myPath==undefined && creep.spawning==false )//&& Game.cpu.tickLimit-Game.cpu.getUsed()>50)
     {
         creep.say("renew path")
         var ret = PathFinder.search(this.pos, destination, {
@@ -119,7 +119,7 @@ Creep.prototype.move_avoid_hostile= function move_avoid_hostile(creep,destinatio
             }
         }
         else{
-            creep.say(ret.incomplete)
+            //creep.say(ret.incomplete)
         }
     }
 
@@ -136,7 +136,7 @@ Creep.prototype.move_avoid_hostile= function move_avoid_hostile(creep,destinatio
         {
             creep.memory.myPath=undefined
         }
-        creep.say(move_result)
+       // creep.say(move_result)
         
        
     }
