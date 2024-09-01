@@ -421,6 +421,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             //console.log("----------------------------------------------", spawn, "----------------------------------------------");
 
 
+            /*
 
             //////////////////////////////
             console.log("reactions ")
@@ -443,8 +444,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             // Get and log the array of max level resources
             const maxLevelResources = getMaxLevelResources();
             console.log(maxLevelResources);
-
-
+            */
+            /////////////////////////////////////
 
 
             if ((Game.shard.name == 'shard2' || Game.shard.name == 'shard1') && Game.cpu.bucket == 10000) {
@@ -455,7 +456,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 5000 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                //  || spawn.room.name == 'W5N3'
+                 //  || spawn.room.name == 'W4N3'
             ) {
 
 

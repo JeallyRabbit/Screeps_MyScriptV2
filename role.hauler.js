@@ -248,7 +248,7 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
         creep.say("link");
         //creep.say(spawn.memory.merchant);
         if (creep.transfer(Game.getObjectById(spawn.memory.manager_link_id), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(Game.getObjectById(spawn.memory.manager_link_id), { reusePath: 21 });
+            creep.moveTo(Game.getObjectById(spawn.memory.manager_link_id), { reusePath: 21, avoidCreeps: true});
         }
     }
     else if (creep.memory.filler_containers != undefined && Game.getObjectById(creep.memory.filler_containers[0]) != null && creep.memory.filler_containers.length > 0
@@ -258,14 +258,14 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
         if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[0]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
             //creep.say("Q");
 
-            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[0]), { reusePath: 21 });
+            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[0]), { reusePath: 21, avoidCreeps: true });
             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[0]).pos, 1, false);;
         }
     }
     else if ((creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1]) != null && Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
         if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[1]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
             //creep.say("P");
-            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]), { reusePath: 21 });
+            creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]), { reusePath: 21 , avoidCreeps: true});
             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[1]).pos, 1, false);;
         }
     }

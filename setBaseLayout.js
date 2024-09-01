@@ -965,6 +965,8 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     //spawn.memory.building_list = [];
     var stage = undefined
     console.log("PLANING BASE AT: ", spawn.room.name)
+
+    //spawn.memory.if_success_planing_base=false
     /*
     if(roomCM==undefined)
     {
@@ -1007,7 +1009,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     var cols = 50;
 
     console.log(spawn.room.name, " is planing ", stage, " stage")
-    if (stage == 0) // planning stamps
+    if (stage == 0 && spawn.memory.if_success_planing_base!=true) // planning stamps
     {
 
         var cpu_before = Game.cpu.getUsed()
