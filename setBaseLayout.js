@@ -789,11 +789,13 @@ function plan_borders(spawn, roomCM, rcl) {
             seeds.push(new RoomPosition(49, i, spawn.room.name))
         }
     }
+
     /*
     console.log("seeds")
     for (seed of seeds) {
         console.log(seed)
-    }*/
+    }
+        */
 
     var if_visualize = true
     outsideFieldFloodCM = spawn.room.floodFillToRamparts(seeds, spawn.memory.room_plan, if_visualize)
@@ -1012,7 +1014,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     if (spawn.memory.if_success_planing_stage == false) {
         spawn.memory.building_stage = undefined
     }
-    //spawn.memory.if_success_planing_stage = false;
+    spawn.memory.if_success_planing_stage = false;
 
     if (spawn.memory.building_stage == undefined || (spawn.memory.building_stage != undefined && spawn.memory.building_stage > 40)) { // if stage is out of bounds
         spawn.memory.building_stage = 0;
@@ -1030,7 +1032,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         }
         return;
     }
-    spawn.memory.if_success_planing_base = false;
+    //spawn.memory.if_success_planing_base = false;
 
 
     if (spawn.memory.if_success_planing_base == true) {
