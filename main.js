@@ -156,15 +156,10 @@ module.exports.loop = function () {
             }
 
         }
-        for (var roomName in Game.rooms) {
-            var room = Game.rooms[roomName]
-            room.visual.text("raw_energy_income: " + room.memory.raw_energy_income, 41, 1, { color: '#fc03b6' })
-            room.visual.text("raw_last_mean_energy_income/t: " + Math.round(room.memory.raw_last_mean_energy_income * 100) / 100, 41, 2, { color: '#fc03b6' })
-            room.visual.text("timer: " + (Game.time % step) + "/" + step, 41, 3, { color: '#fc03b6' })
 
-            room.visual.text("raw_keepers_income: " + room.memory.raw_keepers_energy_income, 41, 10, { color: '#fc03b6' })
-            room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 11, { color: '#fc03b6' })
-        }
+
+
+        
 
 
 
@@ -447,6 +442,10 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             */
             /////////////////////////////////////
 
+            spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 41, 10, { color: '#fc03b6' })
+        spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 11, { color: '#fc03b6' })
+
+
 
             if ((Game.shard.name == 'shard2' || Game.shard.name == 'shard1') && Game.cpu.bucket == 10000) {
                 Game.cpu.generatePixel();
@@ -456,7 +455,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 5000 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                 //  || spawn.room.name == 'W4N3'
+                  || spawn.room.name == 'W4N3'
             ) {
 
 

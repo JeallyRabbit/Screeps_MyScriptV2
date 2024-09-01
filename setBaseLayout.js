@@ -158,7 +158,7 @@ function plan_road_to_target(spawn, roomCM, target, rcl, my_range, start) {
             });
 
 
-           
+
 
 
             //costs.set(destination.x, destination.y, 255);
@@ -401,7 +401,7 @@ function plan_manager_stamp(spawn, roomCM) {
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
             if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j) < min_distance_from_spawn
-        && i>6 && i<44 && j>6 && j<44) {
+                && i > 6 && i < 44 && j > 6 && j < 44) {
                 min_distance_from_spawn = floodCM.get(i, j);
                 pos_for_manager.x = i;
                 pos_for_manager.y = j;
@@ -772,66 +772,100 @@ function plan_borders(spawn, roomCM, rcl) {
     });
 
     var rampart_entrances_list = []
+
+    //terrain = Room.Terrain(spawn.room.name)
+    var seeds = []
+    for (var i = 0; i < 50; i++) {
+        if (terrain.get(i, 0) == 0) {
+            seeds.push(new RoomPosition(i, 0, spawn.room.name))
+        }
+        if (terrain.get(0, i) == 0) {
+            seeds.push(new RoomPosition(0, i, spawn.room.name))
+        }
+        if (terrain.get(i, 49) == 0) {
+            seeds.push(new RoomPosition(i, 49, spawn.room.name))
+        }
+        if (terrain.get(49, i) == 0) {
+            seeds.push(new RoomPosition(49, i, spawn.room.name))
+        }
+    }
+    /*
+    console.log("seeds")
+    for (seed of seeds) {
+        console.log(seed)
+    }*/
+
+    var if_visualize = true
+    outsideFieldFloodCM = spawn.room.floodFillToRamparts(seeds, spawn.memory.room_plan, if_visualize)
+
+
+
+
+
+
+
     for (var i = 1; i < 48; i++) {
         for (var j = 1; j < 48; j++) {
-            //findinf horizontal edges
+            //finding horizontal edges
             if (((spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART && spawn.memory.room_plan[i - 1][j] == STRUCTURE_RAMPART) || (spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART && spawn.memory.room_plan[i + 1][j] == STRUCTURE_RAMPART))
                 && i % 3 == 0
             ) {
-                spawn.room.visual.circle(i, j, { fill: 'orange', radius: 0.5, stroke: 'red' });
-                if (j < spawn.pos.x) {
-                    spawn.room.visual.circle(i, j + 1, { fill: 'black', radius: 0.5, stroke: 'red' });
-                    //spawn.memory.room_plan[i][j + 1] = STRUCTURE_RAMPART
+
+                spawn.room.visual.circle(i, j, { fill: 'blue', radius: 0.5, stroke: 'black' });
+
+                if (outsideFieldFloodCM.get(i, j - 1) == 250) { // outer field is below ramparts
+                    spawn.room.visual.circle(i, j + 1, { fill: 'blue', radius: 0.5, stroke: 'blue' });
                     rampart_entrances_list.push(new building_list_element(i, j + 1, spawn.room.name, STRUCTURE_RAMPART, rcl));
                     spawn.memory.building_list.push(new building_list_element(i, j + 1, spawn.room.name, STRUCTURE_RAMPART, rcl));
 
-                    spawn.room.visual.circle(i, j + 2, { fill: 'red', radius: 0.5, stroke: 'red' });
-                    //spawn.memory.room_plan[i][j + 2] = STRUCTURE_RAMPART
-                    spawn.memory.building_list.push(new building_list_element(i, j + 2, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                    spawn.room.visual.circle(i, j + 2, { fill: 'blue', radius: 0.5, stroke: 'blue' });
                     rampart_entrances_list.push(new building_list_element(i, j + 2, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                    spawn.memory.building_list.push(new building_list_element(i, j + 2, spawn.room.name, STRUCTURE_RAMPART, rcl));
                 }
-                else {
+                else if (outsideFieldFloodCM.get(i, j + 1) == 250) { // outer field is below ramparts
                     spawn.room.visual.circle(i, j - 1, { fill: 'red', radius: 0.5, stroke: 'red' });
-                    spawn.memory.building_list.push(new building_list_element(i, j - 1, spawn.room.name, STRUCTURE_RAMPART, rcl));
                     rampart_entrances_list.push(new building_list_element(i, j - 1, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                    spawn.memory.building_list.push(new building_list_element(i, j - 1, spawn.room.name, STRUCTURE_RAMPART, rcl));
 
                     spawn.room.visual.circle(i, j - 2, { fill: 'red', radius: 0.5, stroke: 'red' });
-                    spawn.memory.building_list.push(new building_list_element(i, j - 2, spawn.room.name, STRUCTURE_RAMPART, rcl));
-                    //building_list.push(new building_list_element(i, j - 2, spawn.room.name, STRUCTURE_RAMPART, rcl));
                     rampart_entrances_list.push(new building_list_element(i, j - 2, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                    spawn.memory.building_list.push(new building_list_element(i, j - 2, spawn.room.name, STRUCTURE_RAMPART, rcl));
+
                 }
-                //console.log("teeth: ", i, " ", j)
-            }//vertical
+            }//finding vertical
             else if (((spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART && spawn.memory.room_plan[i][j - 1] == STRUCTURE_RAMPART) || (spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART && spawn.memory.room_plan[i][j + 1] == STRUCTURE_RAMPART))
                 && j % 3 == 0
             ) {
-                spawn.room.visual.circle(i, j, { fill: 'orange', radius: 0.5, stroke: 'red' });
+                spawn.room.visual.circle(i, j, { fill: 'white', radius: 0.5, stroke: 'black' });
 
-                if (i < spawn.pos.y) {
-                    spawn.room.visual.circle(i + 1, j, { fill: 'red', radius: 0.5, stroke: 'red' });
-                    //spawn.memory.room_plan[i + 1][j] = STRUCTURE_RAMPART
-                    spawn.memory.building_list.push(new building_list_element(i + 1, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                if (outsideFieldFloodCM.get(i - 1, j) == 250) {
+                    spawn.room.visual.circle(i + 1, j, { fill: 'black', radius: 0.5, stroke: 'black' });
                     rampart_entrances_list.push(new building_list_element(i + 1, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                    spawn.memory.building_list.push(new building_list_element(i + 1, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
 
-                    spawn.room.visual.circle(i + 2, j, { fill: 'red', radius: 0.5, stroke: 'red' });
-                    spawn.memory.building_list.push(new building_list_element(i + 2, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                    spawn.room.visual.circle(i + 2, j, { fill: 'black', radius: 0.5, stroke: 'black' });
                     rampart_entrances_list.push(new building_list_element(i + 2, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
-                }
-                else {
-                    spawn.room.visual.circle(i - 1, j, { fill: 'red', radius: 0.5, stroke: 'red' });
-                    //spawn.memory.room_plan[i - 1][j] = STRUCTURE_RAMPART
-                    spawn.memory.building_list.push(new building_list_element(i - 1, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
-                    rampart_entrances_list.push(new building_list_element(i - 1, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                    spawn.memory.building_list.push(new building_list_element(i + 2, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
 
-                    spawn.room.visual.circle(i - 2, j, { fill: 'red', radius: 0.5, stroke: 'red' });
-                    //spawn.memory.room_plan[i - 2][j] = STRUCTURE_RAMPART
-                    spawn.memory.building_list.push(new building_list_element(i - 2, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
-                    rampart_entrances_list.push(new building_list_element(i - 2, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
                 }
-                //console.log("teeth: ", i, " ", j)
+                else if (outsideFieldFloodCM.get(i + 1, j) == 250) {
+                    spawn.room.visual.circle(i - 1, j, { fill: 'white', radius: 0.5, stroke: 'black' });
+                    rampart_entrances_list.push(new building_list_element(i - 1, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                    spawn.memory.building_list.push(new building_list_element(i - 1, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
+
+                    spawn.room.visual.circle(i - 2, j, { fill: 'white', radius: 0.5, stroke: 'black' });
+                    rampart_entrances_list.push(new building_list_element(i - 2, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                    spawn.memory.building_list.push(new building_list_element(i - 2, j, spawn.room.name, STRUCTURE_RAMPART, rcl));
+                }
             }
         }
     }
+
+
+
+
+
+
 
     for (r of rampart_entrances_list) {
         spawn.memory.room_plan[r.x][r.y] = STRUCTURE_RAMPART
@@ -978,7 +1012,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     if (spawn.memory.if_success_planing_stage == false) {
         spawn.memory.building_stage = undefined
     }
-    spawn.memory.if_success_planing_stage = false;
+    //spawn.memory.if_success_planing_stage = false;
 
     if (spawn.memory.building_stage == undefined || (spawn.memory.building_stage != undefined && spawn.memory.building_stage > 40)) { // if stage is out of bounds
         spawn.memory.building_stage = 0;
@@ -996,9 +1030,15 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         }
         return;
     }
+    spawn.memory.if_success_planing_base = false;
 
-    if(spawn.memory.if_success_planing_base==true)
-    {
+
+    if (spawn.memory.if_success_planing_base == true) {
+        let roomCM_1 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
+        plan_borders(spawn, roomCM_1, 4);
+
+
+
         build_from_lists(spawn)
         return;
     }
@@ -1008,8 +1048,10 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     var rows = 50;
     var cols = 50;
 
+
+
     console.log(spawn.room.name, " is planing ", stage, " stage")
-    if (stage == 0 && spawn.memory.if_success_planing_base!=true) // planning stamps
+    if (stage == 0 && spawn.memory.if_success_planing_base != true) // planning stamps
     {
 
         var cpu_before = Game.cpu.getUsed()
@@ -1048,7 +1090,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         var cpu_after = Game.cpu.getUsed();
         spawn.memory.cpu_spent_for_stamps = cpu_after - cpu_before;
     }
-    else if (stage == 1 && spawn.memory.if_success_planing_base!=true) // planning borders
+    else if (stage == 1 && spawn.memory.if_success_planing_base != true) // planning borders
     {
         var cpu_before = Game.cpu.getUsed()
         let roomCM_1 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
@@ -1060,7 +1102,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         var cpu_after = Game.cpu.getUsed()
         spawn.memory.cpu_for_borders = cpu_after - cpu_before
     }
-    else if (stage == 2 && spawn.memory.if_success_planing_base!=true) // planing roads
+    else if (stage == 2 && spawn.memory.if_success_planing_base != true) // planing roads
     {
         var cpu_before = Game.cpu.getUsed()
         let roomCM_2 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
@@ -1100,7 +1142,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         var cpu_after = Game.cpu.getUsed()
         spawn.memory.cpu_for_roads1 = cpu_after - cpu_before
     }
-    else if (stage == 3 && spawn.memory.if_success_planing_base!=true) {
+    else if (stage == 3 && spawn.memory.if_success_planing_base != true) {
 
         var cpu_before = Game.cpu.getUsed()
         let roomCM_2 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
@@ -1118,7 +1160,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
                         // planning road between sources
                         for (let other_src of spawn.memory.keepers_sources) {
                             if (Game.getObjectById(other_src.id) != null && other_src.id != src.id
-                        && Game.getObjectById(other_src.id).pos!=undefined ) {
+                                && Game.getObjectById(other_src.id).pos != undefined) {
                                 plan_road_to_target(spawn, roomCM_2,
                                     Game.getObjectById(src.id).pos.getNearbyPositions(), 2, 2,
                                     Game.getObjectById(other_src.id).pos)
@@ -1150,15 +1192,15 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         ////console.log("mineral pos: ", mineral[0].pos);
         spawn.room.createConstructionSite(mineral[0].pos, STRUCTURE_EXTRACTOR);
         spawn.memory.building_stage++;
-        spawn.memory.if_success_planing_base=true
-        console.log("success plannig base: ",spawn.memory.if_success_planing_base)
+        spawn.memory.if_success_planing_base = true
+        console.log("success plannig base: ", spawn.memory.if_success_planing_base)
     }
 
     spawn.memory.if_success_planing_stage = true;
-    
+
 
     // //console.log("VISUALS");
-    var if_visualize = true;
+    var if_visualize = false
     if (if_visualize) {
         for (let i = 0; i < 50; i++) {
             for (let j = 0; j < 50; j++) {

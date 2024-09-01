@@ -112,6 +112,27 @@ function areRoomsAdjacent(tileName1, tileName2) {
         (letterB1 === letterB2 || Math.abs(letterB1.charCodeAt(0) - letterB2.charCodeAt(0)) <= 1)
     );
 }
+
+function isRoomKeepersRoom(coordinate) {
+    // Extract the numeric parts from the coordinate string
+    const match = coordinate.match(/W(\d+)N(\d+)|W(\d+)S(\d+)|E(\d+)S(\d+)|E(\d+)N(\d+)/);
+    
+    if (!match) {
+        return false; // Return false if the format does not match
+    }
+
+    // Extract the numeric values, which could be in different capturing groups
+    const x = parseInt(match[1] || match[3] || match[5] || match[7], 10);
+    const y = parseInt(match[2] || match[4] || match[6] || match[8], 10);
+    
+    // Get the last digit of both coordinates
+    const lastDigitX = x % 10;
+    const lastDigitY = y % 10;
+
+    // Check if both last digits are in the range <4,6>
+    return (lastDigitX >= 4 && lastDigitX <= 6) && (lastDigitY >= 4 && lastDigitY <= 6);
+}
+
 Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
 
@@ -331,20 +352,32 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                         }
 
                     }
+
+                    var is_road_safe=true;
+
+                    for(position of ret.path)
+                    {
+                        if(isRoomKeepersRoom(position.roomName)==true)
+                        {
+                            is_road_safe=false
+                            //_road_safe=false;
+                            //Memory.is_riad_safe_1=position
+                            break;
+                        }
+                    }
+
                     //console.log(already_scanned, " ",in_other_use)
                     if (already_scanned == false && ret.path.length < 100 && in_other_use != true
-                        // next condition need testing
+                        && is_road_safe==true
                         //&& ret.incomplete==false
                     ) {
                         spawn.memory.farming_sources.push(new_farming_source);
                         
-                        //console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-                        //console.log("added source: ", sources[i].id, " in ", creep.room.name);
-                        //creep.say("ADD")
+                        
                     }
 
 
-
+                    
                 }
 
                 /*
@@ -405,7 +438,9 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
                 //console.log(' ')
                 //console.log(already_scanned, " ",in_other_use)
-                if (already_scanned == false && avg_distance < 100 && in_other_use != true) {
+                if (already_scanned == false && avg_distance < 100 && in_other_use != true
+                    && is_road_safe==true
+                ) {
                     spawn.memory.farming_rooms.push(new_farming);
                     //console.log("adding source from: ", creep.room.name)
                 }

@@ -342,9 +342,9 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         var spawn_num = 1
         if (Game.spawns[spawn.room.name + '_2'] != undefined) { spawn_num++; }
         if (Game.spawns[spawn.room.name + '_3'] != undefined) { spawn_num++; }
-        while (farming_body_parts < spawn_num * 350 && farming_sources_num < spawn.memory.farming_sources.length) {
+        while (farming_body_parts < spawn_num * 400 && farming_sources_num < spawn.memory.farming_sources.length) {
             farming_body_parts += spawn.memory.farming_sources[farming_sources_num].body_parts_cost;
-            if (farming_body_parts < spawn_num * 350) {
+            if (farming_body_parts < spawn_num * 400) {
                 farming_sources_num++;
             }
             else {
@@ -725,8 +725,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
 
         }
-
-        spawn.room.visual.text("spawn.memory.need_soldier: " + spawn.memory.need_soldier, 22, 8, { color: '#fc03b6' })
 
 
 

@@ -2,6 +2,32 @@
 const { boosting_driver } = require('boosting_driver');
 //const { move_avoid_hostile } = require("./move_avoid_hostile");
 //var roleHauler = require('role.hauler');
+
+/*
+function addEnergyIncome(creep,spawn,amount)
+{
+    //creep.memory.target_room 
+    
+    for(rm of spawn.memory.farming_rooms)
+    {
+        if(rm.name==creep.memory.target_room)
+        {
+            if(rm.income==undefined)
+            {
+                rm.income=amount
+            }
+            else{
+                rm.income+=amount
+            }
+            break;
+        }
+    }
+}
+    */
+
+
+
+
 Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spawn) {
 
     //run: function (creep, spawn) {
@@ -269,18 +295,23 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
             if (creep.memory.home_container != undefined && Game.getObjectById(creep.memory.home_container) != null) {
                 if (Game.getObjectById(creep.memory.home_container).structureType == STRUCTURE_STORAGE) {
                     for (let res in creep.store) {
+                        var amount =creep.store[RESOURCE_ENERGY]
                         var transfer_result = creep.transfer(Game.getObjectById(creep.memory.home_container), res);
                         if (transfer_result == ERR_NOT_IN_RANGE) {
                             creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true,avoidCreeps: true });
                             break;
                         }
                         else if (transfer_result == OK) {
+
+                            //addEnergyIncome(creep,spawn,amount)
+
                             creep.memory.max_container = undefined;
                         }
                     }
                 }
                 else {
                     for (let res in creep.store) {
+                        var amount =creep.store[RESOURCE_ENERGY]
                         var transfer_result = creep.transfer(Game.getObjectById(creep.memory.home_container), res);
                         if (transfer_result == ERR_NOT_IN_RANGE) {
                             creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true,avoidCreeps: true  });
@@ -288,9 +319,15 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                         }
                         else if (transfer_result == ERR_FULL) {
                             creep.drop(res);
+
+                            //addEnergyIncome(creep,spawn,amount)
+
                             creep.memory.max_container = undefined;
                         }
                         else if (transfer_result == OK) {
+
+                            //addEnergyIncome(creep,spawn,amount)
+
                             creep.memory.max_container = undefined;
                         }
 
