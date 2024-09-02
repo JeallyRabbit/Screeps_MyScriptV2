@@ -12,7 +12,7 @@ Spawn.prototype.lab = function lab(spawn) {
                 break;
             }
         }
-    }
+    } 
     if (spawn.memory.labs_id == undefined) {
         var labs_find = spawn.room.find(FIND_MY_STRUCTURES, {
             filter: { structureType: STRUCTURE_LAB }
