@@ -10,6 +10,26 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
     //defineInputLabs();
 
     //defineOutputLabs();
+    if(creep.ticksToLive<50)
+    {
+        for (res in creep.store) {
+            if (res == RESOURCE_ENERGY) { continue }
+            if (res.startsWith("X")) // lvl 3 res go to storage
+            {
+                var transfer_result = creep.transfer(creep.room.storage, res)
+                if (transfer_result == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(creep.room.storage, { reusePath: 10 })
+                }
+
+            }
+            else { // others go to terminal
+                var transfer_result = creep.transfer(creep.room.terminal, res)
+                if (transfer_result == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(creep.room.terminal, { reusePath: 10 })
+                }
+            }
+        }
+    }
 
     defineLabs(creep);
 
@@ -56,20 +76,66 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
         else {
 
             // if input labs are empty find reaction for them to run - save that into room.memory
+            creep.memory.reaction=undefined
             var areInputsEmptyOrMatchReaction = areInputsEmpty(creep)
-            if (areInputsEmptyOrMatchReaction == true) {
+            if (areInputsEmptyOrMatchReaction == true ) {
 
+                
                 creep.say("fill in")
                 if (creep.room.memory.reaction == undefined) {
-                    creep.room.memory.reaction = creep.room.terminal.reactions()
+                    if(creep.store.getUsedCapacity()==0)
+                    {
+                        creep.room.memory.reaction = creep.room.terminal.reactions()
+                    }
+                    else{
+                        ///////////////////////////
+                        for (res in creep.store) {
+                            if (res == RESOURCE_ENERGY) { continue }
+                            if (res.startsWith("X")) // lvl 3 res go to storage
+                            {
+                                var transfer_result = creep.transfer(creep.room.storage, res)
+                                if (transfer_result == ERR_NOT_IN_RANGE) {
+                                    creep.moveTo(creep.room.storage, { reusePath: 10 })
+                                }
+        
+                            }
+                            else { // others go to terminal
+                                var transfer_result = creep.transfer(creep.room.terminal, res)
+                                if (transfer_result == ERR_NOT_IN_RANGE) {
+                                    creep.moveTo(creep.room.terminal, { reusePath: 10 })
+                                }
+                            }
+                        }
+                        //////////////////////////
+                    }
                 }
 
                 if (creep.room.memory.reaction != undefined) {
                     //reaction[0] to input 1
-                    // reaction[1] to input 2
                     creep.say("a")
                     var reaction = creep.room.memory.reaction
-                    creep.say(reaction[0], " ", reaction[1])
+                    creep.say(reaction[0]+" - "+ reaction[1])
+
+                    for (res in creep.store) {
+                        if (res == RESOURCE_ENERGY || res==reaction[0] || res==reaction[1]) { continue }
+                        if (res.startsWith("X")) // lvl 3 res go to storage
+                        {
+                            var transfer_result = creep.transfer(creep.room.storage, res)
+                            if (transfer_result == ERR_NOT_IN_RANGE) {
+                                creep.moveTo(creep.room.storage, { reusePath: 10 })
+                            }
+    
+                        }
+                        else { // others go to terminal
+                            var transfer_result = creep.transfer(creep.room.terminal, res)
+                            if (transfer_result == ERR_NOT_IN_RANGE) {
+                                creep.moveTo(creep.room.terminal, { reusePath: 10 })
+                            }
+                        }
+                    }
+                    // reaction[1] to input 2
+                    
+                    //creep.say("s")
                     var input1 = Game.getObjectById(creep.room.memory.input1_lab_id)
                     var input2 = Game.getObjectById(creep.room.memory.input2_lab_id)
                     // no resource in input 1
