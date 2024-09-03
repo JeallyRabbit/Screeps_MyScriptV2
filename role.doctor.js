@@ -68,8 +68,8 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                     //reaction[0] to input 1
                     // reaction[1] to input 2
                     creep.say("a")
-                    var reaction=creep.room.memory.reaction
-                    creep.say(reaction[0]," ",reaction[1])
+                    var reaction = creep.room.memory.reaction
+                    creep.say(reaction[0], " ", reaction[1])
                     var input1 = Game.getObjectById(creep.room.memory.input1_lab_id)
                     var input2 = Game.getObjectById(creep.room.memory.input2_lab_id)
                     // no resource in input 1
@@ -82,9 +82,8 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                             }
                         }
                         else {
-                            if(creep.transfer(input1,reaction[0])==ERR_NOT_IN_RANGE)
-                            {
-                                creep.moveTo(input1,{reusePath: 10})
+                            if (creep.transfer(input1, reaction[0]) == ERR_NOT_IN_RANGE) {
+                                creep.moveTo(input1, { reusePath: 10 })
                             }
                         }
                     }
@@ -96,13 +95,12 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                             }
                         }
                         else {
-                            if(creep.transfer(input2,reaction[1])==ERR_NOT_IN_RANGE)
-                            {
-                                creep.moveTo(input2,{reusePath: 10})
+                            if (creep.transfer(input2, reaction[1]) == ERR_NOT_IN_RANGE) {
+                                creep.moveTo(input2, { reusePath: 10 })
                             }
                         }
                     }
-                    
+
                 }
 
 
@@ -121,26 +119,35 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                     creep.say("clear1")
                     for (res in creep.store) {
                         if (creep.transfer(creep.room.storage, res) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(creep.memory.storage, { reusePath: 10 })
+                            creep.moveTo(creep.room.storage, { reusePath: 10 })
                         }
                     }
                 }
                 else {
-                    creep.say("clear2")
+                    //creep.say("clear2")
                     //var lab = Game.getObjectById(areInputsEmpty_bool)
-                    var lab=[];
-                    for(id of creep.room.memory.output_labs_id)
-                    {
-                        lab.push(Game.getObjectById(id))
+                    var labs = [];
+                    for (id of creep.room.memory.output_labs_id) {
+                        labs.push(Game.getObjectById(id))
                     }
-                    for (res in lab.store) {
-                        if (res == RESOURCE_ENERGY) { continue }
-                        else {
-                            if (creep.withdraw(lab, res) == ERR_NOT_IN_RANGE) {
-                                creep.moveTo(lab, { reusePath: 10 })
+                    //creep.say(labs.length)
+                    //console.log('lab: ')
+                    for (let lab of labs) {
+                        //console.log(lab.id)
+                        //console.log("res")
+                        for (res in lab.store) {
+                            //console.log(res)
+                            if (res == RESOURCE_ENERGY) { continue }
+                            else {
+                                if (creep.withdraw(lab, res) == ERR_NOT_IN_RANGE) {
+                                    creep.moveTo(lab, { reusePath: 10 })
+                                    return;
+
+                                }
                             }
                         }
                     }
+
                 }
 
 
@@ -159,13 +166,13 @@ function areInputsEmpty(creep) {
 
     for (res in input1.store) {
         console.log(res)
-        if (res == RESOURCE_ENERGY || res==creep.room.memory.reaction[0]) { continue }
+        if (res == RESOURCE_ENERGY || res == creep.room.memory.reaction[0]) { continue }
         else if (input1.store[res] > 0) { return creep.room.memory.input1_lab_id }
     }
 
     var input2 = Game.getObjectById(creep.room.memory.input2_lab_id)
 
-    for (res in input2.store || res==creep.room.memory.reaction[1]) {
+    for (res in input2.store || res == creep.room.memory.reaction[1]) {
         if (res == RESOURCE_ENERGY) { continue }
         else if (input2.store[res] > 0) { return creep.room.memory.input2_lab_id }
     }
