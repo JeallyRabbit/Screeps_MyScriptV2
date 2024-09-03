@@ -41,11 +41,13 @@ var _ = require('lodash');
 
 const Movement = require('screeps-movement');
 
+/*
 const movementConfig = {
     visualize: true,
     trackHostileRooms: true
 }
 Movement.setConfig(movementConfig)
+*/
 
 
 const profiler = require('screeps-profiler');
@@ -455,7 +457,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 5000 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                //  || spawn.room.name == 'W4N3'
+                 // || spawn.room.name == 'W4N3'
             ) {
 
 
@@ -493,6 +495,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     if (spawn.room.controller.level >= 6) {
                         //terminal.tick(spawn);
                         spawn.terminal(spawn);
+                        console.log("reaction to run: ",spawn.room.terminal.reactions())
                         spawn.lab(spawn);
                         //lab.tick(spawn);
                     }

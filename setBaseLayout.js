@@ -28,37 +28,6 @@ function is_pos_free(x, y, roomName) {
 
 }
 
-function is_wall_on_plan(spawn, x, y) {
-    if (spawn.memory.room_plan[x][y] == STRUCTURE_WALL || spawn.memory.room_plan[x][y] == 'constructedWall') {
-        return true;
-
-    }
-    else {
-        return false;
-    }
-}
-
-function is_wall_on_list(spawn, x, y) {
-    var it = 0;
-    for (let structure of spawn.memory.building_list) {
-        if (structure.x == x && structure.y == y && structure.structureType == STRUCTURE_WALL) {
-            return it;
-        }
-        it++;
-    }
-    return -1;
-}
-
-function is_wall_in_room(spawn, x, y) {
-    var sturctures_at_pos = spawn.room.lookForAt(LOOK_STRUCTURES, x, y)
-
-    for (structure of sturctures_at_pos) {
-        if (structure.structureType == STRUCTURE_WALL) {
-            return true;
-        }
-    }
-    return false;
-}
 
 function plan_road_to_target(spawn, roomCM, target, rcl, my_range, start) {
 
@@ -525,7 +494,9 @@ function plan_main_spawn_stamp(spawn, roomCM) {
     }
 }
 
-function plan_tower(spawn, roomCM, rcl) {
+
+function plan_labs_stamp(spawn,roomCM)
+{
     var is_succes = false;
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
@@ -535,28 +506,26 @@ function plan_tower(spawn, roomCM, rcl) {
         }
     }
 
-
-    var pos_for_tower = new RoomPosition(0, 0, spawn.room.name);
+    var pos_for_labs = new RoomPosition(0, 0, spawn.room.name);
     seeds = [];
     seeds.push(spawn.memory.storage_pos);
-    seeds.push(spawn.pos);
+
     distanceCM = spawn.room.diagonalDistanceTransform(roomCM, false);
-    //Memory.roomVisuals=false;
     floodCM = spawn.room.floodFill(seeds);
 
-    min_distance_from_spawn = 100;
+    min_distance_from_storage = Infinity;
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < min_distance_from_spawn) {
-                min_distance_from_spawn = floodCM.get(i, j);
-                pos_for_tower.x = i;
-                pos_for_tower.y = j;
+            if (distanceCM.get(i, j) >= 5 && floodCM.get(i, j) < min_distance_from_storage
+        && i>6 && j>6) {
+                min_distance_from_storage = floodCM.get(i, j);
+                pos_for_labs.x = i;
+                pos_for_labs.y = j;
             }
         }
     }
-
-    spawn.memory.room_plan[pos_for_tower.x][pos_for_tower.y] = STRUCTURE_TOWER;
-    spawn.memory.building_list.push(new building_list_element(pos_for_tower.x, pos_for_tower.y, spawn.room.name, STRUCTURE_TOWER, rcl));
+    console.log("x: ",pos_for_labs.x," y: ",pos_for_labs.y)
+    create_labs_stamp(spawn,pos_for_labs.x,pos_for_labs.y)
 
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
@@ -567,8 +536,69 @@ function plan_tower(spawn, roomCM, rcl) {
         }
     }
     return is_succes;
+
+
+
 }
 
+function create_labs_stamp(spawn,x,y)
+{
+    console.log("pos for labs: ",x," ",y)
+    spawn.memory.room_plan[x - 1][y] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x - 1, y , spawn.room.name, STRUCTURE_LAB, 6));
+    spawn.room.memory.input_lab_1_pos=new RoomPosition(x-1,y,spawn.room.name)
+
+    spawn.memory.room_plan[x ][y+1] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x , y+1 , spawn.room.name, STRUCTURE_LAB, 6));
+    spawn.room.memory.input_lab_2_pos=new RoomPosition(x,y+1,spawn.room.name)
+
+    spawn.memory.room_plan[x+1][y+1] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x+1 , y+1 , spawn.room.name, STRUCTURE_LAB, 6));
+
+    spawn.memory.room_plan[x+1][y] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x+1 , y , spawn.room.name, STRUCTURE_LAB, 7));
+
+    spawn.memory.room_plan[x][y-1] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x , y-1 , spawn.room.name, STRUCTURE_LAB, 7));
+
+    spawn.memory.room_plan[x-1][y-1] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x-1 , y-1 , spawn.room.name, STRUCTURE_LAB, 7));
+
+    spawn.memory.room_plan[x-2][y] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x-2 , y , spawn.room.name, STRUCTURE_LAB, 8));
+
+    spawn.memory.room_plan[x-2][y+1] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x-2 , y+1 , spawn.room.name, STRUCTURE_LAB, 8));
+
+    spawn.memory.room_plan[x-1][y+2] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x-1 , y+2 , spawn.room.name, STRUCTURE_LAB, 8));
+
+    spawn.memory.room_plan[x][y+2] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x , y+2 , spawn.room.name, STRUCTURE_LAB, 8));
+
+    for(let i=0;i<3;i++)
+    {
+        // TOP LEFT
+        spawn.memory.room_plan[x-2+i][y-i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x-2+i, y-i , spawn.room.name, STRUCTURE_ROAD, 6));
+
+        // TOP RIGHT
+        spawn.memory.room_plan[x+i][y-2+i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x+i, y-2+i , spawn.room.name, STRUCTURE_ROAD, 6));
+
+        // BOTTOM LEFT
+        spawn.memory.room_plan[x-3+i][y-1+i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x-3+i, y-1+i , spawn.room.name, STRUCTURE_ROAD, 6));
+
+        // BOTTOM RIGHT
+        spawn.memory.room_plan[x+i][y+3-i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x+i, y+3-i , spawn.room.name, STRUCTURE_ROAD, 6));
+
+        // MIDDLE
+        spawn.memory.room_plan[x-2+i][y+2-i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x-2+i, y+2-i , spawn.room.name, STRUCTURE_ROAD, 6));
+    }
+}
 
 function plan_towers_stamp(spawn, roomCM) {
     var is_succes = false;
@@ -728,7 +758,7 @@ function plan_borders(spawn, roomCM, rcl) {
             && building.structureType != STRUCTURE_CONTAINER
         )*/
         if (building.structureType == STRUCTURE_EXTENSION || building.structureType == STRUCTURE_TOWER || building.structureType == STRUCTURE_SPAWN
-            || building.structureType == STRUCTURE_STORAGE
+            || building.structureType == STRUCTURE_STORAGE || building.structureType==STRUCTURE_LAB
         ) {
             max_x = Math.max(max_x, building.x);
             min_x = Math.min(min_x, building.x);
@@ -1082,6 +1112,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_extension_stamp(spawn, roomCM, 7);
         plan_extension_stamp(spawn, roomCM, 7);
         plan_towers_stamp(spawn, roomCM);
+        plan_labs_stamp(spawn,roomCM);
         plan_sources_containers(spawn, roomCM, 2);
         plan_keeper_sources_containers(spawn, roomCM, 7)
 
@@ -1183,7 +1214,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     }
     else if (stage == 4) {
         var cpu_before = Game.cpu.getUsed()
-        build_from_lists(spawn);
+        //build_from_lists(spawn);
         spawn.memory.building_stage++;
         var cpu_after = Game.cpu.getUsed()
         spawn.memory.cpu_for_building = cpu_after - cpu_before
@@ -1201,7 +1232,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
 
 
     // //console.log("VISUALS");
-    var if_visualize = false
+    var if_visualize = true
     if (if_visualize) {
         for (let i = 0; i < 50; i++) {
             for (let j = 0; j < 50; j++) {
@@ -1232,6 +1263,9 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
                 }
                 else if (spawn.memory.room_plan[i][j] == STRUCTURE_LINK) {
                     spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'blue' });
+                }
+                else if (spawn.memory.room_plan[i][j] == STRUCTURE_LAB) {
+                    spawn.room.visual.circle(i - 0.25, j - 0.4, 0.5, 0.8, { fill: 'pink', stroke: 'pink' });
                 }
             }
         }
