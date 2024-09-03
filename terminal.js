@@ -8,6 +8,10 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
     // /** @param {Game} game **/
     //tick: function (spawn) {
+    if(spawn.room.terminal==undefined || spawn.room.storage==undefined)
+    {
+        return
+    }
     var terminal = spawn.room.terminal;
 
     var storage = spawn.room.storage;

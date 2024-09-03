@@ -494,8 +494,13 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     spawn.links(spawn);
                     if (spawn.room.controller.level >= 6) {
                         //terminal.tick(spawn);
+                        
                         spawn.terminal(spawn);
-                        console.log("reaction to run: ",spawn.room.terminal.reactions())
+                        if(spawn.room.terminal!=undefined)
+                        {
+                            console.log("reaction to run: ",spawn.room.terminal.reactions())
+                        }
+                        
                         spawn.lab(spawn);
                         //lab.tick(spawn);
                     }
