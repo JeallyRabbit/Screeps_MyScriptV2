@@ -358,4 +358,3 @@ function defineLabs(creep) {
         return null
     }
 }
-
