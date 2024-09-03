@@ -497,10 +497,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         //terminal.tick(spawn);
                         
                         spawn.terminal(spawn);
+                        /*
                         if(spawn.room.terminal!=undefined)
                         {
                             console.log("reaction to run: ",spawn.room.terminal.reactions())
                         }
+                            */
                         
                         spawn.lab(spawn);
                         //lab.tick(spawn);
