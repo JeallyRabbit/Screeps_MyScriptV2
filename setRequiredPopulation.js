@@ -85,7 +85,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     else {
         spawn.memory.req_scanners = 0;
     }
-
+    spawn.memory.req_doctors = 0;
 
 
     spawn.memory.req_carriers = 0;
@@ -151,6 +151,10 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.req_fillers = 4;
     }
 
+    if(spawn.room.controller.level>=6)
+    {
+        spawn.memory.req_doctors=1;
+    }
     if (spawn.room.storage != undefined && spawn.room.controller.level < 8 && spawn.room.controller.level > 3) {
         if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 0) {
             spawn.memory.req_upgraders_parts = Math.floor(spawn.room.storage.store[RESOURCE_ENERGY] / 20000);
@@ -277,7 +281,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.req_keeperFarmers = 0;//role num 17
     */
     spawn.memory.req_claimers = 0;//role num 11
-    spawn.memory.req_doctors = 0;
+    
     if (spawn.memory.farming_rooms == undefined) {
         spawn.memory.farming_rooms = [];
 
@@ -903,20 +907,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
 
 
-    if (spawn.room.controller.level >= 6 && Game.time % 1400 == 1 && false) {
-        var labs = spawn.room.find(FIND_STRUCTURES, {
-            filter: function (structure) {
-                return structure.structureType == STRUCTURE_LAB;
-            }
-        });
-        if (labs != undefined && labs.length > 0) {
-            //spawn.memory.req_doctors=1;
-            spawn.memory.req_doctors = 1;
-        }
-    }
-    else {
-        spawn.memory.req_doctors = 0;
-    }
 
 
 

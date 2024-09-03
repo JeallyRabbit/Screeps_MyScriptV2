@@ -579,16 +579,16 @@ function create_labs_stamp(spawn,x,y)
     for(let i=0;i<3;i++)
     {
         // TOP LEFT
-        spawn.memory.room_plan[x-2+i][y-i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(x-2+i, y-i , spawn.room.name, STRUCTURE_ROAD, 6));
+        spawn.memory.room_plan[x-3+i][y-i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x-3+i, y-i , spawn.room.name, STRUCTURE_ROAD, 6));
 
         // TOP RIGHT
         spawn.memory.room_plan[x+i][y-2+i] = STRUCTURE_ROAD;
         spawn.memory.building_list.push(new building_list_element(x+i, y-2+i , spawn.room.name, STRUCTURE_ROAD, 6));
 
         // BOTTOM LEFT
-        spawn.memory.room_plan[x-3+i][y-1+i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(x-3+i, y-1+i , spawn.room.name, STRUCTURE_ROAD, 6));
+        spawn.memory.room_plan[x-3+i][y+1+i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x-3+i, y+1+i , spawn.room.name, STRUCTURE_ROAD, 6));
 
         // BOTTOM RIGHT
         spawn.memory.room_plan[x+i][y+3-i] = STRUCTURE_ROAD;

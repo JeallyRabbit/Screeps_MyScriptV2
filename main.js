@@ -10,7 +10,7 @@ var towers = require('towers');
 var links = require('links');
 var terminal = require('terminal');
 var lab = require('labs');
-
+var reactions=require('reactions')
 var roleTowerKeeper = require('role.TowerKeeper');
 var roleClaimer = require('role.Claimer');
 var roleReserver = require('role.reserver');
@@ -129,6 +129,7 @@ module.exports.loop = function () {
             }
         }
             */
+            
 
         var step = 6000
         if (Game.time % step == 0 && false) {
@@ -457,7 +458,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 5000 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                 // || spawn.room.name == 'W4N3'
+                // || spawn.room.name == 'W7N4'
             ) {
 
 
@@ -1289,7 +1290,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
             if (pop_doctors < spawn.memory.req_doctors) {
-                if (spawn.spawnCreep([MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY], 'Doctor_' + spawn.room.name + '_' + Game.time, { memory: { role: 'doctor', home_room: spawn.room } }) == 0) {
+                var doctor_body=[MOVE,MOVE,MOVE,MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY]
+                if (spawn.spawnCreep(doctor_body, 'Doctor_' + spawn.room.name + '_' + Game.time, { memory: { role: 'doctor', home_room: spawn.room } }) == 0) {
                     continue;
                 }
             }
