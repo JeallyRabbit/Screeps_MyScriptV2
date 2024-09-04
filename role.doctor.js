@@ -47,6 +47,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             creep.memory.to_fill_energy = undefined
             creep.memory.to_clear_output = undefined
             creep.memory.reaction = undefined
+            creep.room.memory.reaction=undefined
 
 
             if (creep.store.getUsedCapacity() > 0 || creep.ticksToLive<50) {
@@ -149,6 +150,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
             else {
                 creep.memory.task = undefined
+                return
             }
 
         }
@@ -158,10 +160,32 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             var lab = Game.getObjectById(creep.memory.to_clear_input)
             if (areInputsEmpty(creep)==true) {
                 creep.memory.task = undefined
+                return
                 creep.say("no task")
             }
             else {
                 //creep.say("11")
+
+                if(creep.store.getFreeCapacity(RESOURCE_ENERGY)==0)
+                {
+                    creep.say("cl")
+                    for (res in creep.store) {
+                        if (res == RESOURCE_ENERGY) { continue }
+                        if (creep.transfer(creep.room.storage, res) == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(creep.room.storage, { reusePath: 10 })
+                        }
+                    }
+                }
+                else{
+                    for (res in lab.store) {
+                        if (res == RESOURCE_ENERGY) { continue }
+                        if (creep.withdraw(lab, res) == ERR_NOT_IN_RANGE) {
+                            //creep.say("13")
+                            creep.moveTo(lab, { reusePath: 10 })
+                        }
+                    }
+                }
+                /*
                 if (creep.store.getUsedCapacity(RESOURCE_ENERGY) ==0 ) {
                     //creep.say("12")
                     for (res in lab.store) {
@@ -173,6 +197,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                     }
                 }
                 else {
+                    creep.say("cl")
                     for (res in creep.store) {
                         if (res == RESOURCE_ENERGY) { continue }
                         if (creep.transfer(creep.room.storage, res) == ERR_NOT_IN_RANGE) {
@@ -180,6 +205,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                         }
                     }
                 }
+                    */
             }
         }
 
@@ -188,8 +214,14 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             var input1 = Game.getObjectById(creep.room.memory.input1_lab_id)
             var input2 = Game.getObjectById(creep.room.memory.input2_lab_id)
 
-            if (input1.store[creep.room.memory.reaction[0]] > 0 && input2.store[creep.room.memory.reaction[1]] > 0) {
+            if ( creep.room.memory.reaction==undefined || (input1.store[creep.room.memory.reaction[0]] > 0 && input2.store[creep.room.memory.reaction[1]] > 0)) {
                 creep.memory.task = undefined
+                return
+            }
+            if(creep.memory.reaction==undefined && creep.room.memory.reaction==undefined)
+            {
+                creep.memory.task=undefined
+                return
             }
             /*
             if(input1.store[creep.room.memory.reaction[0]]>0 && input2.store[creep.room.memory.reaction[1]]>0)

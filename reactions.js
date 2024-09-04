@@ -81,7 +81,7 @@ StructureTerminal.prototype.reactions = function reactions() {
         else if (this.store["Z"] > MIN_AMOUNT && this.store["K"] > MIN_AMOUNT && this.store["ZK"]<REQ_MID_AMOUNT) {
             return ["Z", "K"]
         }
-        else if (this.store["U"] > MIN_AMOUNT && this.store["L"] > MIN_AMOUN && this.store["UL"]<REQ_MID_AMOUNT) {
+        else if (this.store["U"] > MIN_AMOUNT && this.store["L"] > MIN_AMOUNT && this.store["UL"]<REQ_MID_AMOUNT) {
             return ["U", "L"]
         }
     }

@@ -445,8 +445,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             */
             /////////////////////////////////////
 
-            spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 41, 10, { color: '#fc03b6' })
-        spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 11, { color: '#fc03b6' })
+            spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 6, { color: '#fc03b6' })
+            spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 7, { color: '#fc03b6' })
 
 
 
