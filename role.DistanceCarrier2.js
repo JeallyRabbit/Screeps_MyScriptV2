@@ -30,15 +30,7 @@ function addEnergyIncome(creep,spawn,amount)
 
 Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spawn) {
 
-    //run: function (creep, spawn) {
-    //creep.say(creep.memory.home_room);
-    //creep.move(RIGHT);
-    //return;
-    //creep.drop(RESOURCE_ENERGY);
-    //creep.suicide();
 
-
-    //creep.move(TOP);
     if (creep.memory.boosting_list == undefined) {
         creep.memory.boosting_list = ["KH", "KH2O", "XKH2O"];//boost types that creep accepts
     }
@@ -225,7 +217,6 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                     if (Game.getObjectById(creep.memory.reource_to_collect) != null) {
                         creep.memory.max_container = undefined;
                         if (creep.pickup(Game.getObjectById(creep.memory.reource_to_collect)) == ERR_NOT_IN_RANGE) {
-                            //move_avoid_hostile(creep, Game.getObjectById(creep.memory.reource_to_collect).pos, 1, true);
                             creep.moveTo(Game.getObjectById(creep.memory.reource_to_collect), { reusePath: 21,avoidCreeps: true  });
                             //creep.say("E");
                         }

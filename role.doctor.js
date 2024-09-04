@@ -198,12 +198,19 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
                 */
             if (creep.store[creep.room.memory.reaction[0]] == 0) {
-                if (creep.withdraw(creep.room.terminal, creep.room.memory.reaction[0], (creep.store.getCapacity() / 2) - ((creep.store.getCapacity() / 2) % 5)) == ERR_NOT_IN_RANGE) {
+                var terminal_amount=creep.room.terminal.store[creep.room.memory.reaction[0]]-(creep.room.terminal.store[creep.room.memory.reaction[0]]%5)
+                var creep_amount=((creep.store.getCapacity() / 2) - ((creep.store.getCapacity() / 2) % 5))
+                var final_aount=(Math.min(terminal_amount,creep_amount))
+                if (creep.withdraw(creep.room.terminal, creep.room.memory.reaction[0], final_aount) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(creep.room.terminal, { reusePath: 10 })
                 }
             }
             else if (creep.store[creep.room.memory.reaction[1]] == 0) {
-                if (creep.withdraw(creep.room.terminal, creep.room.memory.reaction[1], (creep.store.getCapacity() / 2) - ((creep.store.getCapacity() / 2) % 5)) == ERR_NOT_IN_RANGE) {
+                creep.say("with2")
+                var terminal_amount=creep.room.terminal.store[creep.room.memory.reaction[1]]-(creep.room.terminal.store[creep.room.memory.reaction[1]]%5)
+                var creep_amount=((creep.store.getCapacity() / 2) - ((creep.store.getCapacity() / 2) % 5))
+                var final_aount=(Math.min(terminal_amount,creep_amount))
+                if (creep.withdraw(creep.room.terminal, creep.room.memory.reaction[1], final_aount) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(creep.room.terminal, { reusePath: 10 })
                 }
             }
