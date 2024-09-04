@@ -31,7 +31,7 @@ StructureTerminal.prototype.reactions = function reactions() {
             return ["U", "L"]
         }
     }
-    /*
+    
     if(storage.store["XKHO2"]<REQ_AMOUNT){ //2 ranged attack
         if (this.store["KHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT ) {
             return ["KHO2", "X"]
@@ -161,7 +161,7 @@ StructureTerminal.prototype.reactions = function reactions() {
         }
     }
 
-   */
+   
     
 
 

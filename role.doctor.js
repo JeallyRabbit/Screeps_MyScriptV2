@@ -49,7 +49,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             creep.memory.reaction = undefined
 
 
-            if (creep.store.getUsedCapacity() > 0) {
+            if (creep.store.getUsedCapacity() > 0 || creep.ticksToLive<50) {
                 creep.memory.task = CLEAR_CREEP
             }
             else if (ifLabsNeedEnergy(creep) != false) // case 0 on issue #207
@@ -154,16 +154,20 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
         }
 
         if (creep.memory.task == CLEAR_INPUT) {
+            creep.memory.to_clear_input = areInputsEmpty(creep)
             var lab = Game.getObjectById(creep.memory.to_clear_input)
             if (areInputsEmpty(creep)==true) {
                 creep.memory.task = undefined
                 creep.say("no task")
             }
             else {
-                if (creep.store.getFreeCapacity() > 0) {
+                //creep.say("11")
+                if (creep.store.getUsedCapacity(RESOURCE_ENERGY) ==0 ) {
+                    //creep.say("12")
                     for (res in lab.store) {
                         if (res == RESOURCE_ENERGY) { continue }
                         if (creep.withdraw(lab, res) == ERR_NOT_IN_RANGE) {
+                            //creep.say("13")
                             creep.moveTo(lab, { reusePath: 10 })
                         }
                     }
