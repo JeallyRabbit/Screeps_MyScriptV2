@@ -31,18 +31,18 @@ StructureTerminal.prototype.reactions = function reactions() {
             return ["U", "L"]
         }
     }
-
+    /*
     if(storage.store["XKHO2"]<REQ_AMOUNT){ //2 ranged attack
-        if (this.store["KHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+        if (this.store["KHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT ) {
             return ["KHO2", "X"]
         }
-        else if (this.store["KO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+        else if (this.store["KO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT  && this.store["KHO2"]<REQ_MID_AMOUNT) {
             return ["KO", "OH"]
         }
-        else if (this.store["K"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+        else if (this.store["K"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["KO"]<REQ_MID_AMOUNT) {
             return ["K", "O"]
         }
-        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT && this.store["OH"]<REQ_MID_AMOUNT) {
             return ["H", "O"]
         }
     }
@@ -51,10 +51,10 @@ StructureTerminal.prototype.reactions = function reactions() {
         if (this.store["LHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
             return ["LHO2", "X"]
         }
-        else if (this.store["LO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+        else if (this.store["LO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT && this.store["LHO2"]<REQ_MID_AMOUNT) {
             return ["LO", "OH"]
         }
-        else if (this.store["L"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+        else if (this.store["L"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT && this.store["LO"]<REQ_MID_AMOUNT) {
             return ["L", "O"]
         }
         else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["OH"]<REQ_MID_AMOUNT) {
@@ -66,22 +66,22 @@ StructureTerminal.prototype.reactions = function reactions() {
         if (this.store["GHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
             return ["GHO2", "X"]
         }
-        else if (this.store["GO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+        else if (this.store["GO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT && this.store["GHO2"]<REQ_MID_AMOUNT) {
             return ["GO", "OH"]
         }
-        else if (this.store["G"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+        else if (this.store["G"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT && this.store["GO"]<REQ_MID_AMOUNT) {
             return ["G", "O"]
         }
         else if (this.store["O"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT  && this.store["OH"]<REQ_MID_AMOUNT) {
             return ["O", "H"]
         }
-        else if (this.store["ZK"] > MIN_AMOUNT && this.store["UL"] > MIN_AMOUNT) {
+        else if (this.store["ZK"] > MIN_AMOUNT && this.store["UL"] > MIN_AMOUNT && this.store["G"]<REQ_MID_AMOUNT) {
             return ["ZK", "UL"]
         }
-        else if (this.store["Z"] > MIN_AMOUNT && this.store["K"] > MIN_AMOUNT) {
+        else if (this.store["Z"] > MIN_AMOUNT && this.store["K"] > MIN_AMOUNT && this.store["ZK"]<REQ_MID_AMOUNT) {
             return ["Z", "K"]
         }
-        else if (this.store["U"] > MIN_AMOUNT && this.store["L"] > MIN_AMOUNT) {
+        else if (this.store["U"] > MIN_AMOUNT && this.store["L"] > MIN_AMOUN && this.store["UL"]<REQ_MID_AMOUNT) {
             return ["U", "L"]
         }
     }
@@ -90,10 +90,10 @@ StructureTerminal.prototype.reactions = function reactions() {
         if (this.store["UH2O"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
             return ["UH2O", "X"]
         }
-        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT && this.store["UH2O"]<REQ_MID_AMOUNT) {
             return ["UH", "OH"]
         }
-        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT && this.store["UH"]<REQ_MID_AMOUNT) {
             return ["U", "H"]
         }
         else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["OH"]<REQ_MID_AMOUNT) {
@@ -105,25 +105,25 @@ StructureTerminal.prototype.reactions = function reactions() {
         if (this.store["ZHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
             return ["ZHO2", "X"]
         }
-        else if (this.store["ZO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+        else if (this.store["ZO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT  && this.store["ZHO2"]<REQ_MID_AMOUNT) {
             return ["ZO", "OH"]
         }
-        else if (this.store["Z"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+        else if (this.store["Z"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["ZO"]<REQ_MID_AMOUNT) {
             return ["Z", "O"]
         }
-        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["OH"]<REQ_MID_AMOUNT) {
             return ["H", "O"]
         }
     }
 
     if(storage.store["XKH2O"]<REQ_AMOUNT){ //7 CAPACITY
-        if (this.store["KH2O"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+        if (this.store["KH2O"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT ) {
             return ["KH2O", "X"]
         }
-        else if (this.store["KH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+        else if (this.store["KH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT && this.store["KH2O"]<REQ_MID_AMOUNT) {
             return ["KH", "OH"]
         }
-        else if (this.store["K"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+        else if (this.store["K"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT && this.store["KH"]<REQ_MID_AMOUNT) {
             return ["K", "H"]
         }
         else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["OH"]<REQ_MID_AMOUNT) {
@@ -135,10 +135,10 @@ StructureTerminal.prototype.reactions = function reactions() {
         if (this.store["UHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
             return ["UHO2", "X"]
         }
-        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT && this.store["UHO2"]<REQ_MID_AMOUNT) {
             return ["UH", "OH"]
         }
-        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT && this.store["UH"]<REQ_MID_AMOUNT) {
             return ["U", "H"]
         }
         else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["OH"]<REQ_MID_AMOUNT) {
@@ -150,10 +150,10 @@ StructureTerminal.prototype.reactions = function reactions() {
         if (this.store["UHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
             return ["UHO2", "X"]
         }
-        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT && this.store["UHO2"]<REQ_MID_AMOUNT) {
             return ["UH", "OH"]
         }
-        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT && this.store["UH"]<REQ_MID_AMOUNT) {
             return ["U", "H"]
         }
         else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["OH"]<REQ_MID_AMOUNT) {
@@ -161,7 +161,7 @@ StructureTerminal.prototype.reactions = function reactions() {
         }
     }
 
-   
+   */
     
 
 
