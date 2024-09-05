@@ -85,6 +85,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
         if (creep.memory.task == CLEAR_CREEP) {
             if (creep.store.getUsedCapacity() == 0) {
                 creep.memory.task = undefined
+                return
             }
             else {
                 for (res in creep.store) {
@@ -98,7 +99,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
 
         if (creep.memory.task == FILL_LABS_ENERGY) {
             var to_fill = Game.getObjectById(creep.memory.to_fill_energy)
-            if (to_fill == null || (to_fill != null && to_fill.store[RESOURCE_ENERGY] >= LAB_ENERGY_CAPACITY)) { creep.memory.task = undefined }
+            if (to_fill == null || (to_fill != null && to_fill.store[RESOURCE_ENERGY] >= LAB_ENERGY_CAPACITY)) { creep.memory.task = undefined;return }
             else {
                 if (creep.store[RESOURCE_ENERGY] == 0) {
                     if (creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -124,6 +125,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                 if ((isSomethingInOutputs(creep)==false) ||  (creep.store.getFreeCapacity(RESOURCE_ENERGY)==0)) {
                     (isSomethingInOutputs(creep)==false) ||  (creep.store.getFreeCapacity(RESOURCE_ENERGY)==0)
                     creep.memory.task = undefined
+                    return
                 }
                 else {
                     
