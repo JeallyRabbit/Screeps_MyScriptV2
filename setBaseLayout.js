@@ -1226,6 +1226,8 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         spawn.memory.building_stage++;
         spawn.memory.if_success_planing_base = true
         console.log("success plannig base: ", spawn.memory.if_success_planing_base)
+
+        delete spawn.memory.roomCM
     }
 
     spawn.memory.if_success_planing_stage = true;
