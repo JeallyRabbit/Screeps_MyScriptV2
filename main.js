@@ -763,6 +763,10 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         if (creep.ticksToLive > creep.memory.time_to_sleep) {
                             //creep.say('Dsleep')
                             if (creep.memory.time_to_sleep != null) {
+                                if(creep.pos.isNearTo(spawn))
+                                {
+                                    creep.fleeFrom(spawn,3)
+                                }
                                 continue;
                             }
                             else {

@@ -90,7 +90,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
             //spawn.room.visual.text(("energy: " + cost2, 25, 25, { color: '#fc03b6' }))
         }
 
-        
+
         for (res of this.room.memory.need_resources) {
             var buy_result = buy_resource(spawn,res, 5000)
             console.log(res, " buying result: ", buy_result)
@@ -256,7 +256,7 @@ function buy_resource(spawn,res, amount) {
         var price = (Game.market.getOrderById(best_order_id).price * trade_amount) - cost
         var price_per_unit = price / trade_amount
         //console.log("price per unit: ", price_per_unit)
-        if (price_per_unit < 20 || true) {
+        if (price_per_unit < 2000) {
             buying_result = Game.market.deal(best_order_id, trade_amount, spawn.room.name)
             
         }

@@ -293,11 +293,12 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
         if (creep.memory.target_room != undefined && creep.room.name != creep.memory.target_room) {
             
-
+            /*
             var reusePath=100;
 
             if(creep.memory.destination==undefined)
             {
+
                 creep.say("destination unknown")
                 var destination=[];
                 for(var i=1;i<50;i++)
@@ -322,8 +323,9 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
                 }
                 creep.moveTo(new RoomPosition(25,25,creep.memory.target_room))
             }
+                */
             
-
+            creep.moveTo(new RoomPosition(25,25,creep.memory.target_room))
             
             
             

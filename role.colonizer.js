@@ -88,12 +88,19 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
 
             }
             else { // harvesting ==false
-                if (creep.room.controller.my && (creep.room.controller.level < 2 || creep.room.controller.ticksToDowngrade < 5000)) {
-                    if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(creep.room.controller, { reusePath: 11, maxRooms: 1 })
+                if(creep.room.controller.my)
+                {
+                    if(creep.room.controller.ticksToDowngrade<5000){creep.memory.upgrading_controler=true}
+                    if(creep.room.controller.ticksToDowngrade>7500){creep.memory.upgrading_controler=false}
+                    if (creep.memory.upgrading_controler==true) {
+                        if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(creep.room.controller, { reusePath: 11, maxRooms: 1 })
+                        }
                     }
                 }
-                else {
+                
+                
+                if(creep.memory.upgrading_controler!=true){
 
                     /// find ramparts and repair them
                     var ramparts = creep.room.find(FIND_MY_STRUCTURES, {
@@ -138,6 +145,7 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
                             if(creep.build(construction_sites_ramparts[0])==ERR_NOT_IN_RANGE)
                             {
                                 creep.moveTo(construction_sites_ramparts[0],{reusePath: 10, maxROoms: 1})
+                                return
                             }
                             creep.roleBuilder(creep, spawn);
                             return
