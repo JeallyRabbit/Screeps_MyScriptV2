@@ -438,18 +438,22 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             if (spawn_pos_x > 4 && spawn_pos_x < 46 && spawn_pos_y > 4 && spawn_pos_y < 46) {
                 console.log("pos for new spawn: ", spawn_pos_x, " ", spawn_pos_y, " ", creep.room.name);
                 var is_to_close = false;
-                for (let my_room in Game.rooms) {
-                    if (Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[my_room].name) < 2 && my_room != creep.room.name) {
-                        console.log(" ");
-                        console.log("distance between: ", creep.room.name, " and ", Game.rooms[my_room].name,
-                            " = ", Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[my_room].name));
-                        console.log("Room is to close");
-                        console.log(" ");
-                        is_to_close = true;
-                        break;
+                if(Game.shard.name!='shard3')
+                {
+                    for (let my_room in Game.rooms) {
+                        if (Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[my_room].name) < 2 && my_room != creep.room.name) {
+                            console.log(" ");
+                            console.log("distance between: ", creep.room.name, " and ", Game.rooms[my_room].name,
+                                " = ", Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[my_room].name));
+                            console.log("Room is to close");
+                            console.log(" ");
+                            is_to_close = true;
+                            break;
+                        }
                     }
                 }
-                if (is_to_close == false  || true ) {
+                
+                if (is_to_close == false) {
                     if (Memory.colonizing == true) {
                         //creep.move(LEFT)
                         creep.room.visual.circle(spawn_pos_x, spawn_pos_y, { fill: '#666666', radius: 0.5, stroke: 'green' });

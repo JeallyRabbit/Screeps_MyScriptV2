@@ -90,6 +90,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
             //spawn.room.visual.text(("energy: " + cost2, 25, 25, { color: '#fc03b6' }))
         }
 
+        
         for (res of this.room.memory.need_resources) {
             var buy_result = buy_resource(spawn,res, 5000)
             console.log(res, " buying result: ", buy_result)

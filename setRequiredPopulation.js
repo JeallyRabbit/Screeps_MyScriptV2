@@ -72,7 +72,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 30000
     ) {
         spawn.memory.req_claimers = 1;
-        spawn.memory.req_colonizers = 8;
+        spawn.memory.req_colonizers = 4;
     }
     else {
         spawn.memory.req_claimers = 0;

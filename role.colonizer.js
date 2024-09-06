@@ -5,7 +5,14 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
     //creep.memory.target_room='W19N13'
     if (creep.memory.target_room) {
         if (creep.room.name == creep.memory.target_room) {// if in target room - go claim 
-
+            if (creep.room.find(FIND_HOSTILE_CREEPS, {
+                filter:
+                    function (hostile) {
+                        return hostile.owner.username != 'Invader'
+                    }
+            }).length > 0) {
+                creep.room.controller.activateSafeMode()
+            }
             if (creep.store[RESOURCE_ENERGY] == 0) {
                 creep.memory.harvesting = true;
             }
@@ -88,33 +95,87 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
                 }
                 else {
 
-                    if (creep.room.find(FIND_CONSTRUCTION_SITES).length > 0) {
-                        creep.roleBuilder(creep, spawn);
-                        return
-                    }
-                    else {
-                        var colonize_room_spawn = creep.room.find(FIND_STRUCTURES, {
-                            filter:
-                                function (str) {
-                                    return str.my == true && str.structureType == STRUCTURE_SPAWN;
-                                }
-                        });
-                        if (colonize_room_spawn != undefined && colonize_room_spawn.length > 0) {
-                            // if (creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                            //creep.roleFarmer(creep, spawn)
+                    /// find ramparts and repair them
+                    var ramparts = creep.room.find(FIND_MY_STRUCTURES, {
+                        filter:
+                            function (str) {
+                                return str.structureType == STRUCTURE_RAMPART
+                            }
+                    })
 
-                            //return;
-                            //}
-                            //else {
-                            creep.memory.home_room.name = creep.memory.target_room;
-                            creep.roleHauler(creep, spawn)
-                            creep.say("hauling")
-                            //creep.drop(RESOURCE_ENERGY)
-                            return
-                            //}
-                            //return
+                    var min_rampart_hp = 10000
+                    var max_rampart_hp = 15000
+
+                    var found_min = 0;
+                    for (r of ramparts) {
+                        if (r.hits < min_rampart_hp) { creep.memory.repair_ramparts = true; creep.memory.target_rampart = r.id; break; }
+                    }
+
+                    if (creep.memory.repair_ramparts == true) {
+                        for (r of ramparts) {
+                            if (r.hits > max_rampart_hp) { creep.memory.repair_ramparts = false; break; }
                         }
                     }
+                    if (creep.memory.repair_ramparts == true) {
+                        if (creep.repair(Game.getObjectById(creep.memory.target_rampart)) == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(Game.getObjectById(creep.memory.target_rampart), { reusePath: 11, maxRooms: 1 })
+                        }
+                    }
+                    else {
+                        //creating ramparts around controller
+                        var controller_pos = creep.room.controller.pos.getN_NearbyPositions(1)
+                        for (p of controller_pos) {
+                            creep.room.createConstructionSite(p.x, p.y, STRUCTURE_RAMPART)
+                        }
+
+                        var construction_sites_ramparts = creep.room.find(FIND_CONSTRUCTION_SITES,{filter: 
+                            function(c)
+                            {
+                                return c.structureType==STRUCTURE_RAMPART
+                            }
+                        })
+                        if (construction_sites_ramparts.length > 0) {
+                            if(creep.build(construction_sites_ramparts[0])==ERR_NOT_IN_RANGE)
+                            {
+                                creep.moveTo(construction_sites_ramparts[0],{reusePath: 10, maxROoms: 1})
+                            }
+                            creep.roleBuilder(creep, spawn);
+                            return
+                        }
+                        else if(creep.room.find(FIND_CONSTRUCTION_SITES).length>0)
+                        {
+                            creep.roleBuilder(creep, spawn);
+                            return
+                        }
+                        else {
+                            var colonize_room_spawn = creep.room.find(FIND_STRUCTURES, {
+                                filter:
+                                    function (str) {
+                                        return str.my == true && str.structureType == STRUCTURE_SPAWN;
+                                    }
+                            });
+                            if (colonize_room_spawn != undefined && colonize_room_spawn.length > 0) {
+                                // if (creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                                //creep.roleFarmer(creep, spawn)
+
+                                //return;
+                                //}
+                                //else {
+                                creep.memory.home_room.name = creep.memory.target_room;
+                                creep.roleHauler(creep, spawn)
+                                //creep.say("hauling")
+                                //creep.drop(RESOURCE_ENERGY)
+                                return
+                                //}
+                                //return
+                            }
+                        }
+                    }
+
+
+                    ////
+
+
 
 
 
@@ -131,6 +192,7 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
                 //console.log("coing to target_room");
 
                 //creep.moveToRoom(creep.memory.target_room,{reusePath: 11, avoidSk: true,avoidHostileRooms: true});
+                /*
                 var reusePath = 100;
 
                 if (creep.memory.destination == undefined) {
@@ -145,15 +207,19 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
                 }
 
                 if (creep.memory.destination != undefined) {
-                    creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
+                    creep.moveTo(creep.memory.destination,{reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true})
+                    //creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
                 }
+                    */
+
+                creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
             }
             //creep.moveTo(Game.rooms[creep.memory.target_room].controller.pos);
             //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room, { reusePath: 15, avoidSk: true }),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
         }
     }
     else {
-        creep.say("No Target");
+        //creep.say("No Target");
 
     }
 

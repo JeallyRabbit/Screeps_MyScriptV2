@@ -621,7 +621,7 @@ function plan_towers_stamp(spawn, roomCM) {
     min_distance_from_spawn = 100;
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < min_distance_from_spawn) {
+            if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < min_distance_from_spawn && i>5 && i<45 && j>5 && j<45) {
                 min_distance_from_spawn = floodCM.get(i, j);
                 pos_for_tower.x = i;
                 pos_for_tower.y = j;
