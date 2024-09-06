@@ -10,7 +10,7 @@ var towers = require('towers');
 var links = require('links');
 var terminal = require('terminal');
 var lab = require('labs');
-
+var reactions=require('reactions')
 var roleTowerKeeper = require('role.TowerKeeper');
 var roleClaimer = require('role.Claimer');
 var roleReserver = require('role.reserver');
@@ -41,11 +41,13 @@ var _ = require('lodash');
 
 const Movement = require('screeps-movement');
 
+/*
 const movementConfig = {
     visualize: true,
     trackHostileRooms: true
 }
 Movement.setConfig(movementConfig)
+*/
 
 
 const profiler = require('screeps-profiler');
@@ -127,6 +129,7 @@ module.exports.loop = function () {
             }
         }
             */
+            
 
         var step = 6000
         if (Game.time % step == 0 && false) {
@@ -241,7 +244,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
         if (Game.shard.name != 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15 && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.gcl.level) {
             Memory.colonizing = true;
-            Memory.colonizing = false;
+            //Memory.colonizing = false;
         }
         // console.log(Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15)
 
@@ -442,8 +445,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             */
             /////////////////////////////////////
 
-            spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 41, 10, { color: '#fc03b6' })
-        spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 11, { color: '#fc03b6' })
+            spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 6, { color: '#fc03b6' })
+            spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 7, { color: '#fc03b6' })
 
 
 
@@ -455,7 +458,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 5000 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                //  || spawn.room.name == 'W4N3'
+                // || spawn.room.name == 'W7N4'
             ) {
 
 
@@ -492,7 +495,15 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     spawn.links(spawn);
                     if (spawn.room.controller.level >= 6) {
                         //terminal.tick(spawn);
+                        
                         spawn.terminal(spawn);
+                        /*
+                        if(spawn.room.terminal!=undefined)
+                        {
+                            console.log("reaction to run: ",spawn.room.terminal.reactions())
+                        }
+                            */
+                        
                         spawn.lab(spawn);
                         //lab.tick(spawn);
                     }
@@ -752,6 +763,10 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         if (creep.ticksToLive > creep.memory.time_to_sleep) {
                             //creep.say('Dsleep')
                             if (creep.memory.time_to_sleep != null) {
+                                if(creep.pos.isNearTo(spawn))
+                                {
+                                    creep.fleeFrom(spawn,3)
+                                }
                                 continue;
                             }
                             else {
@@ -1281,7 +1296,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
             if (pop_doctors < spawn.memory.req_doctors) {
-                if (spawn.spawnCreep([MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY, MOVE, CARRY], 'Doctor_' + spawn.room.name + '_' + Game.time, { memory: { role: 'doctor', home_room: spawn.room } }) == 0) {
+                var doctor_body=[MOVE,MOVE,MOVE,MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY]
+                if (spawn.spawnCreep(doctor_body, 'Doctor_' + spawn.room.name + '_' + Game.time, { memory: { role: 'doctor', home_room: spawn.room } }) == 0) {
                     continue;
                 }
             }

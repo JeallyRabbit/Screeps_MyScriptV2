@@ -1,323 +1,481 @@
-const { can_run_lvl_3_reaction } = require("./can_run_reactions");
-const { can_run_lvl_2_reaction } = require("./can_run_reactions");
-const { can_run_lvl_1_reaction } = require("./can_run_reactions");
-const { can_run_lvl_0_reaction } = require("./can_run_reactions");
+
+const { minBy } = require("lodash");
 const { have_mineral_in_it } = require("./have_mineral_in_it");
 
-Creep.prototype.roleDoctor = function roleDoctor(creep, spawn) {
+
+const FILL_LABS_ENERGY = 'fill_labs_energy'
+const CLEAR_OUTPUTS = 'clear_outputs'
+const CLEAR_INPUT = 'clear_input'
+const FILL_INPUT = 'fill_input'
+const CLEAR_CREEP = 'clear_creep'
+
+Creep.prototype.roleDoctor = function roleDoctor(creep) {
 
 
-    var labs = creep.room.find(FIND_STRUCTURES, {
-        filter: function (structure) {
-            return structure.structureType == STRUCTURE_LAB;
-        }
-    });
+    //room.memory.input_lab_1_pos
+    //define input lab1
+    //defineInputLabs();
 
-
-    var storage = creep.room.find(FIND_STRUCTURES, {
-        filter: function (structure) {
-            return structure.structureType == STRUCTURE_STORAGE;
-        }
-    });
-    //creep.transfer(storage[0],"GHO2");
-    var terminal = creep.room.find(FIND_STRUCTURES, {
-        filter: function (structure) {
-            return structure.structureType == STRUCTURE_TERMINAL;
-        }
-    });
-    var input1pos = new RoomPosition(spawn.pos.x + 3, spawn.pos.y, creep.room.name);
-    var input2pos = new RoomPosition(spawn.pos.x + 3, spawn.pos.y - 1, creep.room.name);
-    //console.log("input1pos: ",input1pos);
-    //console.log("input2pos: ",input2pos);
-    var output_lab = creep.room.find(FIND_STRUCTURES, {
-        filter: function (structure) {
-            return structure.structureType == STRUCTURE_LAB
-                && ((structure.pos.x != input1pos.x && structure.pos.y != input1pos.y)
-                    || (structure.pos.x != input2pos.x && structure.pos.y != input2pos.y))
-            //&& have_mineral_in_it(structure)!=false;
-            //&& have_mineral_in_it(structure)==true;
-        }
-    });
-    //console.log(output_lab.length);
-    if (output_lab.length != 0) {
-        //console.log("output.lab[0]: ",output_lab[0].store.getCapacity());
-        output_lab = output_lab.sort((a, b) => (b.store[have_mineral_in_it(b)]) - (a.store[have_mineral_in_it(a)]));
-        output_lab = output_lab[0];
-        //console.log("output_lab: ", output_lab.store[have_mineral_in_it(output_lab)]);
-    }
-
-
-    var creeps_to_boost = creep.room.find(FIND_MY_CREEPS, {
-        filter: function (creep_to_boost) {
-            return creep_to_boost.memory.need_boosting == true
-                && creep_to_boost.memory.booster != undefined;
-            //&& creep_to_boost.pos.isNearTo(output_lab.pos);
-        }
-    });
-    //console.log("output_laAb: ",output_lab);
-    //console.log("output_lab.pos: ",output_lab.pos);
-    //console.log(have_mineral_in_it(output_lab));
-    if (creeps_to_boost != undefined && creeps_to_boost.length > 0) {
-        creep.memory.boosting = true;
-        creep.say("A");
-        if (have_mineral_in_it(output_lab) != false) {
-            creep.memory.filling_booster = false;
-        }
-        else if (have_mineral_in_it(output_lab) == false) {
-            creep.memory.filling_booster = true;
-        }
-    }
-    else {
-        creep.memory.boosting = false;
-        creep.memory.filling_booster = false;
-    }
-
-
-    var upgrading_lab0 = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: function (structure) {
-            return structure.structureType == STRUCTURE_LAB
-                && (structure.pos.x == spawn.pos.x + 3 && structure.pos.y == spawn.pos.y);
-        }
-    });
-    //console.log("upgrading_lab0: ", upgrading_lab0.pos);
-    if (upgrading_lab0 == undefined) {
-        var upgrading_lab0 = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: function (structure) {
-                return structure.structureType == STRUCTURE_LAB;
-            }
-        });
-    }
-
-    if (upgrading_lab0 != undefined && upgrading_lab0 != null) {
-        var upgrading_lab1 = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: function (structure) {
-                return structure.structureType == STRUCTURE_LAB
-                    && structure.pos != upgrading_lab0.pos;
-            }
-        });
-        if (upgrading_lab1 == undefined) {
-            upgrading_lab1 = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter: function (structure) {
-                    return structure.structureType == STRUCTURE_LAB
-                        && (structure.pos.x == spawn.pos.x + 3 && structure.pos.y == spawn.pos.y - 1);
-                }
-            });
-
-        }
-    }
-
-    if (creep.memory.to_transport == undefined ||
-        (have_mineral_in_it(upgrading_lab0) != false && have_mineral_in_it(upgrading_lab1) != false)) {
-        //
-        if (can_run_lvl_0_reaction(storage[0]) != "NOTHING") {
-            creep.memory.to_transport = can_run_lvl_0_reaction(storage[0]);
-        }
-        else if (can_run_lvl_1_reaction(storage[0]) != "NOTHING") {
-            creep.memory.to_transport = can_run_lvl_1_reaction(storage[0]);
-        }
-        else if (can_run_lvl_2_reaction(storage[0]) != "NOTHING") {
-            creep.memory.to_transport = can_run_lvl_2_reaction(storage[0]);
-        }
-        else if (can_run_lvl_3_reaction(storage[0]) != "NOTHING") {
-            //creep.say("V");
-            creep.memory.to_transport = can_run_lvl_3_reaction(storage[0]);
-        }
-
-        if (can_run_lvl_0_reaction(storage[0]) == "NOTHING"
-            && can_run_lvl_1_reaction(storage[0]) == "NOTHING"
-            && can_run_lvl_2_reaction(storage[0]) == "NOTHING"
-            && can_run_lvl_3_reaction(storage[0]) == "NOTHING") {
-            //creep.say("A");
-            creep.memory.to_transport = false;
-        }
-    }
-    else {
-        //creep.memory.to_transport = undefined;
-    }
-
-    //console.log(upgrading_lab0," ", upgrading_lab1);
-    if (upgrading_lab0 != undefined && upgrading_lab1 != undefined) {
-
-        if (have_mineral_in_it(upgrading_lab0) != false && upgrading_lab0.store[creep.memory.to_transport[0]] == 0) {
-            creep.memory.clear0 = true;
-        }
-        else /*if(creep.store.getFreeCapacity()==creep.store.getCapacity())*/ {
-            //creep.say(false);
-            creep.memory.clear0 = false;
-        }
-        if (have_mineral_in_it(upgrading_lab1) != false && upgrading_lab1.store[creep.memory.to_transport[1]] == 0) {
-            creep.memory.clear1 = true;
-        }
-        else if (creep.store.getFreeCapacity() == creep.store.getCapacity()) {
-            creep.memory.clear1 = false;
-        }
-    }
-
-    if (creep.memory.boosting == true) {
-        if (creep.memory.filling_booster == true) {
-            creep.say("b");
-            var withdraw_amount = Math.min(creep.store.getFreeCapacity(), storage[0].store[creeps_to_boost[0].memory.booster]);
-            var upgrades_num = Math.floor(withdraw_amount / 30);
-            withdraw_amount = Math.min(upgrades_num, creeps_to_boost[0].memory.parts_to_boost.length) * 30;
-            if (creep.store.getFreeCapacity() < creep.store.getCapacity() &&
-                creep.store[creeps_to_boost[0].memory.booster] < withdraw_amount) {//creep have in store resource that is not required for boosting
-                creep.moveTo(storage[0], { range: 1 });
-                for (const resource in creep.store) {
-                    creep.transfer(storage[0], resource);
-                }
-            }
-            else if (creep.store.getFreeCapacity() == creep.store.getCapacity())//creep is empty
+    //defineOutputLabs();
+    if (creep.ticksToLive < 50) {
+        for (res in creep.store) {
+            if (res == RESOURCE_ENERGY) { continue }
+            if (res.startsWith("X")) // lvl 3 res go to storage
             {
-                var withdraw_amount = Math.min(creep.store.getFreeCapacity(), storage[0].store[creeps_to_boost[0].memory.booster]);
-                var upgrades_num = Math.floor(withdraw_amount / 30);
-                withdraw_amount = Math.min(upgrades_num, creeps_to_boost[0].memory.parts_to_boost.length) * 30;
-                if (withdraw_amount > 0) {
-                    if (creep.withdraw(storage[0], creeps_to_boost[0].memory.booster, withdraw_amount) == ERR_NOT_IN_RANGE) {
-                        creep.say(creep.moveTo(storage[0]));
-                    }
+                var transfer_result = creep.transfer(creep.room.storage, res)
+                if (transfer_result == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(creep.room.storage, { reusePath: 10 })
                 }
-            }
-            else if (creep.store[creeps_to_boost[0].memory.booster] > 0) {
-                creep.say("c");
-                if (creep.transfer(output_lab, creeps_to_boost[0].memory.booster) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(output_lab);
-                }
-                //creep.say(creep.transfer(output_lab, creeps_to_boost[0].memory.booster));
-                creep.moveTo(output_lab);
-                return;
 
-                //return ;
+            }
+            else { // others go to terminal
+                var transfer_result = creep.transfer(creep.room.terminal, res)
+                if (transfer_result == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(creep.room.terminal, { reusePath: 10 })
+                }
             }
         }
-        else {//go empty the output lab
-            if (creep.store.getFreeCapacity() == creep.store.getCapacity()) {// is empty
-                // creep.say("!");
-                creep.moveTo(output_lab, { range: 1 });
-                for (const resource in output_lab.store) {
-                    if (resource != RESOURCE_ENERGY) {
-                        creep.withdraw(output_lab, resource);
-                    }
+    }
+
+    //defineLabs(creep);
+
+    // if labs energy<
+    if (defineLabs(creep) == OK) {
+
+        if (creep.memory.task == undefined) {
+            creep.say("finding task")
+            creep.memory.to_fill_energy = undefined
+            creep.memory.to_clear_output = undefined
+            creep.memory.reaction = undefined
+            creep.room.memory.reaction=undefined
+
+
+            if (creep.store.getUsedCapacity() > 0 || creep.ticksToLive<50) {
+                creep.memory.task = CLEAR_CREEP
+            }
+            else if (ifLabsNeedEnergy(creep) != false) // case 0 on issue #207
+            {
+                creep.memory.task = FILL_LABS_ENERGY
+                creep.memory.to_fill_energy = findMinEnergyLab(creep)
+            }
+            else if (isSomethingInOutputs(creep) != false)  // case 1 on issue #207
+            {
+                creep.memory.task = CLEAR_OUTPUTS
+                creep.memory.to_clear_output = isSomethingInOutputs(creep)
+            }
+            else if(areInputsEmpty(creep)!=true){
+            // (isOnlyOneInputNotEmpty(creep) == 1 || (inputMatchReaction(creep)!=true)) {
+                creep.say("clr in")
+                creep.memory.task = CLEAR_INPUT
+                creep.memory.to_clear_input = areInputsEmpty(creep)
+            }
+            else if (isOnlyOneInputNotEmpty(creep) == 0) {
+                if (creep.room.terminal != undefined) {
+                    creep.memory.task = FILL_INPUT
+                    creep.memory.reaction = creep.room.terminal.reactions()
+                    creep.room.memory.reaction=creep.room.terminal.reactions()
                 }
+
+            }
+        }
+
+        creep.say(creep.memory.task)
+        //creep.say(inputMatchReaction(creep)!=true)
+
+        if (creep.memory.task == CLEAR_CREEP) {
+            if (creep.store.getUsedCapacity() == 0) {
+                creep.memory.task = undefined
+                return
             }
             else {
-                creep.moveTo(storage[0], { range: 1 });
-                for (const resource in creep.store) {
-                    creep.transfer(storage[0], resource);
-                }
-            }
-
-        }
-    }
-    else if (have_mineral_in_it(output_lab) != false) {
-        if (have_mineral_in_it(creep) == false && creep.store[RESOURCE_ENERGY] == 0) {// is empty
-            creep.moveTo(output_lab, { range: 1 });
-            for (const resource in output_lab.store) {
-                if (resource != RESOURCE_ENERGY) {
-                    creep.withdraw(output_lab, resource);
-                }
-            }
-        }
-        else {
-            creep.moveTo(storage[0], { range: 1 });
-            for (const resource in creep.store) {
-                creep.transfer(storage[0], resource);
-            }
-        }
-    }
-    else {
-        //running reactions in labs
-        if (creep.memory.to_transport != undefined) {
-
-            if (creep.store[creep.memory.to_transport[0]] == 0 && creep.store[creep.memory.to_transport[1]] == 0
-                && creep.store.getFreeCapacity() < creep.store.getCapacity()) {
-                for (const resource in creep.store) {
-                    if (creep.transfer(storage[0], resource) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(storage[0]);
+                for (res in creep.store) {
+                    if (creep.transfer(creep.room.storage, res) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(creep.room.storage, { reusePath: 10 })
                         break;
                     }
                 }
             }
+        }
 
-            if (upgrading_lab0 != undefined && upgrading_lab1 != undefined) {
-                //creep.say("labing");
-                if (creep.memory.clear0 == true) {//clear lab0
+        if (creep.memory.task == FILL_LABS_ENERGY) {
+            var to_fill = Game.getObjectById(creep.memory.to_fill_energy)
+            if (to_fill == null || (to_fill != null && to_fill.store[RESOURCE_ENERGY] >= LAB_ENERGY_CAPACITY)) { creep.memory.task = undefined;return }
+            else {
+                if (creep.store[RESOURCE_ENERGY] == 0) {
+                    if (creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(creep.room.storage, { reusePath: 10 })
+                    }
+                }
+                else {
+                    if (creep.transfer(to_fill, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(to_fill, { reusePath: 10 })
+                    }
+                }
+            }
+        }
 
-                    if (creep.store.getFreeCapacity() == creep.store.getFreeCapacity()) {// if is empty
-                        creep.moveTo(upgrading_lab0, { range: 1 });
-                        for (const resource in upgrading_lab0.store) {
-                            if (resource != RESOURCE_ENERGY) {
-                                creep.withdraw(upgrading_lab0, resource);
+        if (creep.memory.task == CLEAR_OUTPUTS) {
+            var lab = Game.getObjectById(creep.memory.to_clear_output)
+            if (lab != null) {
+                var is_empty = true;
+                for (res in lab.store) {
+                    if (res == RESOURCE_ENERGY) { continue }
+                    if (lab.store[res] > 0) { is_empty = false; break }
+                }
+                if ((isSomethingInOutputs(creep)==false) ||  (creep.store.getFreeCapacity(RESOURCE_ENERGY)==0)) {
+                    (isSomethingInOutputs(creep)==false) ||  (creep.store.getFreeCapacity(RESOURCE_ENERGY)==0)
+                    creep.memory.task = undefined
+                    return
+                }
+                else {
+                    
+                    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                        creep.memory.to_clear_output=isSomethingInOutputs(creep)
+                        for (res in lab.store) {
+                            if (res == RESOURCE_ENERGY) { continue }
+
+                            if (creep.withdraw(lab, res) == ERR_NOT_IN_RANGE) {
+                                creep.moveTo(lab, { reusePath: 10 })
+                                break;
                             }
                         }
                     }
                     else {
-                        creep.moveTo(storage[0], { range: 1 });
-                        for (const resource in creep.store) {
-                            creep.transfer(storage[0], resource);
+                        for (res in creep.store) {
+                            if (creep.transfer(creep.room.storage, res) == ERR_NOT_IN_RANGE) {
+                                creep.moveTo(creep.room.storage, { reusePath: 10 })
+                                break;
+                            }
                         }
                     }
                 }
-                else if (creep.memory.clear1 == true) {//clear lab1
+            }
+            else {
+                creep.memory.task = undefined
+                return
+            }
 
-                    if (creep.store.getFreeCapacity() == creep.store.getCapacity()) {// if is empty
-                        creep.say('col');
-                        creep.moveTo(upgrading_lab1, { range: 1 });
-                        for (const resource in upgrading_lab1.store) {
-                            if (resource != RESOURCE_ENERGY) {
-                                creep.withdraw(upgrading_lab1, resource);
-                            }
+        }
+
+        if (creep.memory.task == CLEAR_INPUT) {
+            creep.memory.to_clear_input = areInputsEmpty(creep)
+            var lab = Game.getObjectById(creep.memory.to_clear_input)
+            if (areInputsEmpty(creep)==true) {
+                creep.memory.task = undefined
+                return
+                creep.say("no task")
+            }
+            else {
+                //creep.say("11")
+
+                if(creep.store.getFreeCapacity(RESOURCE_ENERGY)==0)
+                {
+                    creep.say("cl")
+                    for (res in creep.store) {
+                        if (res == RESOURCE_ENERGY) { continue }
+                        if (creep.transfer(creep.room.storage, res) == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(creep.room.storage, { reusePath: 10 })
                         }
                     }
-                    else {
-                        creep.say("dum");
-                        creep.moveTo(storage[0], { range: 1 });
-                        for (const resource in creep.store) {
-                            creep.transfer(storage[0], resource);
+                }
+                else{
+                    for (res in lab.store) {
+                        if (res == RESOURCE_ENERGY) { continue }
+                        if (creep.withdraw(lab, res) == ERR_NOT_IN_RANGE) {
+                            //creep.say("13")
+                            creep.moveTo(lab, { reusePath: 10 })
+                        }
+                    }
+                }
+                /*
+                if (creep.store.getUsedCapacity(RESOURCE_ENERGY) ==0 ) {
+                    //creep.say("12")
+                    for (res in lab.store) {
+                        if (res == RESOURCE_ENERGY) { continue }
+                        if (creep.withdraw(lab, res) == ERR_NOT_IN_RANGE) {
+                            //creep.say("13")
+                            creep.moveTo(lab, { reusePath: 10 })
                         }
                     }
                 }
                 else {
-                    if (upgrading_lab0.store[creep.memory.to_transport[0]] == 0) {
-                        console.log(upgrading_lab0.pos);
-                        console.log(upgrading_lab1.pos);
-                        if (creep.store[creep.memory.to_transport[0]] == 0) {
-                            withdraw_amount = Math.min(creep.store.getFreeCapacity(), storage[0].store[creep.memory.to_transport[0]]);
-                            if (creep.withdraw(storage[0], creep.memory.to_transport[0], withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
-                                creep.moveTo(storage[0]);
-                            }
-                        }
-                        else {
-                            var transfered_amount = 1;
-                            transfered_amount = Math.min(creep.store[creep.memory.to_transport[0]], upgrading_lab0.store.getFreeCapacity());
-                            if (creep.transfer(upgrading_lab0, creep.memory.to_transport[0], transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-
-                                creep.moveTo(upgrading_lab0);
-                            }
+                    creep.say("cl")
+                    for (res in creep.store) {
+                        if (res == RESOURCE_ENERGY) { continue }
+                        if (creep.transfer(creep.room.storage, res) == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(creep.room.storage, { reusePath: 10 })
                         }
                     }
-                    else if (upgrading_lab1.store[creep.memory.to_transport[1]] == 0) {
-                        creep.say("O");
-                        if (creep.store[creep.memory.to_transport[1]] == 0) {
-                            withdraw_amount = Math.min(creep.store.getFreeCapacity(), storage[0].store[creep.memory.to_transport[1]]);
-                            if (creep.withdraw(storage[0], creep.memory.to_transport[1], withdraw_amount) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
-                                creep.moveTo(storage[0]);
-                            }
-                        }
-                        else {
-                            //creep.say("7");
-                            var transfered_amount = 1;
-                            transfered_amount = Math.min(creep.store[creep.memory.to_transport[1]], upgrading_lab1.store.getFreeCapacity());
-                            if (creep.transfer(upgrading_lab1, creep.memory.to_transport[1], transfered_amount) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
+                }
+                    */
+            }
+        }
 
-                                creep.moveTo(upgrading_lab1);
-                            }
-                        }
-                    }
+        if (creep.memory.task == FILL_INPUT) {
+
+            var input1 = Game.getObjectById(creep.room.memory.input1_lab_id)
+            var input2 = Game.getObjectById(creep.room.memory.input2_lab_id)
+
+            if ( creep.room.memory.reaction==undefined || (input1.store[creep.room.memory.reaction[0]] > 0 && input2.store[creep.room.memory.reaction[1]] > 0)) {
+                creep.memory.task = undefined
+                return
+            }
+            if(creep.memory.reaction==undefined && creep.room.memory.reaction==undefined)
+            {
+                creep.memory.task=undefined
+                return
+            }
+            /*
+            if(input1.store[creep.room.memory.reaction[0]]>0 && input2.store[creep.room.memory.reaction[1]]>0)
+            {
+                creep.memory.task=undefined
+            }
+                */
+            if (creep.store[creep.room.memory.reaction[0]] == 0) {
+                var terminal_amount=creep.room.terminal.store[creep.room.memory.reaction[0]]-(creep.room.terminal.store[creep.room.memory.reaction[0]]%5)
+                var creep_amount=((creep.store.getCapacity() / 2) - ((creep.store.getCapacity() / 2) % 5))
+                var final_aount=(Math.min(terminal_amount,creep_amount))
+                if (creep.withdraw(creep.room.terminal, creep.room.memory.reaction[0], final_aount) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(creep.room.terminal, { reusePath: 10 })
+                }
+            }
+            else if (creep.store[creep.room.memory.reaction[1]] == 0) {
+                creep.say("with2")
+                var terminal_amount=creep.room.terminal.store[creep.room.memory.reaction[1]]-(creep.room.terminal.store[creep.room.memory.reaction[1]]%5)
+                var creep_amount=((creep.store.getCapacity() / 2) - ((creep.store.getCapacity() / 2) % 5))
+                var final_aount=(Math.min(terminal_amount,creep_amount))
+                if (creep.withdraw(creep.room.terminal, creep.room.memory.reaction[1], final_aount) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(creep.room.terminal, { reusePath: 10 })
+                }
+            }
+
+            if (creep.store[creep.room.memory.reaction[0]] > 0) {
+                if (creep.transfer(input1, creep.room.memory.reaction[0]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(input1, { reusePath: 10 })
+                }
+            }
+            else if (creep.store[creep.room.memory.reaction[1]] > 0) {
+                if (creep.transfer(input2, creep.room.memory.reaction[1]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(input2, { reusePath: 10 })
+                }
+            }
+
+
+
+
+        }
+
+
+
+
+    }
+
+
+};
+
+function inputMatchReaction(creep)
+{// returns id of not matching input lab or true
+
+    //lab1= Game.getObjectById(creep.room.memory.input1_lab_id)
+    for(res in Game.getObjectById(creep.room.memory.input1_lab_id).store)
+    {
+        if(res==RESOURCE_ENERGY){continue}
+        if(Game.getObjectById(creep.room.memory.input1_lab_id).store[res]>0 && res!=creep.room.memory.reaction[0])
+        {
+            return creep.room.memory.input1_lab_id
+        }
+    }
+    /*
+    if(Game.getObjectById(creep.room.memory.input1_lab_id).store[creep.room.memory.reaction[0]]>0)
+    {
+        return creep.room.memory.input1_lab_id
+    }
+        */
+
+    for(res in Game.getObjectById(creep.room.memory.input2_lab_id).store)
+        {
+            if(res==RESOURCE_ENERGY){continue}
+            if(Game.getObjectById(creep.room.memory.input2_lab_id).store[res]>0 && res!=creep.room.memory.reaction[1])
+            {
+                return creep.room.memory.input2_lab_id
+            }
+        }
+        /*
+    if(Game.getObjectById(creep.room.memory.input2_lab_id).store[creep.room.memory.reaction[1]]>0)
+    {
+        return creep.room.memory.input2_lab_id
+    }*/
+    return true
+}
+
+function isOnlyOneInputNotEmpty(creep) { // if there is only one is not empty, returns its id, if both not empty return 2, if both empty returns 0
+    var input1NotEmpty = 0
+    var input2NotEmpty = 0
+
+    var lab1 = Game.getObjectById(creep.room.memory.input1_lab_id)
+    var lab2 = Game.getObjectById(creep.room.memory.input2_lab_id)
+
+    if (lab1.store.getUsedCapacity() > 0 && lab1.store.getUsedCapacity() != lab1.store[RESOURCE_ENERGY]) {
+        input1NotEmpty = 1;
+    }
+
+    if (lab2.store.getUsedCapacity() > 0 && lab2.store.getUsedCapacity() != lab2.store[RESOURCE_ENERGY]) {
+        input2NotEmpty = 1;
+    }
+
+    if (input1NotEmpty + input2NotEmpty == 1) {
+        if (input1NotEmpty == 1) { return creep.room.memory.input1_lab_id }
+        else { return creep.room.memory.input2_lab_id }
+    }
+
+
+
+    return input1NotEmpty + input2NotEmpty
+}
+
+
+function isSomethingInOutputs(creep) {
+
+    var max_amount = 0;
+    var max_id = undefined
+
+    for (lab_id of creep.room.memory.output_labs_id) {
+        var lab = Game.getObjectById(lab_id)
+        
+        for (res in lab.store) {
+            if (lab.store[res] > max_amount && res != RESOURCE_ENERGY) {
+                max_amount = lab.store[res]
+                max_id = lab_id
+            }
+        }
+        //if (lab.store[RESOURCE_ENERGY] != lab.store.getUsedCapacity() && lab.store.getUsedCapacity() > 0) { return lab_id }
+    }
+    if (max_id != undefined) {
+        creep.memory.max_amount = max_amount
+        return max_id
+    }
+    else { return false }
+}
+
+function ifLabsNeedEnergy(creep) {
+    if (Game.getObjectById(creep.room.memory.input1_lab_id).store[RESOURCE_ENERGY] < Game.getObjectById(creep.room.memory.input1_lab_id).store.getCapacity(RESOURCE_ENERGY)) {
+        return creep.room.memory.input1_lab_id
+    }
+    if (Game.getObjectById(creep.room.memory.input2_lab_id).store[RESOURCE_ENERGY] < Game.getObjectById(creep.room.memory.input2_lab_id).store.getCapacity(RESOURCE_ENERGY)) {
+        return creep.room.memory.input2_lab_id
+    }
+    for (lab_id of creep.room.memory.output_labs_id) {
+        var lab = Game.getObjectById(lab_id)
+        if (lab.store[RESOURCE_ENERGY] < lab.store.getCapacity(RESOURCE_ENERGY)) { return lab_id }
+    }
+    return false
+}
+
+function areInputsEmpty(creep) {
+    var input1 = Game.getObjectById(creep.room.memory.input1_lab_id)
+
+    for (res in input1.store) {
+        if (res == RESOURCE_ENERGY ) { continue }
+        else if (input1.store[res] > 0) { return creep.room.memory.input1_lab_id }
+    }
+
+    var input2 = Game.getObjectById(creep.room.memory.input2_lab_id)
+
+    for (res in input2.store ) {
+        if (res == RESOURCE_ENERGY) { continue }
+        else if (input2.store[res] > 0) { return creep.room.memory.input2_lab_id }
+    }
+    return true
+
+}
+
+
+function findMinEnergyLab(creep) {
+    var min_lab_id = creep.room.memory.input1_lab_id;
+    var min_lab_energy = Game.getObjectById(min_lab_id).store[RESOURCE_ENERGY]
+    if (Game.getObjectById(creep.room.memory.input2_lab_id).store[RESOURCE_ENERGY] < min_lab_energy) {
+        min_lab_energy = Game.getObjectById(creep.room.memory.input2_lab_id).store[RESOURCE_ENERGY]
+        min_lab_id = creep.room.memory.input2_lab_id
+    }
+
+    for (lab_id of creep.room.memory.output_labs_id) {
+        if (Game.getObjectById(lab_id).store[RESOURCE_ENERGY] < min_lab_energy) {
+            min_lab_energy = Game.getObjectById(lab_id).store[RESOURCE_ENERGY]
+            min_lab_id = lab_id
+        }
+    }
+    return min_lab_id
+}
+
+
+
+function defineLabs(creep) {
+    if (creep.room.memory.input1_lab_id != undefined && Game.getObjectById(creep.room.memory.input1_lab_id) == null) {
+        creep.room.memory.input1_lab_id = undefined;
+    }
+
+    if (creep.room.memory.input1_lab_id == undefined) {
+        var lab = creep.room.find(FIND_MY_STRUCTURES, {
+            filter: function (str) {
+                return str.structureType == STRUCTURE_LAB && str.pos.x == creep.room.memory.input_lab_1_pos.x && str.pos.y == creep.room.memory.input_lab_1_pos.y
+                    && str.pos.roomName == creep.room.memory.input_lab_1_pos.roomName;
+            }
+        });
+        if (lab.length > 0) {
+            creep.room.memory.input1_lab_id = lab[0].id;
+        }
+    }
+
+    //define input lab 2
+    if (creep.room.memory.input2_lab_id != undefined && Game.getObjectById(creep.room.memory.input2_lab_id) == null) {
+        creep.room.memory.input2_lab_id = undefined;
+    }
+
+    if (creep.room.memory.input2_lab_id == undefined) {
+        var lab = creep.room.find(FIND_MY_STRUCTURES, {
+            filter: function (str) {
+                return str.structureType == STRUCTURE_LAB && str.pos.x == creep.room.memory.input_lab_2_pos.x && str.pos.y == creep.room.memory.input_lab_2_pos.y
+                    && str.pos.roomName == creep.room.memory.input_lab_2_pos.roomName;
+            }
+        });
+        if (lab.length > 0) {
+            creep.room.memory.input2_lab_id = lab[0].id;
+        }
+    }
+
+    if (creep.room.memory.output_labs_id != undefined && creep.room.memory.output_labs_id.length > 0) {
+        for (lab_id of creep.room.memory.output_labs_id) {
+            if (Game.getObjectById(lab_id) == null) { creep.room.memory.output_labs_id = undefined; break; }
+        }
+    }
+
+    if (creep.room.memory.output_labs_id == undefined) {
+        var lab = creep.room.find(FIND_MY_STRUCTURES, {
+            filter: function (str) {
+                return str.structureType == STRUCTURE_LAB;
+            }
+        });
+        if (lab.length > 0) {
+            creep.room.memory.output_labs_id = [];
+            creep.room.memory.output_labs_id = [];
+            for (a of lab) {
+                if (!(a.pos.x == creep.room.memory.input_lab_1_pos.x && a.pos.y == creep.room.memory.input_lab_1_pos.y) &&
+                    !(a.pos.x == creep.room.memory.input_lab_2_pos.x && a.pos.y == creep.room.memory.input_lab_2_pos.y)) {
+                    //creep.room.memory.output_labs_id.push(a.id);
+                    creep.room.memory.output_labs_id.push(a.id);
                 }
 
             }
         }
+
     }
 
-};
-
+    if (creep.room.memory.output_labs_id != undefined && creep.room.memory.output_labs_id.length > 0
+        && creep.room.memory.input1_lab_id != undefined && creep.room.memory.input2_lab_id != undefined
+    ) {
+        return OK
+    }
+    else {
+        return null
+    }
+}

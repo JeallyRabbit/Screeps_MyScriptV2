@@ -111,12 +111,13 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
             //return;
             //withdrawing from storage
             for (let res in storage.store) {
-                if (res != RESOURCE_ENERGY) {
+                if(res==RESOURCE_ENERGY || (res.startsWith("X") && !(res.endsWith("X")))){continue}
+                //if (res != RESOURCE_ENERGY) {
                     if (creep.store.getFreeCapacity(res) == creep.store.getCapacity() && creep.withdraw(storage, res) == OK) {
                         //creep.say("withdrawa; ", res)
                         return;
                     }
-                }
+                //}
             }
 
             //transfering to terminal

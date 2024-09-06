@@ -1,130 +1,169 @@
+const MIN_AMOUNT = 99
+const REQ_AMOUNT = 10000
 
-function can_run_lvl_0_reaction(storage) {
-    if (storage.store["H"] > 0 && storage.store["O"] > 0) {
-        return ["O", "H"];
-    }
-    else if (storage.store["Z"] > 0 && storage.store["K"] > 0) {
-        //console.log("ZKZKZKZKZKZKKZZKZK");
-        return ["Z", "K"];
-    }
-    else if (storage.store["U"] > 0 && storage.store["L"] > 0) {
-        return ["U", "L"];
-    }
-    else if (storage.store["ZK"] > 0 && storage.store["UL"] > 0) {
-        return ["ZK", "UL"];
+StructureTerminal.prototype.reactions = function reactions() {
+    if (this.room.storage != undefined) {
+        var storage = this.room.storage
     }
     else {
-        return "NOTHING";
+        return
     }
-}
-exports.can_run_lvl_0_reaction = can_run_lvl_0_reaction;
+    if (storage.store["XGH2O"] < REQ_AMOUNT) { //1 upgrade controller boost
+        if (this.store["GH2O"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+            return ["GH2O", "X"]
+        }
+        else if (this.store["GH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+            return ["GH", "OH"]
+        }
+        else if (this.store["G"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+            return ["G", "H"]
+        }
+        else if (this.store["O"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+            return ["O", "H"]
+        }
+        else if (this.store["ZK"] > MIN_AMOUNT && this.store["UL"] > MIN_AMOUNT) {
+            return ["ZK", "UL"]
+        }
+        else if (this.store["Z"] > MIN_AMOUNT && this.store["K"] > MIN_AMOUNT) {
+            return ["Z", "K"]
+        }
+        else if (this.store["U"] > MIN_AMOUNT && this.store["L"] > MIN_AMOUNT) {
+            return ["U", "L"]
+        }
+    }
 
-function can_run_lvl_1_reaction(storage) {
-    //console.log(storage.store["K"]);
-    if (storage.store["H"] > 0 && storage.store["U"] > 0) {
-        return ["U", "H"];
+    if(storage.store["XKHO2"]<REQ_AMOUNT){ //2 ranged attack
+        if (this.store["KHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+            return ["KHO2", "X"]
+        }
+        else if (this.store["KO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+            return ["KO", "OH"]
+        }
+        else if (this.store["K"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["K", "O"]
+        }
+        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["H", "O"]
+        }
     }
-    if (storage.store["O"] > 0 && storage.store["U"] > 0) {
-        return ["U", "O"];
+
+    if(storage.store["XLHO2"]<REQ_AMOUNT){ //3 heal
+        if (this.store["LHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+            return ["LHO2", "X"]
+        }
+        else if (this.store["LO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+            return ["LO", "OH"]
+        }
+        else if (this.store["L"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["L", "O"]
+        }
+        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["H", "O"]
+        }
     }
-    if (storage.store["K"] > 0 && storage.store["H"] > 0) {
-        return ["K", "H"];
+
+    if (storage.store["XGHO2"] < REQ_AMOUNT) { //4 tough
+        if (this.store["GHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+            return ["GHO2", "X"]
+        }
+        else if (this.store["GO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+            return ["GO", "OH"]
+        }
+        else if (this.store["G"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["G", "O"]
+        }
+        else if (this.store["O"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+            return ["O", "H"]
+        }
+        else if (this.store["ZK"] > MIN_AMOUNT && this.store["UL"] > MIN_AMOUNT) {
+            return ["ZK", "UL"]
+        }
+        else if (this.store["Z"] > MIN_AMOUNT && this.store["K"] > MIN_AMOUNT) {
+            return ["Z", "K"]
+        }
+        else if (this.store["U"] > MIN_AMOUNT && this.store["L"] > MIN_AMOUNT) {
+            return ["U", "L"]
+        }
     }
-    if (storage.store["K"] > 0 && storage.store["O"] > 0) {
-        return ["K", "O"];
+
+    if(storage.store["XUH2O"]<REQ_AMOUNT){ //5 Attack
+        if (this.store["UH2O"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+            return ["UH2O", "X"]
+        }
+        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+            return ["UH", "OH"]
+        }
+        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+            return ["U", "H"]
+        }
+        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["H", "O"]
+        }
     }
-    if (storage.store["L"] > 0 && storage.store["H"] > 0) {
-        return ["L", "H"];
+
+    if(storage.store["XZHO2"]<REQ_AMOUNT){ //6 MOVE
+        if (this.store["ZHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+            return ["ZHO2", "X"]
+        }
+        else if (this.store["ZO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+            return ["ZO", "OH"]
+        }
+        else if (this.store["Z"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["Z", "O"]
+        }
+        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["H", "O"]
+        }
     }
-    if (storage.store["L"] > 0 && storage.store["O"] > 0) {
-        return ["L", "O"];
+
+    if(storage.store["XKH2O"]<REQ_AMOUNT){ //7 CAPACITY
+        if (this.store["KH2O"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+            return ["KH2O", "X"]
+        }
+        else if (this.store["KH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+            return ["KH", "OH"]
+        }
+        else if (this.store["K"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+            return ["K", "H"]
+        }
+        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["H", "O"]
+        }
     }
-    if (storage.store["Z"] > 0 && storage.store["H"] > 0) {
-        return ["Z", "H"];
+
+    if(storage.store["XUHO2"]<REQ_AMOUNT){ //8 CAPACITY
+        if (this.store["UHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+            return ["UHO2", "X"]
+        }
+        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+            return ["UH", "OH"]
+        }
+        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+            return ["U", "H"]
+        }
+        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["H", "O"]
+        }
     }
-    if (storage.store["Z"] > 0 && storage.store["O"] > 0) {
-        return ["Z", "O"];
+
+    if(storage.store["XUHO2"]<REQ_AMOUNT){ //9 HARVEST
+        if (this.store["UHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+            return ["UHO2", "X"]
+        }
+        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT) {
+            return ["UH", "OH"]
+        }
+        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT) {
+            return ["U", "H"]
+        }
+        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT) {
+            return ["H", "O"]
+        }
     }
-    if (storage.store["G"] > 0 && storage.store["H"] > 0) {
-        return ["G", "H"];
-    }
-    if (storage.store["G"] > 0 && storage.store["O"] > 0) {
-        return ["G", "O"];
-    }
-    else { return "NOTHING"; }
+
+   
+    
+
+
 }
-exports.can_run_lvl_1_reaction = can_run_lvl_1_reaction;
-function can_run_lvl_2_reaction(storage) {
-    if (storage.store["UH"] > 0 && storage.store["OH"] > 0) {
-        return ["UH", "OH"];
-    }
-    if (storage.store["UO"] > 0 && storage.store["OH"] > 0) {
-        return ["UO", "OH"];
-    }
-    if (storage.store["KH"] > 0 && storage.store["OH"] > 0) {
-        return ["KH", "OH"];
-    }
-    if (storage.store["KO"] > 0 && storage.store["OH"] > 0) {
-        return ["KO", "OH"];
-    }
-    if (storage.store["LH"] > 0 && storage.store["OH"] > 0) {
-        return ["LH,", "OH"];
-    }
-    if (storage.store["LO"] > 0 && storage.store["OH"] > 0) {
-        return ["LH", "OH"];
-    }
-    if (storage.store["ZH"] > 0 && storage.store["OH"] > 0) {
-        return ["ZH", "OH"];
-    }
-    if (storage.store["ZO"] > 0 && storage.store["OH"] > 0) {
-        return ["ZH", "OH"];
-    }
-    if (storage.store["GH"] > 0 && storage.store["OH"] > 0) {
-        return ["GH", "OH"];
-    }
-    if (storage.store["GO"] > 0 && storage.store["OH"] > 0) {
-        return ["GO", "OH"];
-    }
-    else {
-        return "NOTHING";
-    }
-}
-exports.can_run_lvl_2_reaction = can_run_lvl_2_reaction;
-function can_run_lvl_3_reaction(storage) {
-    if (storage.store["UH20"] > 0 && storage.store["X"] > 0) {
-        return ["UH2O", "X"];
-    }
-    if (storage.store["UHO2"] > 0 && storage.store["X"] > 0) {
-        return ["UHO2", "X"];
-    }
-    if (storage.store["KH20"] > 0 && storage.store["X"] > 0) {
-        return ["KH2O", "X"];
-    }
-    if (storage.store["KHO2"] > 0 && storage.store["X"] > 0) {
-        return ["KHO2", "X"];
-    }
-    if (storage.store["LH20"] > 0 && storage.store["X"] > 0) {
-        return ["LH2O", "X"];
-    }
-    if (storage.store["LHO2"] > 0 && storage.store["X"] > 0) {
-        return ["LHO2", "X"];
-    }
-    if (storage.store["ZH20"] > 0 && storage.store["X"] > 0) {
-        return ["ZH2O", "X"];
-    }
-    if (storage.store["ZHO2"] > 0 && storage.store["X"] > 0) {
-        return ["ZHO2", "X"];
-    }
-    if (storage.store["GH2O"] > 0 && storage.store["X"] > 0) {
-        return ["GH2O", "X"];
-    }
-    if (storage.store["GHO2"] > 0 && storage.store["X"] > 0) {
-        //console.log("XGHO2");
-        return ["GHO2", "X"];
-    }
-    else {
-        return "NOTHING";
-    }
-}
-exports.can_run_lvl_3_reaction = can_run_lvl_3_reaction;
 

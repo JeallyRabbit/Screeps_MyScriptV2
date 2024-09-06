@@ -157,9 +157,9 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
         if (creep.room.name != spawn.memory.rooms_to_scan[0]) {
             //creep.say("MOV");
 
+            creep.moveToRoom(spawn.memory.rooms_to_scan[0], { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
 
-
-
+            /*
             if(creep.memory.destination==undefined)
                 {
                     creep.say("destination unknown")
@@ -178,6 +178,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 {
                     creep.move_avoid_hostile(creep,creep.memory.destination,30,true)
                 }
+                    */
 
         }
         else {

@@ -35,6 +35,7 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
                     creep.attackController(Game.rooms[creep.memory.target_room].controller);
 
                 }
+                creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y,STRUCTURE_RAMPART)
                 creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y,
                     STRUCTURE_SPAWN, creep.room.name + "_1");
                 //creep.say(creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y + 2,
@@ -47,6 +48,7 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
             //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room,{reusePath:15,avoidSk:true}),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
             //creep.say("mov")
             //creep.moveToRoom(creep.memory.target_room,{avoidSk: true,avoidHostileRooms: true, reusePath: 21});
+            /*
             var reusePath = 100;
 
             if (creep.memory.destination == undefined) {
@@ -61,8 +63,12 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
             }
 
             if (creep.memory.destination != undefined) {
-                creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
-            }
+                //creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
+                creep.say("mov")
+                creep.moveTo(creep.memory.destination,{reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true})
+            }*/
+
+            creep.moveToRoom(creep.memory.target_room,{reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true})
         }
     }
     else {
