@@ -1068,7 +1068,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     if (spawn.memory.if_success_planing_base == true) {
         
 
-
+        console.log("base planed, building from lists")
 
         build_from_lists(spawn)
         return;
