@@ -4,12 +4,16 @@ const STATE_NEED_MILITARY_SUPPORT = 'STATE_NEED_MILITARY_SUPPORT'
 const STATE_NEED_ENERGY = 'STATE_NEED_ENERGY'
 const STATE_STATE_NEED_MILITARY_ENERGY = 'STATE_NEED_MILITARY_ENERGY'
 
+
+const MIN_AMOUNT_TERMINAL=5000
+const MIN_AMOUNT_BUY=2500
+
+
 Spawn.prototype.terminal = function terminal(spawn) {
 
     // /** @param {Game} game **/
     //tick: function (spawn) {
-    if(spawn.room.terminal==undefined || spawn.room.storage==undefined)
-    {
+    if (spawn.room.terminal == undefined || spawn.room.storage == undefined) {
         return
     }
     var terminal = spawn.room.terminal;
@@ -18,25 +22,38 @@ Spawn.prototype.terminal = function terminal(spawn) {
     //console.log("orders num: ",Game.market.getAllOrders().length)
     //console.log("creditas: ",Game.market.credits)
 
-    if (terminal != undefined && storage != undefined) {
+    if (terminal != undefined && storage != undefined && Game.time%4==0) {
 
 
-        /*
-        console.log("orders:")
-        var orders = Game.market.getAllOrders();
-        for(order of orders)
-        {
-            //var order=orders[0];
-            console.log(order.id+" "+order.type+" "+order.resourceType+" "+order.price)
-            console.log("")
+
+
+        //sharing basic resources
+        if (terminal.room.controller.level >= 6 && terminal.cooldown == 0) {
+            for (main of Memory.main_spawns) {
+                //console.log("main: ", main)
+                main_spawn = Game.getObjectById(main)
+                if (main_spawn == null || main_spawn.room.name == spawn.room.name) {
+                    continue
+                }
+                //console.log("main2: ", main_spawn.room.name)
+                var sending_result = false
+                var basic_resources = ["O", "H", "O", "U", "L", "K", "Z", "X", "OH"]
+                for (res of basic_resources) {
+                    if (main_spawn.room.memory.need_resources!=undefined && terminal.store[res] > MIN_AMOUNT_TERMINAL * 2 && main_spawn.room.memory.need_resources.includes(res)) {
+                        sending_result = terminal.send(res, MIN_AMOUNT_TERMINAL, main_spawn.room.name);
+                        if(sending_result==OK)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
         }
-            
-        */
 
 
 
 
-
+        // sharing energy
         if (terminal.room.controller.level == 8 && terminal.cooldown == 0) {
 
             //console.log("term")
@@ -44,6 +61,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
             var amount = 5000;
             closest_to_send_energy = undefined
             min_distance = Infinity
+            
             if (spawn.memory.state.includes(STATE_NEED_ENERGY) == false && storage != null && storage.store[RESOURCE_ENERGY] > 400000
                 && terminal.store[RESOURCE_ENERGY] > amount) {
 
@@ -54,9 +72,11 @@ Spawn.prototype.terminal = function terminal(spawn) {
                     if (main_spawn == null || main_spawn.room.name == spawn.room.name) {
                         continue
                     }
-                    //console.log("main2: ", main_spawn.room.name)
+
+
                     if (main_spawn != null && main_spawn.room.terminal != undefined && main_spawn.memory.state != undefined
                         && main_spawn.memory.state.length > 0 && main_spawn.memory.state.includes(STATE_NEED_ENERGY)) {
+
                         //console.log("room: ", main_spawn.room.name, " need energy - cost of sending: ", cost)
                         var cost = Game.market.calcTransactionCost(amount, terminal.room.name, main_spawn.room.name)
                         if (cost < min_distance) {
@@ -64,16 +84,14 @@ Spawn.prototype.terminal = function terminal(spawn) {
                             closest_to_send_energy = main_spawn.room.name;
                         }
                     }
+
+
                 }
                 if (closest_to_send_energy != undefined) {
                     console.log("sending energy to: ", closest_to_send_energy)
                     terminal.send(RESOURCE_ENERGY, amount, closest_to_send_energy);
                 }
             }
-
-
-
-
         }
 
 
@@ -91,8 +109,8 @@ Spawn.prototype.terminal = function terminal(spawn) {
         }
 
 
-        for (res of this.room.memory.need_resources) {
-            var buy_result = buy_resource(spawn,res, 5000)
+        for (res of this.room.memory.need_resources_buy) {
+            var buy_result = buy_resource(spawn, res, 2500)
             console.log(res, " buying result: ", buy_result)
             if (buy_result == OK || this.cooldown != 0) { break; }
         }
@@ -219,7 +237,7 @@ function sell_resource(terminal, cost, spawn, res) {
     return cost
 }
 
-function buy_resource(spawn,res, amount) {
+function buy_resource(spawn, res, amount) {
     if (res == undefined || res == RESOURCE_ENERGY) {
         return;
     }
@@ -258,7 +276,7 @@ function buy_resource(spawn,res, amount) {
         //console.log("price per unit: ", price_per_unit)
         if (price_per_unit < 2000) {
             buying_result = Game.market.deal(best_order_id, trade_amount, spawn.room.name)
-            
+
         }
 
     }

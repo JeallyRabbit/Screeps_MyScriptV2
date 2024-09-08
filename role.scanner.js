@@ -7,9 +7,9 @@ function findRouteTestScanner(starting_pos, destination) {
 
     var ret = PathFinder.search(starting_pos, destination, {
         //maxRooms: 64,
-        
+
         plainCost: 2,
-        range: 5 ,
+        range: 5,
         swampCost: 2,
         maxOps: 8000,
 
@@ -24,25 +24,25 @@ function findRouteTestScanner(starting_pos, destination) {
             let room = Game.rooms[roomName];
             if (!room) { return; }
 
-           // if (roomName == spawn.room.name) {
-           //     costs = roomCM;
-           // }
-           // else {
-                // setting costmatrix for for rooms other than spawnRoom
-                //console.log(roomName);
-                costs = new PathFinder.CostMatrix;
-                const terrain = room.getTerrain()
+            // if (roomName == spawn.room.name) {
+            //     costs = roomCM;
+            // }
+            // else {
+            // setting costmatrix for for rooms other than spawnRoom
+            //console.log(roomName);
+            costs = new PathFinder.CostMatrix;
+            const terrain = room.getTerrain()
 
-                for (let y = 0; y < 50; y++) {
-                    for (let x = 0; x < 50; x++) {
-                        const tile = terrain.get(x, y);
-                        const weight =
-                            tile === TERRAIN_MASK_WALL ? 255 : // wall  => unwalkable
-                                tile === TERRAIN_MASK_SWAMP ? 10 : // swamp => weight:  10
-                                    2; // plain => weight:  2
-                        costs.set(x, y, weight);
-                    }
+            for (let y = 0; y < 50; y++) {
+                for (let x = 0; x < 50; x++) {
+                    const tile = terrain.get(x, y);
+                    const weight =
+                        tile === TERRAIN_MASK_WALL ? 255 : // wall  => unwalkable
+                            tile === TERRAIN_MASK_SWAMP ? 10 : // swamp => weight:  10
+                                2; // plain => weight:  2
+                    costs.set(x, y, weight);
                 }
+            }
             //}
             //let 
 
@@ -84,13 +84,10 @@ function findRouteTestScanner(starting_pos, destination) {
 
             room.find(FIND_HOSTILE_CREEPS).forEach(function (a) {
                 costs.set(a.pos.x, a.pos.y, 255);
-                console.log(a.pos.x," ",a.pos.y)
-                for(var i=a.pos.x-5;i<a.pos.x+5;i++)
-                {
-                    for(var j=a.pos.y-5;j<a.pos.y+5;j++)
-                    {
-                        if(i>=0 && i<=49 && j>=0 && j<=49)
-                        {
+                console.log(a.pos.x, " ", a.pos.y)
+                for (var i = a.pos.x - 5; i < a.pos.x + 5; i++) {
+                    for (var j = a.pos.y - 5; j < a.pos.y + 5; j++) {
+                        if (i >= 0 && i <= 49 && j >= 0 && j <= 49) {
                             costs.set(i, j, 255)
                         }
                     }
@@ -114,13 +111,13 @@ function findRouteTestScanner(starting_pos, destination) {
             }
             */
 
-           // costs.set(destination.x, destination.y, 255);
+            // costs.set(destination.x, destination.y, 255);
 
             return costs;
         }
     });
 
-    
+
 
     /*
     for (a of ret.path) {
@@ -245,20 +242,18 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
     //creep.memory.target_room='W3N6'
 
 
-    if(Memory.colonizing==false)
-    {
+    if (Memory.colonizing == false) {
         creep.suicide()
     }
 
-    if(spawn.memory.manual_colonize!=undefined)
-    {
-        creep.memory.target_room=spawn.memory.manual_colonize;
+    if (spawn.memory.manual_colonize != undefined) {
+        creep.memory.target_room = spawn.memory.manual_colonize;
     }
 
     console.log("scanner from: ", creep.memory.home_room.name, " is at: ", creep.room.name)
     //creep.memory.target_room='W19N13'
     console.log("scanner pos: ", creep.room.name, " heading to: ", creep.memory.target_room);
-    if ((spawn.memory.scanner_rooms == undefined || (spawn.memory.scanner_rooms != undefined && spawn.memory.scanner_rooms.length == 0) ) && creep.memory.target_room==undefined) {
+    if ((spawn.memory.scanner_rooms == undefined || (spawn.memory.scanner_rooms != undefined && spawn.memory.scanner_rooms.length == 0)) && creep.memory.target_room == undefined) {
         spawn.memory.scanner_rooms = []
         spawn.memory.scanner_rooms = generateRoomsInRangeAndSort(spawn.room.name);
 
@@ -271,7 +266,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
             creep.memory.target_room = spawn.memory.scanner_rooms[0];
         }
-        else if (spawn.memory.scanner_rooms!=undefined && Game.map.getRoomStatus(spawn.memory.scanner_rooms[0]).status != "normal") {
+        else if (spawn.memory.scanner_rooms != undefined && Game.map.getRoomStatus(spawn.memory.scanner_rooms[0]).status != "normal") {
             spawn.memory.scanner_rooms.shift();
             return;
         }
@@ -284,7 +279,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             creep.say("removing home_room");
             return;
         }
-        if (Game.map.findRoute(creep.room.name, creep.memory.target_room) == ERR_NO_PATH || Game.map.getRoomStatus(creep.memory.target_room!='normal')) {
+        if (Game.map.findRoute(creep.room.name, creep.memory.target_room) == ERR_NO_PATH || Game.map.getRoomStatus(creep.memory.target_room != 'normal')) {
             console.log("removing: ", creep.memory.target_room);
             creep.say("A")
             spawn.memory.scanner_rooms.shift()
@@ -292,7 +287,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
         }
 
         if (creep.memory.target_room != undefined && creep.room.name != creep.memory.target_room) {
-            
+
             /*
             var reusePath=100;
 
@@ -324,15 +319,15 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
                 creep.moveTo(new RoomPosition(25,25,creep.memory.target_room))
             }
                 */
-            
-            creep.moveTo(new RoomPosition(25,25,creep.memory.target_room))
-            
-            
-            
+
+            creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room))
+
+
+
 
         }
 
-        
+
 
 
     }
@@ -340,13 +335,18 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
 
     if (creep.room.name == creep.memory.target_room && creep.memory.target_room != creep.memory.home_room.name) {
+
+        if(spawn.memory.to_colonize!=undefined && spawn.memory.to_colonize.name==creep.room.name)
+        {
+            return;
+        }
         creep.say("at target");
         //console.log("scanner at target_room");
         var is_reserved = false;
         var is_owned = false;
         var is_guarded = false;
         var is_already_scanned = false;
-        if (creep.room.controller != undefined && creep.room.controller.reservation != undefined) {
+        if (creep.room.controller != undefined && creep.room.controller.reservation != undefined && creep.room.controller.reservation.username != 'Invader') {
             is_reserved = true;
             //creep.say("reserved");
         }
@@ -424,24 +424,23 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             let distanceCM = creep.room.distanceTransform(roomCM, true);
             // I need position for spawnstamp - spawn stamp must be as close to controller as possible and at distance minimum 
             // 4 tiles from any other wall
-            var spawn_pos_x = -1;
-            var spawn_pos_y = -1;
+            var spawn_stamp_pos_x = -1;
+            var spawn_stamp_pos_y = -1;
             min_distance_from_controller = 100;
             for (i = 0; i < 50; i++) {
                 for (let j = 0; j < 50; j++) {
-                    if (distanceCM.get(i, j) > 6 && floodCM.get(i, j) < min_distance_from_controller
-                        && i > 4 && i < 46 && j > 4 && j < 46) {
+                    if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j) < min_distance_from_controller
+                        && i > 4 && i < 46 && j > 6 && j < 46) {
                         min_distance_from_controller = floodCM.get(i, j);
-                        spawn_pos_x = i;
-                        spawn_pos_y = j-2;
+                        spawn_stamp_pos_x = i;
+                        spawn_stamp_pos_y = j;
                     }
                 }
             }
-            if (spawn_pos_x > 4 && spawn_pos_x < 46 && spawn_pos_y > 4 && spawn_pos_y < 46) {
-                console.log("pos for new spawn: ", spawn_pos_x, " ", spawn_pos_y, " ", creep.room.name);
+            if (spawn_stamp_pos_x > 7 && spawn_stamp_pos_x < 46 && spawn_stamp_pos_y >7  && spawn_stamp_pos_y < 46) {
+                console.log("pos for new spawn: ", spawn_stamp_pos_x, " ", spawn_stamp_pos_y , " ", creep.room.name);
                 var is_to_close = false;
-                if(Game.shard.name!='shard3')
-                {
+                if (Game.shard.name != 'shard3' && (spawn.memory.to_colonize != undefined && creep.room.name == spawn.memory.to_colonize)) {
                     for (let my_room in Game.rooms) {
                         if (Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[my_room].name) < 2 && my_room != creep.room.name) {
                             console.log(" ");
@@ -454,20 +453,42 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
                         }
                     }
                 }
-                
+
+                if(spawn.memory.manual_colonize!=undefined && creep.room.name==spawn.memory.manual_colonize)
+                {
+                    is_to_close=false
+                }
+
                 if (is_to_close == false) {
                     if (Memory.colonizing == true) {
                         //creep.move(LEFT)
-                        creep.room.visual.circle(spawn_pos_x, spawn_pos_y, { fill: '#666666', radius: 0.5, stroke: 'green' });
+                        creep.room.visual.circle(spawn_stamp_pos_x, spawn_stamp_pos_y+2, { fill: '#666666', radius: 0.5, stroke: 'green' });
 
-                        Memory.rooms_to_colonize.push(new colonizeRoom(creep.room.name, spawn_pos_x, spawn_pos_y));
+                        var in_to_colonize=false
+                        if(Memory.rooms_to_colonize!=undefined)
+                        {
+                            for(r of Memory.rooms_to_colonize)
+                            {
+                                if(r.name==creep.room.name)
+                                {
+                                    in_to_colonize=true;
+                                    break
+                                }
+                            }
+                        }
+                        if(in_to_colonize==false)
+                        {
+                            Memory.rooms_to_colonize.push(new colonizeRoom(creep.room.name, spawn_stamp_pos_x, spawn_stamp_pos_y+2));
+                            creep.suicide()
+                        }
+                        
                     }
 
                 }
 
             }
             else {
-                console.log("room: ", creep.room.name, " have wrong spawn position ", spawn_pos_x, " ", spawn_pos_y);
+                console.log("room: ", creep.room.name, " have wrong spawn position ", spawn_pos_x, " ", spawn_pos_y-2);
             }
             // 19 38
 
@@ -477,11 +498,10 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             // if yes add room to list of rooms_to_colnize
         }
         creep.memory.target_room = undefined;
-        if(spawn.memory.scanner_rooms!=undefined && spawn.memory.scanner_rooms.length>0)
-        {
+        if (spawn.memory.scanner_rooms != undefined && spawn.memory.scanner_rooms.length > 0) {
             spawn.memory.scanner_rooms.shift();
         }
-        
+
 
 
     }

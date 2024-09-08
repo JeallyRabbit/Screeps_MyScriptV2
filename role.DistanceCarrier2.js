@@ -156,6 +156,9 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                                 creep.sleep(((creep.store.getCapacity() - creep.store.getUsedCapacity()) - Game.getObjectById(creep.memory.max_container).store.getUsedCapacity()) / 20);
 
                             }
+                            else{
+                               // creep.fleeFrom({spawn})
+                            }
 
                         }
                     }
@@ -169,8 +172,12 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                 if (creep.memory.reource_to_collect == undefined && creep.memory.target_room != undefined && Game.rooms[creep.memory.target_room] != undefined) {
 
                     const dropped_resource = Game.rooms[creep.memory.target_room].find(FIND_DROPPED_RESOURCES, {
-                        filter: resource => resource.amount >= creep.store.getCapacity() - creep.store.getUsedCapacity()
+                        filter: function (resource){
+                            return resource.amount >= creep.store.getCapacity() - creep.store.getUsedCapacity()
+                            && resource.pos.isNearTo(spawn.pos.x,spawn.pos.y)==false
+                        }
                     });
+                    //creep.say("dr: "+dropped_resource.length)
                     if (dropped_resource != undefined && dropped_resource != null && dropped_resource.length > 0) {
                         // var closest_resource = creep.pos.findClosestByPath(dropped_resource);
                         var max_res_amount = 0;
@@ -207,6 +214,9 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                         if (avoid.length == 0) {
                             creep.sleep(20);
                         }
+                        else{
+                            //creep.fleeFrom({spawn})
+                        }
                     }
 
                 }
@@ -216,6 +226,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                     if (Game.getObjectById(creep.memory.reource_to_collect) != null) {
                         creep.memory.max_container = undefined;
                         if (creep.pickup(Game.getObjectById(creep.memory.reource_to_collect)) == ERR_NOT_IN_RANGE) {
+                            //creep.say("res")
                             creep.moveTo(Game.getObjectById(creep.memory.reource_to_collect), { reusePath: 21,avoidCreeps: true  });
                             //creep.say("E");
                         }
@@ -304,7 +315,9 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                         var amount =creep.store[RESOURCE_ENERGY]
                         var transfer_result = creep.transfer(Game.getObjectById(creep.memory.home_container), res);
                         if (transfer_result == ERR_NOT_IN_RANGE) {
+                            
                             creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true,avoidCreeps: true  });
+                            
                             break;
                         }
                         else if (transfer_result == ERR_FULL) {
@@ -320,6 +333,21 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
 
                             creep.memory.max_container = undefined;
                         }
+                        if(creep.pos.inRangeTo(Game.getObjectById(creep.memory.home_container),3)
+                        && !creep.pos.isNearTo(Game.getObjectById(creep.memory.home_container)))
+                            {
+                                var empty_carriers=creep.pos.findInRange(FIND_MY_CREEPS,1,{filter:
+                                    function (cr)
+                                    {
+                                        return cr.store.getFreeCapacity(RESOURCE_ENERGY)>0
+                                    }
+                                })
+                                if(empty_carriers.length>0)
+                                {
+                                    
+                                    creep.transfer(empty_carriers[0],RESOURCE_ENERGY)
+                                }
+                            }
 
                     }
                 }

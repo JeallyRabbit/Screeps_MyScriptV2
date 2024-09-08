@@ -94,6 +94,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
     else {
         //move_avoid_hostile(creep,new RoomPosition(25,25,creep.memory.target_room),25,false,8000);
         //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room));
+        /*
         var reusePath = 100;
 
         if (creep.memory.destination == undefined) {
@@ -110,6 +111,9 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
         if (creep.memory.destination != undefined) {
             creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
         }
+            */
+
+        creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
 
 
     }

@@ -28,7 +28,7 @@ class keeperQuad
     constructor(roomName,strongholdLevel)
     {
         this.roomName=roomName;
-        this.strongholdLevel=lestrongholdLevelvel;
+        this.strongholdLevel=strongholdLevel;
     }
 }
 
@@ -65,20 +65,36 @@ function calculateDistance(point1, point2) {
 Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
 
-    if (Memory.rooms_to_colonize.length > 0) {
+    if (Memory.rooms_to_colonize.length > 0 && Memory.rooms_to_colonize.colonizer==spawn.room.name
+        && spawn.memory.to_colonize==undefined
+    ) {
         spawn.memory.to_colonize = Memory.rooms_to_colonize[0];
     }
+
     if (spawn.memory.to_colonize != undefined && spawn.room.controller.level >= 4
-        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 30000
+        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 50000
+    ) 
+    {
+        spawn.memory.have_energy_to_colonize=true 
+    }
+
+    if (spawn.memory.to_colonize != undefined && spawn.room.controller.level >= 4
+        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] <40000
+    ) 
+    {
+        spawn.memory.have_energy_to_colonize=false
+    }
+    if (spawn.memory.have_energy_to_colonize==true
     ) {
         spawn.memory.req_claimers = 1;
-        spawn.memory.req_colonizers = 4;
+        spawn.memory.req_colonizers = 8;
     }
     else {
         spawn.memory.req_claimers = 0;
         spawn.memory.req_colonizers = 0;
     }
 
+    //console.log(spawn.room.name," ", (Memory.colonizing == true && spawn.room.controller.level >= 6) )
     if (Memory.colonizing == true && spawn.room.controller.level >= 6) {
         spawn.memory.req_scanners = 1
     }
@@ -724,9 +740,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             //console.log("2")
             if (spawn.memory.to_colonize.soldier != undefined && Game.getObjectById(spawn.memory.to_colonize.soldier) == null) {
                 spawn.memory.to_colonize.soldier = undefined
+                console.log("reseting colonization soldier")
             }
 
             if (spawn.memory.to_colonize.soldier == undefined) {
+                console.log(spawn.room.name, " need soldier for colonization of ", spawn.memory.to_colonize.name)
                 spawn.memory.need_soldier = spawn.memory.to_colonize.name
             }
 
@@ -940,12 +958,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         }
 
     }
-    /*
-    if(Memory.rooms_to_scan!=undefined && Memory.rooms_to_scan.length>0 && spawn.room.controller.level>=4)
-    {
-        spawn.memory.to_colonize=Memory.rooms_to_scan[0];
-    }
-    */
 
 
 

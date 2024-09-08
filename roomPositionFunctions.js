@@ -57,7 +57,7 @@ RoomPosition.prototype.getOpenPositions=function getOpenPositions(){ //returns o
         return !pos.lookFor(LOOK_CREEPS).length;
 
     });
-    return walkablePositions;
+    return freePositions;
     //return freePositions;
 }
 

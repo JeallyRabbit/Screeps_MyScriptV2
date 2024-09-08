@@ -116,7 +116,7 @@ function areRoomsAdjacent(tileName1, tileName2) {
 function isRoomKeepersRoom(coordinate) {
     // Extract the numeric parts from the coordinate string
     const match = coordinate.match(/W(\d+)N(\d+)|W(\d+)S(\d+)|E(\d+)S(\d+)|E(\d+)N(\d+)/);
-    
+
     if (!match) {
         return false; // Return false if the format does not match
     }
@@ -124,7 +124,7 @@ function isRoomKeepersRoom(coordinate) {
     // Extract the numeric values, which could be in different capturing groups
     const x = parseInt(match[1] || match[3] || match[5] || match[7], 10);
     const y = parseInt(match[2] || match[4] || match[6] || match[8], 10);
-    
+
     // Get the last digit of both coordinates
     const lastDigitX = x % 10;
     const lastDigitY = y % 10;
@@ -150,15 +150,18 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
         spawn.memory.rooms_to_scan = generateAdjacentRooms(spawn.room.name);
     }
     else if (spawn.memory.rooms_to_scan.length == 0) {
-       // creep.suicide();
+        // creep.suicide();
     }
 
     if (spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length > 0) {
         if (creep.room.name != spawn.memory.rooms_to_scan[0]) {
             //creep.say("MOV");
 
-            creep.moveToRoom(spawn.memory.rooms_to_scan[0], { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
+            //creep.moveTo(new RoomPosition(25, 25, spawn.memory.rooms_to_scan[0]), { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
 
+            const exitDir = creep.room.findExitTo(spawn.memory.rooms_to_scan[0]);
+            const exit = creep.pos.findClosestByRange(exitDir);
+            creep.moveTo(exit,{ reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true });
             /*
             if(creep.memory.destination==undefined)
                 {
@@ -179,6 +182,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                     creep.move_avoid_hostile(creep,creep.memory.destination,30,true)
                 }
                     */
+
 
         }
         else {
@@ -204,8 +208,8 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 var avg_distance = 0;
                 for (let i = 0; i < sources.length; i++) {
                     var ret = findRouteTest(spawn.pos, sources[i].pos.getNearbyPositions())
-                    
-                   if (ret.incomplete == false) {
+
+                    if (ret.incomplete == false) {
                         avg_distance += ret.path.length;
 
                         var new_keeper_source = new keeperSource(sources[i].id, creep.room.name, 0, 0, ret.path.length, sources[i].pos.getOpenPositions().length)
@@ -226,9 +230,9 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                             if (other_spawn != null && other_spawn != spawn && other_spawn.room.name != creep.memory.home_room.name) {
                                 for (let other_keeper_source of other_spawn.memory.keepers_sources) {
                                     //console.log(other_keeper_source.id," ",other_keeper_source.name)
-                                    if ((other_keeper_source.id == sources[i].id)){// || other_keeper_source.name == sources[i].name) && other_keeper_source.name != spawn.room.name) {
+                                    if ((other_keeper_source.id == sources[i].id)) {// || other_keeper_source.name == sources[i].name) && other_keeper_source.name != spawn.room.name) {
                                         //cconsole.log("source: ", sources[i].id, " in use by: ", other_spawn.name);
-                                        
+
                                         //console.log("SKIIIIIIIIIIIPING")
                                         in_other_use = true;
                                         break
@@ -236,7 +240,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                                 }
                             }
                         }
-                        if (!is_already_scanned && !in_other_use && ret.path.length<100) {
+                        if (!is_already_scanned && !in_other_use && ret.path.length < 100) {
                             spawn.memory.keepers_sources.push(new_keeper_source)
                         }
 
@@ -274,11 +278,11 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                         }
                     }
                 }
-                
+
                 spawn.memory.keeper_room_already_scanned = already_scanned;
                 spawn.memory.keeper_room_in_other_use = in_other_use;
-                
-                if (already_scanned == false && in_other_use == false && ret.path.length<100) {
+
+                if (already_scanned == false && in_other_use == false && ret.path.length < 100) {
                     spawn.memory.keepers_rooms.push(new_keeper_room);
 
                 }
@@ -297,7 +301,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 var avg_distance = 0;
                 for (let i = 0; i < sources.length; i++) {
                     var ret = findRouteTest(spawn.pos, sources[i].pos.getNearbyPositions())
-                    
+
                     avg_distance += ret.path.length;
 
                     var new_farming_source = new farmingSource(sources[i].id, creep.room.name, 0, 0, ret.path.length, sources[i].pos.getOpenPositions().length)
@@ -354,13 +358,11 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
                     }
 
-                    var is_road_safe=true;
+                    var is_road_safe = true;
 
-                    for(position of ret.path)
-                    {
-                        if(isRoomKeepersRoom(position.roomName)==true)
-                        {
-                            is_road_safe=false
+                    for (position of ret.path) {
+                        if (isRoomKeepersRoom(position.roomName) == true) {
+                            is_road_safe = false
                             //_road_safe=false;
                             //Memory.is_riad_safe_1=position
                             break;
@@ -369,16 +371,16 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
                     //console.log(already_scanned, " ",in_other_use)
                     if (already_scanned == false && ret.path.length < 100 && in_other_use != true
-                        && is_road_safe==true
+                        && is_road_safe == true
                         //&& ret.incomplete==false
                     ) {
                         spawn.memory.farming_sources.push(new_farming_source);
-                        
-                        
+
+
                     }
 
 
-                    
+
                 }
 
                 /*
@@ -440,7 +442,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 //console.log(' ')
                 //console.log(already_scanned, " ",in_other_use)
                 if (already_scanned == false && avg_distance < 100 && in_other_use != true
-                    && is_road_safe==true
+                    && is_road_safe == true
                 ) {
                     spawn.memory.farming_rooms.push(new_farming);
                     //console.log("adding source from: ", creep.room.name)
