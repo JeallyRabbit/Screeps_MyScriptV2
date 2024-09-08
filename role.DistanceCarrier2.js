@@ -316,7 +316,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                     for (let res in creep.store) {
                         var amount =creep.store[RESOURCE_ENERGY]
                         var transfer_result = creep.transfer(Game.getObjectById(creep.memory.home_container), res);
-                        if (transfer_result == ERR_NOT_IN_RANGE || creep.pos.inRangeTo(spawn,4)) {
+                        if (transfer_result == ERR_NOT_IN_RANGE) {
                             
                             creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true,avoidCreeps: true  });
                             
