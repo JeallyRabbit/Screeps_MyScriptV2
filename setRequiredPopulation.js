@@ -171,7 +171,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
     if (spawn.room.storage != undefined && spawn.room.controller.level < 8 && spawn.room.controller.level > 3) {
         if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 0) {
-            spawn.memory.req_upgraders_parts = Math.floor(spawn.room.storage.store[RESOURCE_ENERGY] / 20000);
+            spawn.memory.req_upgraders_parts =Math.max(1,Math.floor(spawn.room.storage.store[RESOURCE_ENERGY] / 20000) ) ;
 
         }
         else {
@@ -197,10 +197,10 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
         else {
-            if (spawn.room.controller.ticksToDowngrade < CONTROLLER_DOWNGRADE[8] * 0.5) {
-                spawn.memory.req_upgraders_parts = 2;
+            if (spawn.room.controller.level==8 && spawn.room.controller.ticksToDowngrade < CONTROLLER_DOWNGRADE[8] * 0.5) {
+                spawn.memory.req_upgraders_parts = 1;
             }
-            if (spawn.room.controller.ticksToDowngrade > CONTROLLER_DOWNGRADE[8] * 0.9) {
+            if (spawn.room.controller.level==8 && spawn.room.controller.ticksToDowngrade > CONTROLLER_DOWNGRADE[8] * 0.9) {
                 spawn.memory.req_upgraders_parts = 0;
             }
         }
