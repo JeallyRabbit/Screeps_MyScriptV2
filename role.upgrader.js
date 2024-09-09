@@ -125,17 +125,20 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
                 //console.log("myrange: ",creep.pos.getMyRangeTo(creep.room.controller.pos))
                 for(a of creep.memory.other_upgraders)
                 {
-                    //creep.say(creep.pos.getRangeTo(creep.room.controller))
+                    //creep.say(creep.pos.getMyRangeTo(creep.room.controller.pos))
+                    //console.log(creep.pos.getMyRangeTo(creep.room.controller.pos))
                     cr=Game.getObjectById(a)
                     if(cr==null){ continue;}
+
                     //creep.say(creep.pos.getRangeTo(creep.room.controller))
                     if(cr!=null && cr.store[RESOURCE_ENERGY]<creep.store[RESOURCE_ENERGY] && 
                         (cr.pos.getMyRangeTo(creep.room.controller.pos)<creep.pos.getMyRangeTo(creep.room.controller.pos)
-                    ||(Game.getObjectById(creep.memory.deposit)!=undefined && cr.pos.getMyRangeTo(Game.getObjectById(creep.memory.deposit).pos)>creep.pos.getMyRangeTo(Game.getObjectById(creep.memory.deposit).pos)) ) 
-                    && creep.pos.isNearTo(cr.pos))
+                    ||(Game.getObjectById(creep.memory.deposit)!=undefined && cr.pos.getMyRangeTo(Game.getObjectById(creep.memory.deposit).pos)>creep.pos.getMyRangeTo(Game.getObjectById(creep.memory.deposit).pos))
+                 )
+                   && creep.pos.getMyRangeTo(cr.pos)<1.5)
                     {
                         
-                        //creep.say(creep.transfer(cr,RESOURCE_ENERGY))
+                        //creep.say("pass")
                         creep.transfer(cr,RESOURCE_ENERGY)
                         break;
                     }

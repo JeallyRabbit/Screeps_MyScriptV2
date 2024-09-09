@@ -151,6 +151,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
     }
     else if (spawn.memory.rooms_to_scan.length == 0) {
         spawn.memory.if_success_planning_base = false
+        spawn.memory.forced_upgrades[spawn.room.controller.level - 1]=0
         creep.suicide();
     }
 

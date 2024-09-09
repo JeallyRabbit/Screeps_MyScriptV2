@@ -156,8 +156,10 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             spawn.memory.req_upgraders_parts = 3;
             var sources_num = spawn.memory.farming_sources.length
 
-            if (spawn.memory.total_calculated_income_per_tick != undefined && spawn.memory.farming_sources[sources_num - 1].carry_power >= spawn.memory.farming_sources[sources_num - 1].harvesting_power) {
-                spawn.memory.req_upgraders_parts = Math.round((spawn.memory.total_calculated_income_per_tick / 2) * 100) / 100
+            if (spawn.memory.total_calculated_income_per_tick != undefined && spawn.memory.farming_sources[sources_num - 1].carry_power >= spawn.memory.farming_sources[sources_num - 1].harvesting_power
+                && spawn.memory.farming_sources[sources_num - 1].carry_power>0
+            ) {
+                spawn.memory.req_upgraders_parts = Math.round((spawn.memory.total_calculated_income_per_tick / 1.5) * 100) / 100
             }
         }
 
@@ -362,9 +364,9 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         var spawn_num = 1
         if (Game.spawns[spawn.room.name + '_2'] != undefined) { spawn_num++; }
         if (Game.spawns[spawn.room.name + '_3'] != undefined) { spawn_num++; }
-        while (farming_body_parts < spawn_num * 400 && farming_sources_num < spawn.memory.farming_sources.length) {
+        while (farming_body_parts < spawn_num * 425 && farming_sources_num < spawn.memory.farming_sources.length) {
             farming_body_parts += spawn.memory.farming_sources[farming_sources_num].body_parts_cost;
-            if (farming_body_parts < spawn_num * 400) {
+            if (farming_body_parts < spawn_num * 425) {
                 farming_sources_num++;
             }
             else {
@@ -372,8 +374,8 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
 
         }
-        // LIMITING TO ONLY TWO SOURCES - SPAWN ROOM
-        //farming_sources_num = 2
+        spawn.memory.body_parts_for_farming=farming_body_parts
+
         /////////////////////////////////
         if (Game.shard.name == 'shard3') {
             for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
