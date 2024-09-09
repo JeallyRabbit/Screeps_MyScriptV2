@@ -481,7 +481,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     spawn.memory.forced_upgrades.push(0)
                 }
             }
-            if (Game.cpu.bucket > 200 && spawn.memory.forced_upgrades[spawn.room.controller.level - 1] <= 5 &&
+            if (Game.cpu.bucket > 200 && spawn.memory.forced_upgrades[spawn.room.controller.level - 1] <= 8 &&
                 (spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length == 0)
             ) {
                 if (spawn.memory.forced_upgrades[spawn.room.controller.level - 1] == 0) {
@@ -992,17 +992,6 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.room.visual.text("Time: " + Game.time, 20, 0, { color: '#fc03b6' })
 
 
-            /*
-            console.log("Upgraders: ", upgraders_parts, "/", spawn.memory.req_upgraders_parts, " | ",
-                "Builders: ", pop_builders, "/", spawn.memory.req_builders, " | fillers:", pop_fillers, "/", spawn.memory.req_fillers,
-                " | haulers: ", pop_haulers, "/", spawn.memory.req_haulers, " | TowerKeepers: ", pop_towerKeepers, "/", spawn.memory.req_towerKeepers,
-                " | Claimers: ", pop_claimers, "/", spawn.memory.req_claimers,
-                " | DistanceCarriers: ", pop_distanceCarriers, " | Doctors: ", pop_doctors, "/", spawn.memory.req_doctors, " | ",
-                " Merchants: ", pop_merchants, "/", spawn.memory.req_merchants, " | ",
-                "Scouts: ", pop_scouts, "/", spawn.memory.req_scouts, " | ", "Spawned Body parts: ", spawned_body_parts, "/500");
-                
-            console.log("scanners: ", pop_scanners, " | Colonizers; ", pop_colonizers, "/", spawn.memory.req_colonizers);
-            */
             if (spawn.memory.progress != 0 && spawn.memory.progress_old != 0 &&
                 spawn.memory.progress_sum != 0 && spawn.memory.progress_counter > 4 &&
                 spawn.memory.progress != spawn.memory.progress_old) {
@@ -1162,6 +1151,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
             if (pop_scouts < spawn.memory.req_scouts) {
+                console.log(spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }))
                 if (spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }) == 0) {
                 }
                 continue;
@@ -1342,7 +1332,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 spawn.memory.mean_cpu = spawn.memory.mean_cpu_sum / step
                 spawn.memory.mean_cpu_sum = 0
             }
-
+            spawn.room.visual.text("Calculated final income/t: " + spawn.memory.total_calculated_income_per_tick, 44, 3, { color: '#fc03b6' })
             spawn.room.visual.text("used Cpu: " + (spawn_end_cpu - spawn_start_cpu), 44, 4, { color: '#fc03b6' })
             spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
 

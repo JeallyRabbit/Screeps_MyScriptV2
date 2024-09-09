@@ -96,3 +96,8 @@ RoomPosition.prototype.getNOpenPositions=function getNOpenPositions(n){ //return
 
     return freePositions;
 }
+
+RoomPosition.prototype.getMyRangeTo = function getMyRangeTo(ps)
+{
+    return Math.sqrt(((this.x - ps.x)*(this.x - ps.x))+((this.y - ps.y)*(this.y - ps.y)))
+}

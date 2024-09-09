@@ -23,12 +23,10 @@ class farmingRoom {
     }
 }
 
-class keeperQuad
-{
-    constructor(roomName,strongholdLevel)
-    {
-        this.roomName=roomName;
-        this.strongholdLevel=strongholdLevel;
+class keeperQuad {
+    constructor(roomName, strongholdLevel) {
+        this.roomName = roomName;
+        this.strongholdLevel = strongholdLevel;
     }
 }
 
@@ -65,26 +63,24 @@ function calculateDistance(point1, point2) {
 Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
 
-    if (Memory.rooms_to_colonize.length > 0 && Memory.rooms_to_colonize.colonizer==spawn.room.name
-        && spawn.memory.to_colonize==undefined
+    if (Memory.rooms_to_colonize.length > 0 && Memory.rooms_to_colonize.colonizer == spawn.room.name
+        && spawn.memory.to_colonize == undefined
     ) {
         spawn.memory.to_colonize = Memory.rooms_to_colonize[0];
     }
 
     if (spawn.memory.to_colonize != undefined && spawn.room.controller.level >= 4
         && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 50000
-    ) 
-    {
-        spawn.memory.have_energy_to_colonize=true 
+    ) {
+        spawn.memory.have_energy_to_colonize = true
     }
 
     if (spawn.memory.to_colonize != undefined && spawn.room.controller.level >= 4
-        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] <40000
-    ) 
-    {
-        spawn.memory.have_energy_to_colonize=false
+        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] < 40000
+    ) {
+        spawn.memory.have_energy_to_colonize = false
     }
-    if (spawn.memory.have_energy_to_colonize==true
+    if (spawn.memory.have_energy_to_colonize == true
     ) {
         spawn.memory.req_claimers = 1;
         spawn.memory.req_colonizers = 8;
@@ -158,18 +154,23 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         //spawn.memory.req_harvesters = 4;
         if (spawn.memory.upgrading || spawn.memory.building == undefined || spawn.memory.building == false) {
             spawn.memory.req_upgraders_parts = 6;
+            if (spawn.memory.total_calculated_income_per_tick != undefined) {
+                spawn.memory.req_upgraders_parts = Math.round((spawn.memory.total_calculated_income_per_tick / 2)*100)/100
+            }
         }
 
         spawn.memory.req_fillers = 4;
     }
     else if (spawn.room.controller.level == 3) {
         spawn.memory.req_upgraders_parts = 10;
+        if (spawn.memory.total_calculated_income_per_tick != undefined) {
+            spawn.memory.req_upgraders_parts = Math.round((spawn.memory.total_calculated_income_per_tick / 2)*100)/100
+        }
         spawn.memory.req_fillers = 4;
     }
 
-    if(spawn.room.controller.level>=6)
-    {
-        spawn.memory.req_doctors=1;
+    if (spawn.room.controller.level >= 6) {
+        spawn.memory.req_doctors = 1;
     }
     if (spawn.room.storage != undefined && spawn.room.controller.level < 8 && spawn.room.controller.level > 3) {
         if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 0) {
@@ -297,7 +298,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.req_keeperFarmers = 0;//role num 17
     */
     spawn.memory.req_claimers = 0;//role num 11
-    
+
     if (spawn.memory.farming_rooms == undefined) {
         spawn.memory.farming_rooms = [];
 
@@ -307,6 +308,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
     }
     else {
+        var total_calculated_income_per_tick = 0;
         for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
 
             if (spawn.memory.farming_sources[i].body_parts_cost == undefined) {
@@ -335,11 +337,14 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 var cost = farmers_cost + repairer_cost + distanceCarriers_cost;
                 var final_income = raw_source_income - cost;
                 spawn.memory.farming_sources[i].calculatedIncome = final_income;
+                spawn.memory.farming_sources[i].calculated_income_per_tick = final_income / CREEP_LIFE_TIME
+                total_calculated_income_per_tick += final_income / CREEP_LIFE_TIME;
                 spawn.memory.farming_sources[i].income_per_body_part = spawn.memory.farming_sources[i].calculatedIncome / spawn.memory.farming_sources[i].body_parts_cost;
 
             }
 
         }
+        spawn.memory.total_calculated_income_per_tick = Math.round(total_calculated_income_per_tick*100)/100;
 
         if (Game.shard.name != 'shard3') {
             if (spawn.room.controller.level == 7 && spawn.memory.lvl7_scan == undefined) {
@@ -482,16 +487,14 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_keeperFarmer = undefined;
     spawn.memory.need_keeperFarmer_room = undefined
     spawn.memory.need_keeperRepairer = undefined;
-    spawn.memory.need_keeper_quad=undefined;
-    if(spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]>30000)
-    {
-        spawn.memory.spawning_keepers=true
+    spawn.memory.need_keeper_quad = undefined;
+    if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 30000) {
+        spawn.memory.spawning_keepers = true
     }
-    if(spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]<10000)
-    {
-        spawn.memory.spawning_keepers=false
+    if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] < 10000) {
+        spawn.memory.spawning_keepers = false
     }
-    if (spawn.memory.spawning_keepers==true) {
+    if (spawn.memory.spawning_keepers == true) {
         //keeper repairers and killers
         if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0
             && spawn.room.controller.level >= 8) {
@@ -520,11 +523,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             for (let keeper_source of spawn.memory.keepers_sources) {
 
                 if (Game.rooms[keeper_source.name] != undefined && Game.rooms[keeper_source.name].memory.invaded == true) {
-                    
+
                     //console.log("room: ",keeper_source.name," is invaded")
                     continue
                 }
-                    
+
 
                 if (keeper_source.harvesting_power <= (SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME)
                     && keeper_source.keeperKiller != undefined) {
@@ -586,7 +589,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_source_farmer_room = undefined;
     spawn.memory.need_distanceRepairer = undefined;
     spawn.memory.need_soldier = undefined;
-    spawn.memory.need_claimer=undefined;
+    spawn.memory.need_claimer = undefined;
     spawn.memory.need_melee_soldier = undefined;
     spawn.memory.need_melee_defenders = undefined;
 
@@ -686,30 +689,27 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                         }
                 })
 
-                
+
                 //console.log("towers at : ",myRoom," : ", towers.length)
                 // if there are towers do not send soldiers
                 //console.log(invaders.length > 0, " ", cores.length > 0, " ", Game.rooms[myRoom].memory.soldiers < 3)
                 //console.log("invaders: ", invaders.length)
-                if(inFarmingRooms && !inKeepersRooms && (invaders.length>0) && Game.rooms[myRoom].memory.soldiers < 3)
-                {
+                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0) && Game.rooms[myRoom].memory.soldiers < 3) {
                     spawn.memory.need_soldier = myRoom;
                 }
-                else if(inFarmingRooms && !inKeepersRooms && (cores.length>0) && Game.rooms[myRoom].memory.soldiers < 3)
-                {
+                else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 3) {
                     spawn.memory.need_melee_soldier = myRoom;
                 }
 
 
-                else if(!inFarmingRooms && inKeepersRooms && cores.length>0 )
-                {
+                else if (!inFarmingRooms && inKeepersRooms && cores.length > 0) {
                     var towers = Game.rooms[myRoom].find(FIND_HOSTILE_STRUCTURES, {
                         filter:
                             function (str) {
                                 return str.structureType == STRUCTURE_TOWER
                             }
                     })
-                    spawn.memory.need_keeper_quad=new keeperQuad(myRoom,towers.length)
+                    spawn.memory.need_keeper_quad = new keeperQuad(myRoom, towers.length)
                 }
                 /*
                 if ((invaders.length > 0 || cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 3
@@ -748,7 +748,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 spawn.memory.need_soldier = spawn.memory.to_colonize.name
             }
 
-            
+
             if (spawn.memory.to_colonize.claimer != undefined && Game.getObjectById(spawn.memory.to_colonize.claimer) == null) {
                 spawn.memory.to_colonize.claimer = undefined
             }
