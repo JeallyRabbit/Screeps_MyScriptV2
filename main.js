@@ -452,8 +452,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if(spawn.memory.keepers_rooms!=undefined && spawn.memory.keepers_rooms.length>0)
             {
-                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 6, { color: '#fc03b6' })
-                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 7, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 8, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41,9, { color: '#fc03b6' })
 
             }
             
@@ -467,7 +467,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 1500 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                // || spawn.room.name == 'W5N8'
+                // || spawn.room.name == 'W8N9'
             ) {
 
 
@@ -991,6 +991,13 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             spawn.room.visual.text("Time: " + Game.time, 20, 0, { color: '#fc03b6' })
 
+            spawn.room.visual.text("Calculated final income/t: " + spawn.memory.total_calculated_income_per_tick, 44, 3, { color: '#fc03b6' })
+            spawn.room.visual.text("used Cpu: " + (spawn_end_cpu - spawn_start_cpu), 44, 4, { color: '#fc03b6' })
+            spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
+            spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
+                44,6, { color: '#fc03b6' })
+
+
 
             if (spawn.memory.progress != 0 && spawn.memory.progress_old != 0 &&
                 spawn.memory.progress_sum != 0 && spawn.memory.progress_counter > 4 &&
@@ -998,8 +1005,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
                 //console.log("Progress/tick: ", (spawn.memory.progress_sum / spawn.memory.progress_counter));
             }
-            spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
-                spawn.room.controller.pos.x, spawn.room.controller.pos.y - 1, { color: '#fc03b6' })
+            //spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
+            //    spawn.room.controller.pos.x, spawn.room.controller.pos.y - 1, { color: '#fc03b6' })
             //console.log(" ");
 
 
@@ -1332,9 +1339,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 spawn.memory.mean_cpu = spawn.memory.mean_cpu_sum / step
                 spawn.memory.mean_cpu_sum = 0
             }
-            spawn.room.visual.text("Calculated final income/t: " + spawn.memory.total_calculated_income_per_tick, 44, 3, { color: '#fc03b6' })
-            spawn.room.visual.text("used Cpu: " + (spawn_end_cpu - spawn_start_cpu), 44, 4, { color: '#fc03b6' })
-            spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
+            
 
         }
     });

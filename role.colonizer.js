@@ -75,7 +75,7 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
                             src = []
                         }
                     }
-                    var target_src = creep.pos.findClosestByRange(src)
+                    var target_src = creep.pos.findClosestByPath(src)
                     //creep.say(target_src)
                     //console.log("target_src: ",target_src)
                     if (target_src != null) {

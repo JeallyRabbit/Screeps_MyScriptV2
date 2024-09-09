@@ -527,7 +527,7 @@ function plan_labs_stamp(spawn,roomCM)
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
             if (distanceCM.get(i, j) >= 5 && floodCM.get(i, j) < min_distance_from_storage
-        && i>6 && j>6) {
+        && i>6 && i<44 && j>6 && j<44) {
                 min_distance_from_storage = floodCM.get(i, j);
                 pos_for_labs.x = i;
                 pos_for_labs.y = j;
@@ -923,18 +923,44 @@ function plan_controller_ramparts(spawn) {
     }
 }
 
-function plan_controller_container(spawn) {
+function plan_controller_container(spawn,roomCM) {
+    seeds = [];
+    seeds.push(spawn.room.controller.pos);
+    distanceCM = spawn.room.distanceTransform(roomCM, false);
+
     spawn.memory.controller_link_pos = undefined;
-    var controller_pos = spawn.room.controller.pos.getN_NearbyPositions(2);
-    const terrain = spawn.room.getTerrain();
-    for (let position of controller_pos) {
-        if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL) {
-            spawn.memory.room_plan[position.x][position.y] = STRUCTURE_CONTAINER;
-            spawn.memory.building_list.push(new building_list_element(position.x, position.y, spawn.room.name, STRUCTURE_CONTAINER, 2));
-            break;
+    
+    floodCM = spawn.room.floodFill(seeds);
+    var pos_for_container = new RoomPosition(0, 0, spawn.room.name);
+
+    min_distance_from_controller = 100;
+    for (i = 0; i < 50; i++) {
+        for (let j = 0; j < 50; j++) {
+            if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < min_distance_from_controller && i>5 && i<45 && j>5 && j<45) {
+                min_distance_from_controller = floodCM.get(i, j);
+                pos_for_container.x = i;
+                pos_for_container.y = j;
+            }
         }
     }
 
+    if(pos_for_container.x != 0 && pos_for_container.y!=0)
+    {
+        spawn.memory.room_plan[pos_for_container.x][pos_for_container.y] = STRUCTURE_CONTAINER;
+        spawn.memory.building_list.push(new building_list_element(pos_for_container.x, pos_for_container.y, spawn.room.name, STRUCTURE_CONTAINER, 2));
+        spawn.memory.controller_container_pos=pos_for_container
+        console.log("pos for container: ",pos_for_container.x," ", pos_for_container.y)
+
+        if(spawn.memory.room_plan[pos_for_container.x+1][pos_for_container.y]==0)
+        {
+            spawn.memory.room_plan[pos_for_container.x+1][pos_for_container.y] = STRUCTURE_LINK;
+            spawn.memory.building_list.push(new building_list_element(pos_for_container.x+1, pos_for_container.y, spawn.room.name, STRUCTURE_LINK, 6));
+            spawn.memory.controller_link_pos = new RoomPosition(pos_for_container.x+1, pos_for_container.y, spawn.room.name);
+        }
+    }
+
+
+    /*
     for (let position of controller_pos) {
         var structures_on_pos = spawn.room.lookAt(position.x, position.y);
         var is_free = true;
@@ -952,6 +978,7 @@ function plan_controller_container(spawn) {
             break;
         }
     }
+        */
 }
 
 
@@ -1161,7 +1188,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
             plan_controller_ramparts(spawn);
         }
 
-        plan_controller_container(spawn)
+        plan_controller_container(spawn,roomCM_2)
 
         //planning roads to sources (in all farming rooms including main room)
         if ((spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length == 0) || spawn.room.controller.level >= 4) {

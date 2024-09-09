@@ -205,7 +205,8 @@ function generateRoomsInRangeAndSort(tileName, range = 8) {
 
             if (roomsInRange[i] != undefined && checkRoomNameEndsWith5(roomsInRange[i].name) == true) {
                 //console.log("center room: ", roomsInRange[i].name)
-                roomsInRange.splice(i, 1);
+                //roomsInRange.splice(i, 1);
+
                 var keepers_rooms = generateAdjacentRooms(roomsInRange[i].name);
                 for (let keeper_room of keepers_rooms) {
                     // console.log("generated keeper room: ",keeper_room);

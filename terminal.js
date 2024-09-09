@@ -95,7 +95,13 @@ Spawn.prototype.terminal = function terminal(spawn) {
         }
 
 
-        //var cost = sell_everything_except_energy(terminal, cost, spawn)
+        //selling every resource (except energy) that i have more than 50k
+        var cost = sell_everything_except_energy(terminal, cost, spawn)
+        console.log("cost: ",cost)
+        if(cost==OK)
+        {
+            return
+        }
         //console.log(terminal.room.name," cost: ",cost)
 
 
@@ -131,7 +137,7 @@ function sell_everything_except_energy(terminal, cost, spawn) {
         //return;
     }
     for (res in terminal.store) {
-        if (res == RESOURCE_ENERGY || terminal.store[res] < 5000) {
+        if (res == RESOURCE_ENERGY || terminal.store[res] < 50000) {
             continue;
         }
         //console.log("i have storage");
@@ -159,6 +165,7 @@ function sell_everything_except_energy(terminal, cost, spawn) {
         if (best_order_id != undefined) {
 
             //console.log("best offer2: ",best_order_id);
+            var selling_result=undefined
             var trade_amount = Math.min(terminal.store[res], Game.market.getOrderById(best_order_id).amount)
             trade_amount /= 2
             var cost = Game.market.calcTransactionCost(trade_amount, Game.market.getOrderById(best_order_id).roomName,
@@ -168,7 +175,8 @@ function sell_everything_except_energy(terminal, cost, spawn) {
             //console.log("profit per unit: ",profit_per_unit)
             if (profit_per_unit > 10 || true) {
                 //console.log("profit_per_unit: ",profit_per_unit)
-                console.log(res, " selling result: ", Game.market.deal(best_order_id, trade_amount, spawn.room.name))
+                selling_result=Game.market.deal(best_order_id, trade_amount, spawn.room.name)
+                console.log(res, " selling result: ", selling_result)
                 //console.log(Game.market.outgoingTransactions);
 
                 //console.log("trade_amount: ",trade_amount);
@@ -185,7 +193,7 @@ function sell_everything_except_energy(terminal, cost, spawn) {
         }
         */
     }
-    return cost
+    return selling_result
 }
 
 function sell_resource(terminal, cost, spawn, res) {
