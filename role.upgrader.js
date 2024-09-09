@@ -119,7 +119,7 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
             }
 
 
-            if(creep.store[RESOURCE_ENERGY]>0)
+            if(creep.store[RESOURCE_ENERGY]>0 && creep.memory.other_upgraders!=undefined && creep.memory.other_upgraders.length>0)
             {
                 //var to_pass=undefined
                 //console.log("myrange: ",creep.pos.getMyRangeTo(creep.room.controller.pos))
@@ -131,7 +131,7 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
                     //creep.say(creep.pos.getRangeTo(creep.room.controller))
                     if(cr!=null && cr.store[RESOURCE_ENERGY]<creep.store[RESOURCE_ENERGY] && 
                         (cr.pos.getMyRangeTo(creep.room.controller.pos)<creep.pos.getMyRangeTo(creep.room.controller.pos)
-                    || cr.pos.getMyRangeTo(Game.getObjectById(creep.memory.deposit).pos)>creep.pos.getMyRangeTo(Game.getObjectById(creep.memory.deposit).pos))
+                    ||(Game.getObjectById(creep.memory.deposit)!=undefined && cr.pos.getMyRangeTo(Game.getObjectById(creep.memory.deposit).pos)>creep.pos.getMyRangeTo(Game.getObjectById(creep.memory.deposit).pos)) ) 
                     && creep.pos.isNearTo(cr.pos))
                     {
                         

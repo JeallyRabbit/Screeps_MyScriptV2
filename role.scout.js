@@ -150,7 +150,8 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
         spawn.memory.rooms_to_scan = generateAdjacentRooms(spawn.room.name);
     }
     else if (spawn.memory.rooms_to_scan.length == 0) {
-        // creep.suicide();
+        spawn.memory.if_success_planning_base = false
+        creep.suicide();
     }
 
     if (spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length > 0) {
@@ -161,7 +162,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
             const exitDir = creep.room.findExitTo(spawn.memory.rooms_to_scan[0]);
             const exit = creep.pos.findClosestByRange(exitDir);
-            creep.moveTo(exit,{ reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true });
+            creep.moveTo(exit, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true });
             /*
             if(creep.memory.destination==undefined)
                 {

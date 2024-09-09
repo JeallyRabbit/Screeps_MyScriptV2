@@ -178,6 +178,16 @@ function plan_road_to_target(spawn, roomCM, target, rcl, my_range, start) {
 
         }
     }
+
+    for (let i = 0; i < 50; i++) {
+        for (let j = 0; j < 50; j++) {
+            if (spawn.memory.room_plan[i][j] ==STRUCTURE_ROAD) {
+                roomCM.set(i, j, 0);
+            }
+
+        }
+    }
+
 }
 
 
@@ -1075,7 +1085,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         
 
         console.log("base planed, building from lists")
-
+        visualizeBase(spawn)
         build_from_lists(spawn)
         return;
     }
@@ -1240,43 +1250,10 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
 
 
     // //console.log("VISUALS");
+
     var if_visualize = true
     if (if_visualize) {
-        for (let i = 0; i < 50; i++) {
-            for (let j = 0; j < 50; j++) {
-                if (spawn.memory.room_plan[i][j] == STRUCTURE_EXTENSION) {
-                    spawn.room.visual.circle(i, j, { fill: '#ffff00', radius: 0.5, stroke: 'red' });
-                    ////console.log("SHOWING EXTENSION");
-                }
-                else if (spawn.memory.room_plan[i][j] == STRUCTURE_ROAD) {
-                    spawn.room.visual.circle(i, j, { fill: '#666666', radius: 0.5, stroke: 'black' });
-                }
-                else if (spawn.memory.room_plan[i][j] == STRUCTURE_CONTAINER) {
-                    spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: 'red', stroke: 'black' });
-                }
-                else if (spawn.memory.room_plan[i][j] == STRUCTURE_SPAWN) {
-                    spawn.room.visual.circle(i, j, { fill: '#666666', radius: 0.5, stroke: 'pink' });
-                }
-                else if (spawn.memory.room_plan[i][j] == STRUCTURE_STORAGE) {
-                    spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#666666', stroke: 'white' });
-                }
-                else if (spawn.memory.room_plan[i][j] == STRUCTURE_TOWER) {
-                    spawn.room.visual.circle(i, j, { fill: 'red', radius: 0.5, stroke: 'red' });
-                }
-                else if (spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART) {
-                    spawn.room.visual.circle(i, j, { fill: 'green', radius: 0.5, stroke: 'green' });
-                }
-                else if (spawn.memory.room_plan[i][j] == STRUCTURE_WALL) {
-                    spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'grey' });
-                }
-                else if (spawn.memory.room_plan[i][j] == STRUCTURE_LINK) {
-                    spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'blue' });
-                }
-                else if (spawn.memory.room_plan[i][j] == STRUCTURE_LAB) {
-                    spawn.room.visual.circle(i - 0.25, j - 0.4, 0.5, 0.8, { fill: 'pink', stroke: 'pink' });
-                }
-            }
-        }
+        visualizeBase(spawn);
     }
 
 
@@ -1289,4 +1266,42 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
 
 
 
+
+function visualizeBase(spawn) {
+    for (let i = 0; i < 50; i++) {
+        for (let j = 0; j < 50; j++) {
+            if (spawn.memory.room_plan[i][j] == STRUCTURE_EXTENSION) {
+                spawn.room.visual.circle(i, j, { fill: '#ffff00', radius: 0.5, stroke: 'red' });
+                ////console.log("SHOWING EXTENSION");
+            }
+            else if (spawn.memory.room_plan[i][j] == STRUCTURE_ROAD) {
+                spawn.room.visual.circle(i, j, { fill: '#666666', radius: 0.5, stroke: 'black' });
+            }
+            else if (spawn.memory.room_plan[i][j] == STRUCTURE_CONTAINER) {
+                spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: 'red', stroke: 'black' });
+            }
+            else if (spawn.memory.room_plan[i][j] == STRUCTURE_SPAWN) {
+                spawn.room.visual.circle(i, j, { fill: '#666666', radius: 0.5, stroke: 'pink' });
+            }
+            else if (spawn.memory.room_plan[i][j] == STRUCTURE_STORAGE) {
+                spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#666666', stroke: 'white' });
+            }
+            else if (spawn.memory.room_plan[i][j] == STRUCTURE_TOWER) {
+                spawn.room.visual.circle(i, j, { fill: 'red', radius: 0.5, stroke: 'red' });
+            }
+            else if (spawn.memory.room_plan[i][j] == STRUCTURE_RAMPART) {
+                spawn.room.visual.circle(i, j, { fill: 'green', radius: 0.5, stroke: 'green' });
+            }
+            else if (spawn.memory.room_plan[i][j] == STRUCTURE_WALL) {
+                spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'grey' });
+            }
+            else if (spawn.memory.room_plan[i][j] == STRUCTURE_LINK) {
+                spawn.room.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'blue' });
+            }
+            else if (spawn.memory.room_plan[i][j] == STRUCTURE_LAB) {
+                spawn.room.visual.circle(i - 0.25, j - 0.4, 0.5, 0.8, { fill: 'pink', stroke: 'pink' });
+            }
+        }
+    }
+}
 

@@ -127,8 +127,8 @@ module.exports.loop = function () {
             for (a of construction_sites) {
                 a.remove();
             }
-        }
-         */
+        }*/
+         
 
 
         var step = 6000
@@ -467,7 +467,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 1500 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                // || spawn.room.name == 'E16S57'
+                // || spawn.room.name == 'W5N8'
             ) {
 
 

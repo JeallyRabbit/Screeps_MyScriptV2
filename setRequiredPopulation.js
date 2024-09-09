@@ -150,22 +150,17 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.req_upgraders_parts = 1;
         spawn.memory.req_fillers = 0;
     }
-    else if (spawn.room.controller.level == 2) {
+    else if (spawn.room.controller.level == 2 || spawn.room.controller.level == 3 ) {
         //spawn.memory.req_harvesters = 4;
         if (spawn.memory.upgrading || spawn.memory.building == undefined || spawn.memory.building == false) {
-            spawn.memory.req_upgraders_parts = 6;
-            if (spawn.memory.total_calculated_income_per_tick != undefined) {
-                spawn.memory.req_upgraders_parts = Math.round((spawn.memory.total_calculated_income_per_tick / 2)*100)/100
+            spawn.memory.req_upgraders_parts = 3;
+            var sources_num = spawn.memory.farming_sources.length
+
+            if (spawn.memory.total_calculated_income_per_tick != undefined && spawn.memory.farming_sources[sources_num - 1].carry_power >= spawn.memory.farming_sources[sources_num - 1].harvesting_power) {
+                spawn.memory.req_upgraders_parts = Math.round((spawn.memory.total_calculated_income_per_tick / 2) * 100) / 100
             }
         }
 
-        spawn.memory.req_fillers = 4;
-    }
-    else if (spawn.room.controller.level == 3) {
-        spawn.memory.req_upgraders_parts = 10;
-        if (spawn.memory.total_calculated_income_per_tick != undefined) {
-            spawn.memory.req_upgraders_parts = Math.round((spawn.memory.total_calculated_income_per_tick / 2)*100)/100
-        }
         spawn.memory.req_fillers = 4;
     }
 
@@ -344,7 +339,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
 
         }
-        spawn.memory.total_calculated_income_per_tick = Math.round(total_calculated_income_per_tick*100)/100;
+        spawn.memory.total_calculated_income_per_tick = Math.round(total_calculated_income_per_tick * 100) / 100;
 
         if (Game.shard.name != 'shard3') {
             if (spawn.room.controller.level == 7 && spawn.memory.lvl7_scan == undefined) {
