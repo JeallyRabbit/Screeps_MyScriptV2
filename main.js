@@ -312,7 +312,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 spawn.memory.lvl_1_time = Game.time;
             }
             if (spawn.memory.lvl_2_time == undefined && spawn.room.controller.level == 2) {
-                spawn.memory.lvl_2_time = Game.time - spawn.memory.lvl_1_time;
+                spawn.memory.lvl_2_time = Game.time;
             }
             if (spawn.memory.lvl_3_time == undefined && spawn.room.controller.level == 3) {
                 spawn.memory.lvl_3_time = Game.time - spawn.memory.lvl_2_time;

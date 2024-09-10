@@ -70,13 +70,13 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
 
     if (spawn.memory.to_colonize != undefined && spawn.room.controller.level >= 4
-        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 50000
+        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 25000
     ) {
         spawn.memory.have_energy_to_colonize = true
     }
 
     if (spawn.memory.to_colonize != undefined && spawn.room.controller.level >= 4
-        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] < 40000
+        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] < 15000
     ) {
         spawn.memory.have_energy_to_colonize = false
     }
@@ -741,7 +741,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
         // soldiers for colonization
         if (spawn.memory.need_soldier == undefined && spawn.memory.to_colonize != undefined
-            && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 30000
+            && spawn.room.storage != undefined && spawn.memory.have_energy_to_colonize == true
         ) {
 
             //console.log("2")

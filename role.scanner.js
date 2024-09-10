@@ -427,18 +427,18 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             // 4 tiles from any other wall
             var spawn_stamp_pos_x = -1;
             var spawn_stamp_pos_y = -1;
-            min_distance_from_controller = 100;
+            min_distance_from_controller = Infinity;
             for (i = 0; i < 50; i++) {
                 for (let j = 0; j < 50; j++) {
                     if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j) < min_distance_from_controller
-                        && i > 4 && i < 46 && j > 6 && j < 46) {
+                        && i > 7 && i < 46 && j > 7 && j < 43) {
                         min_distance_from_controller = floodCM.get(i, j);
                         spawn_stamp_pos_x = i;
                         spawn_stamp_pos_y = j;
                     }
                 }
             }
-            if (spawn_stamp_pos_x > 7 && spawn_stamp_pos_x < 46 && spawn_stamp_pos_y >7  && spawn_stamp_pos_y < 46) {
+            if (spawn_stamp_pos_x > 7 && spawn_stamp_pos_x < 46 && spawn_stamp_pos_y >7  && spawn_stamp_pos_y < 43) {
                 console.log("pos for new spawn: ", spawn_stamp_pos_x, " ", spawn_stamp_pos_y , " ", creep.room.name);
                 var is_to_close = false;
                 if (Game.shard.name != 'shard3' && (spawn.memory.to_colonize != undefined && creep.room.name == spawn.memory.to_colonize)) {
@@ -489,7 +489,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
             }
             else {
-                console.log("room: ", creep.room.name, " have wrong spawn position ", spawn_pos_x, " ", spawn_pos_y-2);
+                console.log("room: ", creep.room.name, " have wrong spawn position ", spawn_stamp_pos_x, " ", spawn_stamp_pos_y+2);
             }
             // 19 38
 
