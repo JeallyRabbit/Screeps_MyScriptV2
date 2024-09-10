@@ -32,6 +32,8 @@ var roleKeeperFarmer = require('role.keeper_farmer');
 
 //var roleDistanceCarrier = require('role.DistanceCarrier');
 var roleDistanceCarrier2 = require('role.DistanceCarrier2')
+var roleDuoLeader = require('role.duoLeader')
+var roleDuoFollower = require('role.duoFollower')
 
 var roleIntershardClaimer = require('role.intershardClaimer')
 var roleIntershardColonizer = require('role.intershardColonizer')
@@ -103,6 +105,15 @@ class farmingRoom {
     }
 }
 
+class Duo {
+    constructor(duoId, duoHome) {
+        this.id = duoId;
+        this.home = duoHome;
+        //this.leaderId =duoleaderId 
+        //this.followerId=duoFollowerId
+    }
+}
+
 global.bucket = [];
 global.CPU = [];
 require('module.chartCPU');
@@ -128,7 +139,7 @@ module.exports.loop = function () {
                 a.remove();
             }
         }*/
-         
+
 
 
         var step = 6000
@@ -450,13 +461,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             */
             /////////////////////////////////////
 
-            if(spawn.memory.keepers_rooms!=undefined && spawn.memory.keepers_rooms.length>0)
-            {
+            if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0) {
                 spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 8, { color: '#fc03b6' })
-                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41,9, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 9, { color: '#fc03b6' })
 
             }
-            
+
 
 
             if ((Game.shard.name == 'shard2' || Game.shard.name == 'shard1') && Game.cpu.bucket == 10000) {
@@ -581,6 +591,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
 
+            if (spawn.memory.duos != undefined && spawn.memory.duos.length > 0) {
+                for (d of spawn.memory.duos) {
+                    d.followerId = undefined;
+                    d.leaderId = undefined;
+                }
+            }
             /*
             spawn.memory.farming_rooms = [];
             for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
@@ -936,11 +952,63 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         pop_melee_defenders += workParts
                         creep.roleMeleeDefender(creep, spawn);
                     }
+                    else if (creep.memory.role == 'duoLeader') {
+                        //find itself a duo object to be assigned to
+                        for (d of spawn.memory.duos) {
+                            if (d.id == creep.memory.duoId) {
+                                //creep.say(d.id)
+                                d.leaderId = creep.id;
+                                break;
+                            }
+                        }
+                    }
+                    else if (creep.memory.role == 'duoFollower') {
+                        for (d of spawn.memory.duos) {
+                            if (d.id == creep.memory.duoId) {
+                                //creep.say(d.id)
+                                d.followerId = creep.id;
+                                break;
+                            }
+                        }
+                    }
+
 
                     else {
                         //creep.say('no role');
                     }
                     //pos_exchange(creep);
+                }
+            }
+
+            if (spawn.room.name == 'W7N4' && spawn.memory.duos.length == 0) {
+                spawn.memory.duos = [];
+                spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room))
+            }
+
+
+            // proceeding with duos
+            if (spawn.memory.duos == undefined) {
+                spawn.memory.duos = [];
+            }
+            if (spawn.memory.duos != undefined && spawn.memory.duos.length > 0) {
+                for (let i = 0; i < spawn.memory.duos.length; i++) {
+                    var duo = spawn.memory.duos[i]
+                    var leader = Game.getObjectById(duo.leaderId)
+                    var follower = Game.getObjectById(duo.followerId)
+                    //console.log("DDDDDDUUUUUOOOOO")
+                    if (leader != null && follower != null) {
+                        //console.log("suo is setting ")
+                        leader.memory.follower = duo.followerId
+                        leader.roleDuoLeader(spawn)
+
+                        follower.memory.leader = duo.leaderId
+                        follower.roleDuoFollower(spawn)
+                    }
+
+                    if ((leader == null && duo.leaderId != undefined) || (follower == null && duo.followerId != undefined)) {
+                        duo.isDead = true
+                    }
+
                 }
             }
             //console.log("farming_rooms[0].harvesting power ------------------------------ ",spawn.memory.farming_rooms[0].harvesting_power)
@@ -995,7 +1063,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.room.visual.text("used Cpu: " + (spawn_end_cpu - spawn_start_cpu), 44, 4, { color: '#fc03b6' })
             spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
             spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
-                44,6, { color: '#fc03b6' })
+                44, 6, { color: '#fc03b6' })
 
 
 
@@ -1064,7 +1132,46 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
 
 
+            spawn.memory.isSpawningDuo=false
+            // loop for spawning duos
+            if (spawn.spawning == null || true) {
+                for (d of spawn.memory.duos) {
+                    if (!d.isDead)// if duo is not dead
+                    {
+                        if (d.leaderId == undefined) {
+                            spawn.memory.isSpawningDuo=true
+                            //console.log("trying to spawn leader")
+                            //var leaderBody = [MOVE, RANGED_ATTACK]
+                            var leaderBody =[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,HEAL,HEAL,HEAL,HEAL];
 
+                            spawn.memory.leaderSpawningResult = spawn.spawnCreep(leaderBody, "DL" + d.id, { memory: { home_room: spawn.room, role: 'duoLeader', duoId: d.id } })
+                            if (spawn.spawnCreep(leaderBody, "DL" + d.id, { memory: { homeRoom: spawn.room, role: 'duoLeader', duoId: d.id } }) == 0) {
+                                
+                                spawn.memory.isSpawningDuo=true
+                            }
+                        }
+                        else if (d.followerId == undefined) {
+                            spawn.memory.isSpawningDuo=true
+                            //console.log("trying to spawn follower")
+                            var followerBody = [MOVE, HEAL]
+                            followerBody=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL]
+                            spawn.memory.followerSpawningResult = spawn.spawnCreep(followerBody, "DF" + d.id, { memory: { home_room: spawn.room, role: 'duoFollower', duoId: d.id } })
+                            if (spawn.spawnCreep(followerBody, "DF" + d.id, { memory: { homeRoom: spawn.room, role: 'duoFollower', duoId: d.id } }) == 0) {
+                                
+                                spawn.memory.isSpawningDuo=true
+                            }
+                        }
+                    }
+                }
+            }
+            /*
+            if(spawn.room.name=='W7N4')
+            {
+                console.log("spawning duo: ",spawn.memory.isSpawningDuo)
+            }
+                */
+            
+            if(spawn.memory.isSpawningDuo==true){continue;}
 
             if (pop_haulers > 0 && pop_merchants > 0) {
                 if (spawn.memory.need_keeperHealer != undefined && false) {
@@ -1170,7 +1277,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 continue;
             }
             if (pop_colonizers < spawn.memory.req_colonizers && pop_claimers > 0 && spawn.room.controller.level >= 4
-                && spawn.memory.to_colonize!=undefined
+                && spawn.memory.to_colonize != undefined
             ) {
                 if (spawn.spawnCreep(maxColonizer(energyCap), 'Colonizer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
@@ -1339,7 +1446,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 spawn.memory.mean_cpu = spawn.memory.mean_cpu_sum / step
                 spawn.memory.mean_cpu_sum = 0
             }
-            
+
 
         }
     });

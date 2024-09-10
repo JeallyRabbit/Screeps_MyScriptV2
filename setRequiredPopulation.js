@@ -80,7 +80,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     ) {
         spawn.memory.have_energy_to_colonize = false
     }
-    if (spawn.memory.have_energy_to_colonize == true
+    if (spawn.memory.have_energy_to_colonize == true && spawn.memory.to_colonize!=undefined
     ) {
         spawn.memory.req_claimers = 1;
         spawn.memory.req_colonizers = 8;
@@ -91,7 +91,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
 
     //console.log(spawn.room.name," ", (Memory.colonizing == true && spawn.room.controller.level >= 6) )
-    if (Memory.colonizing == true && spawn.room.controller.level >= 6) {
+    if (Memory.colonizing == true && spawn.room.controller.level >= 4) {
         spawn.memory.req_scanners = 1
     }
     else {

@@ -516,7 +516,7 @@ function plan_labs_stamp(spawn,roomCM)
         }
     }
 
-    var pos_for_labs = new RoomPosition(0, 0, spawn.room.name);
+    var pos_for_labs = new RoomPosition(-0, -0, spawn.room.name);
     seeds = [];
     seeds.push(spawn.memory.storage_pos);
 
@@ -535,7 +535,11 @@ function plan_labs_stamp(spawn,roomCM)
         }
     }
     console.log("x: ",pos_for_labs.x," y: ",pos_for_labs.y)
-    create_labs_stamp(spawn,pos_for_labs.x,pos_for_labs.y)
+    if(pos_for_labs.x!=0 && pos_for_labs.y!=0)
+    {
+        create_labs_stamp(spawn,pos_for_labs.x,pos_for_labs.y)
+    }
+    
 
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
