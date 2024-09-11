@@ -81,7 +81,7 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
                     if (target_src != null) {
                         //console.log("trying to harvest")
                         if (creep.harvest(target_src) == ERR_NOT_IN_RANGE) {
-                            creep.say(target_src.pos.x)
+                            //creep.say(target_src.pos.x)
                             creep.moveTo(target_src, { reusePath: 11, maxRooms: 1 })
                         }
                         //creep.say(((target_src.pos.getOpenPositions().length>0  && !creep.pos.isNearTo(target_src))) )
@@ -138,7 +138,7 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
                                 STRUCTURE_SPAWN, creep.room.name + "_1")
                         }
                         else {
-                            creep.say("rampart")
+                            //creep.say("rampart")
                             creep.say(creep.room.createConstructionSite(spawn.memory.to_colonize.spawn_pos_x, spawn.memory.to_colonize.spawn_pos_y, STRUCTURE_RAMPART))
                         }
                     }

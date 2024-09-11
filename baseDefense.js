@@ -15,14 +15,19 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
     if (hostiles != undefined && hostiles.length > 0) {
         this.memory.weakest_any = hostiles[0].id;
 
-        var hostile_not_invader=this.room.find(FIND_HOSTILE_CREEPS,{filter: 
-            function(hostile)
-            {
-                return hostile.owner.username!='Invader'
-            }
+        console.log(this.room.name, " is underattack")
+        if (this.memory.state.includes(STATE_UNDER_ATTACK) == false) {
+            this.memory.state.push(STATE_UNDER_ATTACK)
+
+        }
+
+        var hostile_not_invader = this.room.find(FIND_HOSTILE_CREEPS, {
+            filter:
+                function (hostile) {
+                    return hostile.owner.username != 'Invader'
+                }
         })
-        if(hostile_not_invader.length>0 && this.room.controller.level<=4)
-        {
+        if (hostile_not_invader.length > 0 && this.room.controller.level <= 4) {
             this.room.controller.activateSafeMode();
         }
         /*
@@ -53,16 +58,15 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
 
 
         if (Game.shard.name != 'shard3' && this.memory.weakest_any != undefined && Game.getObjectById(this.memory.weakest_any).owner.username != 'Invader' && this.room.controller.level < 6) {
-            if(spawn.pos.findInRange(FIND_HOSTILE_CREEPS,7,{
-                filter: function (h)
-                {
-                    return h.controller.owner.username!='Invader'
+            if (spawn != undefined && spawn.pos.findInRange(FIND_HOSTILE_CREEPS, 7, {
+                filter: function (h) {
+                    return h.controller.owner.username != 'Invader'
                 }
-            }).length>0)
-            {
+            }).length > 0) {
+
                 this.room.controller.activateSafeMode()
             }
-            
+
         }
 
 
@@ -81,7 +85,7 @@ function setCostMatrix(hostiles) {
     }
 
     let meleeCosts = new PathFinder.CostMatrix
-    let repairerCosts=new PathFinder.CostMatrix
+    let repairerCosts = new PathFinder.CostMatrix
 
     this.room.find(FIND_STRUCTURES).forEach(function (struct) {
         if (struct.structureType === STRUCTURE_ROAD) {
@@ -141,6 +145,10 @@ function setCostMatrix(hostiles) {
     for (ramp of ramparts) {
         meleeCosts.set(ramp.pos.x, ramp.pos.y, 1)
         repairerCosts.set(ramp.pos.x, ramp.pos.y, 0xff)
+        if(this.memory.room_plan==undefined)
+        {
+            continue;
+        }
         if (ramp.pos.x >= this.pos.x) {// rampart is on right side of spawn -> add blocking edge on the right side
             if (this.memory.room_plan[ramp.pos.x + 1][ramp.pos.y] == 0) {
                 meleeCosts.set(ramp.pos.x + 1, ramp.pos.y, 0xff)
