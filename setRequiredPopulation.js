@@ -501,11 +501,13 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] < 10000) {
         spawn.memory.spawning_keepers = false
     }
+    console.log("invader quad before killers: ",spawn.memory.need_invader_quad.name)
     if (spawn.memory.spawning_keepers == true) {
         //keeper repairers and killers
         if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0
             && spawn.room.controller.level >= 8) {
             for (let keeper_room of spawn.memory.keepers_rooms) {
+
                 if (spawn.memory.need_invader_quad == keeper_room.name) {
                     continue
                 }
@@ -528,6 +530,10 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         if (spawn.memory.keepers_sources != undefined && spawn.memory.keepers_sources.length > 0 && spawn.room.controller.level >= 8) {
             // Finding keeper farmers
             for (let keeper_source of spawn.memory.keepers_sources) {
+
+                if (spawn.memory.need_invader_quad == keeper_source.name) {
+                    continue
+                }
 
                 if (Game.rooms[keeper_source.name] != undefined && Game.rooms[keeper_source.name].memory.invaded == true) {
 
