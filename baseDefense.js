@@ -15,11 +15,7 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
     if (hostiles != undefined && hostiles.length > 0) {
         this.memory.weakest_any = hostiles[0].id;
 
-        console.log(this.room.name, " is underattack")
-        if (this.memory.state.includes(STATE_UNDER_ATTACK) == false) {
-            this.memory.state.push(STATE_UNDER_ATTACK)
 
-        }
 
         var hostile_not_invader = this.room.find(FIND_HOSTILE_CREEPS, {
             filter:
@@ -29,6 +25,13 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
         })
         if (hostile_not_invader.length > 0 && this.room.controller.level <= 4) {
             this.room.controller.activateSafeMode();
+            
+            console.log(this.room.name, " is underattack")
+            if (this.memory.state.includes(STATE_UNDER_ATTACK) == false) {
+                this.memory.state.push(STATE_UNDER_ATTACK)
+
+            }
+
         }
         /*
         if (this.memory.state.includes(STATE_UNDER_ATTACK) == false
@@ -145,8 +148,7 @@ function setCostMatrix(hostiles) {
     for (ramp of ramparts) {
         meleeCosts.set(ramp.pos.x, ramp.pos.y, 1)
         repairerCosts.set(ramp.pos.x, ramp.pos.y, 0xff)
-        if(this.memory.room_plan==undefined)
-        {
+        if (this.memory.room_plan == undefined) {
             continue;
         }
         if (ramp.pos.x >= this.pos.x) {// rampart is on right side of spawn -> add blocking edge on the right side
