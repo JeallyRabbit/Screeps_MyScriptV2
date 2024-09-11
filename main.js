@@ -10,7 +10,7 @@ var towers = require('towers');
 var links = require('links');
 var terminal = require('terminal');
 var lab = require('labs');
-var reactions=require('reactions')
+var reactions = require('reactions')
 var roleTowerKeeper = require('role.TowerKeeper');
 var roleClaimer = require('role.Claimer');
 var roleReserver = require('role.reserver');
@@ -32,6 +32,8 @@ var roleKeeperFarmer = require('role.keeper_farmer');
 
 //var roleDistanceCarrier = require('role.DistanceCarrier');
 var roleDistanceCarrier2 = require('role.DistanceCarrier2')
+var roleDuoLeader = require('role.duoLeader')
+var roleDuoFollower = require('role.duoFollower')
 
 var roleIntershardClaimer = require('role.intershardClaimer')
 var roleIntershardColonizer = require('role.intershardColonizer')
@@ -103,6 +105,15 @@ class farmingRoom {
     }
 }
 
+class Duo {
+    constructor(duoId, duoHome) {
+        this.id = duoId;
+        this.home = duoHome;
+        //this.leaderId =duoleaderId 
+        //this.followerId=duoFollowerId
+    }
+}
+
 global.bucket = [];
 global.CPU = [];
 require('module.chartCPU');
@@ -127,9 +138,9 @@ module.exports.loop = function () {
             for (a of construction_sites) {
                 a.remove();
             }
-        }
-            */
-            
+        }*/
+
+
 
         var step = 6000
         if (Game.time % step == 0 && false) {
@@ -162,7 +173,7 @@ module.exports.loop = function () {
 
 
 
-        
+
 
 
 
@@ -265,12 +276,17 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             var closest_distance = Infinity;
             for (let spawn_id of Memory.main_spawns) {
                 var spawn = Game.getObjectById(spawn_id);
+                if (spawn.room.controller.level < 4) { continue }
                 for (let to_colonize of Memory.rooms_to_colonize) {
                     if (to_colonize.distance_to_closest == undefined ||
                         (to_colonize.distance_to_closest >= Game.map.getRoomLinearDistance(Game.getObjectById(spawn_id).room.name, to_colonize.name))) {
-                        to_colonize.distance_to_closest = Game.map.getRoomLinearDistance(Game.getObjectById(spawn_id).room.name, to_colonize.name);
-                        to_colonize.colonizer = Game.getObjectById(spawn_id).room.name;
-                        Game.getObjectById(spawn_id).memory.to_colonize = new colonizeRoom(to_colonize.name, to_colonize.spawn_pos_x, to_colonize.spawn_pos_y);
+                        if (spawn.memory.to_colonize == undefined) {
+                            to_colonize.distance_to_closest = Game.map.getRoomLinearDistance(Game.getObjectById(spawn_id).room.name, to_colonize.name);
+                            to_colonize.colonizer = Game.getObjectById(spawn_id).room.name;
+
+                            Game.getObjectById(spawn_id).memory.to_colonize = new colonizeRoom(to_colonize.name, to_colonize.spawn_pos_x, to_colonize.spawn_pos_y);
+                        }
+
                         /*
                         Game.getObjectById(spawn_id).memory.to_colonize.name=to_colonize.name;
                         Game.getObjectById(spawn_id).memory.to_colonize.spawn_pos_x=to_colonize.spawn_pos_x;
@@ -303,11 +319,11 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             var spawn_start_cpu = Game.cpu.getUsed()
             var spawn = Game.getObjectById(Memory.main_spawns[spawn_num]);
 
-            if (spawn.memory.lvl_1_time == undefined && spawn.room.controller.level == 1) {
+            if (spawn.memory.lvl_1_time == undefined && spawn.room.controller.level <= 2) {
                 spawn.memory.lvl_1_time = Game.time;
             }
             if (spawn.memory.lvl_2_time == undefined && spawn.room.controller.level == 2) {
-                spawn.memory.lvl_2_time = Game.time - spawn.memory.lvl_1_time;
+                spawn.memory.lvl_2_time = Game.time;
             }
             if (spawn.memory.lvl_3_time == undefined && spawn.room.controller.level == 3) {
                 spawn.memory.lvl_3_time = Game.time - spawn.memory.lvl_2_time;
@@ -445,8 +461,11 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             */
             /////////////////////////////////////
 
-            spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 6, { color: '#fc03b6' })
-            spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 7, { color: '#fc03b6' })
+            if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0) {
+                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 8, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 9, { color: '#fc03b6' })
+
+            }
 
 
 
@@ -456,9 +475,9 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
 
-            if ((Game.time % 5000 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
+            if ((Game.time % 1500 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                // || spawn.room.name == 'W7N4'
+                // || spawn.room.name == 'W8N9'
             ) {
 
 
@@ -472,7 +491,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     spawn.memory.forced_upgrades.push(0)
                 }
             }
-            if (Game.cpu.bucket > 200 && spawn.memory.forced_upgrades[spawn.room.controller.level - 1] <= 5) {
+            if (Game.cpu.bucket > 200 && spawn.memory.forced_upgrades[spawn.room.controller.level - 1] <= 8 &&
+                (spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length == 0)
+            ) {
+                if (spawn.memory.forced_upgrades[spawn.room.controller.level - 1] == 0) {
+                    spawn.memory.if_success_planning_base = false
+                }
                 spawn.setBaseLayout(spawn)
                 spawn.memory.forced_upgrades[spawn.room.controller.level - 1]++;
             }
@@ -495,7 +519,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     spawn.links(spawn);
                     if (spawn.room.controller.level >= 6) {
                         //terminal.tick(spawn);
-                        
+
                         spawn.terminal(spawn);
                         /*
                         if(spawn.room.terminal!=undefined)
@@ -503,7 +527,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             console.log("reaction to run: ",spawn.room.terminal.reactions())
                         }
                             */
-                        
+
                         spawn.lab(spawn);
                         //lab.tick(spawn);
                     }
@@ -567,6 +591,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
 
+            if (spawn.memory.duos != undefined && spawn.memory.duos.length > 0) {
+                for (d of spawn.memory.duos) {
+                    d.followerId = undefined;
+                    d.leaderId = undefined;
+                }
+            }
             /*
             spawn.memory.farming_rooms = [];
             for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
@@ -722,9 +752,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         if (creep.ticksToLive > 200 || creep.spawning) {
                             pop_claimers++;
                         }
-                        if(spawn.memory.to_colonize!=undefined && creep.memory.target_room==spawn.memory.to_colonize.name)
-                        {
-                            spawn.memory.to_colonize.claimer=creep.id
+                        if (spawn.memory.to_colonize != undefined && creep.memory.target_room == spawn.memory.to_colonize.name) {
+                            spawn.memory.to_colonize.claimer = creep.id
                         }
                     }
                     else if (creep.memory.role == 'reserver') {
@@ -763,9 +792,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         if (creep.ticksToLive > creep.memory.time_to_sleep) {
                             //creep.say('Dsleep')
                             if (creep.memory.time_to_sleep != null) {
-                                if(creep.pos.isNearTo(spawn))
-                                {
-                                    creep.fleeFrom(spawn,3)
+                                if (creep.pos.isNearTo(spawn)) {
+                                    creep.fleeFrom(spawn, 3)
                                 }
                                 continue;
                             }
@@ -924,11 +952,63 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         pop_melee_defenders += workParts
                         creep.roleMeleeDefender(creep, spawn);
                     }
+                    else if (creep.memory.role == 'duoLeader') {
+                        //find itself a duo object to be assigned to
+                        for (d of spawn.memory.duos) {
+                            if (d.id == creep.memory.duoId) {
+                                //creep.say(d.id)
+                                d.leaderId = creep.id;
+                                break;
+                            }
+                        }
+                    }
+                    else if (creep.memory.role == 'duoFollower') {
+                        for (d of spawn.memory.duos) {
+                            if (d.id == creep.memory.duoId) {
+                                //creep.say(d.id)
+                                d.followerId = creep.id;
+                                break;
+                            }
+                        }
+                    }
+
 
                     else {
                         //creep.say('no role');
                     }
                     //pos_exchange(creep);
+                }
+            }
+
+            if (spawn.room.name == 'W7N4' && spawn.memory.duos.length == 0) {
+                spawn.memory.duos = [];
+                spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room))
+            }
+
+
+            // proceeding with duos
+            if (spawn.memory.duos == undefined) {
+                spawn.memory.duos = [];
+            }
+            if (spawn.memory.duos != undefined && spawn.memory.duos.length > 0) {
+                for (let i = 0; i < spawn.memory.duos.length; i++) {
+                    var duo = spawn.memory.duos[i]
+                    var leader = Game.getObjectById(duo.leaderId)
+                    var follower = Game.getObjectById(duo.followerId)
+                    //console.log("DDDDDDUUUUUOOOOO")
+                    if (leader != null && follower != null) {
+                        //console.log("suo is setting ")
+                        leader.memory.follower = duo.followerId
+                        leader.roleDuoLeader(spawn)
+
+                        follower.memory.leader = duo.leaderId
+                        follower.roleDuoFollower(spawn)
+                    }
+
+                    if ((leader == null && duo.leaderId != undefined) || (follower == null && duo.followerId != undefined)) {
+                        duo.isDead = true
+                    }
+
                 }
             }
             //console.log("farming_rooms[0].harvesting power ------------------------------ ",spawn.memory.farming_rooms[0].harvesting_power)
@@ -965,7 +1045,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.room.visual.text("Doctors: " + pop_doctors + "/" + spawn.memory.req_doctors, 4, 9, { color: '#fc03b6' })
             spawn.room.visual.text("Merchants: " + pop_merchants + "/" + spawn.memory.req_merchants, 4, 10, { color: '#fc03b6' })
             spawn.room.visual.text("Scouts: " + pop_scouts + "/" + spawn.memory.req_scouts, 4, 11, { color: '#fc03b6' })
-            spawn.room.visual.text("scanners: " + pop_scanners, 4, 12, { color: '#fc03b6' })
+            spawn.room.visual.text("scanners: " + pop_scanners + "/" + spawn.memory.req_scanners, 4, 12, { color: '#fc03b6' })
             spawn.room.visual.text("Colonizers; " + pop_colonizers + "/" + spawn.memory.req_colonizers, 4, 13, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperKillers; " + pop_keeperKillers, 4, 14, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperFarmers; " + pop_keeperFarmers, 4, 15, { color: '#fc03b6' })
@@ -979,26 +1059,22 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             spawn.room.visual.text("Time: " + Game.time, 20, 0, { color: '#fc03b6' })
 
+            spawn.room.visual.text("Calculated final income/t: " + spawn.memory.total_calculated_income_per_tick, 44, 3, { color: '#fc03b6' })
+            spawn.room.visual.text("used Cpu: " + (spawn_end_cpu - spawn_start_cpu), 44, 4, { color: '#fc03b6' })
+            spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
+            spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
+                44, 6, { color: '#fc03b6' })
 
-            /*
-            console.log("Upgraders: ", upgraders_parts, "/", spawn.memory.req_upgraders_parts, " | ",
-                "Builders: ", pop_builders, "/", spawn.memory.req_builders, " | fillers:", pop_fillers, "/", spawn.memory.req_fillers,
-                " | haulers: ", pop_haulers, "/", spawn.memory.req_haulers, " | TowerKeepers: ", pop_towerKeepers, "/", spawn.memory.req_towerKeepers,
-                " | Claimers: ", pop_claimers, "/", spawn.memory.req_claimers,
-                " | DistanceCarriers: ", pop_distanceCarriers, " | Doctors: ", pop_doctors, "/", spawn.memory.req_doctors, " | ",
-                " Merchants: ", pop_merchants, "/", spawn.memory.req_merchants, " | ",
-                "Scouts: ", pop_scouts, "/", spawn.memory.req_scouts, " | ", "Spawned Body parts: ", spawned_body_parts, "/500");
-                
-            console.log("scanners: ", pop_scanners, " | Colonizers; ", pop_colonizers, "/", spawn.memory.req_colonizers);
-            */
+
+
             if (spawn.memory.progress != 0 && spawn.memory.progress_old != 0 &&
                 spawn.memory.progress_sum != 0 && spawn.memory.progress_counter > 4 &&
                 spawn.memory.progress != spawn.memory.progress_old) {
 
                 //console.log("Progress/tick: ", (spawn.memory.progress_sum / spawn.memory.progress_counter));
             }
-            spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
-                spawn.room.controller.pos.x, spawn.room.controller.pos.y - 1, { color: '#fc03b6' })
+            //spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
+            //    spawn.room.controller.pos.x, spawn.room.controller.pos.y - 1, { color: '#fc03b6' })
             //console.log(" ");
 
 
@@ -1056,7 +1132,46 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
 
 
+            spawn.memory.isSpawningDuo=false
+            // loop for spawning duos
+            if (spawn.spawning == null || true) {
+                for (d of spawn.memory.duos) {
+                    if (!d.isDead)// if duo is not dead
+                    {
+                        if (d.leaderId == undefined) {
+                            spawn.memory.isSpawningDuo=true
+                            //console.log("trying to spawn leader")
+                            //var leaderBody = [MOVE, RANGED_ATTACK]
+                            var leaderBody =[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,HEAL,HEAL,HEAL,HEAL];
 
+                            spawn.memory.leaderSpawningResult = spawn.spawnCreep(leaderBody, "DL" + d.id, { memory: { home_room: spawn.room, role: 'duoLeader', duoId: d.id } })
+                            if (spawn.spawnCreep(leaderBody, "DL" + d.id, { memory: { homeRoom: spawn.room, role: 'duoLeader', duoId: d.id } }) == 0) {
+                                
+                                spawn.memory.isSpawningDuo=true
+                            }
+                        }
+                        else if (d.followerId == undefined) {
+                            spawn.memory.isSpawningDuo=true
+                            //console.log("trying to spawn follower")
+                            var followerBody = [MOVE, HEAL]
+                            followerBody=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL]
+                            spawn.memory.followerSpawningResult = spawn.spawnCreep(followerBody, "DF" + d.id, { memory: { home_room: spawn.room, role: 'duoFollower', duoId: d.id } })
+                            if (spawn.spawnCreep(followerBody, "DF" + d.id, { memory: { homeRoom: spawn.room, role: 'duoFollower', duoId: d.id } }) == 0) {
+                                
+                                spawn.memory.isSpawningDuo=true
+                            }
+                        }
+                    }
+                }
+            }
+            /*
+            if(spawn.room.name=='W7N4')
+            {
+                console.log("spawning duo: ",spawn.memory.isSpawningDuo)
+            }
+                */
+            
+            if(spawn.memory.isSpawningDuo==true){continue;}
 
             if (pop_haulers > 0 && pop_merchants > 0) {
                 if (spawn.memory.need_keeperHealer != undefined && false) {
@@ -1150,17 +1265,20 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
             if (pop_scouts < spawn.memory.req_scouts) {
+                console.log(spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }))
                 if (spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }) == 0) {
                 }
                 continue;
             }
 
-            if (pop_scanners < spawn.memory.req_scanners && Memory.main_spawns.length + Memory.rooms_to_colonize.length < 4) {
+            if (pop_scanners < spawn.memory.req_scanners /* && Memory.main_spawns.length + Memory.rooms_to_colonize.length < 4*/) {
                 if (spawn.spawnCreep([MOVE], 'Scanner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scanner', home_room: spawn.room } }) == 0) {
                 }
                 continue;
             }
-            if (pop_colonizers < spawn.memory.req_colonizers && pop_claimers > 0 && spawn.room.controller.level >= 4) {
+            if (pop_colonizers < spawn.memory.req_colonizers && pop_claimers > 0 && spawn.room.controller.level >= 4
+                && spawn.memory.to_colonize != undefined
+            ) {
                 if (spawn.spawnCreep(maxColonizer(energyCap), 'Colonizer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'colonizer',
@@ -1240,7 +1358,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
             }
-            if (spawn.memory.to_colonize!=undefined && spawn.memory.to_colonize.claimer==undefined/* && spawn.memory.claiming_rooms.length > 0*/) {
+            if (spawn.memory.to_colonize != undefined && spawn.memory.to_colonize.claimer == undefined/* && spawn.memory.claiming_rooms.length > 0*/) {
                 //if(pop_claimers==0){pop_claimers=1;}
                 if (spawn.spawnCreep(maxClaimer(energyCap), 'C_' + spawn.room.name + '_' + Game.time, {
                     memory: {
@@ -1296,7 +1414,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
             if (pop_doctors < spawn.memory.req_doctors) {
-                var doctor_body=[MOVE,MOVE,MOVE,MOVE,MOVE,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY]
+                var doctor_body = [MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY]
                 if (spawn.spawnCreep(doctor_body, 'Doctor_' + spawn.room.name + '_' + Game.time, { memory: { role: 'doctor', home_room: spawn.room } }) == 0) {
                     continue;
                 }
@@ -1329,8 +1447,6 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 spawn.memory.mean_cpu_sum = 0
             }
 
-            spawn.room.visual.text("used Cpu: " + (spawn_end_cpu - spawn_start_cpu), 44, 4, { color: '#fc03b6' })
-            spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
 
         }
     });
