@@ -1,5 +1,6 @@
 
 //test git 3
+//duo git test
 var roleHauler = require('role.hauler');
 var roleBuilder = require('role.builder');
 var roleUpgrader = require('role.upgrader');
@@ -269,8 +270,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             Memory.colonizing = false;
 
             // console.log(Memory.main_spawns.length," + ",Memory.rooms_to_colonize.length," < ",(Game.gcl.level+2)/2);
-        }
-            */
+        } 
+            */ 
 
         if (Memory.rooms_to_colonize != undefined && Memory.rooms_to_colonize.length > 0) {
             var closest_distance = Infinity;
