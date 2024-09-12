@@ -607,7 +607,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_melee_defenders = undefined;
 
     if (spawn.memory.state.includes(STATE_UNDER_ATTACK)) {
-        spawn.memory.need_melee_defenders = spawn.room.controller.level*4;
+        spawn.memory.need_melee_defenders = spawn.room.controller.level*2;
     }
     //spawn.memory.need_melee_soldier = 'W41N15';
     spawn.memory.need_reserver = undefined;
