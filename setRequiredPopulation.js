@@ -153,14 +153,13 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     else if (spawn.room.controller.level == 2 || spawn.room.controller.level == 3 ) {
         //spawn.memory.req_harvesters = 4;
         if (spawn.memory.upgrading || spawn.memory.building == undefined || spawn.memory.building == false) {
-            spawn.memory.req_upgraders_parts = 3;
             var sources_num=0;
             if(spawn.memory.farming_sources!=undefined && spawn.memory.farming_sources.length>0)
             {
                 sources_num = spawn.memory.farming_sources.length
                 if (spawn.memory.total_calculated_income_per_tick != undefined && (spawn.memory.farming_sources[sources_num - 1].carry_power >= spawn.memory.farming_sources[sources_num - 1].harvesting_power
                     || spawn.memory.farming_sources[sources_num - 1].carry_power >= SOURCE_ENERGY_CAPACITY/ENERGY_REGEN_TIME )
-                    && spawn.memory.farming_sources[sources_num - 1].carry_power>0
+                    && spawn.memory.farming_sources[sources_num - 1].harvesting_power>(SOURCE_ENERGY_CAPACITY/ENERGY_REGEN_TIME)/2
                 ) {
                     spawn.memory.req_upgraders_parts = Math.round((spawn.memory.total_calculated_income_per_tick / 1.5) * 100) / 100
                 }
@@ -501,7 +500,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] < 10000) {
         spawn.memory.spawning_keepers = false
     }
-    console.log("invader quad before killers: ",spawn.memory.need_invader_quad.name)
+    //console.log("invader quad before killers: ",spawn.memory.need_invader_quad.name)
     if (spawn.memory.spawning_keepers == true) {
         //keeper repairers and killers
         if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0
@@ -551,6 +550,9 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     break;
                 }
             }
+
+            console.log("need keeperFarmer: ",spawn.memory.need_keeperFarmer_room)
+            console.log("keeper_source.harvesting_power: ",keeper_source.harvesting_power)
 
             // keeper carriers
             for (let keeper_source of spawn.memory.keepers_sources) {
