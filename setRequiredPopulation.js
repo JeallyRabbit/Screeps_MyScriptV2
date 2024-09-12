@@ -525,9 +525,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
             }
         }
+        //console.log("a: ",spawn.room.name)
         //keeper farmers and keeper Carriers
         if (spawn.memory.keepers_sources != undefined && spawn.memory.keepers_sources.length > 0 && spawn.room.controller.level >= 8) {
             // Finding keeper farmers
+            //console.log("b ",spawn.room.name)
             for (let keeper_source of spawn.memory.keepers_sources) {
 
                 if (spawn.memory.need_invader_quad == keeper_source.name) {
@@ -550,9 +552,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     break;
                 }
             }
-
-            console.log("need keeperFarmer: ",spawn.memory.need_keeperFarmer_room)
-            console.log("keeper_source.harvesting_power: ",keeper_source.harvesting_power)
 
             // keeper carriers
             for (let keeper_source of spawn.memory.keepers_sources) {

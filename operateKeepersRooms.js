@@ -5,7 +5,7 @@ Spawn.prototype.operateKeepersRooms = function operateKeepersRooms() {
     //Game.rooms[keeperRoom].memory.containers
     //Game.rooms[keeperRoom].memory.droppedEnergy
 
-
+    if(this.memory.keepers_rooms==undefined){return}
 
     for (let keeperRoom of this.memory.keepers_rooms) {
         var room = Game.rooms[keeperRoom.name]

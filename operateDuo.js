@@ -1,11 +1,18 @@
+
+
+
 Spawn.prototype.operateDuo = function operateDuo(duo) {
 
     var leader = Game.getObjectById(duo.leaderId)
     var follower = Game.getObjectById(duo.followerId)
+    duo.moving = false;
 
     console.log("leader pos: ", leader.pos)
     console.log("follower pos: ",follower.pos)
     console.log("tower damage: ",TOWER_POWER_ATTACK)
+
+
+
     // for leader
     leader.memory.target_room = 'W6N4'
     leader.memory.task = 'destroy_invader_core'
@@ -62,6 +69,11 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
 
         if (leader.room.name == leader.memory.target_room) {
             if (leader.memory.task = 'destroy_invader_core') {
+
+                if(leader.memory.invaderCore!=undefined && Game.getObjectById(leader.memory.invaderCore)==null)
+                {
+                    leader.memory.invaderCore=undefined
+                }
                 if (leader.memory.invaderCore == undefined) {
                     var core = leader.room.find(FIND_STRUCTURES, {
                         filter:
@@ -96,6 +108,22 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
                         leader.fleeFrom({ core }, 20)
                     }
                 }
+                else{
+                    leader.say("other")
+                    var hostile_constructions=leader.room.find(FIND_HOSTILE_STRUCTURES,{
+                        filter: function(str)
+                        {
+                            return str.structureType!=STRUCTURE_KEEPER_LAIR
+                        }
+                    })
+                    if(hostile_constructions.length>0)
+                    {
+                        leader.moveTo(hostile_constructions[0])
+                        duo.moving=true;
+
+                        leader.rangedMassAttack()
+                    }
+                }
             }
         }
     }
@@ -108,7 +136,7 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
             return
         }
         if (!follower.pos.isNearTo(leader) || duo.moving) {
-            follower.say("mv")
+            //follower.say( duo.moving)
             follower.moveTo(leader, { avoidCreeps: false });
         }
 
@@ -118,14 +146,14 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
         var leaderHp = leader.hits / leader.hitsMax
 
         if (leaderHp <= followerHp /* && leader.hits < leader.hitsMax*/ ) {
-            follower.say("Hl")
+            //follower.say("Hl")
             if(follower.heal(leader)==ERR_NOT_IN_RANGE)
             {
                 follower.rangedHeal(leader)
             }
         }
         else {
-            follower.say("Hf")
+            //follower.say("Hf")
             follower.heal(follower)
         }
 
