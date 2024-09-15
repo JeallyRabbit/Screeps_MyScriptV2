@@ -28,7 +28,7 @@ var roleColonizer = require('role.colonizer');
 var roleRampartRepairer = require('role.rampart_repairer');
 var roleKeeperRepairer = require('role.keeper_repairer');
 var roleMeleeDefender = require('role.meleeDefender')
-
+var roleEnergySupport=require('role.energySupport')
 var roleKeeperFarmer = require('role.keeper_farmer');
 
 //var roleDistanceCarrier = require('role.DistanceCarrier');
@@ -974,6 +974,10 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             }
                         }
                     }
+                    else if(creep.memory.role=='energySupport')
+                    {
+                        creep.roleEnergySupport(creep,spawn)
+                    }
 
 
                     else {
@@ -985,7 +989,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if (spawn.room.name == 'W7N4' && spawn.memory.duos.length == 0) {
                 spawn.memory.duos = [];
-                spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room))
+                //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room))
             }
 
 
