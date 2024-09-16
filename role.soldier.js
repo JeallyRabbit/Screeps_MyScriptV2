@@ -26,7 +26,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
 
         var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
 
-        var target_structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+        var target_structure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
             filter: function (structure) {
                 //return structure.my==false && 
                 return structure.room.name != spawn.room.name
@@ -42,15 +42,17 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
         //  target_creep = creep.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES)
         //}
         if (target_creep) {
-            //creep.say("Fighting");
+            //creep.say(target_creep.pos.x);
             if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
             }
+            creep.rangedMassAttack()
+            creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
             //}
 
             if (creep.memory.is_melee == false) {
                 if (creep.pos.inRangeTo(target_creep, 2)) {
-                    creep.fleeFrom({ target_creep }, 3)
+                    //creep.fleeFrom({ target_creep }, 3)
                     // goOutOfRange(creep, 3);
                 }
             }
@@ -68,10 +70,12 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
                 }
             }
             else {
-                if (creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(target_structure);
+                creep.rangedMassAttack()
+                /* if (creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target_structure);
                     //console.log("structure to far");
-                }
+                } */
             }
 
             ////creep.say(creep.rangedAttack(target_structure));

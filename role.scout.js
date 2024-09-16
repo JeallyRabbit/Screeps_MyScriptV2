@@ -373,12 +373,20 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
                     //console.log(already_scanned, " ",in_other_use)
                     if (already_scanned == false && ret.path.length < 100 && in_other_use != true
-                        && is_road_safe == true && ret.path.incomplete==false
+                        && is_road_safe == true // && ret.path.incomplete==false
                         //&& ret.incomplete==false
                     ) {
                         spawn.memory.farming_sources.push(new_farming_source);
+                        console.log("adding source")
 
-
+                    }
+                    else{
+                        console.log("not added source at: ",creep.room.name)
+                        console.log("already scanned: ",already_scanned == false)
+                        console.log("ret.path.length < 100: ",ret.path.length < 100)
+                        console.log("in_other_use != true: ",in_other_use != true)
+                        console.log("is_road_safe == true: ",is_road_safe == true)
+                        console.log("ret.path.incomplete==false: ",ret.path.incomplete==false)
                     }
 
 

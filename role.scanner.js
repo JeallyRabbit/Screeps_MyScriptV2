@@ -84,7 +84,7 @@ function findRouteTestScanner(starting_pos, destination) {
 
             room.find(FIND_HOSTILE_CREEPS).forEach(function (a) {
                 costs.set(a.pos.x, a.pos.y, 255);
-                console.log(a.pos.x, " ", a.pos.y)
+               // console.log(a.pos.x, " ", a.pos.y)
                 for (var i = a.pos.x - 5; i < a.pos.x + 5; i++) {
                     for (var j = a.pos.y - 5; j < a.pos.y + 5; j++) {
                         if (i >= 0 && i <= 49 && j >= 0 && j <= 49) {
@@ -251,9 +251,9 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
         creep.memory.target_room = spawn.memory.manual_colonize;
     }
 
-    console.log("scanner from: ", creep.memory.home_room.name, " is at: ", creep.room.name)
+    //console.log("scanner from: ", creep.memory.home_room.name, " is at: ", creep.room.name)
     //creep.memory.target_room='W19N13'
-    console.log("scanner pos: ", creep.room.name, " heading to: ", creep.memory.target_room);
+    // /console.log("scanner pos: ", creep.room.name, " heading to: ", creep.memory.target_room);
     if ((spawn.memory.scanner_rooms == undefined || (spawn.memory.scanner_rooms != undefined && spawn.memory.scanner_rooms.length == 0)) && creep.memory.target_room == undefined) {
         spawn.memory.scanner_rooms = []
         spawn.memory.scanner_rooms = generateRoomsInRangeAndSort(spawn.room.name);

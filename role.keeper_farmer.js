@@ -6,7 +6,7 @@ const { boosting_driver } = require('boosting_driver');
 
 Creep.prototype.roleKeeperFarmer = function roleKeeperFarmer(creep, spawn) {
 
-    // /creep.suicide();
+    //creep.suicide();
 
     var active_carry=_.filter(creep.body, function(part){return part.type==CARRY && part.hits>0 })
     if(active_carry.length==0)

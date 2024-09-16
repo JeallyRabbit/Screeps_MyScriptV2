@@ -549,6 +549,7 @@ function plan_labs_stamp(spawn,roomCM)
             }
         }
     }
+    spawn.room.memory.output_labs_id = undefined
     return is_succes;
 
 
