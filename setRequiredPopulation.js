@@ -663,20 +663,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
 
-        // REPAIRERS //
-        for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
-            if (spawn.memory.farming_rooms[i].distanceRepairer == undefined && spawn.memory.farming_rooms[i].harvesting_power > 0 && spawn.memory.farming_rooms[i].carry_power > 0) {
-                if ((Game.rooms[spawn.memory.farming_rooms[i].name] != undefined && Game.rooms[spawn.memory.farming_rooms[i].name].controller.reservation != undefined
-                    && Game.rooms[spawn.memory.farming_rooms[i].name].controller.reservation.username == 'Invader'
-                ) && spawn.memory.farming_rooms[i].harvesting_power > 0 && spawn.memory.farming_rooms[i].carry_power > 0
-                    /* || (spawn.memory.farming_rooms[i].name==spawn.room.name && spawn.memory.towers_id!=undefined && spawn.memory.towers_id.length>0) */ //skip home_rooms with towers
-                ) {
-                    continue;
-                }
-                spawn.memory.need_distanceRepairer = spawn.memory.farming_rooms[i].name;
-                break;
-            }
-        }
+        
 
         //  SOLDIERS //
 
@@ -745,6 +732,22 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 }*/
             }
         }
+
+        // REPAIRERS //
+        for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
+            if (spawn.memory.farming_rooms[i].distanceRepairer == undefined && spawn.memory.farming_rooms[i].harvesting_power > 0 && spawn.memory.farming_rooms[i].carry_power > 0) {
+                if ((Game.rooms[spawn.memory.farming_rooms[i].name] != undefined && Game.rooms[spawn.memory.farming_rooms[i].name].controller.reservation != undefined
+                    && Game.rooms[spawn.memory.farming_rooms[i].name].controller.reservation.username == 'Invader'
+                ) && spawn.memory.farming_rooms[i].harvesting_power > 0 && spawn.memory.farming_rooms[i].carry_power > 0
+                    /* || (spawn.memory.farming_rooms[i].name==spawn.room.name && spawn.memory.towers_id!=undefined && spawn.memory.towers_id.length>0) */ //skip home_rooms with towers
+                ) {
+                    continue;
+                }
+                spawn.memory.need_distanceRepairer = spawn.memory.farming_rooms[i].name;
+                break;
+            }
+        }
+        
 
         // soldiers for colonization
         if (spawn.memory.need_soldier == undefined && spawn.memory.to_colonize != undefined
