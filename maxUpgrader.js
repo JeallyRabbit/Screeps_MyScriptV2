@@ -26,7 +26,7 @@ function maxUpgrader(cap, spawn, max)// return array with max possible work part
         cap -= 150;
     }
     //console.log("avaliable work parts: ", Math.floor(cap/100));
-    if (spawn.room.memory.distanceToController > 10) {
+    if (spawn.room.memory.distanceToController!=undefined && spawn.room.memory.distanceToController > 10) {
         for (let i = 0; i < Math.floor(cap / 200); i++) {
             parts.push(WORK);
             parts.push(MOVE);
