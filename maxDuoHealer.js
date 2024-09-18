@@ -20,4 +20,4 @@ function maxDuoHealer(cap)// return array with max possible work parts for haule
     
     return parts;
 }
-module.exports = maxSoldier;
+module.exports = maxDuoHealer;

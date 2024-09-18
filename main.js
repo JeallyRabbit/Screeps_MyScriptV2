@@ -28,7 +28,7 @@ var roleColonizer = require('role.colonizer');
 var roleRampartRepairer = require('role.rampart_repairer');
 var roleKeeperRepairer = require('role.keeper_repairer');
 var roleMeleeDefender = require('role.meleeDefender')
-var roleEnergySupport=require('role.energySupport')
+var roleEnergySupport = require('role.energySupport')
 var roleKeeperFarmer = require('role.keeper_farmer');
 
 //var roleDistanceCarrier = require('role.DistanceCarrier');
@@ -72,6 +72,7 @@ const maxDuoHealer = require('maxDuoHealer')
 
 var RoomPositionFunctions = require('roomPositionFunctions');
 const maxSoldier = require('./maxSoldier');
+const maxSoldier2 = require('./maxSoldier2');
 const maxMeleeSoldier = require('./maxMeleeSoldier');
 const maxReserver = require('./maxReserver');
 const setBaseLayout = require('./setBaseLayout');
@@ -273,7 +274,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             // console.log(Memory.main_spawns.length," + ",Memory.rooms_to_colonize.length," < ",(Game.gcl.level+2)/2);
         } 
-            */ 
+            */
 
         if (Memory.rooms_to_colonize != undefined && Memory.rooms_to_colonize.length > 0) {
             var closest_distance = Infinity;
@@ -411,7 +412,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.baseDefense();
             spawn.operateKeepersRooms()
             spawn.setRequiredPopulation(spawn);
-            
+
 
             spawn.memory.farming_rooms = [];
             if (spawn.memory.farming_sources != undefined) {
@@ -957,27 +958,32 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         creep.roleMeleeDefender(creep, spawn);
                     }
                     else if (creep.memory.role == 'duoLeader') {
-                        //find itself a duo object to be assigned to
-                        for (d of spawn.memory.duos) {
-                            if (d.id == creep.memory.duoId) {
-                                //creep.say(d.id)
-                                d.leaderId = creep.id;
-                                break;
+                        if (spawn.memory.duos != undefined) {
+                            //find itself a duo object to be assigned to
+                            for (d of spawn.memory.duos) {
+                                if (d.id == creep.memory.duoId) {
+                                    //creep.say(d.id)
+                                    d.leaderId = creep.id;
+                                    break;
+                                }
                             }
                         }
+
                     }
                     else if (creep.memory.role == 'duoFollower') {
-                        for (d of spawn.memory.duos) {
-                            if (d.id == creep.memory.duoId) {
-                                //creep.say(d.id)
-                                d.followerId = creep.id;
-                                break;
+                        if (spawn.memory.duos != undefined) {
+                            for (d of spawn.memory.duos) {
+                                if (d.id == creep.memory.duoId) {
+                                    //creep.say(d.id)
+                                    d.followerId = creep.id;
+                                    break;
+                                }
                             }
                         }
+
                     }
-                    else if(creep.memory.role=='energySupport')
-                    {
-                        creep.roleEnergySupport(creep,spawn)
+                    else if (creep.memory.role == 'energySupport') {
+                        creep.roleEnergySupport(creep, spawn)
                     }
 
 
@@ -990,9 +996,9 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
             //manually adding duo
-            if ((spawn.room.name == 'E16S57' || spawn.room.name == 'E17S59' || spawn.room.name == 'E13S56') && spawn.memory.duos.length <2) {
+            if ((spawn.room.name == 'E16S57' || spawn.room.name == 'E17S59' || spawn.room.name == 'E13S56') && spawn.memory.duos!=undefined &&  spawn.memory.duos.length < 1) {
                 spawn.memory.duos = [];
-                spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room))
+                //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room))
             }
 
 
@@ -1018,7 +1024,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
                         spawn.operateDuo(duo)
 
-                        
+
                     }
 
                     if ((leader == null && duo.leaderId != undefined) || (follower == null && duo.followerId != undefined)) {
@@ -1148,38 +1154,38 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
 
 
-            spawn.memory.isSpawningDuo=false
+            spawn.memory.isSpawningDuo = false
             // loop for spawning duos
             if (spawn.spawning == null || true) {
                 for (d of spawn.memory.duos) {
                     if (!d.isDead)// if duo is not dead
                     {
                         if (d.leaderId == undefined) {
-                            spawn.memory.isSpawningDuo=true
+                            spawn.memory.isSpawningDuo = true
                             console.log("trying to spawn leader")
                             //var leaderBody = [MOVE, RANGED_ATTACK]
-                            var leaderBody =[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,HEAL,HEAL,HEAL,HEAL];
-                            leaderBody=maxSoldier(energyCap)
+                            var leaderBody = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL, HEAL, HEAL, HEAL];
+                            leaderBody = maxSoldier(energyCap)
                             spawn.memory.leaderSpawningResult = spawn.spawnCreep(leaderBody, "DL" + d.id, { memory: { home_room: spawn.room, role: 'duoLeader', duoId: d.id } })
                             if (spawn.spawnCreep(leaderBody, "DL" + d.id, { memory: { homeRoom: spawn.room, role: 'duoLeader', duoId: d.id } }) == 0) {
-                                
-                                spawn.memory.isSpawningDuo=true
+
+                                spawn.memory.isSpawningDuo = true
                             }
                         }
                         else if (d.followerId == undefined) {
-                            spawn.memory.isSpawningDuo=true
+                            spawn.memory.isSpawningDuo = true
                             console.log("trying to spawn follower")
                             var followerBody = [MOVE, HEAL]
 
                             //followerBody=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL]
-                            
+
                             //5400 energy
-                            followerBody=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL]
-                            followerBody=maxDuoHealer(energyCap)
+                            followerBody = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL]
+                            followerBody = maxDuoHealer(energyCap)
                             spawn.memory.followerSpawningResult = spawn.spawnCreep(followerBody, "DF" + d.id, { memory: { home_room: spawn.room, role: 'duoFollower', duoId: d.id } })
                             if (spawn.spawnCreep(followerBody, "DF" + d.id, { memory: { homeRoom: spawn.room, role: 'duoFollower', duoId: d.id } }) == 0) {
-                                
-                                spawn.memory.isSpawningDuo=true
+
+                                spawn.memory.isSpawningDuo = true
                             }
                         }
                     }
@@ -1191,8 +1197,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 console.log("spawning duo: ",spawn.memory.isSpawningDuo)
             }
                 */
-            
-            if(spawn.memory.isSpawningDuo==true){continue;}
+
+            if (spawn.memory.isSpawningDuo == true) { continue; }
 
             if (pop_haulers > 0 && pop_merchants > 0) {
                 if (spawn.memory.need_keeperHealer != undefined && false) {
@@ -1209,7 +1215,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
                     var killer_body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, HEAL, HEAL, HEAL, HEAL, HEAL]
                     //var killer_body = [MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,HEAL,HEAL,HEAL,HEAL,HEAL]
-                    
+
                     if (spawn.spawnCreep(killer_body, 'KeeperKiller_' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperKiller', target_room: spawn.memory.need_keeperKiller, home_room: spawn.room } }) == 0) {
                         //console.log("Spawning KeeperKiller");
                         continue;
@@ -1262,7 +1268,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
 
             if (spawn.memory.need_soldier != undefined) {
-                if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
+                if (spawn.spawnCreep(maxSoldier2(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:
                             spawn.memory.need_soldier, home_room: spawn.room
