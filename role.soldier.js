@@ -46,13 +46,13 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
             }
-            creep.rangedMassAttack()
+            //creep.rangedMassAttack()
             creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
             //}
 
             if (creep.memory.is_melee == false) {
-                if (creep.pos.inRangeTo(target_creep, 2)) {
-                    //creep.fleeFrom({ target_creep }, 3)
+                if (creep.pos.inRangeTo(target_creep, 3)) {
+                    creep.fleeFrom({ target_creep }, 3)
                     // goOutOfRange(creep, 3);
                 }
             }
