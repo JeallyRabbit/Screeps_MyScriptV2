@@ -988,9 +988,11 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
 
-            if (spawn.room.name == 'W7N4' && spawn.memory.duos.length == 0) {
+
+            //manually adding duo
+            if ((spawn.room.name == 'E16S57' || spawn.room.name == 'E17S59' || spawn.room.name == 'E13S56') && spawn.memory.duos.length <2) {
                 spawn.memory.duos = [];
-                //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room))
+                spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room))
             }
 
 

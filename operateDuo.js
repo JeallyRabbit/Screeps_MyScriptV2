@@ -9,12 +9,17 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
 
     console.log("leader pos: ", leader.pos)
     console.log("follower pos: ",follower.pos)
-    console.log("tower damage: ",TOWER_POWER_ATTACK)
+    //console.log("tower damage: ",TOWER_POWER_ATTACK)
 
 
 
     // for leader
-    leader.memory.target_room = 'W6N4'
+    //leader.memory.target_room = 'W6N4'
+    duo.target_room='E14S58'
+    if(duo.target_room!=undefined)
+    {
+        leader.memory.target_room=duo.target_room
+    }
     leader.memory.task = 'destroy_invader_core'
 
     duo.hp=(leader.hits+follower.hits)/(leader.hitsMax+follower.hitsMax)
@@ -68,7 +73,7 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
 
 
         if (leader.room.name == leader.memory.target_room) {
-            if (leader.memory.task = 'destroy_invader_core') {
+            if (leader.memory.task = 'destroy_invader_core' || true) {
 
                 if(leader.memory.invaderCore!=undefined && Game.getObjectById(leader.memory.invaderCore)==null)
                 {
