@@ -68,6 +68,7 @@ const maxRampartRepairer = require('maxRampartRepairer')
 const maxDistanceCarrier = require('maxDistanceCarrier');
 const maxFarmer = require('maxFarmer');
 const maxClaimer = require('maxClaimer');
+const maxDuoHealer = require('maxDuoHealer')
 
 var RoomPositionFunctions = require('roomPositionFunctions');
 const maxSoldier = require('./maxSoldier');
@@ -1156,7 +1157,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             console.log("trying to spawn leader")
                             //var leaderBody = [MOVE, RANGED_ATTACK]
                             var leaderBody =[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,RANGED_ATTACK,HEAL,HEAL,HEAL,HEAL];
-
+                            leaderBody=maxSoldier(energyCap)
                             spawn.memory.leaderSpawningResult = spawn.spawnCreep(leaderBody, "DL" + d.id, { memory: { home_room: spawn.room, role: 'duoLeader', duoId: d.id } })
                             if (spawn.spawnCreep(leaderBody, "DL" + d.id, { memory: { homeRoom: spawn.room, role: 'duoLeader', duoId: d.id } }) == 0) {
                                 
@@ -1172,7 +1173,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             
                             //5400 energy
                             followerBody=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL]
-                            
+                            followerBody=maxDuoHealer(energyCap)
                             spawn.memory.followerSpawningResult = spawn.spawnCreep(followerBody, "DF" + d.id, { memory: { home_room: spawn.room, role: 'duoFollower', duoId: d.id } })
                             if (spawn.spawnCreep(followerBody, "DF" + d.id, { memory: { homeRoom: spawn.room, role: 'duoFollower', duoId: d.id } }) == 0) {
                                 
@@ -1206,6 +1207,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
                     var killer_body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, HEAL, HEAL, HEAL, HEAL, HEAL]
                     //var killer_body = [MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,HEAL,HEAL,HEAL,HEAL,HEAL]
+                    
                     if (spawn.spawnCreep(killer_body, 'KeeperKiller_' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperKiller', target_room: spawn.memory.need_keeperKiller, home_room: spawn.room } }) == 0) {
                         //console.log("Spawning KeeperKiller");
                         continue;
