@@ -77,9 +77,20 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
     var found_important_lvl2 = false;
     if (found_important_lvl1 == false) {
         for (let i = 0; i < targets.length; i++) {
-            if (targets[i].structureType == STRUCTURE_EXTENSION) {
+            if (targets[i].structureType == STRUCTURE_TOWER) {
                 closest_target = targets[i];
                 found_important_lvl2 = true;
+                //creep.say("S");
+                break;
+            }
+        }
+    }
+    var found_important_lvl3 = false;
+    if (found_important_lvl2 == false) {
+        for (let i = 0; i < targets.length; i++) {
+            if (targets[i].structureType == STRUCTURE_EXTENSION) {
+                closest_target = targets[i];
+                found_important_lvl3 = true;
                 //creep.say("S");
                 break;
             }

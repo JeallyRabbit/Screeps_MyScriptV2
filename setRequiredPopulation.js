@@ -603,7 +603,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_source_farmer_room = undefined;
     spawn.memory.need_distanceRepairer = undefined;
     spawn.memory.need_soldier = undefined;
-    //spawn.memory.need_soldier='E14S58'
+    if(spawn.room.name=='E13S56')
+    {
+        //spawn.memory.need_soldier='E13S58'
+    }
+    //
     spawn.memory.need_claimer = undefined;
     spawn.memory.need_melee_soldier = undefined;
     spawn.memory.need_melee_defenders = undefined;
