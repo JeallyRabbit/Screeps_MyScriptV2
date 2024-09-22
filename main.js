@@ -257,9 +257,9 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             Memory.colonizing = false;
         }
 
-        if (Game.shard.name != 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 20 && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.gcl.level) {
+        if (Game.shard.name != 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15 && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.gcl.level) {
             Memory.colonizing = true;
-            Memory.colonizing = false;
+            //Memory.colonizing = false;
         }
         // console.log(Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15)
 
@@ -1268,7 +1268,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
 
             if (spawn.memory.need_soldier != undefined) {
-                if (spawn.spawnCreep(maxSoldier2(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
+                if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:
                             spawn.memory.need_soldier, home_room: spawn.room
