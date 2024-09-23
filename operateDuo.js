@@ -15,7 +15,7 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
 
     // for leader
     //leader.memory.target_room = 'W6N4'
-    duo.target_room='E14S58'
+    duo.target_room='E14S53'
     if(duo.target_room!=undefined)
     {
         leader.memory.target_room=duo.target_room

@@ -255,7 +255,7 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
         && (Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store.getCapacity(RESOURCE_ENERGY)
             || Game.getObjectById(creep.memory.filler_containers[0]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
 
-        if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[0]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
+        if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[0]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             //creep.say("Q");
 
             creep.moveTo(Game.getObjectById(creep.memory.filler_containers[0]), { reusePath: 21, avoidCreeps: true });
@@ -263,7 +263,7 @@ Creep.prototype.roleHauler = function roleHauler(creep, spawn) {//transfer energ
         }
     }
     else if ((creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 1 && Game.getObjectById(creep.memory.filler_containers[1]) != null && Game.getObjectById(creep.memory.filler_containers[1]).store.getFreeCapacity(RESOURCE_ENERGY) > 0)) {
-        if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[1]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
+        if (creep.transfer(Game.getObjectById(creep.memory.filler_containers[1]), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             //creep.say("P");
             creep.moveTo(Game.getObjectById(creep.memory.filler_containers[1]), { reusePath: 21 , avoidCreeps: true});
             //move_avoid_hostile(creep, Game.getObjectById(creep.memory.filler_containers[1]).pos, 1, false);;

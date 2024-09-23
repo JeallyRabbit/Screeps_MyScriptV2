@@ -110,9 +110,10 @@ class farmingRoom {
 }
 
 class Duo {
-    constructor(duoId, duoHome) {
+    constructor(duoId, duoHome,target_room) {
         this.id = duoId;
         this.home = duoHome;
+        this.target_room=target_room
         //this.leaderId =duoleaderId 
         //this.followerId=duoFollowerId
     }
@@ -996,7 +997,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
             //manually adding duo
-            if ((spawn.room.name == 'E16S57' || spawn.room.name == 'E17S59' || spawn.room.name == 'E13S56') && spawn.memory.duos!=undefined &&  spawn.memory.duos.length < 1) {
+            if (spawn.room.name == 'E13S56') {
                 spawn.memory.duos = [];
                 //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room))
             }
