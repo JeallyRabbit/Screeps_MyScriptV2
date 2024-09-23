@@ -145,14 +145,10 @@ function plan_road_to_target(spawn, roomCM, target, rcl, my_range, start) {
 
         for (let i = 0; i < ret.path.length; i++) {
 
-            /*
-            if (destination == spawn.room.controller.pos) {
-                console.log(ret.path[i].x, " ", ret.path[i].y)
+            if(i==ret.path.length-1 && spawn.room.controller.pos.inRangeTo(ret.path[i].x,ret.path[i].y,3))
+            {
+                spawn.room.memory.distanceToController=ret.path.length
             }
-            */
-            //if (ret.path[i].x != destination.x || ret.path[i].y != destination.y || ret.path[i].roomName != destination.roomName
-            // && roomCM.get(ret.path[i].x,ret.path[i].y)<255
-            // ) {
 
             spawn.memory.road_building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, ret.path[i].roomName, STRUCTURE_ROAD, rcl));
             if (ret.path[i].roomName == spawn.room.name && roomCM.get(ret.path[i].x, ret.path[i].y) < 255) {
