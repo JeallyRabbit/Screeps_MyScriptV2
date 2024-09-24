@@ -640,16 +640,18 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     spawned_body_parts += creep.body.length;
                     if (creep.memory.role == 'upgrader') {
 
+                        if (creep.ticksToLive > 20 || creep.spawning) {
+                            upgraders_parts += _.filter(creep.body, { type: WORK }).length;
+
+                        }
+                        
                         if (upgraders_parts > 0 && spawn.memory.req_builders > 0) {
                             creep.roleBuilder(creep, spawn)
                             continue;
                         }
 
                         creep.roleUpgrader(creep, spawn);
-                        if (creep.ticksToLive > 20 || creep.spawning) {
-                            upgraders_parts += _.filter(creep.body, { type: WORK }).length;
-
-                        }
+                        
                     }
                     else if (creep.memory.role == 'hauler') {
                         if (creep.ticksToLive > 50 || creep.spawning) {

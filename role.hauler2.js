@@ -172,7 +172,6 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
                 if (creep.room.storage != undefined && creep.pos.inRangeTo(creep.room.storage, 3)) {
                     avoid.push(creep.room.storage)
                 }
-                //creep.say(spawn.pos)
                 if (avoid.length > 0) {
                     creep.fleeFrom(avoid, 3);
                 }
@@ -184,15 +183,10 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
             }
             creep.memory.cID_max = undefined;
         }
-        /*
-        if(creep.store[RESOURCE_ENERGY]==0 && creep.pos.inRangeTo(spawn,2))
-        {
-            //creep.say(spawn.pos)
-            creep.fleeFrom([spawn],2);
-        }*/
 
     }
 
+    creep.say(creep.memory.task)
 
     if (creep.memory.task == 'FILL_FILLERS_CONTAINERS') {
         if (Game.getObjectById(creep.memory.container_to_fill) != null && Game.getObjectById(creep.memory.container_to_fill).store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
@@ -200,7 +194,6 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
             return;
         }
         if (creep.transfer(Game.getObjectById(creep.memory.container_to_fill), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            creep.say("2")
             creep.moveTo(Game.getObjectById(creep.memory.container_to_fill), { reusePath: 10, avoidCreeps: false })
         }
     }
@@ -227,7 +220,6 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
 
         if (extensions.length > 0) {
             var closestExtension = creep.pos.findClosestByRange(extensions);
-            //creep.say(closestExtension.id)
             if (closestExtension) {
                 if (creep.transfer(closestExtension, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
                     creep.moveTo(closestExtension, { reusePath: 11 });
@@ -247,7 +239,6 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
                 if (creep.room.storage != undefined && creep.pos.inRangeTo(creep.room.storage, 3)) {
                     avoid.push(creep.room.storage)
                 }
-                //creep.say(spawn.pos)
                 if (avoid.length > 0) {
                     creep.fleeFrom(avoid, 3);
                 }
@@ -276,7 +267,6 @@ function defineStructures(creep, spawn) {
 
     // filler containers
     if (creep.memory.filler_containers == undefined) {
-        //creep.say("qwe");
         if (creep.memory.filler_containers_renew == undefined) {
             creep.memory.filler_containers_renew = 1;
         }
@@ -292,7 +282,6 @@ function defineStructures(creep, spawn) {
         });
 
         if (filler_containers.length > 0) {
-            //creep.say("adk");
             creep.memory.filler_containers = [];
             for (let i = 0; i < filler_containers.length; i++) {
                 creep.memory.filler_containers.push(filler_containers[i].id)
@@ -375,7 +364,6 @@ function defineStructures(creep, spawn) {
 
 
     if (creep.memory.extensions_id == undefined || creep.memory.extensions_id < 1) {
-        //creep.say("EX");
         creep.memory.extensions_full = 1;
     }
 
