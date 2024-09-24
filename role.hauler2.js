@@ -46,7 +46,7 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
                         min_energy = Game.getObjectById(cont).store[RESOURCE_ENERGY]
                         creep.memory.container_to_fill = cont
                     }
-                    break;
+                    //break;
                 }
             }
         }
@@ -68,8 +68,8 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
     }
 
     //driver for tasks
-    creep.say(creep.memory.task)
-    console.log(creep.memory.task)
+    //creep.say(creep.memory.task)
+    //console.log(creep.memory.task)
 
     if (creep.memory.task=='COLLECTING') // if is empty go to container
     {// go to container
