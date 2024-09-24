@@ -50,9 +50,10 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
                 }
             }
         }
-        else if (creep.memory.upgraders_container != undefined && Game.getObjectById(creep.memory.upgraders_container) != null
-            && Game.getObjectById(creep.memory.upgraders_container).store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store.getCapacity() / 2) {
+        if (creep.memory.task==undefined && creep.memory.upgraders_container != undefined && Game.getObjectById(creep.memory.upgraders_container) != null
+            && Game.getObjectById(creep.memory.upgraders_container).store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store.getCapacity(RESOURCE_ENERGY) / 2) {
             creep.memory.task = 'FILL_UPGRADERS_CONTAINER'
+            console.log("upgraders container")
             creep.memory.container_to_fill = creep.memory.upgraders_container
         }
         else if (creep.memory.extensions_full == 0) {
@@ -67,6 +68,7 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
         }
     }
 
+    //creep.say("2")
     //driver for tasks
     //creep.say(creep.memory.task)
     //console.log(creep.memory.task)
@@ -186,7 +188,7 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
 
     }
 
-    creep.say(creep.memory.task)
+   
 
     if (creep.memory.task == 'FILL_FILLERS_CONTAINERS') {
         if (Game.getObjectById(creep.memory.container_to_fill) != null && Game.getObjectById(creep.memory.container_to_fill).store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
