@@ -8,12 +8,17 @@ function maxUpgrader(cap, spawn, max)// return array with max possible work part
     else if (spawn.room.controller.level == 8) {
         cap = 1650;
     }
+    else if (spawn.room.controller.level == 2) {
+        return [MOVE, MOVE, MOVE, MOVE, WORK, WORK, WORK, CARRY]
+    }
+
     if (cap > 3200) {
         cap = 3200;
     }
     if (max != undefined && cap > max) {
         cap = max;
     }
+
     var parts = [];
     parts.push(MOVE);
     parts.push(CARRY);
@@ -26,7 +31,7 @@ function maxUpgrader(cap, spawn, max)// return array with max possible work part
         cap -= 150;
     }
     //console.log("avaliable work parts: ", Math.floor(cap/100));
-    if (spawn.room.memory.distanceToController!=undefined && spawn.room.memory.distanceToController > 10) {
+    if (spawn.room.memory.distanceToController != undefined && spawn.room.memory.distanceToController > 10) {
         for (let i = 0; i < Math.floor(cap / 200); i++) {
             parts.push(WORK);
             parts.push(MOVE);
