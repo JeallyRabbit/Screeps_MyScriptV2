@@ -53,13 +53,12 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
         if (creep.memory.task==undefined && creep.memory.upgraders_container != undefined && Game.getObjectById(creep.memory.upgraders_container) != null
             && Game.getObjectById(creep.memory.upgraders_container).store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store.getCapacity(RESOURCE_ENERGY) / 2) {
             creep.memory.task = 'FILL_UPGRADERS_CONTAINER'
-            console.log("upgraders container")
             creep.memory.container_to_fill = creep.memory.upgraders_container
         }
-        else if (creep.memory.extensions_full == 0) {
+        else if (creep.memory.extensions_full == 0 && creep.memory.task==undefined) {
             creep.memory.task = 'FILL_EXTENSIONS'
         }
-        else if (spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+        else if (spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && creep.memory.task==undefined) {
             creep.memory.task = 'FILL_SPAWN'
 
         }
@@ -67,11 +66,6 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
             creep.fleeFrom({ spawn }, 6)
         }
     }
-
-    //creep.say("2")
-    //driver for tasks
-    //creep.say(creep.memory.task)
-    //console.log(creep.memory.task)
 
     if (creep.memory.task=='COLLECTING') // if is empty go to container
     {// go to container
