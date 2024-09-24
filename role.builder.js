@@ -8,12 +8,7 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
 
 
 
-    var targets = creep.room.find(FIND_CONSTRUCTION_SITES, {
-        filter:
-            function (structure) {
-                return structure.my == true || true;
-            }
-    });
+    var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
     if (targets.length == 0) // if no constructuin sites suicide
     {
         if (creep.room.name == spawn.room.name) {
@@ -70,7 +65,7 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
         if (targets[i].structureType == STRUCTURE_SPAWN || targets[i].structureType == STRUCTURE_STORAGE || targets[i].structureType == STRUCTURE_CONTAINER) {
             closest_target = targets[i];
             found_important_lvl1 = true;
-            //creep.say("S");
+            creep.say("lvl1");
             break;
         }
     }
@@ -80,18 +75,18 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
             if (targets[i].structureType == STRUCTURE_TOWER) {
                 closest_target = targets[i];
                 found_important_lvl2 = true;
-                //creep.say("S");
+                creep.say("lvl2");
                 break;
             }
         }
     }
     var found_important_lvl3 = false;
-    if (found_important_lvl2 == false) {
+    if (found_important_lvl2 == false  && found_important_lvl1==false) {
         for (let i = 0; i < targets.length; i++) {
             if (targets[i].structureType == STRUCTURE_EXTENSION) {
                 closest_target = targets[i];
                 found_important_lvl3 = true;
-                //creep.say("S");
+                creep.say("lvl3");
                 break;
             }
         }

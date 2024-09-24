@@ -2,6 +2,7 @@
 //test git 3
 //duo git test
 var roleHauler = require('role.hauler');
+var roleHauler2=require('role.hauler2')
 var roleBuilder = require('role.builder');
 var roleUpgrader = require('role.upgrader');
 var roleSoldier = require('role.soldier');
@@ -658,7 +659,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             //creep.say('💤')
                             continue;
                         }
-                        creep.roleHauler(creep, spawn);
+                        creep.roleHauler2(creep, spawn);
 
 
                     }

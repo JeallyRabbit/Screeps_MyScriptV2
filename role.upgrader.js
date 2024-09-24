@@ -60,6 +60,7 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
             || (Game.getObjectById(spawn.memory.controller_link_id) != null && spawn.memory.controller_link_id != creep.memory.deposit && Game.getObjectById(spawn.memory.controller_link_id).store[RESOURCE_ENERGY] > 0)/*|| Game.time%76==0*/) {
             creep.memory.deposit = undefined;
         }
+        
         if (creep.memory.deposit == undefined /*&& Game.time % 4 == 0*/) {
 
             if (spawn.memory.controller_link_id != undefined && Game.getObjectById(spawn.memory.controller_link_id) != null
