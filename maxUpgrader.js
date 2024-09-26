@@ -8,7 +8,7 @@ function maxUpgrader(cap, spawn, max)// return array with max possible work part
     else if (spawn.room.controller.level == 8) {
         cap = 1650;
     }
-    else if (spawn.room.controller.level == 2) {
+    else if (spawn.room.controller.level == 2 && cap>300) {
         return [MOVE, MOVE, MOVE, MOVE, WORK, WORK, WORK, CARRY]
     }
 

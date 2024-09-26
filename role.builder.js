@@ -65,7 +65,7 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
         if (targets[i].structureType == STRUCTURE_SPAWN || targets[i].structureType == STRUCTURE_STORAGE || targets[i].structureType == STRUCTURE_CONTAINER) {
             closest_target = targets[i];
             found_important_lvl1 = true;
-            creep.say("lvl1");
+            //creep.say("lvl1");
             break;
         }
     }
@@ -75,7 +75,7 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
             if (targets[i].structureType == STRUCTURE_TOWER) {
                 closest_target = targets[i];
                 found_important_lvl2 = true;
-                creep.say("lvl2");
+                //creep.say("lvl2");
                 break;
             }
         }
@@ -86,7 +86,7 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
             if (targets[i].structureType == STRUCTURE_EXTENSION) {
                 closest_target = targets[i];
                 found_important_lvl3 = true;
-                creep.say("lvl3");
+                //creep.say("lvl3");
                 break;
             }
         }

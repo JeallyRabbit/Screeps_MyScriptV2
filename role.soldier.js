@@ -24,7 +24,12 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
     }
     if (creep.room.name == creep.memory.target_room) {
 
-        var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS,{filter:
+            function (cr)
+            {
+                return cr.owner.username!='Alphonzo'
+            }
+        });
 
         var target_structure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
             filter: function (structure) {
@@ -52,7 +57,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
 
             if (creep.memory.is_melee == false) {
                 if (creep.pos.inRangeTo(target_creep, 3)) {
-                    creep.fleeFrom({ target_creep }, 3)
+                    creep.fleeFrom({ target_creep }, 3,{maxRooms: 1})
                     // goOutOfRange(creep, 3);
                 }
             }

@@ -646,7 +646,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
                         }
                         
-                        if (upgraders_parts > 0 && spawn.memory.building==true)//spawn.memory.req_builders > 0 && false) {
+                        if (upgraders_parts > 0 && spawn.memory.building==true && spawn.room.controller.ticksToDowngrade>5000)//spawn.memory.req_builders > 0 && false) {
                         {
                             pop_builders++;
                             creep.roleBuilder(creep, spawn)
@@ -692,7 +692,24 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             }
                         }*/
 
-
+                        if(spawn.memory.rooms_to_blockade!=undefined && spawn.memory.rooms_to_blockade.length>0)
+                        {
+                            //console.log(creep.pos)
+                           // creep.say()
+                            for(a of spawn.memory.rooms_to_blockade)
+                            {
+                                //a.soldier_id=creep.id
+                                //console.log("a")
+                                //console.log(a.roomName)
+                                //creep.say(a.roomName)
+                                if(a.roomName==creep.memory.target_room)
+                                {
+                                    //console.log(creep.id)
+                                    a.soldier_id=creep.id;
+                                    break;
+                                }
+                            }
+                        }
 
 
                         /*
