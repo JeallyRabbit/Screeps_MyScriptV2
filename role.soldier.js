@@ -24,11 +24,11 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
     }
     if (creep.room.name == creep.memory.target_room) {
 
-        var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS,{filter:
-            function (cr)
-            {
-                return cr.owner.username!='Alphonzo'
-            }
+        var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+            filter:
+                function (cr) {
+                    return cr.owner.username != 'Alphonzo'
+                }
         });
 
         var target_structure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
@@ -56,9 +56,14 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             //}
 
             if (creep.memory.is_melee == false) {
-                if (creep.pos.inRangeTo(target_creep, 3)) {
-                    creep.fleeFrom({ target_creep }, 3,{maxRooms: 1})
+                if (creep.pos.inRangeTo(target_creep, 3) && (_.filter(target_creep.body, { type: RANGED_ATTACK }).length > 0
+                    || _.filter(target_creep.body, { type: ATTACK }).length > 0)) {
+                    creep.fleeFrom({ target_creep }, 3, { maxRooms: 1 })
                     // goOutOfRange(creep, 3);
+                }
+                else if(creep.pos.isNearTo(target_creep.pos))
+                {
+                    creep.rangedMassAttack()
                 }
             }
 
