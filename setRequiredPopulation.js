@@ -631,7 +631,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     if (spawn.memory.manual_blockade != undefined) {
         if (spawn.memory.rooms_to_blockade.contains_rooms(spawn.memory.manual_blockade) == false) {
             console.log("new blockade room")
-            spawn.memory.rooms_to_blockade.push(new blockadeRoom('W2S37'))
+            spawn.memory.rooms_to_blockade.push(new blockadeRoom(spawn.memory.manual_blockade))
         }
     }
     //
