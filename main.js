@@ -646,7 +646,9 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
                         }
                         
-                        if (upgraders_parts > 0 && spawn.memory.building==true && spawn.room.controller.ticksToDowngrade>5000)//spawn.memory.req_builders > 0 && false) {
+                        if (upgraders_parts > 0 && spawn.memory.building==true && spawn.room.controller.ticksToDowngrade>5000
+                            && spawn.room.controller.level>=2
+                        )//spawn.memory.req_builders > 0 && false) {
                         {
                             pop_builders++;
                             creep.roleBuilder(creep, spawn)
