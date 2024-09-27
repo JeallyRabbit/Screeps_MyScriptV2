@@ -1070,6 +1070,19 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     var stage = undefined
     console.log("PLANING BASE AT: ", spawn.room.name)
 
+    if(spawn.memory.controller_container_pos!=undefined)
+    {
+        var cont=spawn.room.lookForAt(LOOK_STRUCTURES,spawn.memory.controller_container_pos.x,spawn.memory.controller_container_pos.y)
+        for(c of cont)
+        {
+            if(c.structureType==STRUCTURE_CONTAINER)
+            {
+                spawn.memory.controller_container_id=c.id
+                break
+            }
+        }
+        // /controller_container_id
+    }
     //spawn.memory.if_success_planning_base=false
     /*
     if(roomCM==undefined)

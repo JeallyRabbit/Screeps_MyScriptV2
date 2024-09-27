@@ -57,9 +57,11 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
         }
         if ((creep.memory.deposit != undefined && Game.getObjectById(creep.memory.deposit) != null && Game.getObjectById(creep.memory.deposit).store[RESOURCE_ENERGY] == 0
            /* && Game.getObjectById(creep.memory.deposit).structureType != STRUCTURE_LINK*/)
-            || (Game.getObjectById(spawn.memory.controller_link_id) != null && spawn.memory.controller_link_id != creep.memory.deposit && Game.getObjectById(spawn.memory.controller_link_id).store[RESOURCE_ENERGY] > 0)/*|| Game.time%76==0*/) {
+            || (Game.getObjectById(spawn.memory.controller_link_id) != null && spawn.memory.controller_link_id != creep.memory.deposit && Game.getObjectById(spawn.memory.controller_link_id).store[RESOURCE_ENERGY] > 0)
+            || (spawn.memory.controller_container_id!=undefined && Game.getObjectById(spawn.memory.controller_container_id) != null && spawn.memory.controller_container_id != creep.memory.deposit && Game.getObjectById(spawn.memory.controller_container_id).store[RESOURCE_ENERGY] > 0)) {
             creep.memory.deposit = undefined;
         }
+
         
         if (creep.memory.deposit == undefined /*&& Game.time % 4 == 0*/) {
 
