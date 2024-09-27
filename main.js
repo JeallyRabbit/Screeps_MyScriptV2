@@ -670,6 +670,10 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             //creep.say('💤')
                             continue;
                         }
+                        if(creep.store.getCapacity(RESOURCE_ENERGY)<200)
+                        {
+                            spawn.memory.req_haulers=2;
+                        }
                         creep.roleHauler2(creep, spawn);
 
 

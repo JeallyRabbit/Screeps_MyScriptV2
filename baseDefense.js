@@ -23,7 +23,7 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
                     return hostile.owner.username != 'Invader'
                 }
         })
-        if (hostile_not_invader.length > 0 && this.room.controller.level <= 4) {
+        if (hostile_not_invader.length > 0 && this.room.controller.level < 4) {
             this.room.controller.activateSafeMode();
 
 

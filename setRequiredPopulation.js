@@ -279,7 +279,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
     spawn.memory.req_haulers = 1;// role num 4
     if (Game.shard.name == 'shard1') {
-        spawn.memory.req_haulers = 2;
+       // spawn.memory.req_haulers = 2;
     }
     spawn.memory.req_berserk = 1;//role num 8
     spawn.memory.req_transporters = 0;//role numm 9
