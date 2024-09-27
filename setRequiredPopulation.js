@@ -18,6 +18,19 @@ Array.prototype.contains_rooms = function contains_rooms(roomName) {
     return false
 }
 
+Array.prototype.contains_target_room = function contains_target_room(roomName) {
+    if (this != undefined && this.length > 0) {
+        //console.log("contains_rooms: ")
+        for (a of this) {
+            //console.log(a)
+            if (a.target_room == roomName) {
+                return true;
+            }
+        }
+    }
+    return false
+}
+
 class blockadeRoom {
     constructor(name) {
         this.roomName = name
@@ -75,6 +88,16 @@ function calculateDistance(point1, point2) {
     const distance = Math.sqrt(dx ** 2 + dy ** 2);
 
     return distance;
+}
+
+class Duo {
+    constructor(duoId, duoHome,target_room) {
+        this.id = duoId;
+        this.home = duoHome;
+        this.target_room=target_room
+        //this.leaderId =duoleaderId 
+        //this.followerId=duoFollowerId
+    }
 }
 
 
@@ -176,7 +199,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             if (spawn.memory.farming_sources != undefined && spawn.memory.farming_sources.length > 0) {
                 sources_num = spawn.memory.farming_sources.length
                 if (spawn.memory.total_calculated_income_per_tick != undefined && (spawn.memory.farming_sources[sources_num - 1].carry_power >= spawn.memory.farming_sources[sources_num - 1].harvesting_power
-                    || spawn.memory.farming_sources[sources_num - 1].carry_power >= SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME)
+                    || spawn.memory.farming_sources[sources_num - 1].carry_power >=spawn.memory.farming_sources[sources_num - 1].harvesting_power)
                     && spawn.memory.farming_sources[sources_num - 1].harvesting_power > (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) / 2
                     && spawn.memory.building != true
                 ) {
@@ -622,9 +645,26 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_source_farmer_room = undefined;
     spawn.memory.need_distanceRepairer = undefined;
     spawn.memory.need_soldier = undefined;
-    if (spawn.room.name == 'E13S56') {
-        //spawn.memory.need_soldier='E13S58'
+    
+
+    //manually adding duo
+    if (spawn.room.name == 'W3S38') {
+        if(spawn.memory.duos==undefined){spawn.memory.duos = [];}
+        if(spawn.memory.duos!=undefined)
+        {
+            if(spawn.memory.duos.contains_target_room('W3S37')==false)
+            {
+                //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,'W3S37'))
+            }
+
+            if(spawn.memory.duos.length==1)
+            {
+               // spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,'W2S37'))
+            }
+        }
     }
+
+
     if (spawn.memory.rooms_to_blockade == undefined) {
         spawn.memory.rooms_to_blockade = [];
     }

@@ -1025,11 +1025,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
 
 
-            //manually adding duo
-            if (spawn.room.name == 'E13S56') {
-                spawn.memory.duos = [];
-                //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room))
-            }
+            
 
 
             // proceeding with duos

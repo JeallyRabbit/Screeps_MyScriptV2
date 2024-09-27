@@ -15,7 +15,6 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
 
     // for leader
     //leader.memory.target_room = 'W6N4'
-    duo.target_room='E14S53'
     if(duo.target_room!=undefined)
     {
         leader.memory.target_room=duo.target_room
@@ -39,10 +38,10 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
         if (!leader.pos.inRangeTo(follower.pos, 1)) {// leader is to far from follower
             leader.say("to far")
             
-            if (leader.pos.roomName == follower.pos.roomName) {
+            if (leader.pos.roomName == follower.pos.roomName ) {
                 duo.moving=true
                 leader.moveTo(follower, { range: 1 })
-                return
+                return;
             }
             //
             //return;
@@ -72,9 +71,10 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
         }
 
 
-        if (leader.room.name == leader.memory.target_room) {
+        if (leader.room.name == leader.memory.target_room || true) {
             if (leader.memory.task = 'destroy_invader_core' || true) {
 
+                //leader.rangedMassAttack()
                 if(leader.memory.invaderCore!=undefined && Game.getObjectById(leader.memory.invaderCore)==null)
                 {
                     leader.memory.invaderCore=undefined
@@ -114,6 +114,40 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
                     }
                 }
                 else{
+                    var hostile_creeps=leader.room.find(FIND_HOSTILE_CREEPS,{filter:
+                        function(en)
+                        {
+                            return en.owner.username!='Aplhonzo'
+                        }
+                    })
+                    if(hostile_creeps.length>0)
+                    {
+                        closest_hostile=leader.pos.findClosestByRange(hostile_creeps)
+                        if(closest_hostile!=null)
+                        {
+                            if (leader.rangedAttack(closest_hostile) == ERR_NOT_IN_RANGE) {
+                                leader.moveTo(closest_hostile, { maxRooms: 1, avoidSk: true });
+                            }
+
+                            leader.say(closest_hostile)
+                            console.log("closest hostile to duo: ",closest_hostile.pos)
+                            if (leader.memory.is_melee == false) {
+                                leader.rangedAttack(closest_hostile)
+                                if (leader.pos.inRangeTo(closest_hostile, 2) && (_.filter(closest_hostile.body, function (part) {
+                                    return part.type === RANGED_ATTACK && part.hits > 0;
+                                }).length > 0 || _.filter(closest_hostile.body, function (part) {
+                                    return part.type === ATTACK && part.hits > 0;
+                                }).length > 0)) {
+                                    duo.moving=true
+                                    leader.fleeFrom({ closest_hostile }, 3, { maxRooms: 1 })
+                                    // goOutOfRange(creep, 3);
+                                }
+                                if (leader.pos.isNearTo(closest_hostile.pos)) {
+                                    leader.rangedMassAttack()
+                                }
+                            }
+                        }
+                    }
                     leader.say("other")
                     var hostile_constructions=leader.room.find(FIND_HOSTILE_STRUCTURES,{
                         filter: function(str)
@@ -141,8 +175,8 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
             return
         }
         if (!follower.pos.isNearTo(leader) || duo.moving) {
-            //follower.say( duo.moving)
-            follower.moveTo(leader, { avoidCreeps: false });
+            follower.say( duo.moving)
+            follower.moveTo(leader, { avoidCreeps: false,swampCost:1 });
         }
 
 
@@ -163,8 +197,8 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
         }
 
     }
-
     
+    follower.moveTo(leader, { avoidCreeps: false,swampCost:1 });
 
     if(Game.flags['duo']!=undefined)
     {
