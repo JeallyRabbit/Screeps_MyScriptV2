@@ -334,7 +334,8 @@ function defineStructures(creep, spawn) {
                 break;
             }
             else if(Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY)>0){
-                extensions_full=false;
+                creep.memory.extensions_full=false;
+                break
             }
         }
     }

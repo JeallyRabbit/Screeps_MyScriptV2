@@ -162,7 +162,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
                 creep.heal(creep);
             }
         }
-        else if(Game.rooms[creep.memory.target_room]!=undefined && Game.rooms[creep.memory.target_room].memory.damagedCreeps.length>0)
+        if(Game.rooms[creep.memory.target_room]!=undefined && Game.rooms[creep.memory.target_room].memory.damagedCreeps.length>0)
         {
             var damaged=[];
             for(cr of Game.rooms[creep.memory.target_room].memory.damagedCreeps)
@@ -172,10 +172,15 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             var toHeal=creep.pos.findClosestByRange(damaged)
             if(toHeal!=null)
             {
-                //creep.say("healing my creep")
+                creep.say("healing my creep")
                 if(creep.heal(toHeal)==ERR_NOT_IN_RANGE)
                 {
-                    creep.moveTo(toHeal)
+                    creep.say("ranged heal")
+                    if(target_creep==null)
+                    {
+                        creep.moveTo(toHeal)
+                    }
+                    
                     creep.rangedHeal(toHeal)
                 }
             }
