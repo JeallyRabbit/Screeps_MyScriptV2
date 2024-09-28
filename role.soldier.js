@@ -172,7 +172,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             var toHeal=creep.pos.findClosestByRange(damaged)
             if(toHeal!=null)
             {
-                creep.say("healing my creep")
+                //creep.say("healing my creep")
                 if(creep.heal(toHeal)==ERR_NOT_IN_RANGE)
                 {
                     creep.moveTo(toHeal)

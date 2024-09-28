@@ -51,7 +51,7 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
             }
         }
 
-        if (creep.memory.extensions_full == 0 && creep.memory.task==undefined) {
+        if (creep.memory.extensions_full == false && creep.memory.task==undefined) {
             creep.memory.task = 'FILL_EXTENSIONS'
         }
         else if (creep.memory.task==undefined && creep.memory.upgraders_container != undefined && Game.getObjectById(creep.memory.upgraders_container) != null
@@ -208,6 +208,11 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
     }
 
     if (creep.memory.task == 'FILL_EXTENSIONS') {
+        if(creep.memory.extensions_full==true)
+        {
+            creep.memory.task=undefined
+            return;
+        }
         var extensions = [];
         for (id of creep.memory.extensions_id) {
             if (Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
@@ -321,11 +326,15 @@ function defineStructures(creep, spawn) {
 
 
     // extensions
+    creep.memory.extensions_full=true;
     if (creep.memory.extensions_id != undefined) {
         for (let id of creep.memory.extensions_id) {
             if (Game.getObjectById(id) == null) {
                 creep.memory.extensions_id = undefined;
                 break;
+            }
+            else if(Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY)>0){
+                extensions_full=false;
             }
         }
     }
@@ -350,20 +359,7 @@ function defineStructures(creep, spawn) {
         }
     }
 
-    var extensions = creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return structure.structureType === STRUCTURE_EXTENSION
-                && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-        }
-    });
-    creep.memory.extensions_full = 0;// 1 when tyey are all full
 
-
-
-
-    if (creep.memory.extensions_id == undefined || creep.memory.extensions_id < 1) {
-        creep.memory.extensions_full = 1;
-    }
 
 }
 
