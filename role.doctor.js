@@ -449,7 +449,7 @@ function defineLabs(creep) {
         }
     }
 
-    if (creep.room.memory.output_labs_id == undefined) {
+    if (creep.room.memory.output_labs_id == undefined || (creep.room.memory.output_labs_id!=undefined && creep.room.memory.output_labs_id.length==0)) {
         var lab = creep.room.find(FIND_MY_STRUCTURES, {
             filter: function (str) {
                 return str.structureType == STRUCTURE_LAB;
@@ -457,7 +457,8 @@ function defineLabs(creep) {
         });
         if (lab.length > 0) {
             creep.room.memory.output_labs_id = [];
-            creep.room.memory.output_labs_id = [];
+            var input_1_pos=new RoomPosition(creep.room.memory.input_lab_1_pos.x,creep.room.memory.input_lab_1_pos.y,creep.room.memory.input_lab_1_pos.roomName)
+            var input_2_pos=new RoomPosition(creep.room.memory.input_lab_2_pos.x,creep.room.memory.input_lab_2_pos.y,creep.room.memory.input_lab_2_pos.roomName)
             for (a of lab) {
                 if (!(a.pos.x == creep.room.memory.input_lab_1_pos.x && a.pos.y == creep.room.memory.input_lab_1_pos.y) &&
                     !(a.pos.x == creep.room.memory.input_lab_2_pos.x && a.pos.y == creep.room.memory.input_lab_2_pos.y)) {

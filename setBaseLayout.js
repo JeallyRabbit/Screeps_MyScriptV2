@@ -145,14 +145,10 @@ function plan_road_to_target(spawn, roomCM, target, rcl, my_range, start) {
 
         for (let i = 0; i < ret.path.length; i++) {
 
-            /*
-            if (destination == spawn.room.controller.pos) {
-                console.log(ret.path[i].x, " ", ret.path[i].y)
+            if(i==ret.path.length-1 && spawn.room.controller.pos.inRangeTo(ret.path[i].x,ret.path[i].y,3))
+            {
+                spawn.room.memory.distanceToController=ret.path.length
             }
-            */
-            //if (ret.path[i].x != destination.x || ret.path[i].y != destination.y || ret.path[i].roomName != destination.roomName
-            // && roomCM.get(ret.path[i].x,ret.path[i].y)<255
-            // ) {
 
             spawn.memory.road_building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, ret.path[i].roomName, STRUCTURE_ROAD, rcl));
             if (ret.path[i].roomName == spawn.room.name && roomCM.get(ret.path[i].x, ret.path[i].y) < 255) {
@@ -1074,6 +1070,19 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     var stage = undefined
     console.log("PLANING BASE AT: ", spawn.room.name)
 
+    if(spawn.memory.controller_container_pos!=undefined)
+    {
+        var cont=spawn.room.lookForAt(LOOK_STRUCTURES,spawn.memory.controller_container_pos.x,spawn.memory.controller_container_pos.y)
+        for(c of cont)
+        {
+            if(c.structureType==STRUCTURE_CONTAINER)
+            {
+                spawn.memory.controller_container_id=c.id
+                break
+            }
+        }
+        // /controller_container_id
+    }
     //spawn.memory.if_success_planning_base=false
     /*
     if(roomCM==undefined)
@@ -1153,7 +1162,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_manager_stamp(spawn, roomCM);
 
         //plan_road_to_controller(spawn, roomCM);
-        plan_extension_stamp(spawn, roomCM, 5);
+        plan_extension_stamp(spawn, roomCM, 4);
         plan_extension_stamp(spawn, roomCM, 5);
         plan_extension_stamp(spawn, roomCM, 6);
         plan_extension_stamp(spawn, roomCM, 6);
