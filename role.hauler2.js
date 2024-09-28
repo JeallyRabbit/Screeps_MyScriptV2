@@ -50,14 +50,16 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
                 }
             }
         }
-        if (creep.memory.task==undefined && creep.memory.upgraders_container != undefined && Game.getObjectById(creep.memory.upgraders_container) != null
+
+        if (creep.memory.extensions_full == 0 && creep.memory.task==undefined) {
+            creep.memory.task = 'FILL_EXTENSIONS'
+        }
+        else if (creep.memory.task==undefined && creep.memory.upgraders_container != undefined && Game.getObjectById(creep.memory.upgraders_container) != null
             && Game.getObjectById(creep.memory.upgraders_container).store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store.getCapacity(RESOURCE_ENERGY) / 2) {
             creep.memory.task = 'FILL_UPGRADERS_CONTAINER'
             creep.memory.container_to_fill = creep.memory.upgraders_container
         }
-        else if (creep.memory.extensions_full == 0 && creep.memory.task==undefined) {
-            creep.memory.task = 'FILL_EXTENSIONS'
-        }
+        
         else if (spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && creep.memory.task==undefined) {
             creep.memory.task = 'FILL_SPAWN'
 

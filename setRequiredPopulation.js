@@ -91,10 +91,10 @@ function calculateDistance(point1, point2) {
 }
 
 class Duo {
-    constructor(duoId, duoHome,target_room) {
+    constructor(duoId, duoHome, target_room) {
         this.id = duoId;
         this.home = duoHome;
-        this.target_room=target_room
+        this.target_room = target_room
         //this.leaderId =duoleaderId 
         //this.followerId=duoFollowerId
     }
@@ -279,7 +279,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
     spawn.memory.req_haulers = 1;// role num 4
     if (Game.shard.name == 'shard1') {
-       // spawn.memory.req_haulers = 2;
+        // spawn.memory.req_haulers = 2;
     }
     spawn.memory.req_berserk = 1;//role num 8
     spawn.memory.req_transporters = 0;//role numm 9
@@ -645,21 +645,18 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_source_farmer_room = undefined;
     spawn.memory.need_distanceRepairer = undefined;
     spawn.memory.need_soldier = undefined;
-    
+
 
     //manually adding duo
     if (spawn.room.name == 'W3S38') {
-        if(spawn.memory.duos==undefined){spawn.memory.duos = [];}
-        if(spawn.memory.duos!=undefined)
-        {
-            if(spawn.memory.duos.contains_target_room('W3S37')==false)
-            {
+        if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
+        if (spawn.memory.duos != undefined) {
+            if (spawn.memory.duos.contains_target_room('W3S37') == false) {
                 //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,'W3S37'))
             }
 
-            if(spawn.memory.duos.length==1)
-            {
-               // spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,'W2S37'))
+            if (spawn.memory.duos.length == 1) {
+                // spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,'W2S37'))
             }
         }
     }
@@ -742,6 +739,32 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
         for (let myRoom in Game.rooms) {
             //console.log("myRoom: ", myRoom)
+
+
+
+
+            var creeps_to_heal=Game.rooms[myRoom].find(FIND_MY_CREEPS,{filter:
+                function (cr)
+                {
+                    return cr.hits<cr.hitsMax
+                }
+            })
+
+            Game.rooms[myRoom].memory.damagedCreeps=[];
+            for(cr of creeps_to_heal)
+            {
+                Game.rooms[myRoom].memory.damagedCreeps.push(cr.id);
+            }
+
+
+
+
+
+
+
+
+
+
             const inFarmingRooms = spawn.memory.farming_rooms.some(room => room.name === myRoom);
 
             const inKeepersRooms = spawn.memory.keepers_rooms.some(room => room.name === myRoom);
@@ -755,6 +778,16 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                             return hostile.owner.username == 'Invader'
                         }
                 })
+
+                var enemy_creeps = Game.rooms[myRoom].find(FIND_HOSTILE_CREEPS, {
+                    filter:
+                        function (en) {
+                            return en.owner.username != 'Alphonzo' &&
+                                (en.getActiveBodyparts(WORK) > 0 || en.getActiveBodyparts(ATTACK) > 0 || en.getActiveBodyparts(RANGED_ATTACK) > 0 || en.getActiveBodyparts(CLAIM) > 0)
+                        }
+                })
+                console.log(myRoom, " enemy_creeps: ", enemy_creeps.length)
+
                 var cores = Game.rooms[myRoom].find(FIND_STRUCTURES, {
                     filter:
                         function (str) {
@@ -767,7 +800,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 // if there are towers do not send soldiers
                 //console.log(invaders.length > 0, " ", cores.length > 0, " ", Game.rooms[myRoom].memory.soldiers < 3)
                 //console.log("invaders: ", invaders.length)
-                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0) && Game.rooms[myRoom].memory.soldiers < 3) {
+                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers < 3) {
                     spawn.memory.need_soldier = myRoom;
                 }
                 else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 3) {

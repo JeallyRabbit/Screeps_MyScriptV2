@@ -117,9 +117,21 @@ Spawn.prototype.operateDuo = function operateDuo(duo) {
                     var hostile_creeps=leader.room.find(FIND_HOSTILE_CREEPS,{filter:
                         function(en)
                         {
-                            return en.owner.username!='Aplhonzo'
+                            return en.owner.username!='Aplhonzo' && ( en.getActiveBodyparts(ATTACK)>0 || en.getActiveBodyparts(RANGED_ATTACK)>0)
                         }
                     })
+
+                    if(hostile_creeps.length==0)
+                    {
+                        hostile_creeps=leader.room.find(FIND_HOSTILE_CREEPS,{filter:
+                            function(en)
+                            {
+                                return en.owner.username!='Aplhonzo' 
+                            }
+                        })
+                    }
+
+
                     if(hostile_creeps.length>0)
                     {
                         closest_hostile=leader.pos.findClosestByRange(hostile_creeps)

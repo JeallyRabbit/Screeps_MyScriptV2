@@ -8,7 +8,7 @@ Creep.prototype.roleBuilder = function roleBuilder(creep, spawn) {
 
 
 
-    var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+    var targets = creep.room.find(FIND_MY_CONSTRUCTION_SITES);
     if (targets.length == 0) // if no constructuin sites suicide
     {
         if (creep.room.name == spawn.room.name) {

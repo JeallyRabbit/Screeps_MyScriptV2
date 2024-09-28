@@ -69,10 +69,19 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
         var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
             filter:
                 function (cr) {
-                    return cr.owner.username != 'Alphonzo'
+                    return cr.owner.username != 'Alphonzo' &&
+                    (cr.getActiveBodyparts(ATTACK) > 0 || cr.getActiveBodyparts(RANGED_ATTACK) > 0 || cr.getActiveBodyparts(HEAL) > 0)
                 }
         });
-
+        if(target_creep==null)
+        {
+            target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+                filter:
+                    function (cr) {
+                        return cr.owner.username != 'Alphonzo'
+                    }
+            });
+        }
         var target_structure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
             filter: function (structure) {
                 //return structure.my==false && 
@@ -151,6 +160,24 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             }*/
             if (creep.hits < creep.hitsMax) {
                 creep.heal(creep);
+            }
+        }
+        else if(Game.rooms[creep.memory.target_room]!=undefined && Game.rooms[creep.memory.target_room].memory.damagedCreeps.length>0)
+        {
+            var damaged=[];
+            for(cr of Game.rooms[creep.memory.target_room].memory.damagedCreeps)
+            {
+                damaged.push(Game.getObjectById(cr))
+            }
+            var toHeal=creep.pos.findClosestByRange(damaged)
+            if(toHeal!=null)
+            {
+                creep.say("healing my creep")
+                if(creep.heal(toHeal)==ERR_NOT_IN_RANGE)
+                {
+                    creep.moveTo(toHeal)
+                    creep.rangedHeal(toHeal)
+                }
             }
         }
         else {

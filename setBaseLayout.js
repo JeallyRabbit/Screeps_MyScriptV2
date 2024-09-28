@@ -1162,7 +1162,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_manager_stamp(spawn, roomCM);
 
         //plan_road_to_controller(spawn, roomCM);
-        plan_extension_stamp(spawn, roomCM, 5);
+        plan_extension_stamp(spawn, roomCM, 4);
         plan_extension_stamp(spawn, roomCM, 5);
         plan_extension_stamp(spawn, roomCM, 6);
         plan_extension_stamp(spawn, roomCM, 6);
