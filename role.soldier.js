@@ -149,15 +149,6 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
                 } */
             }
 
-            ////creep.say(creep.rangedAttack(target_structure));
-            /*
-            else if(creep.attack(target_structure)==ERR_NO_BODYPART)
-            {
-                if(creep.rangedAttack(target_structure)==ERR_NOT_IN_RANGE)
-                {
-                    creep.moveTo(target_structure);
-                }
-            }*/
             if (creep.hits < creep.hitsMax) {
                 creep.heal(creep);
             }
@@ -172,10 +163,10 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             var toHeal=creep.pos.findClosestByRange(damaged)
             if(toHeal!=null)
             {
-                creep.say("healing my creep")
+                //creep.say("healing my creep")
                 if(creep.heal(toHeal)==ERR_NOT_IN_RANGE)
                 {
-                    creep.say("ranged heal")
+                    //creep.say("ranged heal")
                     if(target_creep==null)
                     {
                         creep.moveTo(toHeal)

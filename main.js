@@ -37,6 +37,7 @@ var roleDistanceCarrier2 = require('role.DistanceCarrier2')
 var roleDuoLeader = require('role.duoLeader')
 var roleDuoFollower = require('role.duoFollower')
 var operateDuo = require('operateDuo')
+var operateSwarm=require('operateSwarm')
 
 var roleIntershardClaimer = require('role.intershardClaimer')
 var roleIntershardColonizer = require('role.intershardColonizer')
@@ -117,6 +118,17 @@ class Duo {
         this.target_room=target_room
         //this.leaderId =duoleaderId 
         //this.followerId=duoFollowerId
+    }
+}
+
+class Swarm{
+    constructor(swarmId, reqPopulation,target_room,home_room)
+    {
+        this.id=swarmId;
+        this.req_population=reqPopulation;
+        this.target_room=target_room;
+        this.home_rom=home_room;
+        this.members=[];
     }
 }
 
@@ -437,6 +449,13 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
 
+            if(spawn.memory.swarms!=undefined && spawn.memory.swarms.length>0)
+            {
+                for (sw of spawn.memory.swarms)
+                {
+                    sw.members=[]
+                }
+            }
 
 
             //console.log("----------------------------------------------", spawn, "----------------------------------------------");
@@ -1016,6 +1035,23 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         }
 
                     }
+                    else if(creep.memory.role=='swarmMember')
+                    {
+                        if(spawn.memory.swarms!=undefined)
+                        {
+                            for(s of spawn.memory.swarms){
+                                if(s.id==creep.memory.swarmId)
+                                {
+                                    if(!s.members.includes(creep.id))
+                                    {
+                                        s.members.push(creep.id)
+                                    }
+                                    
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     else if (creep.memory.role == 'energySupport') {
                         creep.roleEnergySupport(creep, spawn)
                     }
@@ -1029,7 +1065,20 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
 
 
-            
+            //swarms
+            if(spawn.memory.swarms==undefined)
+            {
+                spawn.memory.swarms=[];
+            }
+            if(spawn.memory.swarms!=undefined && spawn.memory.swarms.length>0)
+            {
+                for(let i=0;i<spawn.memory.swarms.length;i++)
+                {
+                    var swarm=spawn.memory.swarms[i]
+                    spawn.operateSwarm(swarm)
+                }
+            }
+
 
 
             // proceeding with duos
@@ -1183,7 +1232,36 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             }
 
+            //spawning swarm
+            spawn.memory.isSpawningSwarm=false;
+            for(s of spawn.memory.swarms)
+            {
+                if(!s.completed)
+                {
+                    console.log("trying to spawn swarms")
+                    spawn.isSpawningSwarm=true
+                    var spawn_result=spawn.spawnCreep(maxSoldier(energyCap), 'swarm' + spawn.room.name + '_' + Game.time, {
+                        memory: {
+                            role: 'swarmMember',
+                            home_room: spawn.room,
+                            swarmId: s.id
+                        }
+                    }) 
+                    console.log("swarm spawning result: ",spawn_result)
+                    if (spawn_result == 0) {
+                        spawn.isSpawningSwarm=true
+                        continue;
+                    }
+                }
+            }
 
+
+
+
+
+
+
+            //spawning duo
             spawn.memory.isSpawningDuo = false
             // loop for spawning duos
             if (spawn.spawning == null || true) {
@@ -1228,7 +1306,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
                 */
 
-            if (spawn.memory.isSpawningDuo == true) { continue; }
+            if (spawn.memory.isSpawningDuo == true || spawn.memory.isSpawningSwarm==true) { continue; }
 
             if (pop_haulers > 0 && pop_merchants > 0) {
                 if (spawn.memory.need_keeperHealer != undefined && false) {
@@ -1304,7 +1382,6 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             spawn.memory.need_soldier, home_room: spawn.room
                     }
                 }) == 0) {
-                    spawn.memory.soldiers_counter++;
                     continue;
                 }
             }

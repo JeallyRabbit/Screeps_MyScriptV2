@@ -60,7 +60,8 @@ Creep.prototype.roleFiller = function (creep, spawn) {
     if ((creep.memory.working_pos != undefined) && creep.memory.working_pos.x == creep.pos.x && creep.memory.working_pos.y == creep.pos.y) {
         //creep.say('at pos');
         creep.memory.is_working = true;
-        if (creep.memory.my_container != undefined && Game.getObjectById(creep.memory.my_container) == null) {
+        if ((creep.memory.my_container != undefined && Game.getObjectById(creep.memory.my_container) == null)
+        || (Game.getObjectById(creep.memory.my_container)!=null && Game.getObjectById(creep.memory.my_container).store[RESOURCE_ENERGY]==0)) {
             creep.memory.my_container = undefined;
             //creep.say("clearing");
         }

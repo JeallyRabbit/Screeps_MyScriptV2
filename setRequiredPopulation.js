@@ -100,9 +100,51 @@ class Duo {
     }
 }
 
+class Swarm{
+    constructor(swarmId, reqPopulation,target_room,home_rom)
+    {
+        this.id=swarmId;
+        this.req_population=reqPopulation;
+        this.target_room=target_room;
+        this.home_rom=home_rom;
+    }
+}
+
 
 
 Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
+
+
+    if(Memory.allies==undefined)
+    {
+        Memory.allies=[];
+    }
+    //Finding hostiles in every room
+
+    for (room in Game.rooms)
+    {
+        var r=Game.rooms[room]
+        if(r!=undefined)
+        {
+            r.memory.hostiles=[];
+            var hostiles=r.find(FIND_HOSTILE_CREEPS,{filter:
+                function(enemy)
+                {
+                    return !Memory.allies.includes(enemy.owner.username)
+                }
+            })
+            if(hostiles.length>0)
+            {
+                for(a of hostiles)
+                {
+                    r.memory.hostiles.push(a.id)
+                }
+            }
+        }
+    }
+
+
+
 
 
     if (Memory.rooms_to_colonize.length > 0 && Memory.rooms_to_colonize.colonizer == spawn.room.name
@@ -647,6 +689,21 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_soldier = undefined;
 
 
+    //manuall adding swarm
+    if(spawn.room.name=='W3N7')
+    {
+        if(spawn.memory.swarms==undefined){spawn.memory.swarms=[];}
+        if (spawn.memory.swarms != undefined) {
+            if (spawn.memory.swarms.contains_target_room('W2N7') == false) {
+                spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time,6,'W2N7', spawn.room))
+            }
+
+            if (spawn.memory.swarms.length == 1) {
+                // spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, spawn.room,'W2S37'))
+            }
+        }
+    }
+
     //manually adding duo
     if (spawn.room.name == 'W3S38') {
         if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
@@ -786,7 +843,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                                 (en.getActiveBodyparts(WORK) > 0 || en.getActiveBodyparts(ATTACK) > 0 || en.getActiveBodyparts(RANGED_ATTACK) > 0 || en.getActiveBodyparts(CLAIM) > 0)
                         }
                 })
-                console.log(myRoom, " enemy_creeps: ", enemy_creeps.length)
+                //console.log(myRoom, " enemy_creeps: ", enemy_creeps.length)
 
                 var cores = Game.rooms[myRoom].find(FIND_STRUCTURES, {
                     filter:
