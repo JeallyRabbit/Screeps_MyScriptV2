@@ -189,14 +189,14 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         for (cr of Game.rooms[swarm.target_room].memory.damagedCreeps) {
                             damaged.push(Game.getObjectById(cr))
                         }
-                        creep.say("A")
+                        //creep.say("A")
                         var toHeal = creep.pos.findClosestByRange(damaged)
                         if (toHeal != null) {
-                            creep.say("healing my creep")
+                            //creep.say("healing my creep")
                             if (creep.heal(toHeal) == ERR_NOT_IN_RANGE) {
                                 //creep.say("ranged heal")
                                 if (target_creep == null) {
-                                    creep.moveTo(toHeal)
+                                    creep.moveTo(toHeal,{maxRooms: 1})
                                 }
 
                                 if (!target_creep) {
