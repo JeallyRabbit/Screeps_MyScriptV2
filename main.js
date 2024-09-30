@@ -1239,7 +1239,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 if(!s.completed)
                 {
                     console.log("trying to spawn swarms")
-                    spawn.isSpawningSwarm=true
+                    spawn.memory.isSpawningSwarm=true
                     var spawn_result=spawn.spawnCreep(maxSoldier(energyCap), 'swarm' + spawn.room.name + '_' + Game.time, {
                         memory: {
                             role: 'swarmMember',
@@ -1249,7 +1249,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     }) 
                     console.log("swarm spawning result: ",spawn_result)
                     if (spawn_result == 0) {
-                        spawn.isSpawningSwarm=true
+                        spawn.memory.isSpawningSwarm=true
                         continue;
                     }
                 }

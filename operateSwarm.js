@@ -132,6 +132,8 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                             }).length > 0 || _.filter(target_creep.body, function (part) {
                                 return part.type === ATTACK && part.hits > 0;
                             }).length > 0)) {
+
+                                
                                 creep.fleeFrom({ target_creep }, 3, { maxRooms: 1 })
                                 // goOutOfRange(creep, 3);
                             }
@@ -140,8 +142,8 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                             }
                         }
 
-                        if (creep.hits < creep.hitsMax / 2) {
-                            creep.fleeFrom({ target_creep }, 6)
+                        if (creep.hits < creep.hitsMax / 2 && Game.rooms[creep.room.name].memory.hostiles!=undefined) {
+                            creep.fleeFrom(Game.rooms[creep.room.name].memory.hostiles, 6)
                         }
 
 
@@ -209,7 +211,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
 
                 for (other of swarm.members) {
                     if (other != id && Game.getObjectById(other) != null) {
-                        if (creep.pos.getRangeTo(Game.getObjectById(other)) > swarm.members.length + 1
+                        if (creep.pos.getRangeTo(Game.getObjectById(other)) > swarm.members.length 
                             && creep.pos.roomName == Game.getObjectById(other).pos.roomName) {
                             creep.moveTo(Game.getObjectById(other), { avoidCreeps: true })
                             creep.say("grouping")
