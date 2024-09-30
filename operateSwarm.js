@@ -231,9 +231,9 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
 
                 for (other of swarm.members) {
                     if (other != id && Game.getObjectById(other) != null) {
-                        if (creep.pos.getRangeTo(Game.getObjectById(other)) > swarm.members.length
+                        if (creep.pos.getRangeTo(Game.getObjectById(other)) > swarm.req_population
                             && creep.pos.roomName == Game.getObjectById(other).pos.roomName) {
-                            creep.moveTo(Game.getObjectById(other), { avoidCreeps: true })
+                            creep.moveTo(Game.getObjectById(other), { avoidCreeps: true})
                             creep.say("grouping")
                             break;
                         }
