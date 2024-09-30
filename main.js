@@ -625,6 +625,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     d.leaderId = undefined;
                 }
             }
+
+            spawn.memory.sponge_id=undefined;
             /*
             spawn.memory.farming_rooms = [];
             for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
@@ -1240,11 +1242,19 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             }
 
+            var farming_needs_satisfied=false;
+            var farming_sources_length=spawn.memory.farming_sources.length;
+            if(spawn.memory.farming_rooms!=undefined && spawn.memory.farming_sources.length>0 && spawn.memory.farming_sources[farming_sources_length/2].carry_power>=spawn.memory.farming_sources[farming_sources_length/2].harvesting_power
+                && spawn.memory.farming_sources[farming_sources_length/2].harvesting_power>(SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5
+            )
+            {
+                farming_needs_satisfied=true
+            }
             //spawning swarm
             spawn.memory.isSpawningSwarm=false;
             for(s of spawn.memory.swarms)
             {
-                if(!s.completed)
+                if(!s.completed && pop_fillers==spawn.memory.req_fillers && farming_needs_satisfied)
                 {
                     console.log("trying to spawn swarms")
                     spawn.memory.isSpawningSwarm=true

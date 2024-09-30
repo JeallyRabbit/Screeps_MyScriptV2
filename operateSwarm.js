@@ -20,24 +20,26 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
         }
     }
 
-    var target_creep=undefined;
+    var target_creep = undefined;
     //target_creep=creep.room.findClosestByRange(enemy_creeps)
 
+    var allies_present = false;
+    if (Game.rooms[swarm.target_room] != undefined && Game.rooms[swarm.target_room].memory.allies.length > 0) {
+        allies_present = true
+    }
 
     for (id of swarm.members) {
         creep = Game.getObjectById(id)
         if (creep != null) {
 
-            if(_.filter(creep.body, { type: ATTACK }).length>0)
-            {
-                creep.memory.is_melee=true;
+            if (_.filter(creep.body, { type: ATTACK }).length > 0) {
+                creep.memory.is_melee = true;
             }
-            else{
-                creep.memory.is_melee=false;
+            else {
+                creep.memory.is_melee = false;
             }
-            if(target_creep==undefined)
-            {
-                target_creep=creep.pos.findClosestByRange(enemy_creeps)
+            if (target_creep == undefined) {
+                target_creep = creep.pos.findClosestByRange(enemy_creeps)
             }
             //creep.say(target_creep)
             for (other of swarm.members) {
@@ -97,7 +99,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         filter: function (structure) {
                             //return structure.my==false && 
                             //return structure.room.name != spawn.room.name && 
-                            return     structure.structureType != STRUCTURE_CONTROLLER
+                            return structure.structureType != STRUCTURE_CONTROLLER
                                 //&& structure.structureType!=STRUCTURE_WALL
                                 && structure.structureType != STRUCTURE_CONTAINER
                                 && structure.structureType != STRUCTURE_ROAD
@@ -110,19 +112,20 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                     //}
                     if (target_creep) {
                         //creep.say(target_creep.pos.x);
-                        
+
                         //creep.say("cr")
 
 
                         if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
                             //creep.say("to far")
-                            //creep.rangedMassAttack()
+                            if (!allies_present) {
+                                creep.rangedMassAttack()
+                            }
                             creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true, avoidCreeps: true });
                         }
-                        else{
-                            
-                        }
-                        creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true, avoidCreeps: true});
+
+
+                        //
                         //}
 
                         if (creep.memory.is_melee == false) {
@@ -132,16 +135,26 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                                 return part.type === ATTACK && part.hits > 0;
                             }).length > 0)) {
 
-                                
+                                // kiting
                                 creep.fleeFrom({ target_creep }, 3, { maxRooms: 1 })
                                 // goOutOfRange(creep, 3);
                             }
-                            else if (creep.pos.isNearTo(target_creep.pos)) {
-                                //creep.rangedMassAttack()
+                            else if (creep.pos.isNearTo(target_creep.pos) && !allies_present) {
+                                if(!allies_present)
+                                {
+                                    creep.rangedMassAttack()
+                                }
+                            }
+                            else{
+                                creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true, avoidCreeps: true});
                             }
                         }
 
-                        if (creep.hits < creep.hitsMax / 2 && Game.rooms[creep.room.name].memory.hostiles!=undefined) {
+                        if ((_.filter(creep.body, function (part) {
+                            return part.type === RANGED_ATTACK && part.hits > 0;
+                        }).length == 0 &&  _.filter(creep.body, function (part) {
+                            return part.type === ATTACK && part.hits == 0;
+                        }).length > 0) && Game.rooms[creep.room.name].memory.hostiles != undefined) {
                             creep.fleeFrom(Game.rooms[creep.room.name].memory.hostiles, 6)
                         }
 
@@ -154,12 +167,12 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         creep.rangedMassAttack()
                         if (creep.memory.is_melee == true) {
                             if (creep.attack(target_structure) == ERR_NOT_IN_RANGE) {
-                                creep.moveTo(target_structure,{avoidCreeps: true});
+                                creep.moveTo(target_structure, { avoidCreeps: true });
                                 //console.log("structure to far");
                             }
                         }
                         else {
-                            creep.moveTo(target_structure,{avoidCreeps: true});
+                            creep.moveTo(target_structure, { avoidCreeps: true });
                             //creep.rangedMassAttack()
                             /* if (creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE) {
                                 creep.moveTo(target_structure);
@@ -185,28 +198,24 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                                     creep.moveTo(toHeal)
                                 }
 
-                                if(!target_creep)
-                                {
+                                if (!target_creep) {
                                     creep.rangedHeal(toHeal)
                                 }
-                                
+
                             }
                         }
                     }
                     else {
                         // group
-                        for( m of swarm.members)
-                        {
-                            if(Game.getObjectById(m)!=null)
-                            {
-                                if(Game.flags['swarm']!=undefined && !target_creep && !target_structure)
-                                {
-                                    creep.moveTo(Game.flags['swarm'], { reusePath: 11, avoidCreeps: true,maxRooms: 1})
+                        for (m of swarm.members) {
+                            if (Game.getObjectById(m) != null) {
+                                if (Game.flags['swarm'] != undefined && !target_creep && !target_structure) {
+                                    creep.moveTo(Game.flags['swarm'], { reusePath: 11, avoidCreeps: true, maxRooms: 1 })
                                 }
-                                else{
-                                    creep.moveTo(Game.getObjectById(m), { reusePath: 11, avoidCreeps: true,maxRooms: 1, range: swarm.members.length/2 })
+                                else {
+                                    creep.moveTo(Game.getObjectById(m), { reusePath: 11, avoidCreeps: true, maxRooms: 1, range: swarm.members.length / 2 })
                                 }
-                                
+
                                 break;
                             }
                         }
@@ -214,13 +223,15 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                     }
                 }
                 else {
+                    //creep.move(BOTTOM)
+                    //return;
                     creep.moveToRoom(swarm.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
                     //creep.rangedMassAttack()
                 }
 
                 for (other of swarm.members) {
                     if (other != id && Game.getObjectById(other) != null) {
-                        if (creep.pos.getRangeTo(Game.getObjectById(other)) > swarm.members.length 
+                        if (creep.pos.getRangeTo(Game.getObjectById(other)) > swarm.members.length
                             && creep.pos.roomName == Game.getObjectById(other).pos.roomName) {
                             creep.moveTo(Game.getObjectById(other), { avoidCreeps: true })
                             creep.say("grouping")

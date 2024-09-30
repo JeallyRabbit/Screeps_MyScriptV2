@@ -1,20 +1,25 @@
 function maxSponge(cap)// return array with max possible work parts for hauler
 {
-    if (cap > 1950) {
-        cap = 1950;
+    if (cap > 2130) {
+        cap = 2130;
     }
     var parts = [];
-    parts.push(HEAL)
-    parts.push(MOVE)
-    parts.push(MOVE)
-    parts.push(ATTACK)
-    cap -= 430;
+    
+    cap -= 480;
 
     //console.log("avaliable work parts: ", Math.floor(cap/100));
-    for (let i = 0; i < Math.floor(cap / 1200); i++) {
+    for (let i = 0; i < Math.floor(cap / 110); i++) {
+        parts.push(MOVE);
         parts.push(MOVE);
         parts.push(TOUGH);
     }
+
+    parts.push(ATTACK)
+    parts.push(MOVE)
+    parts.push(MOVE)
+    parts.push(MOVE)
+    parts.push(HEAL)
+    
     return parts;
 }
 module.exports = maxSponge;

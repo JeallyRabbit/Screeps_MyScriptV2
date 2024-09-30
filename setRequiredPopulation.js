@@ -140,6 +140,21 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     r.memory.hostiles.push(a.id)
                 }
             }
+
+            r.memory.allies=[];
+            var allies=r.find(FIND_HOSTILE_CREEPS,{filter:
+                function(ally)
+                {
+                    return Memory.allies.includes(ally.owner.username) //&& enemy.owner.username!='Alphonzo'
+                }
+            })
+            if(allies.length>0)
+            {
+                for(a of allies)
+                {
+                    r.memory.allies.push(a.id)
+                }
+            }
         }
     }
 
@@ -692,7 +707,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
     //manuall sponge
     
-    if(spawn.room.memory.manual_sponge!=undefined && spawn.memory.sponge_id==undefined)
+    if(spawn.memory.manual_sponge!=undefined && spawn.memory.sponge_id==undefined)
     {
         spawn.memory.need_sponge=spawn.memory.manual_sponge
     }
