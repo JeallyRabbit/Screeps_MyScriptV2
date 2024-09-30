@@ -184,14 +184,15 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                             creep.heal(creep);
                         }
                     }
-                    if (Game.rooms[creep.memory.target_room] != undefined && Game.rooms[creep.memory.target_room].memory.damagedCreeps.length > 0) {
+                    if (Game.rooms[swarm.target_room] != undefined && Game.rooms[swarm.target_room].memory.damagedCreeps.length > 0) {
                         var damaged = [];
-                        for (cr of Game.rooms[creep.memory.target_room].memory.damagedCreeps) {
+                        for (cr of Game.rooms[swarm.target_room].memory.damagedCreeps) {
                             damaged.push(Game.getObjectById(cr))
                         }
+                        creep.say("A")
                         var toHeal = creep.pos.findClosestByRange(damaged)
                         if (toHeal != null) {
-                            //creep.say("healing my creep")
+                            creep.say("healing my creep")
                             if (creep.heal(toHeal) == ERR_NOT_IN_RANGE) {
                                 //creep.say("ranged heal")
                                 if (target_creep == null) {
