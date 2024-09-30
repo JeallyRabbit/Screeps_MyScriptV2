@@ -1055,6 +1055,11 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     else if (creep.memory.role == 'energySupport') {
                         creep.roleEnergySupport(creep, spawn)
                     }
+                    else if(creep.memory.role=='sponge')
+                    {
+                        spawn.memory.sponge_id=creep.id
+                        spawn.memory.need_sponge=undefined
+                    }
 
 
                     else {
@@ -1559,6 +1564,13 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 //var spawn_result=spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) 
                 //console.log("rampart_repairer spawning_result: ",spawn_result)
                 if (spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) == 0) {
+                    continue;
+                }
+            }
+            if(spawn.memory.need_sponge!=undefined)
+            {
+                if(spawn.spawnCreep(maxSponge(energyCap,spawn),'Sp_' + spawn.room.name + '_' + Game.time, { memory: { role: 'sponge', home_room: spawn.room, target_room: spawn.memory.need_sponge } })==OK)
+                {
                     continue;
                 }
             }

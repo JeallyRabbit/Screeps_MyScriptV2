@@ -40,7 +40,6 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                 target_creep=creep.pos.findClosestByRange(enemy_creeps)
             }
             //creep.say(target_creep)
-
             for (other of swarm.members) {
                 if (other != id && Game.getObjectById(other) != null) {
                     if (creep.hits == creep.hitsMax && Game.getObjectById(other).hits < Game.getObjectById(other).hitsMax) {
@@ -117,7 +116,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
 
                         if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
                             //creep.say("to far")
-                            creep.rangedMassAttack()
+                            //creep.rangedMassAttack()
                             creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true, avoidCreeps: true });
                         }
                         else{
@@ -138,7 +137,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                                 // goOutOfRange(creep, 3);
                             }
                             else if (creep.pos.isNearTo(target_creep.pos)) {
-                                creep.rangedMassAttack()
+                                //creep.rangedMassAttack()
                             }
                         }
 
@@ -161,7 +160,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         }
                         else {
                             creep.moveTo(target_structure,{avoidCreeps: true});
-                            creep.rangedMassAttack()
+                            //creep.rangedMassAttack()
                             /* if (creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE) {
                                 creep.moveTo(target_structure);
                                 //console.log("structure to far");
@@ -186,18 +185,28 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                                     creep.moveTo(toHeal)
                                 }
 
-                                creep.rangedHeal(toHeal)
+                                if(!target_creep)
+                                {
+                                    creep.rangedHeal(toHeal)
+                                }
+                                
                             }
                         }
                     }
                     else {
                         // group
-                        var to_move=undefined;
                         for( m of swarm.members)
                         {
                             if(Game.getObjectById(m)!=null)
                             {
-                                creep.moveTo(Game.getObjectById(m), { reusePath: 11, avoidCreeps: true,maxRooms: 1, range: swarm.members.length/2 })
+                                if(Game.flags['swarm']!=undefined && !target_creep && !target_structure)
+                                {
+                                    creep.moveTo(Game.flags['swarm'], { reusePath: 11, avoidCreeps: true,maxRooms: 1})
+                                }
+                                else{
+                                    creep.moveTo(Game.getObjectById(m), { reusePath: 11, avoidCreeps: true,maxRooms: 1, range: swarm.members.length/2 })
+                                }
+                                
                                 break;
                             }
                         }

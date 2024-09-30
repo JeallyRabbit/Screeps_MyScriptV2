@@ -130,7 +130,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             var hostiles=r.find(FIND_HOSTILE_CREEPS,{filter:
                 function(enemy)
                 {
-                    return !Memory.allies.includes(enemy.owner.username)
+                    return !Memory.allies.includes(enemy.owner.username) //&& enemy.owner.username!='Alphonzo'
                 }
             })
             if(hostiles.length>0)
@@ -689,8 +689,16 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_soldier = undefined;
 
 
+
+    //manuall sponge
+    
+    if(spawn.room.memory.manual_sponge!=undefined && spawn.memory.sponge_id==undefined)
+    {
+        spawn.memory.need_sponge=spawn.memory.manual_sponge
+    }
+
     //manuall adding swarm
-    if(spawn.room.name=='W3N7' && false)
+    if(spawn.room.name=='W3N7' || true)
     {
         if(spawn.memory.swarms==undefined){spawn.memory.swarms=[];}
 
