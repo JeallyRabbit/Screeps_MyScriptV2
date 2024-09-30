@@ -690,18 +690,24 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
 
     //manuall adding swarm
-    if(spawn.room.name=='W3N7')
+    if(spawn.room.name=='W3N7' && false)
     {
         if(spawn.memory.swarms==undefined){spawn.memory.swarms=[];}
-        if (spawn.memory.swarms != undefined) {
-            if (spawn.memory.swarms.contains_target_room('W2N7') == false) {
-                spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time,6,'W2N7', spawn.room))
-            }
 
-            if (spawn.memory.swarms.length == 1) {
-                // spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, spawn.room,'W2S37'))
+        if(spawn.memory.manual_swarm!=undefined)
+        {
+            if (spawn.memory.swarms != undefined) {
+                if (spawn.memory.swarms.contains_target_room(spawn.memory.manual_swarm) == false) {
+                    spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time,6,spawn.memory.manual_swarm, spawn.room))
+                }
+    
+                if (spawn.memory.swarms.length == 1) {
+                    // spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, spawn.room,'W2S37'))
+                }
             }
         }
+        
+        
     }
 
     //manually adding duo
