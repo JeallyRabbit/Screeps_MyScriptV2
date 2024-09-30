@@ -1244,7 +1244,6 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             var farming_needs_satisfied=false;
             var farming_sources_length=Math.floor(spawn.memory.farming_sources.length/2);
-            console.log("farming_sources_length: ",farming_sources_length)
             if(spawn.memory.farming_rooms!=undefined && spawn.memory.farming_sources.length>0 && spawn.memory.farming_sources[farming_sources_length].carry_power>=spawn.memory.farming_sources[farming_sources_length].harvesting_power
                 && spawn.memory.farming_sources[farming_sources_length].harvesting_power>(SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5
             )
