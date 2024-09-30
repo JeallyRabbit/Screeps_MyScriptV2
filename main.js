@@ -38,6 +38,7 @@ var roleDuoLeader = require('role.duoLeader')
 var roleDuoFollower = require('role.duoFollower')
 var operateDuo = require('operateDuo')
 var operateSwarm=require('operateSwarm')
+var roleSponge=require('roleSponge')
 
 var roleIntershardClaimer = require('role.intershardClaimer')
 var roleIntershardColonizer = require('role.intershardColonizer')
@@ -71,6 +72,7 @@ const maxDistanceCarrier = require('maxDistanceCarrier');
 const maxFarmer = require('maxFarmer');
 const maxClaimer = require('maxClaimer');
 const maxDuoHealer = require('maxDuoHealer')
+const maxSponge=require('maxSponge')
 
 var RoomPositionFunctions = require('roomPositionFunctions');
 const maxSoldier = require('./maxSoldier');
@@ -1057,6 +1059,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     }
                     else if(creep.memory.role=='sponge')
                     {
+                        creep.roleSponge(creep,spawn)
                         spawn.memory.sponge_id=creep.id
                         spawn.memory.need_sponge=undefined
                     }
