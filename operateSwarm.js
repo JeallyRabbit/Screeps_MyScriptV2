@@ -269,7 +269,8 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                 var is_any_to_far=false
                 for(other of swarm.members)
                 {
-                    if(creep.pos.getRangeTo(mean_pos)>swarm.members.length+2 && sum_y!=0 && sum_x!=0)
+                    if(Game.getObjectById(other).pos.getRangeTo(mean_pos)>swarm.members.length/2 && sum_y!=0 && sum_x!=0
+                && Game.getObjectById(other).room.name==creep.room.name)
                     {
                         is_any_to_far=true
                         break;
