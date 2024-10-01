@@ -157,7 +157,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         }).length == 0 &&  _.filter(creep.body, function (part) {
                             return part.type === ATTACK && part.hits == 0;
                         }).length > 0) && Game.rooms[creep.room.name].memory.hostiles != undefined) {
-                            creep.fleeFrom(Game.rooms[creep.room.name].memory.hostiles, 6)
+                            creep.fleeFrom(Game.rooms[creep.room.name].memory.hostiles, 6,{maxRooms: 1})
                         }
 
 
@@ -265,15 +265,25 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                 var mean_y=Math.floor(sum_y/counted)
                 creep.say(mean_x+" "+mean_y)
                 var mean_pos=new RoomPosition(mean_x,mean_y,creep.room.name)
-                if(creep.pos.getRangeTo(mean_pos)>swarm.members.length+2 && sum_y!=0 && sum_x!=0)
+
+                var is_any_to_far=false
+                for(other of swarm.members)
                 {
-                    creep.say(creep.pos.getRangeTo(mean_pos))
+                    if(creep.pos.getRangeTo(mean_pos)>swarm.members.length+2 && sum_y!=0 && sum_x!=0)
+                    {
+                        is_any_to_far=true
+                        break;
+                    }
+                }
+                if(is_any_to_far)
+                {
+                    creep.say("any to far")
                     creep.moveTo(mean_pos,{avoidCreeps: false})
                 }
             }
             else {
                 //rand <1;6>
-                creep.fleeFrom([this], 8)
+                creep.fleeFrom([this], 8,{maxRooms: 1})
             }
         }
     }

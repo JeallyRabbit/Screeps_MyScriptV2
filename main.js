@@ -1255,7 +1255,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.memory.isSpawningSwarm=false;
             for(s of spawn.memory.swarms)
             {
-                if(!s.completed && pop_fillers==spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers==spawn.memory.req_haulers)
+                if(!s.completed && pop_fillers==spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers>=spawn.memory.req_haulers)
                 {
                     console.log("trying to spawn swarms")
                     spawn.memory.isSpawningSwarm=true
@@ -1581,7 +1581,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     continue;
                 }
             }
-            if(spawn.memory.need_sponge!=undefined)
+            if(spawn.memory.need_sponge!=undefined && farming_needs_satisfied)
             {
                 if(spawn.spawnCreep(maxSponge(energyCap,spawn),'Sp_' + spawn.room.name + '_' + Game.time, { memory: { role: 'sponge', home_room: spawn.room, target_room: spawn.memory.need_sponge } })==OK)
                 {
