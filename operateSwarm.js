@@ -42,6 +42,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                 target_creep = creep.pos.findClosestByRange(enemy_creeps)
             }
             //creep.say(target_creep)
+            /*
             for (other of swarm.members) {
                 if (other != id && Game.getObjectById(other) != null) {
                     if (creep.hits == creep.hitsMax && Game.getObjectById(other).hits < Game.getObjectById(other).hitsMax) {
@@ -59,6 +60,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                     }
                 }
             }
+                */
 
 
 
@@ -230,15 +232,43 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                     //creep.rangedMassAttack()
                 }
 
+                var sum_x=0;
+                var sum_y=0
+                var counted=0;
+                console.log(creep.id)
                 for (other of swarm.members) {
+                    if(Game.getObjectById(other) != null)
+                    {
+                        if(Game.getObjectById(other).room.name==creep.room.name)
+                        {
+                            console.log("adding other: ",other)
+                            counted++;
+                            sum_x+=Game.getObjectById(other).pos.x
+                            sum_y+=Game.getObjectById(other).pos.y
+                        }
+                        
+                    }
+                    
+                    /*
                     if (other != id && Game.getObjectById(other) != null) {
                         if (creep.pos.getRangeTo(Game.getObjectById(other)) > swarm.req_population
                             && creep.pos.roomName == Game.getObjectById(other).pos.roomName) {
-                            creep.moveTo(Game.getObjectById(other), { avoidCreeps: true})
+                            creep.moveTo(Game.getObjectById(other), { avoidCreeps: true,swampCost:2})
                             creep.say("grouping")
                             break;
                         }
                     }
+                        */
+                }
+                
+                var mean_x=Math.floor(sum_x/counted)
+                var mean_y=Math.floor(sum_y/counted)
+                creep.say(mean_x+" "+mean_y)
+                var mean_pos=new RoomPosition(mean_x,mean_y,creep.room.name)
+                if(creep.pos.getRangeTo(mean_pos)>swarm.members.length+2 && sum_y!=0 && sum_x!=0)
+                {
+                    creep.say(creep.pos.getRangeTo(mean_pos))
+                    creep.moveTo(mean_pos,{avoidCreeps: false})
                 }
             }
             else {

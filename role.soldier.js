@@ -70,7 +70,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
         var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
             filter:
                 function (cr) {
-                    return cr.owner.username != 'Alphonzo' &&
+                    return !Memory.allies.includes(cr.owner.username) &&
                     (cr.getActiveBodyparts(ATTACK) > 0 || cr.getActiveBodyparts(RANGED_ATTACK) > 0 || cr.getActiveBodyparts(HEAL) > 0)
                 }
         });
@@ -79,7 +79,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
                 filter:
                     function (cr) {
-                        return cr.owner.username != 'Alphonzo'
+                        return !Memory.allies.includes(cr.owner.username)
                     }
             });
         }
@@ -100,15 +100,16 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
         //}
         if (target_creep) {
             //creep.say(target_creep.pos.x);
-
+            //creep.move(BOTTOM_RIGHT)
 
 
 
             if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
+                //creep.say("2")
+                creep.moveTo(target_creep.pos, { maxRooms: 1, avoidSk: true,avoidCreeps: true });
             }
             //creep.rangedMassAttack()
-            creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
+            //creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
             //}
 
             if (creep.memory.is_melee == false) {
@@ -118,7 +119,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
                     return part.type === ATTACK && part.hits > 0;
                 }).length > 0)) {
                     creep.fleeFrom({ target_creep }, 3, { maxRooms: 1 })
-                    // goOutOfRange(creep, 3);
+                    creep.say("flee")
                 }
                 else if (creep.pos.isNearTo(target_creep.pos)) {
                     creep.rangedMassAttack()
@@ -132,6 +133,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
 
         }
         else if (target_structure) {
+            creep.say("3")
             //console.log(creep.room.name, " ", "fighting structures");
             ////creep.say("STR");
             //console.log("target_structure: ",target_structure);

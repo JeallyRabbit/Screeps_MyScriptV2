@@ -1244,17 +1244,18 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             var farming_needs_satisfied=false;
             var farming_sources_length=Math.floor(spawn.memory.farming_sources.length/2);
-            if(spawn.memory.farming_rooms!=undefined && spawn.memory.farming_sources.length>0 && spawn.memory.farming_sources[farming_sources_length].carry_power>=spawn.memory.farming_sources[farming_sources_length].harvesting_power
+            if(spawn.memory.farming_rooms!=undefined && spawn.memory.farming_sources.length>0 && Math.ceil(spawn.memory.farming_sources[farming_sources_length].carry_power)>=spawn.memory.farming_sources[farming_sources_length].harvesting_power*0.5
                 && spawn.memory.farming_sources[farming_sources_length].harvesting_power>(SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5
             )
             {
                 farming_needs_satisfied=true
             }
             //spawning swarm
+            console.log(spawn.room.name, " farming_needs_satisfied: ",farming_needs_satisfied," ",farming_sources_length)
             spawn.memory.isSpawningSwarm=false;
             for(s of spawn.memory.swarms)
             {
-                if(!s.completed && pop_fillers==spawn.memory.req_fillers && farming_needs_satisfied)
+                if(!s.completed && pop_fillers==spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers==spawn.memory.req_haulers)
                 {
                     console.log("trying to spawn swarms")
                     spawn.memory.isSpawningSwarm=true
