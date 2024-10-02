@@ -281,20 +281,6 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             Memory.colonizing = false;
 
         }
-        // console.log(Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15)
-
-
-        /*
-        if (Memory.main_spawns.length + Memory.rooms_to_colonize.length <= Math.floor((Game.gcl.level + 2) / 2)
-        || Memory.main_spawns.length + Memory.rooms_to_colonize.length <4) {
-            Memory.colonizing = true;
-        }
-        else {
-            Memory.colonizing = false;
-
-            // console.log(Memory.main_spawns.length," + ",Memory.rooms_to_colonize.length," < ",(Game.gcl.level+2)/2);
-        } 
-            */
 
         if (Memory.rooms_to_colonize != undefined && Memory.rooms_to_colonize.length > 0) {
             var closest_distance = Infinity;
@@ -336,7 +322,6 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
         */
 
         spawn_num = 0;
-        //for (let spawn_id of Memory.main_spawns) 
         console.log("i have: ", Memory.main_spawns.length, " rooms");
         for (spawn_num; spawn_num < Memory.main_spawns.length; spawn_num++) {
 

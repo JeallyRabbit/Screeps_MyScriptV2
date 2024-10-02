@@ -1160,7 +1160,9 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_main_spawn_stamp(spawn, roomCM);
 
         plan_manager_stamp(spawn, roomCM);
+        plan_controller_container(spawn,roomCM)
 
+        
         //plan_road_to_controller(spawn, roomCM);
         plan_extension_stamp(spawn, roomCM, 4);
         plan_extension_stamp(spawn, roomCM, 5);
@@ -1202,7 +1204,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
             plan_controller_ramparts(spawn);
         }
 
-        plan_controller_container(spawn,roomCM_2)
+        
 
         //planning roads to sources (in all farming rooms including main room)
         if ((spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length == 0) || spawn.room.controller.level >= 4) {
