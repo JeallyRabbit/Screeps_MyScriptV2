@@ -2,7 +2,7 @@
 //test git 3
 //duo git test
 var roleHauler = require('role.hauler');
-var roleHauler2=require('role.hauler2')
+var roleHauler2 = require('role.hauler2')
 var roleBuilder = require('role.builder');
 var roleUpgrader = require('role.upgrader');
 var roleSoldier = require('role.soldier');
@@ -37,8 +37,8 @@ var roleDistanceCarrier2 = require('role.DistanceCarrier2')
 var roleDuoLeader = require('role.duoLeader')
 var roleDuoFollower = require('role.duoFollower')
 var operateDuo = require('operateDuo')
-var operateSwarm=require('operateSwarm')
-var roleSponge=require('roleSponge')
+var operateSwarm = require('operateSwarm')
+var roleSponge = require('roleSponge')
 
 var roleIntershardClaimer = require('role.intershardClaimer')
 var roleIntershardColonizer = require('role.intershardColonizer')
@@ -72,7 +72,7 @@ const maxDistanceCarrier = require('maxDistanceCarrier');
 const maxFarmer = require('maxFarmer');
 const maxClaimer = require('maxClaimer');
 const maxDuoHealer = require('maxDuoHealer')
-const maxSponge=require('maxSponge')
+const maxSponge = require('maxSponge')
 
 var RoomPositionFunctions = require('roomPositionFunctions');
 const maxSoldier = require('./maxSoldier');
@@ -114,23 +114,22 @@ class farmingRoom {
 }
 
 class Duo {
-    constructor(duoId, duoHome,target_room) {
+    constructor(duoId, duoHome, target_room) {
         this.id = duoId;
         this.home = duoHome;
-        this.target_room=target_room
+        this.target_room = target_room
         //this.leaderId =duoleaderId 
         //this.followerId=duoFollowerId
     }
 }
 
-class Swarm{
-    constructor(swarmId, reqPopulation,target_room,home_room)
-    {
-        this.id=swarmId;
-        this.req_population=reqPopulation;
-        this.target_room=target_room;
-        this.home_rom=home_room;
-        this.members=[];
+class Swarm {
+    constructor(swarmId, reqPopulation, target_room, home_room) {
+        this.id = swarmId;
+        this.req_population = reqPopulation;
+        this.target_room = target_room;
+        this.home_rom = home_room;
+        this.members = [];
     }
 }
 
@@ -272,10 +271,15 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
         if (Game.shard.name == 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < 4) {
             Memory.colonizing = false;
         }
-
+        console.log("shardname: ", Game.shard.name)
         if (Game.shard.name != 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15 && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.gcl.level) {
             Memory.colonizing = true;
+            if (Game.shard.name == 'newbieland' && Memory.main_spawns.length + Memory.rooms_to_colonize.length >= 3) {
+                Memory.colonizing = false;
+            }
+
             Memory.colonizing = false;
+
         }
         // console.log(Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15)
 
@@ -451,11 +455,9 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
 
-            if(spawn.memory.swarms!=undefined && spawn.memory.swarms.length>0)
-            {
-                for (sw of spawn.memory.swarms)
-                {
-                    sw.members=[]
+            if (spawn.memory.swarms != undefined && spawn.memory.swarms.length > 0) {
+                for (sw of spawn.memory.swarms) {
+                    sw.members = []
                 }
             }
 
@@ -626,7 +628,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
 
-            spawn.memory.sponge_id=undefined;
+            spawn.memory.sponge_id = undefined;
             /*
             spawn.memory.farming_rooms = [];
             for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
@@ -668,22 +670,21 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             upgraders_parts += _.filter(creep.body, { type: WORK }).length;
 
                         }
-                        
-                        if (upgraders_parts > 0 && spawn.memory.building==true && spawn.room.controller.ticksToDowngrade>5000
-                            && spawn.room.controller.level>=2
+
+                        if (upgraders_parts > 0 && spawn.memory.building == true && spawn.room.controller.ticksToDowngrade > 5000
+                            && spawn.room.controller.level >= 2
                         )//spawn.memory.req_builders > 0 && false) {
                         {
                             pop_builders++;
                             creep.roleBuilder(creep, spawn)
                             //continue;
                         }
-                        else
-                        {
-                           creep.roleUpgrader(creep, spawn); 
+                        else {
+                            creep.roleUpgrader(creep, spawn);
                         }
 
-                        
-                        
+
+
                     }
                     else if (creep.memory.role == 'hauler') {
                         if (creep.ticksToLive > 50 || creep.spawning) {
@@ -693,9 +694,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             //creep.say('💤')
                             continue;
                         }
-                        if(creep.store.getCapacity(RESOURCE_ENERGY)<200)
-                        {
-                            spawn.memory.req_haulers=2;
+                        if (creep.store.getCapacity(RESOURCE_ENERGY) < 200) {
+                            spawn.memory.req_haulers = 2;
                         }
                         creep.roleHauler2(creep, spawn);
 
@@ -721,20 +721,17 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             }
                         }*/
 
-                        if(spawn.memory.rooms_to_blockade!=undefined && spawn.memory.rooms_to_blockade.length>0)
-                        {
+                        if (spawn.memory.rooms_to_blockade != undefined && spawn.memory.rooms_to_blockade.length > 0) {
                             //console.log(creep.pos)
-                           // creep.say()
-                            for(a of spawn.memory.rooms_to_blockade)
-                            {
+                            // creep.say()
+                            for (a of spawn.memory.rooms_to_blockade) {
                                 //a.soldier_id=creep.id
                                 //console.log("a")
                                 //console.log(a.roomName)
                                 //creep.say(a.roomName)
-                                if(a.roomName==creep.memory.target_room)
-                                {
+                                if (a.roomName == creep.memory.target_room) {
                                     //console.log(creep.id)
-                                    a.soldier_id=creep.id;
+                                    a.soldier_id = creep.id;
                                     break;
                                 }
                             }
@@ -1039,18 +1036,14 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         }
 
                     }
-                    else if(creep.memory.role=='swarmMember')
-                    {
-                        if(spawn.memory.swarms!=undefined)
-                        {
-                            for(s of spawn.memory.swarms){
-                                if(s.id==creep.memory.swarmId)
-                                {
-                                    if(!s.members.includes(creep.id))
-                                    {
+                    else if (creep.memory.role == 'swarmMember') {
+                        if (spawn.memory.swarms != undefined) {
+                            for (s of spawn.memory.swarms) {
+                                if (s.id == creep.memory.swarmId) {
+                                    if (!s.members.includes(creep.id)) {
                                         s.members.push(creep.id)
                                     }
-                                    
+
                                     break;
                                 }
                             }
@@ -1059,11 +1052,10 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     else if (creep.memory.role == 'energySupport') {
                         creep.roleEnergySupport(creep, spawn)
                     }
-                    else if(creep.memory.role=='sponge')
-                    {
-                        creep.roleSponge(creep,spawn)
-                        spawn.memory.sponge_id=creep.id
-                        spawn.memory.need_sponge=undefined
+                    else if (creep.memory.role == 'sponge') {
+                        creep.roleSponge(creep, spawn)
+                        spawn.memory.sponge_id = creep.id
+                        spawn.memory.need_sponge = undefined
                     }
 
 
@@ -1076,15 +1068,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
             //swarms
-            if(spawn.memory.swarms==undefined)
-            {
-                spawn.memory.swarms=[];
+            if (spawn.memory.swarms == undefined) {
+                spawn.memory.swarms = [];
             }
-            if(spawn.memory.swarms!=undefined && spawn.memory.swarms.length>0)
-            {
-                for(let i=0;i<spawn.memory.swarms.length;i++)
-                {
-                    var swarm=spawn.memory.swarms[i]
+            if (spawn.memory.swarms != undefined && spawn.memory.swarms.length > 0) {
+                for (let i = 0; i < spawn.memory.swarms.length; i++) {
+                    var swarm = spawn.memory.swarms[i]
                     spawn.operateSwarm(swarm)
                 }
             }
@@ -1242,33 +1231,30 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             }
 
-            var farming_needs_satisfied=false;
-            var farming_sources_length=Math.floor(spawn.memory.farming_sources.length/2);
-            if(spawn.memory.farming_rooms!=undefined && spawn.memory.farming_sources.length>0 && Math.ceil(spawn.memory.farming_sources[farming_sources_length].carry_power)>=spawn.memory.farming_sources[farming_sources_length].harvesting_power*0.5
-                && spawn.memory.farming_sources[farming_sources_length].harvesting_power>(SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5
-            )
-            {
-                farming_needs_satisfied=true
+            var farming_needs_satisfied = false;
+            var farming_sources_length = Math.floor(spawn.memory.farming_sources.length / 2);
+            if (spawn.memory.farming_rooms != undefined && spawn.memory.farming_sources.length > 0 && Math.ceil(spawn.memory.farming_sources[farming_sources_length].carry_power) >= spawn.memory.farming_sources[farming_sources_length].harvesting_power * 0.5
+                && spawn.memory.farming_sources[farming_sources_length].harvesting_power > (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5
+            ) {
+                farming_needs_satisfied = true
             }
             //spawning swarm
-            console.log(spawn.room.name, " farming_needs_satisfied: ",farming_needs_satisfied," ",farming_sources_length)
-            spawn.memory.isSpawningSwarm=false;
-            for(s of spawn.memory.swarms)
-            {
-                if(!s.completed && pop_fillers==spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers>=spawn.memory.req_haulers)
-                {
+            //console.log(spawn.room.name, " farming_needs_satisfied: ",farming_needs_satisfied," ",farming_sources_length)
+            spawn.memory.isSpawningSwarm = false;
+            for (s of spawn.memory.swarms) {
+                if (!s.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers) {
                     console.log("trying to spawn swarms")
-                    spawn.memory.isSpawningSwarm=true
-                    var spawn_result=spawn.spawnCreep(maxSoldier(energyCap), 'swarm' + spawn.room.name + '_' + Game.time, {
+                    spawn.memory.isSpawningSwarm = true
+                    var spawn_result = spawn.spawnCreep(maxSoldier(energyCap), 'swarm' + spawn.room.name + '_' + Game.time, {
                         memory: {
                             role: 'swarmMember',
                             home_room: spawn.room,
                             swarmId: s.id
                         }
-                    }) 
-                    console.log("swarm spawning result: ",spawn_result)
+                    })
+                    console.log("swarm spawning result: ", spawn_result)
                     if (spawn_result == 0) {
-                        spawn.memory.isSpawningSwarm=true
+                        spawn.memory.isSpawningSwarm = true
                         continue;
                     }
                 }
@@ -1325,7 +1311,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
                 */
 
-            if (spawn.memory.isSpawningDuo == true || spawn.memory.isSpawningSwarm==true) { continue; }
+            if (spawn.memory.isSpawningDuo == true || spawn.memory.isSpawningSwarm == true) { continue; }
 
             if (pop_haulers > 0 && pop_merchants > 0) {
                 if (spawn.memory.need_keeperHealer != undefined && false) {
@@ -1581,10 +1567,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     continue;
                 }
             }
-            if(spawn.memory.need_sponge!=undefined && farming_needs_satisfied)
-            {
-                if(spawn.spawnCreep(maxSponge(energyCap,spawn),'Sp_' + spawn.room.name + '_' + Game.time, { memory: { role: 'sponge', home_room: spawn.room, target_room: spawn.memory.need_sponge } })==OK)
-                {
+            if (spawn.memory.need_sponge != undefined && farming_needs_satisfied) {
+                if (spawn.spawnCreep(maxSponge(energyCap, spawn), 'Sp_' + spawn.room.name + '_' + Game.time, { memory: { role: 'sponge', home_room: spawn.room, target_room: spawn.memory.need_sponge } }) == OK) {
                     continue;
                 }
             }

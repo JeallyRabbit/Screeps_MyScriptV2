@@ -138,13 +138,15 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             ////creep.say("STR");
             //console.log("target_structure: ",target_structure);
             if (creep.memory.is_melee == true) {
+                creep.say("4")
                 if (creep.attack(target_structure) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target_structure);
+                    creep.say("5")
+                    creep.moveTo(target_structure,{maxRooms: 1,avoidCreeps: true});
                     //console.log("structure to far");
                 }
             }
             else {
-                creep.moveTo(target_structure);
+                creep.moveTo(target_structure,{maxRooms: 1,avoidCreeps: true});
                 creep.rangedMassAttack()
                 /* if (creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target_structure);
