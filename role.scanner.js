@@ -283,8 +283,12 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
         if (Game.map.findRoute(creep.room.name, creep.memory.target_room) == ERR_NO_PATH || Game.map.getRoomStatus(creep.memory.target_room != 'normal')) {
             console.log("removing: ", creep.memory.target_room);
             creep.say("A")
-            spawn.memory.scanner_rooms.shift()
-            creep.memory.target_room = undefined;
+            if(spawn.memory.scanner_rooms!=undefined && spawn.memory.scanner_rooms.length>0)
+            {
+                spawn.memory.scanner_rooms.shift()
+                creep.memory.target_room = undefined;
+            }
+            
         }
 
         if (creep.memory.target_room != undefined && creep.room.name != creep.memory.target_room) {

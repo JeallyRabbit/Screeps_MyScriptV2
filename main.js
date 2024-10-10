@@ -278,9 +278,11 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 Memory.colonizing = false;
             }
 
-            Memory.colonizing = false;
+            //Memory.colonizing = false;
 
         }
+
+
 
         if (Memory.rooms_to_colonize != undefined && Memory.rooms_to_colonize.length > 0) {
             var closest_distance = Infinity;
@@ -614,25 +616,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
 
             spawn.memory.sponge_id = undefined;
-            /*
-            spawn.memory.farming_rooms = [];
-            for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
-                var found = false
-                for (let j = 0; j < spawn.memory.farming_rooms.length; j++) {
-                    if (spawn.memory.farming_sources[i].name == spawn.memory.farming_rooms[j].name) {
-                        spawn.memory.farming_rooms[j].sources_num++;
-                        spawn.memory.farming_rooms[j].max_farmers += spawn.memory.farming_sources[i].max_farmers;
-                        found = true
-                        continue;
-                    }
 
-                }
-                if (found == false) {
-                    spawn.memory.farming_rooms.push(new farmingRoom(spawn.memory.farming_sources[i].name, 0, 0, 1, spawn.memory.farming_sources[i].distance,
-                        spawn.memory.farming_sources[i].max_farmers));
-                }
-            }
-            */
+            
 
             for (var name in Game.creeps) {
 
@@ -1365,7 +1350,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 continue;
             }
 
-            if (spawn.memory.need_soldier != undefined) {
+            if (spawn.memory.need_soldier != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK")) {
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:

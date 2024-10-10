@@ -100,13 +100,12 @@ class Duo {
     }
 }
 
-class Swarm{
-    constructor(swarmId, reqPopulation,target_room,home_rom)
-    {
-        this.id=swarmId;
-        this.req_population=reqPopulation;
-        this.target_room=target_room;
-        this.home_rom=home_rom;
+class Swarm {
+    constructor(swarmId, reqPopulation, target_room, home_rom) {
+        this.id = swarmId;
+        this.req_population = reqPopulation;
+        this.target_room = target_room;
+        this.home_rom = home_rom;
     }
 }
 
@@ -115,43 +114,36 @@ class Swarm{
 Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
 
-    if(Memory.allies==undefined)
-    {
-        Memory.allies=[];
+    if (Memory.allies == undefined) {
+        Memory.allies = [];
     }
     //Finding hostiles in every room
 
-    for (room in Game.rooms)
-    {
-        var r=Game.rooms[room]
-        if(r!=undefined)
-        {
-            r.memory.hostiles=[];
-            var hostiles=r.find(FIND_HOSTILE_CREEPS,{filter:
-                function(enemy)
-                {
-                    return !Memory.allies.includes(enemy.owner.username) //&& enemy.owner.username!='Alphonzo'
-                }
+    for (room in Game.rooms) {
+        var r = Game.rooms[room]
+        if (r != undefined) {
+            r.memory.hostiles = [];
+            var hostiles = r.find(FIND_HOSTILE_CREEPS, {
+                filter:
+                    function (enemy) {
+                        return !Memory.allies.includes(enemy.owner.username) //&& enemy.owner.username!='Alphonzo'
+                    }
             })
-            if(hostiles.length>0)
-            {
-                for(a of hostiles)
-                {
+            if (hostiles.length > 0) {
+                for (a of hostiles) {
                     r.memory.hostiles.push(a.id)
                 }
             }
 
-            r.memory.allies=[];
-            var allies=r.find(FIND_HOSTILE_CREEPS,{filter:
-                function(ally)
-                {
-                    return Memory.allies.includes(ally.owner.username) //&& enemy.owner.username!='Alphonzo'
-                }
+            r.memory.allies = [];
+            var allies = r.find(FIND_HOSTILE_CREEPS, {
+                filter:
+                    function (ally) {
+                        return Memory.allies.includes(ally.owner.username) //&& enemy.owner.username!='Alphonzo'
+                    }
             })
-            if(allies.length>0)
-            {
-                for(a of allies)
-                {
+            if (allies.length > 0) {
+                for (a of allies) {
                     r.memory.allies.push(a.id)
                 }
             }
@@ -706,31 +698,28 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
 
     //manuall sponge
-    
-    if(spawn.memory.manual_sponge!=undefined && spawn.memory.sponge_id==undefined)
-    {
-        spawn.memory.need_sponge=spawn.memory.manual_sponge
+
+    if (spawn.memory.manual_sponge != undefined && spawn.memory.sponge_id == undefined) {
+        spawn.memory.need_sponge = spawn.memory.manual_sponge
     }
 
     //manuall adding swarm
-    if(spawn.room.name=='W3N7' || true)
-    {
-        if(spawn.memory.swarms==undefined){spawn.memory.swarms=[];}
+    if (spawn.room.name == 'W3N7' || true) {
+        if (spawn.memory.swarms == undefined) { spawn.memory.swarms = []; }
 
-        if(spawn.memory.manual_swarm!=undefined)
-        {
+        if (spawn.memory.manual_swarm != undefined) {
             if (spawn.memory.swarms != undefined) {
                 if (spawn.memory.swarms.contains_target_room(spawn.memory.manual_swarm) == false) {
-                    spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time,6,spawn.memory.manual_swarm, spawn.room))
+                    spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, 6, spawn.memory.manual_swarm, spawn.room))
                 }
-    
+
                 if (spawn.memory.swarms.length == 1) {
                     // spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, spawn.room,'W2S37'))
                 }
             }
         }
-        
-        
+
+
     }
 
     //manually adding duo
@@ -811,6 +800,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     && Game.rooms[spawn.memory.farming_sources[i].name].controller.reservation.username == 'Invader') {
                     continue;
                 }
+
                 spawn.memory.need_source_farmer = spawn.memory.farming_sources[i].id;
                 spawn.memory.need_source_farmer_room = spawn.memory.farming_sources[i].name;
                 //consone.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
@@ -818,6 +808,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
 
+        // if room is under attack do not spawn farmers
+        if (spawn.memory.state.includes("STATE_UNDER_ATTACK")) {
+            spawn.memory.need_source_farmer = undefined
+            spawn.memory.need_source_farmer_room = undefined
+        }
 
 
         //  SOLDIERS //
@@ -829,16 +824,15 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
 
 
-            var creeps_to_heal=Game.rooms[myRoom].find(FIND_MY_CREEPS,{filter:
-                function (cr)
-                {
-                    return cr.hits<cr.hitsMax
-                }
+            var creeps_to_heal = Game.rooms[myRoom].find(FIND_MY_CREEPS, {
+                filter:
+                    function (cr) {
+                        return cr.hits < cr.hitsMax
+                    }
             })
 
-            Game.rooms[myRoom].memory.damagedCreeps=[];
-            for(cr of creeps_to_heal)
-            {
+            Game.rooms[myRoom].memory.damagedCreeps = [];
+            for (cr of creeps_to_heal) {
                 Game.rooms[myRoom].memory.damagedCreeps.push(cr.id);
             }
 

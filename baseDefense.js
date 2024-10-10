@@ -39,6 +39,14 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
 
 
         }
+        else if(hostile_not_invader.length>0 && (this.room.controller.safeMode < 500 ||  this.room.controller.safeMode==undefined))
+        {
+            if (this.memory.state.includes(STATE_UNDER_ATTACK) == false) {
+                this.memory.state.push(STATE_UNDER_ATTACK)
+                console.log(this.room.name, " is underattack")
+            }
+        }
+        console.log(this.room.name," ",hostile_not_invader.length," ", this.room.controller.safeMode)
         /*
         if (this.memory.state.includes(STATE_UNDER_ATTACK) == false
     && hostile_not_invader.length==hostiles.length) {
