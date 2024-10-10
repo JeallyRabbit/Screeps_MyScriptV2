@@ -67,12 +67,31 @@ towers = spawn.room.find(FIND_MY_STRUCTURES, {
             }
     });
 
+    var defense_rampart = spawn.room.find(FIND_MY_STRUCTURES, {
+        filter:
+            function (str) {
+                return str.structureType === STRUCTURE_RAMPART && str.hits < str.hitsMax
+            }
+    })
+    var most_damaged_defense_rampart = null
+    if (defense_rampart.length > 0) {
+        most_damaged_defense_rampart = defense_rampart[0];
+        for (a of defense_rampart) {
+            if (a.hits < most_damaged_defense_rampart.hits) {
+                most_damaged_defense_rampart = a
+            }
+        }
+    }
+
 
     for (tower_id of spawn.memory.towers_id) {
         var tower = Game.getObjectById(tower_id);
         if (tower == null) { continue; }
 
-
+        if (spawn.memory.state.includes("STATE_UNDER_ATTACK") && most_damaged_defense_rampart!=null) {
+            tower.repair(most_damaged_defense_rampart)
+            continue
+        }
 
 
         //console.log("damged Creeps: ",damagedCreeps.length);

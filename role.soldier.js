@@ -71,11 +71,10 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             filter:
                 function (cr) {
                     return !Memory.allies.includes(cr.owner.username) &&
-                    (cr.getActiveBodyparts(ATTACK) > 0 || cr.getActiveBodyparts(RANGED_ATTACK) > 0 || cr.getActiveBodyparts(HEAL) > 0)
+                        (cr.getActiveBodyparts(ATTACK) > 0 || cr.getActiveBodyparts(RANGED_ATTACK) > 0 || cr.getActiveBodyparts(HEAL) > 0)
                 }
         });
-        if(target_creep==null)
-        {
+        if (target_creep == null) {
             target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
                 filter:
                     function (cr) {
@@ -106,7 +105,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
 
             if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
                 //creep.say("2")
-                creep.moveTo(target_creep.pos, { maxRooms: 1, avoidSk: true,avoidCreeps: true });
+                creep.moveTo(target_creep.pos, { maxRooms: 1, avoidSk: true, avoidCreeps: true });
             }
             //creep.rangedMassAttack()
             //creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
@@ -141,48 +140,41 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
                 creep.say("4")
                 if (creep.attack(target_structure) == ERR_NOT_IN_RANGE) {
                     creep.say("5")
-                    creep.moveTo(target_structure,{maxRooms: 1,avoidCreeps: true});
-                    //console.log("structure to far");
+                    creep.moveTo(target_structure,{maxRooms: 1,avoidCreeps: true,reusePath: 11,range:1});
                 }
+
             }
             else {
-                creep.moveTo(target_structure,{maxRooms: 1,avoidCreeps: true});
+                creep.moveTo(target_structure, { maxRooms: 1, avoidCreeps: true });
                 creep.rangedMassAttack()
-                /* if (creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target_structure);
-                    //console.log("structure to far");
-                } */
             }
 
             if (creep.hits < creep.hitsMax) {
                 creep.heal(creep);
             }
         }
-        if(Game.rooms[creep.memory.target_room]!=undefined && Game.rooms[creep.memory.target_room].memory.damagedCreeps.length>0)
-        {
-            var damaged=[];
-            for(cr of Game.rooms[creep.memory.target_room].memory.damagedCreeps)
-            {
+        if (Game.rooms[creep.memory.target_room] != undefined && Game.rooms[creep.memory.target_room].memory.damagedCreeps.length > 0) {
+            var damaged = [];
+            for (cr of Game.rooms[creep.memory.target_room].memory.damagedCreeps) {
                 damaged.push(Game.getObjectById(cr))
             }
-            var toHeal=creep.pos.findClosestByRange(damaged)
-            if(toHeal!=null)
-            {
-                //creep.say("healing my creep")
-                if(creep.heal(toHeal)==ERR_NOT_IN_RANGE)
-                {
+            var toHeal = creep.pos.findClosestByRange(damaged)
+            if (toHeal != null) {
+                creep.say("healing my creep")
+                if (creep.heal(toHeal) == ERR_NOT_IN_RANGE) {
                     //creep.say("ranged heal")
-                    if(target_creep==null)
-                    {
+                    if (target_creep == null) {
+                        creep.say("6")
                         creep.moveTo(toHeal)
                     }
-                    
+
                     creep.rangedHeal(toHeal)
                 }
             }
         }
         else {
-            creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 11, maxRooms: 1, range: 22 });
+            //creep.say("7")
+            //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 11, maxRooms: 1, range: 22 });
         }
     }
     else {
@@ -206,9 +198,9 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
         }
             */
-
-        creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
-
+        creep.say("7")
+        //creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
+        creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 11, maxRooms: 1, range: 22 });
 
     }
 
