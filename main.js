@@ -278,7 +278,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 Memory.colonizing = false;
             }
 
-            //Memory.colonizing = false;
+            Memory.colonizing = false;
 
         }
 
