@@ -37,30 +37,38 @@ Creep.prototype.roleRampartRepairer = function roleRampartRepairer(creep, spawn)
             return;
         }
         if (creep.repair(rampart) == ERR_NOT_IN_RANGE) {
-            //creep.say("GO")
-            if (spawn.memory.state.includes(STATE_UNDER_ATTACK) && creep.pos.inRangeTo(rampart, 7)) {
+            creep.say("GO")
+            if (false && spawn.memory.state.includes("STATE_UNDER_ATTACK") && creep.pos.inRangeTo(rampart.pos, 7)) {
+                creep.say("1")
                 var path = creep.pos.findPathTo(rampart.pos, {
-                    range: 3, maxRooms: 1,
+                    range: 3, maxRooms: 1, ignoreCreeps: false,
                     costCallback: function (roomName, costMatrix) {
                         //console.log("PATHING")
-                        creep.say(storedCostMatrix.get(creep.pos.x, creep.pos.y))
+                        //creep.say(storedCostMatrix.get(creep.pos.x, creep.pos.y))
                         return storedCostMatrix
                     }
                 })
                 creep.moveByPath(path)
             }
             else {
-
+                creep.say("2")
                 if (spawn.memory.state.includes("STATE_UNDER_ATTACK")) {
-                    var hostiles = this.room.memory.hostiles;
+                    creep.say("3")
+                    var hostiles=[];
+                    for(a of spawn.room.memory.hostiles)
+                    {
+                        hostiles.push(Game.getObjectById(a))
+                    }
                     var closest_hostile = creep.pos.findClosestByRange(hostiles)
                     let storedCostMatrix = PathFinder.CostMatrix.deserialize(Game.rooms[creep.room.name].memory.meleeCostMatrix);
                     if (closest_hostile != null) {
+                        creep.say("4")
 
-                        if (creep.pos.inRangeTo(closest_hostile, 7)) {
+                        if (creep.pos.inRangeTo(closest_hostile, 10)) {
+                            creep.say("5")
                             if (creep.repair(rampart) == ERR_NOT_IN_RANGE) {
                                 var path = creep.pos.findPathTo(rampart.pos, {
-                                    range: 1, maxRooms: 1,
+                                    range: 2, maxRooms: 1,avoidCreeps: true, ignoreCreeps: false,
                                     costCallback: function (roomName, costMatrix) {
                                         console.log("ramapart repairer in ",spawn.room.name," is avoiding hostiles")
 
@@ -69,14 +77,17 @@ Creep.prototype.roleRampartRepairer = function roleRampartRepairer(creep, spawn)
                                 })
                                 //console.log("path: ",path)
                                 creep.moveByPath(path)
+                                //creep.say("dang rampar")
                             }
                         }
                         else {
-                            creep.moveTo(rampart, { range: 6 })
+                            creep.say("safe ra")
+                            creep.moveTo(rampart.pos, { range: 6,avoidCreeps: true })
                         }
                     }
                 }
                 else {
+                    creep.say("ra")
                     creep.moveTo(rampart, { reusePath: 11, maxRooms: 1 })
                 }
 
@@ -86,7 +97,7 @@ Creep.prototype.roleRampartRepairer = function roleRampartRepairer(creep, spawn)
             }
 
         }
-        creep.say('🛠');
+        //creep.say('🛠');
     }
 
     if (creep.store[RESOURCE_ENERGY] == 0) {

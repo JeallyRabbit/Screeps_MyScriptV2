@@ -4,6 +4,12 @@ const { boosting_driver } = require('boosting_driver');
 Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
 
     //creep.suicide();
+    if(spawn.memory.state.includes("STATE_UNDER_ATTACK") && spawn.room.controller.ticksToDowngrade>2000)
+    {
+        creep.say("rep")
+        creep.roleRampartRepairer(creep, spawn);
+        return;
+    }
     if(creep.memory.work_parts_num==undefined)
     {
         creep.memory.work_parts_num=_.filter(creep.body, { type: WORK }).length

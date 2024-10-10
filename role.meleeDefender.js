@@ -17,7 +17,7 @@ Creep.prototype.roleMeleeDefender = function roleMeleeDefender(creep, spawn) {
         {
             if (creep.attack(closest_hostile) == ERR_NOT_IN_RANGE) {
             var path = creep.pos.findPathTo(closest_hostile.pos, {
-                range: 1, maxRooms: 1,
+                range: 1, maxRooms: 1, avoidCreeps: true,
                 costCallback: function (roomName, costMatrix) {
                     console.log("bbbbbbbb")
     
