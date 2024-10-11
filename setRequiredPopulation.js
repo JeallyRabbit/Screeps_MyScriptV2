@@ -5,6 +5,21 @@ const STATE_NEED_ENERGY = 'STATE_NEED_ENERGY'
 const STATE_STATE_NEED_MILITARY_ENERGY = 'STATE_NEED_MILITARY_ENERGY'
 
 
+function contains_rooms(array,roomName)
+{
+    if(Array.isArray(array))
+    {
+        for(a of array)
+        {
+            if(a.roomName==roomName)
+            {
+                return true
+            }
+        }
+    }
+    return false
+}
+/*
 Array.prototype.contains_rooms = function contains_rooms(roomName) {
     if (this != undefined && this.length > 0) {
         //console.log("contains_rooms: ")
@@ -17,7 +32,23 @@ Array.prototype.contains_rooms = function contains_rooms(roomName) {
     }
     return false
 }
+    */
 
+function contains_target_room(array,roomName)
+{
+    if(Array.isArray(array))
+        {
+            for(a of array)
+            {
+                if(a.target_room==roomName)
+                {
+                    return true
+                }
+            }
+        }
+        return false
+}
+/*
 Array.prototype.contains_target_room = function contains_target_room(roomName) {
     if (this != undefined && this.length > 0) {
         //console.log("contains_rooms: ")
@@ -30,6 +61,7 @@ Array.prototype.contains_target_room = function contains_target_room(roomName) {
     }
     return false
 }
+    */
 
 class blockadeRoom {
     constructor(name) {
@@ -464,9 +496,9 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         var spawn_num = 1
         if (Game.spawns[spawn.room.name + '_2'] != undefined) { spawn_num++; }
         if (Game.spawns[spawn.room.name + '_3'] != undefined) { spawn_num++; }
-        while (farming_body_parts < spawn_num * 425 && farming_sources_num < spawn.memory.farming_sources.length) {
+        while (farming_body_parts < spawn_num * 400 && farming_sources_num < spawn.memory.farming_sources.length) {
             farming_body_parts += spawn.memory.farming_sources[farming_sources_num].body_parts_cost;
-            if (farming_body_parts < spawn_num * 425) {
+            if (farming_body_parts < spawn_num * 400) {
                 farming_sources_num++;
             }
             else {
@@ -709,7 +741,9 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
         if (spawn.memory.manual_swarm != undefined) {
             if (spawn.memory.swarms != undefined) {
-                if (spawn.memory.swarms.contains_target_room(spawn.memory.manual_swarm) == false) {
+                //if (spawn.memory.swarms.contains_target_room(spawn.memory.manual_swarm) == false) 
+                if(contains_target_room(spawn.memory.swarms,spawn.memory.manual_swarm)==false)
+                    {
                     spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, 6, spawn.memory.manual_swarm, spawn.room))
                 }
 
@@ -726,7 +760,9 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     if (spawn.room.name == 'W3S38') {
         if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
         if (spawn.memory.duos != undefined) {
-            if (spawn.memory.duos.contains_target_room('W3S37') == false) {
+           // if (spawn.memory.duos.contains_target_room('W3S37') == false) 
+           if(contains_target_room(spawn.memory.duos,'W3S37'))
+                {
                 //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,'W3S37'))
             }
 
@@ -741,7 +777,9 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.rooms_to_blockade = [];
     }
     if (spawn.memory.manual_blockade != undefined) {
-        if (spawn.memory.rooms_to_blockade.contains_rooms(spawn.memory.manual_blockade) == false) {
+        //if (spawn.memory.rooms_to_blockade.contains_rooms(spawn.memory.manual_blockade) == false) 
+        if(contains_rooms(spawn.memory.rooms_to_blockade,spawn.memory.manual_blockade)==false)
+            {
             console.log("new blockade room")
             spawn.memory.rooms_to_blockade.push(new blockadeRoom(spawn.memory.manual_blockade))
         }

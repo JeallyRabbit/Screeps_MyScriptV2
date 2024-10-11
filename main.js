@@ -162,15 +162,6 @@ module.exports.loop = function () {
 
 
         var step = 6000
-        if (Game.time % step == 0 && false) {
-            //console.log("rooms: ")
-            for (var roomName in Game.rooms) {
-                var room = Game.rooms[roomName]
-                //console.log("roomName: ", roomName)
-                room.memory.raw_energy_income = 0;
-                room.memory.raw_last_mean_energy_income = 0;
-            }
-        }
 
         if (Game.time % step == 0) {
             for (var roomName in Game.rooms) {
@@ -278,7 +269,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 Memory.colonizing = false;
             }
 
-            Memory.colonizing = false;
+            //Memory.colonizing = false;
 
         }
 
@@ -479,8 +470,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             /////////////////////////////////////
 
             if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0) {
-                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 8, { color: '#fc03b6' })
-                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 9, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 9, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 10, { color: '#fc03b6' })
 
             }
 
@@ -494,13 +485,32 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 1500 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                // || spawn.room.name == 'E14S58'
+                // || spawn.room.name == 'E16N13'
             ) {
 
 
                 spawn.setBaseLayout(spawn);
                 //return;
             }
+
+            /*
+            for(a of spawn.memory.building_list)
+            {
+                if(a.structureType==STRUCTURE_RAMPART)
+                {
+                    spawn.room.visual.circle(a.x, a.y, { fill: 'white', radius: 0.5, stroke: 'green',opacity: 0.25});
+                    spawn.room.visual.text(spawn.room.createConstructionSite(a.x,a.y, a.structureType),
+                    a.x, a.y, { fill: 'black' });
+                    if(spawn.room.createConstructionSite(a.x,a.y, a.structureType)!=OK && (a.x==11 || a.x==48))
+                    {
+                        console.log("creating rampart at: ",a.x," ",a.y," result: ",spawn.room.createConstructionSite(a.x,a.y, a.structureType))
+                    }
+                    
+                }
+            }
+                */
+                
+                
 
             if (spawn.memory.forced_upgrades == undefined) {
                 spawn.memory.forced_upgrades = []
@@ -1134,6 +1144,25 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
             spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
                 44, 6, { color: '#fc03b6' })
+            
+            if(spawn.room.memory.energy_on_ramparts!=undefined)
+            {
+                spawn.room.visual.text("Energy spent on ramparts: "+ (spawn.room.memory.energy_on_ramparts), 41, 7, { color: '#fc03b6' })
+                if(Game.time%step==0)
+                {
+                    var temp_en_ramp=spawn.room.memory.energy_on_ramparts/step
+                    temp_en_ramp=Math.round((temp_en_ramp) * 100) / 100
+
+                    spawn.room.memory.mean_energy_on_ramparts=temp_en_ramp
+                    spawn.room.memory.energy_on_ramparts=0;
+                }
+            }
+            if(spawn.room.memory.mean_energy_on_ramparts!=undefined)
+            {
+                spawn.room.visual.text("Energy on ramparts/t: "+ (spawn.room.memory.mean_energy_on_ramparts), 41, 8, { color: '#fc03b6' })
+            }
+
+            console.log(Game.time%step)
 
 
 

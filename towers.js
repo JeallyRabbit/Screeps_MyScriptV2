@@ -136,7 +136,16 @@ towers = spawn.room.find(FIND_MY_STRUCTURES, {
         else if (mostDamagedStructure) {
             //console.log("tower most damaged str: ",mostDamagedStructure.pos);
             //console.log(tower.repair(mostDamagedStructure));
-            tower.repair(mostDamagedStructure)
+            if(tower.repair(mostDamagedStructure)==OK)
+            {
+                if(spawn.room.memory.energy_on_ramparts==undefined)
+                    {
+                        spawn.room.memory.energy_on_ramparts=TOWER_ENERGY_COST
+                    }
+                    else{
+                        spawn.room.memory.energy_on_ramparts+=TOWER_ENERGY_COST
+                    }
+            }
         }
         else if (spawn.memory.weakest_any != undefined && false) {
             if (Game.getObjectById(spawn.memory.weakest_any) != null) {

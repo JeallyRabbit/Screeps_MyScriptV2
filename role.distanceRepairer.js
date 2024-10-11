@@ -8,6 +8,12 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
     //var targets=creep.room.find(FIND_CONSTRUCTION_SITES)
     if (creep.room.name == creep.memory.target_room) {
 
+        if(creep.memory.target_room==spawn.room.name && spawn.memory.state!=undefined && spawn.memory.state.includes("STATE_UNDER_ATTACK"))
+        {
+            creep.say("rep")
+            creep.roleRampartRepairer(creep, spawn);
+            return;
+        }
         //creep.roleBuilder(creep, spawn);
         //return;
         //creep.move(TOP);

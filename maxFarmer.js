@@ -29,9 +29,9 @@ function maxFarmer(cap,spawn,limit)// return array with max possible work parts 
         cap-=100;
     }
     // limit to 5 iterations
-    if(spawn.memory.state.includes('STATE_DEVELOPING') && cap>900)
+    if(spawn.memory.state.includes('STATE_DEVELOPING') && cap>1050)
     {
-        cap=900
+        cap=1050
     }
     for(let i=0;i<Math.floor(cap/150);i++)
     {

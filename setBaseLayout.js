@@ -758,7 +758,7 @@ function plan_borders(spawn, roomCM, rcl) {
             && building.structureType != STRUCTURE_CONTAINER && building.structureType != STRUCTURE_LINK && building.structureType != STRUCTURE_EXTRACTOR
             && building.x > 4 && building.x < 46 && building.y > 4 && building.y < 46) {
             sources2.push({ x: building.x, y: building.y });
-            costMap.set(building.x, building.y, 200);
+            costMap.set(building.x, building.y, 255);
         }
     }
 

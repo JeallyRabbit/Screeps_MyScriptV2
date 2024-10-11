@@ -200,7 +200,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             */
         creep.say("7")
         //creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
-        creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 11, maxRooms: 1, range: 22 });
+        creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 25,  avoidCreeps:true,range : 22});
 
     }
 
