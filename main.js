@@ -470,8 +470,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             /////////////////////////////////////
 
             if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0) {
-                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 9, { color: '#fc03b6' })
-                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 10, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 11, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 12, { color: 'lightblue' })
 
             }
 
@@ -1139,11 +1139,11 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             spawn.room.visual.text("Time: " + Game.time, 20, 0, { color: '#fc03b6' })
 
-            spawn.room.visual.text("Calculated final income/t: " + spawn.memory.total_calculated_income_per_tick, 44, 3, { color: '#fc03b6' })
+            spawn.room.visual.text("Calculated final income/t: " + spawn.memory.total_calculated_income_per_tick, 44, 3, { color: 'lightblue' })
             spawn.room.visual.text("used Cpu: " + (spawn_end_cpu - spawn_start_cpu), 44, 4, { color: '#fc03b6' })
             spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
             spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
-                44, 6, { color: '#fc03b6' })
+                44, 6, { color: 'lightblue' })
             
             if(spawn.room.memory.energy_on_ramparts!=undefined)
             {
@@ -1159,7 +1159,26 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
             if(spawn.room.memory.mean_energy_on_ramparts!=undefined)
             {
-                spawn.room.visual.text("Energy on ramparts/t: "+ (spawn.room.memory.mean_energy_on_ramparts), 41, 8, { color: '#fc03b6' })
+                spawn.room.visual.text("Energy on ramparts/t: "+ (spawn.room.memory.mean_energy_on_ramparts), 41, 8, { color: 'lightblue' })
+            }
+
+            // delivered energy works only with storage and distanceCarriers2 - not including links at rcl8
+            // it should be close to "Calculated final Income"
+            if(spawn.room.memory.delivered_energy!=undefined)
+            {
+                spawn.room.visual.text("Delivered energy: "+ (spawn.room.memory.delivered_energy), 41, 9, { color: '#fc03b6' })
+                if(Game.time%step==0)
+                {
+                    var temp_energy=spawn.room.memory.delivered_energy/step
+                    temp_energy=Math.round((temp_energy) * 100) / 100
+
+                    spawn.room.memory.mean_delivered_energy=temp_energy
+                    spawn.room.memory.delivered_energy=0;
+                }
+            }
+            if(spawn.room.memory.mean_delivered_energy!=undefined)
+            {
+                spawn.room.visual.text("Delivered energy/t: "+ (spawn.room.memory.mean_delivered_energy), 41, 10, { color: 'lightblue' })
             }
 
             console.log(Game.time%step)

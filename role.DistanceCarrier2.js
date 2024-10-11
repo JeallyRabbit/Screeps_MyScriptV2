@@ -307,7 +307,13 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                         else if (transfer_result == OK) {
 
                             //addEnergyIncome(creep,spawn,amount)
-
+                            if(spawn.room.memory.delivered_energy==undefined)
+                            {
+                                spawn.room.memory.delivered_energy=creep.store[RESOURCE_ENERGY]
+                            }
+                            else{
+                                spawn.room.memory.delivered_energy+=creep.store[RESOURCE_ENERGY]
+                            }
                             creep.memory.max_container = undefined;
                         }
                     }
