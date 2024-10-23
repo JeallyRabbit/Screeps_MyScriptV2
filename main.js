@@ -147,7 +147,7 @@ module.exports.loop = function () {
         console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
         console.log("GCL: ", Game.gcl.level, Math.round((Game.gcl.progress / Game.gcl.progressTotal) * 100), "% to next")
 
-
+        Memory.allies = ["GT500", "Alphonzo"];
 
         /*
         //REMOVE ALL CONSTRUCTION SITES
@@ -207,25 +207,6 @@ module.exports.loop = function () {
                 creep.roleIntershardUpgrader(creep);
             }
         }
-        //return;
-        /*
-        spawning intershard claimer
-        //claimer W17N21
-        
-        Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,CLAIM],'IsCLA'+Game.time)
-
-        //colonizer W17N21
-Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY],'IsCol'+Game.time)
-
-        */
-
-        //chartCPU()
-
-        /*
-        Game.spawns['W18N22_2'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY],'IsCol'+Game.time)
-        */
-        //Game.spawns['W17N21_2'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY],'IsCol'+Game.time)
-
         for (var i in Memory.creeps) {  //clearing data about dead creeps
             if (!Game.creeps[i]) {
                 delete Memory.creeps[i];
@@ -470,8 +451,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             /////////////////////////////////////
 
             if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0) {
-                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 11, { color: '#fc03b6' })
-                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 12, { color: 'lightblue' })
+                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 13, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 14, { color: 'lightblue' })
 
             }
 
@@ -509,8 +490,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
                 */
-                
-                
+
+
 
             if (spawn.memory.forced_upgrades == undefined) {
                 spawn.memory.forced_upgrades = []
@@ -627,7 +608,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             spawn.memory.sponge_id = undefined;
 
-            
+
 
             for (var name in Game.creeps) {
 
@@ -1037,11 +1018,13 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         spawn.memory.sponge_id = creep.id
                         spawn.memory.need_sponge = undefined
                     }
-
-
                     else {
                         //creep.say('no role');
                     }
+
+                    /*
+                    
+                        */
                     //pos_exchange(creep);
                 }
             }
@@ -1144,44 +1127,55 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
             spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
                 44, 6, { color: 'lightblue' })
-            
-            if(spawn.room.memory.energy_on_ramparts!=undefined)
-            {
-                spawn.room.visual.text("Energy spent on ramparts: "+ (spawn.room.memory.energy_on_ramparts), 41, 7, { color: '#fc03b6' })
-                if(Game.time%step==0)
-                {
-                    var temp_en_ramp=spawn.room.memory.energy_on_ramparts/step
-                    temp_en_ramp=Math.round((temp_en_ramp) * 100) / 100
 
-                    spawn.room.memory.mean_energy_on_ramparts=temp_en_ramp
-                    spawn.room.memory.energy_on_ramparts=0;
+            if (spawn.room.memory.energy_on_ramparts != undefined) {
+                spawn.room.visual.text("Energy spent on ramparts: " + (spawn.room.memory.energy_on_ramparts), 41, 7, { color: '#fc03b6' })
+                if (Game.time % step == 0) {
+                    var temp_en_ramp = spawn.room.memory.energy_on_ramparts / step
+                    temp_en_ramp = Math.round((temp_en_ramp) * 100) / 100
+
+                    spawn.room.memory.mean_energy_on_ramparts = temp_en_ramp
+                    spawn.room.memory.energy_on_ramparts = 0;
                 }
             }
-            if(spawn.room.memory.mean_energy_on_ramparts!=undefined)
-            {
-                spawn.room.visual.text("Energy on ramparts/t: "+ (spawn.room.memory.mean_energy_on_ramparts), 41, 8, { color: 'lightblue' })
+            if (spawn.room.memory.mean_energy_on_ramparts != undefined) {
+                spawn.room.visual.text("Energy on ramparts/t: " + (spawn.room.memory.mean_energy_on_ramparts), 41, 8, { color: 'lightblue' })
             }
 
             // delivered energy works only with storage and distanceCarriers2 - not including links at rcl8
             // it should be close to "Calculated final Income"
-            if(spawn.room.memory.delivered_energy!=undefined)
-            {
-                spawn.room.visual.text("Delivered energy: "+ (spawn.room.memory.delivered_energy), 41, 9, { color: '#fc03b6' })
-                if(Game.time%step==0)
-                {
-                    var temp_energy=spawn.room.memory.delivered_energy/step
-                    temp_energy=Math.round((temp_energy) * 100) / 100
+            if (spawn.room.memory.delivered_energy != undefined) {
+                spawn.room.visual.text("Delivered energy: " + (spawn.room.memory.delivered_energy), 41, 9, { color: '#fc03b6' })
+                if (Game.time % step == 0) {
+                    var temp_energy = spawn.room.memory.delivered_energy / step
+                    temp_energy = Math.round((temp_energy) * 100) / 100
 
-                    spawn.room.memory.mean_delivered_energy=temp_energy
-                    spawn.room.memory.delivered_energy=0;
+                    spawn.room.memory.mean_delivered_energy = temp_energy
+                    spawn.room.memory.delivered_energy = 0;
                 }
             }
-            if(spawn.room.memory.mean_delivered_energy!=undefined)
-            {
-                spawn.room.visual.text("Delivered energy/t: "+ (spawn.room.memory.mean_delivered_energy), 41, 10, { color: 'lightblue' })
+            if (spawn.room.memory.mean_delivered_energy != undefined) {
+                spawn.room.visual.text("Delivered energy/t: " + (spawn.room.memory.mean_delivered_energy), 41, 10, { color: 'lightblue' })
             }
 
-            console.log(Game.time%step)
+
+            if (spawn.room.memory.energy_on_creeps != undefined) {
+                spawn.room.visual.text("energy spent on creeps: " + (spawn.room.memory.energy_on_creeps), 41, 11, { color: '#fc03b6' })
+                if (Game.time % step == 0) {
+                    var temp_energy = spawn.room.memory.energy_on_creeps / step
+                    temp_energy = Math.round((temp_energy) * 100) / 100
+
+                    spawn.room.memory.mean_energy_on_creeps = temp_energy
+                    spawn.room.memory.energy_on_creeps = 0;
+                }
+
+            }
+            if(spawn.room.memory.mean_energy_on_creeps!=undefined)
+            {
+                spawn.room.visual.text("energy on creeps/t: " + (spawn.room.memory.mean_energy_on_creeps), 41, 12, { color: 'lightblue' })
+            }
+
+            //console.log(Game.time % step)
 
 
 
@@ -1261,7 +1255,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.memory.isSpawningSwarm = false;
             for (s of spawn.memory.swarms) {
                 if (!s.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers) {
-                    console.log("trying to spawn swarms")
+                   // console.log("trying to spawn swarms")
                     spawn.memory.isSpawningSwarm = true
                     var spawn_result = spawn.spawnCreep(maxSoldier(energyCap), 'swarm' + spawn.room.name + '_' + Game.time, {
                         memory: {
@@ -1270,7 +1264,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             swarmId: s.id
                         }
                     })
-                    console.log("swarm spawning result: ", spawn_result)
+                    //console.log("swarm spawning result: ", spawn_result)
                     if (spawn_result == 0) {
                         spawn.memory.isSpawningSwarm = true
                         continue;
@@ -1293,7 +1287,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     {
                         if (d.leaderId == undefined) {
                             spawn.memory.isSpawningDuo = true
-                            console.log("trying to spawn leader")
+                            //console.log("trying to spawn leader")
                             //var leaderBody = [MOVE, RANGED_ATTACK]
                             var leaderBody = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL, HEAL, HEAL, HEAL];
                             leaderBody = maxSoldier(energyCap)
@@ -1305,7 +1299,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         }
                         else if (d.followerId == undefined) {
                             spawn.memory.isSpawningDuo = true
-                            console.log("trying to spawn follower")
+                           // console.log("trying to spawn follower")
                             var followerBody = [MOVE, HEAL]
 
                             //followerBody=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL]
@@ -1375,7 +1369,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
 
             if (pop_melee_defenders < spawn.memory.need_melee_defenders) {
-                console.log("trying to spawn melee Defender")
+                //console.log("trying to spawn melee Defender")
                 if (spawn.spawnCreep(maxMeleeSoldier(energyCap), 'MS_' + Game.time, { memory: { role: 'meleeDefender', home_room: spawn.room } }) == OK) {
                     continue;
                 }
@@ -1423,7 +1417,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
 
             if (pop_scouts < spawn.memory.req_scouts) {
-                console.log(spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }))
+                //console.log(spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }))
                 if (spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }) == 0) {
                 }
                 continue;
@@ -1479,7 +1473,6 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     continue;
                 }
             }
-            //console.log("need_distanceRepairer in main: ",spawn.memory.need_distanceRepairer)
             if (pop_builders < spawn.memory.req_builders && upgraders_parts > 0) // spawning new builder
             {
                 spawn.spawnCreep(maxBuilder(energyCap, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } });
@@ -1596,6 +1589,11 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
 
+
+
+
+
+
             var spawn_end_cpu = Game.cpu.getUsed()
             if (spawn.memory.mean_cpu_sum == undefined) {
                 spawn.memory.mean_cpu_sum = spawn_end_cpu - spawn_start_cpu
@@ -1613,6 +1611,29 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
         }
     });
+
+    for(spawnName in Game.spawns)
+    {
+        if (Game.spawns[spawnName].spawning != null &&
+            Game.spawns[spawnName].spawning.remainingTime == Game.spawns[spawnName].spawning.needTime-1
+        ) {
+            console.log("Spawn: ", spawnName," is spawning creep")
+            if (Game.spawns[spawnName].room.memory.energy_on_creeps == undefined) {
+                Game.spawns[spawnName].room.memory.energy_on_creeps = 0;
+            }
+            if (Game.spawns[spawnName].room.memory.energy_on_creeps != undefined) {
+                creep=Game.creeps[Game.spawns[spawnName].spawning.name];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: MOVE }).length * BODYPART_COST[MOVE];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: WORK }).length * BODYPART_COST[WORK];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: CARRY }).length * BODYPART_COST[CARRY];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: ATTACK }).length * BODYPART_COST[ATTACK];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: RANGED_ATTACK }).length * BODYPART_COST[RANGED_ATTACK];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: HEAL }).length * BODYPART_COST[HEAL];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: CLAIM }).length * BODYPART_COST[CLAIM];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: TOUGH }).length * BODYPART_COST[TOUGH];
+            }
+        }
+    }
 
     bucket.push(Game.cpu.bucket)
     if (bucket.length > 500) {
