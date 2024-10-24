@@ -178,26 +178,12 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
         }
     }
     else {
-        //move_avoid_hostile(creep,new RoomPosition(25,25,creep.memory.target_room),25,false,8000);
-        //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room));
-        /*
-        var reusePath = 100;
-
-        if (creep.memory.destination == undefined) {
-            creep.say("destination unknown")
-            var destination = [];
-            for (var i = 1; i < 50; i++) {
-                for (var j = 1; j < 50; j++) {
-                    destination.push(new RoomPosition(i, j, creep.memory.target_room))
-                }
-            }
-            creep.memory.destination = destination;
+        
+        if(Game.rooms[creep.room.name].memory.hostiles!=undefined && Game.rooms[creep.room.name].memory.hostiles.length>0)
+        {
+            creep.rangedMassAttack()
+            creep.heal(creep)
         }
-
-        if (creep.memory.destination != undefined) {
-            creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
-        }
-            */
         creep.say("7")
         //creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
         creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 25,  avoidCreeps:true,range : 22});
@@ -212,6 +198,6 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
     }
 
 
-
+    
 
 };
