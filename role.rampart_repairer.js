@@ -5,7 +5,7 @@ Creep.prototype.roleRampartRepairer = function roleRampartRepairer(creep, spawn)
     //creep.suicide();
     let storedCostMatrix = PathFinder.CostMatrix.deserialize(Game.rooms[creep.room.name].memory.repairerCostMatrix);
 
-    if (creep.store[RESOURCE_ENERGY] == 0 || (creep.memory.target_rampart == undefined || spawn.memory.state.includes(STATE_UNDER_ATTACK))) {
+    if (creep.store[RESOURCE_ENERGY] == 0 || creep.memory.target_rampart == undefined /* || spawn.memory.state.includes(STATE_UNDER_ATTACK) */ ) {
         //creep.say("renew ramparts")
         creep.memory.target_rampart = undefined;
         var ramparts = creep.room.find(FIND_MY_STRUCTURES, {
