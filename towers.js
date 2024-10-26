@@ -147,7 +147,7 @@ towers = spawn.room.find(FIND_MY_STRUCTURES, {
                     }
             }
         }
-        else if (spawn.memory.weakest_any != undefined && false) {
+        else if (spawn.memory.weakest_any != undefined && Game.getObjectById(spawn.memory.weakest_healer)==null) {
             if (Game.getObjectById(spawn.memory.weakest_any) != null) {
                 tower.attack(Game.getObjectById(spawn.memory.weakest_any))
             }

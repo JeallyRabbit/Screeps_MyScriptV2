@@ -230,6 +230,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
                 */
             if (creep.store[creep.room.memory.reaction[0]] == 0) {
+                creep.say("with1")
                 var terminal_amount = creep.room.terminal.store[creep.room.memory.reaction[0]] - (creep.room.terminal.store[creep.room.memory.reaction[0]] % 5)
                 var creep_amount = ((creep.store.getCapacity() / 2) - ((creep.store.getCapacity() / 2) % 5))
                 var final_aount = (Math.min(terminal_amount, creep_amount))

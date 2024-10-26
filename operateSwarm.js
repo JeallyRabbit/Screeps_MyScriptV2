@@ -132,7 +132,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                                 }
                             }
                             else {
-                                creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true, avoidCreeps: true, ignoreDestructibleStructures: true });
+                                creep.moveTo(target_creep, {maxRooms: 1, avoidSk: true, avoidCreeps: true, ignoreDestructibleStructures: true });
                             }
                         }
 
@@ -292,7 +292,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                 var is_any_to_far = false
                 for (other of swarm.members) {
                     if (Game.getObjectById(other).pos.getRangeTo(mean_pos) > swarm.members.length / 2 
-                        && Game.getObjectById(other).pos.x!=0 && Game.getObjectById(other).pos.x!=49 && Game.getObjectById(other).pos.y!=0 &&Game.getObjectById(other).pos.y!=49
+                        && Game.getObjectById(other).pos.x>1 && Game.getObjectById(other).pos.x<48 && Game.getObjectById(other).pos.y>1 &&Game.getObjectById(other).pos.y<48
                         && sum_y != 0 && sum_x != 0
                         && Game.getObjectById(other).room.name == creep.room.name) {
                         is_any_to_far = true
