@@ -74,6 +74,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                     creep.memory.task = FILL_INPUT
                     creep.memory.reaction = creep.room.terminal.reactions()
                     creep.room.memory.reaction = creep.room.terminal.reactions()
+                    //console.log("reactions to run in: ",creep.room.name," :",creep.room.terminal.reactions())
                 }
 
             }
@@ -162,6 +163,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             var lab = Game.getObjectById(creep.memory.to_clear_input)
             if (areInputsEmpty(creep) == true) {
                 creep.memory.task = undefined
+                
                 return
                 creep.say("no task")
             }
@@ -217,10 +219,12 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
 
             if (creep.room.memory.reaction == undefined || (input1.store[creep.room.memory.reaction[0]] > 0 && input2.store[creep.room.memory.reaction[1]] > 0)) {
                 creep.memory.task = undefined
+                //creep.say(creep.memory.reaction)
                 return
             }
             if (creep.memory.reaction == undefined && creep.room.memory.reaction == undefined) {
                 creep.memory.task = undefined
+                //creep.say("clfill2")
                 return
             }
             /*

@@ -116,13 +116,14 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                             }
                         }
                         if (creep.memory.is_melee == false) {
-                            if (creep.pos.inRangeTo(target_creep, 2) && (_.filter(target_creep.body, function (part) {
+                            if (creep.pos.inRangeTo(target_creep, 3) && (_.filter(target_creep.body, function (part) {
                                 return part.type === RANGED_ATTACK && part.hits > 0;
                             }).length > 0 || _.filter(target_creep.body, function (part) {
                                 return part.type === ATTACK && part.hits > 0;
                             }).length > 0)) {
 
                                 // kiting
+                                //creep.say("kiting")
                                 creep.fleeFrom({ target_creep }, 3, { maxRooms: 1 })
                                 // goOutOfRange(creep, 3);
                             }

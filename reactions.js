@@ -160,8 +160,6 @@ StructureTerminal.prototype.reactions = function reactions() {
             return ["H", "O"]
         }
     }
-
-   
     
 
 
