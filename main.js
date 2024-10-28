@@ -83,6 +83,7 @@ const setBaseLayout = require('./setBaseLayout');
 const maxKeeperFarmer = require('./maxKeeperFarmer');
 const { pos_exchange } = require('./pos_exchange');
 const findRouteTest = require('./findRouteTest');
+const maxMerchant = require('./maxMerchant');
 //const move_avoid_hostile=require('./move_avoid_hostile')
 
 
@@ -1473,6 +1474,12 @@ module.exports.loop = function () {
                     continue;
                 }
             }
+            if (pop_merchants < spawn.memory.req_merchants /* && spawn.room.terminal != undefined*/) {
+                if (spawn.spawnCreep(maxMerchant(energyCap), 'Merchant_' + spawn.room.name + '_' + Game.time, { memory: { role: 'merchant', home_room: spawn.room } }) == 0) {
+                    continue;
+                }
+            }
+
             if (pop_builders < spawn.memory.req_builders && upgraders_parts > 0) // spawning new builder
             {
                 spawn.spawnCreep(maxBuilder(energyCap, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } });
@@ -1553,12 +1560,7 @@ module.exports.loop = function () {
                 }
 
             }
-            if (pop_merchants < spawn.memory.req_merchants /* && spawn.room.terminal != undefined*/) {
-                if (spawn.spawnCreep([MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
-                    CARRY, CARRY, CARRY, CARRY], 'Merchant_' + spawn.room.name + '_' + Game.time, { memory: { role: 'merchant', home_room: spawn.room } }) == 0) {
-                    continue;
-                }
-            }
+            
             if (pop_miners < spawn.memory.req_miners && spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power >= spawn.memory.farming_rooms[0].harvesting_power) {
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn), 'Miner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }) == 0) {
                     continue;

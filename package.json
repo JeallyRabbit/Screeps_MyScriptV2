@@ -4,7 +4,8 @@
   "description": "IDE Autocomplete for Screeps",
   "dependencies": {
     "@types/lodash": "^4.17.7",
-    "@types/screeps": "^3.3.8"
+    "@types/screeps": "^3.3.8",
+    "grunt-screeps": "^1.5.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
