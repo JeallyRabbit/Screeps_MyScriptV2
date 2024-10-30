@@ -61,14 +61,14 @@ Creep.prototype.roleFiller = function (creep, spawn) {
         //creep.say('at pos');
         creep.memory.is_working = true;
         if ((creep.memory.my_container != undefined && Game.getObjectById(creep.memory.my_container) == null)
-        || (Game.getObjectById(creep.memory.my_container)!=null && Game.getObjectById(creep.memory.my_container).store[RESOURCE_ENERGY]==0)) {
+            || (Game.getObjectById(creep.memory.my_container) != null && Game.getObjectById(creep.memory.my_container).store[RESOURCE_ENERGY] == 0)) {
             creep.memory.my_container = undefined;
             //creep.say("clearing");
         }
 
         if (creep.memory.my_container == undefined) {
             if (spawn.memory.filler_link_id != undefined && Game.getObjectById(spawn.memory.filler_link_id) != null
-        && Game.getObjectById(spawn.memory.filler_link_id).store[RESOURCE_ENERGY]>0) {
+                && Game.getObjectById(spawn.memory.filler_link_id).store[RESOURCE_ENERGY] > 0) {
                 creep.memory.my_container = spawn.memory.filler_link_id;
             }
             else {
@@ -79,6 +79,14 @@ Creep.prototype.roleFiller = function (creep, spawn) {
                 });
                 if (container.length > 0) {
                     creep.memory.my_container = container[0].id;
+                    if (spawn.memory.filler_containers == undefined) {
+                        spawn.memory.filler_containers = [];
+                    }
+                    else {
+                        if (!spawn.memory.filler_containers.includes(container[0].id)) {
+                            spawn.memory.filler_containers.push(container[0].id)
+                        }
+                    }
                 }
             }
 
@@ -116,13 +124,25 @@ Creep.prototype.roleFiller = function (creep, spawn) {
                     }
                 }
                 else {
+                    var all_full = true;
                     for (let i = 0; i < creep.memory.to_fill.length; i++) {
-                        var result=creep.transfer(Game.getObjectById(creep.memory.to_fill[i]), RESOURCE_ENERGY);
+                        var result = creep.transfer(Game.getObjectById(creep.memory.to_fill[i]), RESOURCE_ENERGY);
                         //if (Game.getObjectById(creep.memory.to_fill[i]).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                         //    var result=creep.transfer(Game.getObjectById(creep.memory.to_fill[i]), RESOURCE_ENERGY);
-                            if(result==OK && creep.store[RESOURCE_ENERGY]==0){break;}
+                        if (result == OK) { all_full = false; }
+                        if (result == OK && creep.store[RESOURCE_ENERGY] == 0) { break; }
+
                         //}
 
+                    }
+                    //creep.say(all_full)
+                    if (all_full && (Game.getObjectById(creep.memory.my_container) != null && Game.getObjectById(creep.memory.my_container).structureType == STRUCTURE_LINK)
+                        && spawn.memory.filler_containers != undefined && spawn.memory.filler_containers.length > 0) {
+                        //creep.say("cnt")
+                        for (let i = 0; i < spawn.memory.filler_containers.length; i++) {
+                            var result = creep.transfer(Game.getObjectById(spawn.memory.filler_containers[i]), RESOURCE_ENERGY)
+                            if (result == OK) { break; }
+                        }
                     }
                 }
             }

@@ -1429,6 +1429,11 @@ module.exports.loop = function () {
                 }
                 continue;
             }
+            if (spawn.memory.need_sponge != undefined && farming_needs_satisfied) {
+                if (spawn.spawnCreep(maxSponge(energyCap, spawn), 'Sp_' + spawn.room.name + '_' + Game.time, { memory: { role: 'sponge', home_room: spawn.room, target_room: spawn.memory.need_sponge } }) == OK) {
+                    continue;
+                }
+            }
             if (pop_colonizers < spawn.memory.req_colonizers && pop_claimers > 0 && spawn.room.controller.level >= 4
                 && spawn.memory.to_colonize != undefined
             ) {
@@ -1580,11 +1585,7 @@ module.exports.loop = function () {
                     continue;
                 }
             }
-            if (spawn.memory.need_sponge != undefined && farming_needs_satisfied) {
-                if (spawn.spawnCreep(maxSponge(energyCap, spawn), 'Sp_' + spawn.room.name + '_' + Game.time, { memory: { role: 'sponge', home_room: spawn.room, target_room: spawn.memory.need_sponge } }) == OK) {
-                    continue;
-                }
-            }
+            
             if (/* false && */ Game.shard.name == 'shard3' && spawn.room.name == 'W19N13' && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 100000) {
                 if (spawn.spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY], 'IsCar' + Game.time) == 0) {
                     continue;

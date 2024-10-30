@@ -744,7 +744,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 //if (spawn.memory.swarms.contains_target_room(spawn.memory.manual_swarm) == false) 
                 if(contains_target_room(spawn.memory.swarms,spawn.memory.manual_swarm)==false)
                     {
-                    spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, 6, spawn.memory.manual_swarm, spawn.room))
+                    spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, 4, spawn.memory.manual_swarm, spawn.room))
                 }
 
                 if (spawn.memory.swarms.length == 1) {

@@ -42,7 +42,8 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                 target_creep = creep.pos.findClosestByPath(enemy_creeps)
             }
             //creep.say(target_creep)
-            /*
+
+            
             for (other of swarm.members) {
                 if (other != id && Game.getObjectById(other) != null) {
                     if (creep.hits == creep.hitsMax && Game.getObjectById(other).hits < Game.getObjectById(other).hitsMax) {
@@ -60,7 +61,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                     }
                 }
             }
-                */
+                
 
 
 
@@ -265,7 +266,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                 else {
                     //creep.move(BOTTOM)
                     //return;
-                    creep.moveToRoom(swarm.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
+                    creep.moveTo(new RoomPosition(25,25,swarm.target_room), { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
                     //creep.rangedMassAttack()
                 }
 
@@ -301,7 +302,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                     }
                 }
                 if (is_any_to_far) {
-                    creep.moveTo(mean_pos, { avoidCreeps: false })
+                    creep.moveTo(mean_pos, { avoidCreeps: false,swampCost: 1 })
                 }
             }
             else {
