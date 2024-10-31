@@ -23,9 +23,66 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
     if (creep.hits < creep.hitsMax) {
         creep.heal(creep);
     }
+    //creep.say("a")
+    ///////////////////////////////
+    /*
+    if (Game.rooms[creep.memory.target_room] != undefined) {
+        creep.say("1")
+        if (Game.rooms[creep.memory.target_room].memory.soldiers != undefined && Game.rooms[creep.memory.target_room].memory.soldiers.length > 0) {
+            for (sol of Game.rooms[creep.memory.target_room].memory.soldiers) {
+                if (Game.getObjectById(sol) == null) {
+                    creep.say("3")
+                    creep.room.memory.soldiers = undefined
+                    break;
+                }
+            }
+        }
+
+
+        creep.say("2")
+        if (Game.rooms[creep.memory.target_room].memory.soldiers == undefined) {
+            var soldiers = Game.rooms[creep.memory.target_room].find(FIND_MY_CREEPS, {
+                filter:
+                    function (cre) {
+                        return cre.memory.role == 'soldier' && cre.memory.target_room==creep.memory.target_creep
+                    }
+            })
+            console.log("soldiers at: ",creep.memory.target_room," ",soldiers.length)
+            if (soldiers.length > 0) {
+                Game.rooms[creep.memory.target_room].memory.soldiers = [];
+                creep.say("4")
+                for (a of soldiers) {
+                    Game.rooms[creep.memory.target_room].memory.soldiers.push(a.id)
+                }
+            }
+        }
+
+        /*
+        if (Game.rooms[creep.memory.target_room].memory.soldiers!= undefined && Game.rooms[creep.memory.target_room].memory.soldiers.length > 0 && creep.hits == creep.hitsMax) {
+            var in_range_soldiers = [];
+            for (a of Game.rooms[creep.memory.target_room].memory.soldiers) {
+                if (Game.getObjectById(a) != null && Game.getObjectById(a).pos.inRangeTo(creep.pos, 3)) {
+                    if (Game.getObjectById(a).pos.isNearTo(creep.pos) && Game.getObjectById(a).hits < Game.getObjectById(a).hitsMax) {
+                        creep.heal(Game.getObjectById(a))
+                    }
+                    else {
+                       // creep.rangedHeal(Game.getObjectById(a))
+                    }
+                    break;
+                }
+            }
+        }
+            
+    }
+    */
+    /////////////////////////
+
+
+
     if (creep.room.name == creep.memory.target_room) {
 
-
+        ///////////////////////////
+        /*
         if (creep.room.memory.soldiers != undefined && creep.room.memory.soldiers.length > 0) {
             for (sol of creep.room.memory.soldiers) {
                 if (Game.getObjectById(sol) == null) {
@@ -64,7 +121,8 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
                 }
             }
         }
-
+            */
+        ///////////////////////////
 
 
         var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
@@ -140,7 +198,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
                 creep.say("4")
                 if (creep.attack(target_structure) == ERR_NOT_IN_RANGE) {
                     creep.say("5")
-                    creep.moveTo(target_structure,{maxRooms: 1,avoidCreeps: true,reusePath: 11,range:1});
+                    creep.moveTo(target_structure, { maxRooms: 1, avoidCreeps: true, reusePath: 11, range: 1 });
                 }
 
             }
@@ -178,15 +236,14 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
         }
     }
     else {
-        
-        if(Game.rooms[creep.room.name].memory.hostiles!=undefined && Game.rooms[creep.room.name].memory.hostiles.length>0)
-        {
+
+        if (Game.rooms[creep.room.name].memory.hostiles != undefined && Game.rooms[creep.room.name].memory.hostiles.length > 0) {
             creep.rangedMassAttack()
             creep.heal(creep)
         }
         creep.say("7")
         //creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
-        creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 25,  avoidCreeps:true,range : 22});
+        creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 25, avoidCreeps: true, range: 22 });
 
     }
 
@@ -198,6 +255,6 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
     }
 
 
-    
+
 
 };

@@ -918,10 +918,10 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 // if there are towers do not send soldiers
                 //console.log(invaders.length > 0, " ", cores.length > 0, " ", Game.rooms[myRoom].memory.soldiers < 3)
                 //console.log("invaders: ", invaders.length)
-                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers < 3) {
+                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers < 2) {
                     spawn.memory.need_soldier = myRoom;
                 }
-                else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 3) {
+                else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 2) {
                     spawn.memory.need_melee_soldier = myRoom;
                 }
 
@@ -949,24 +949,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 }
 
 
-                /*
-                if ((invaders.length > 0 || cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 3
-                    && towers.length == 0) {
-                    if (myRoom != spawn.room.name) {
-                        spawn.memory.need_soldier = myRoom;
-                        break;
-                    }
-                    else if (spawn.room.controller.level < 4) {//need for spawnRoom
-
-                        spawn.memory.need_soldier = myRoom;
-                        break;
-                    }
-                }
-                else if ((invaders.length > 0 || cores.length > 0)
-                    && towers.length > 0) {
-                    spawn.memory.need_invader_quad = myRoom
-                    // towers amount matches stronghold level except stronghold lvl 5 which have 6 towers
-                }*/
+               
             }
         }
 
@@ -1192,9 +1175,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
     if (spawn.memory.reservers_counter == undefined || spawn.memory.reservers_counter > 500) {
         spawn.memory.reservers_counter = 0;
-    }
-    if (spawn.memory.soldiers_counter == undefined || spawn.memory.soldiers_counter > 500) {
-        spawn.memory.soldiers_counter = 0;
     }
 
     for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {

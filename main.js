@@ -148,7 +148,7 @@ module.exports.loop = function () {
         console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
         console.log("GCL: ", Game.gcl.level, Math.round((Game.gcl.progress / Game.gcl.progressTotal) * 100), "% to next")
 
-        Memory.allies = ["GT500", "Alphonzo"];
+        Memory.allies = ["Alphonzo"];
 
         /*
         //REMOVE ALL CONSTRUCTION SITES
@@ -159,6 +159,22 @@ module.exports.loop = function () {
                 a.remove();
             }
         }*/
+
+        for(roomName in Game.rooms)
+        {
+            var room=Game.rooms[roomName]
+            if(room.memory.soldiers!=undefined && room.memory.soldiers.length>0)
+            {
+                for(sol in room.memory.soldier)
+                {
+                    if(Game.getObjectById(sol)==null)
+                    {
+                        var index=room.memory.soldiers.indexOf(sol)
+                        room.memory.soldiers.splice(index,1)
+                    }
+                }
+            }
+        }
 
 
 
@@ -178,6 +194,8 @@ module.exports.loop = function () {
                     room.memory.raw_last_mean_keepers_energy_income = room.memory.raw_keepers_energy_income / step
                     room.memory.raw_keepers_energy_income = 0
                 }
+
+
             }
 
         }
@@ -552,13 +570,7 @@ module.exports.loop = function () {
                     spawn.memory.farming_rooms[i].soldier = undefined;
                     spawn.memory.farming_rooms[i].reserver = undefined;
 
-                    //console.log("farming room name: ",spawn.memory.farming_rooms[i].name, 
-                    //    Game.rooms[spawn.memory.farming_rooms[i].name]!=undefined)
-
-                    if (Game.rooms[spawn.memory.farming_rooms[i].name] != undefined) {
-                        //console.log("resseting soldiers for: ",spawn.memory.farming_rooms[i].name)
-                        Game.rooms[spawn.memory.farming_rooms[i].name].memory.soldiers = 0;
-                    }
+                   
                 }
             }
 
@@ -582,10 +594,12 @@ module.exports.loop = function () {
 
                     //console.log("keeper room nameL: ",spawn.memory.keepers_rooms[i].name,
                     //    Game.rooms[spawn.memory.keepers_rooms[i].name]!=undefined)
+                    /*
                     if (Game.rooms[spawn.memory.keepers_rooms[i].name] != undefined) {
                         //console.log("resseting soldiers for: ",spawn.memory.keepers_rooms[i].name)
                         Game.rooms[spawn.memory.keepers_rooms[i].name].memory.soldiers = 0;
                     }
+                        */
                     //Game.rooms[myRoom].memory.soldiers
                 }
             }
@@ -672,25 +686,27 @@ module.exports.loop = function () {
                     else if (creep.memory.role == 'soldier') {
                         creep.roleSoldier(creep, spawn);
 
+                        
                         if (Game.rooms[creep.memory.target_room] != undefined) {
-                            Game.rooms[creep.memory.target_room].memory.soldiers++;
-                        }
-                        /*
-                        for (let myRoom in Game.rooms) {
-                            if (myRoom == creep.memory.target_room) {
-                                Game.rooms[myRoom].memory.soldiers++;
-                                break;
+                            if(Game.rooms[creep.memory.target_room].memory.soldiers!=undefined && Game.rooms[creep.memory.target_room].memory.soldiers.length>=0)
+                            {
+                                //creep.say("asd")
+                                //console.log(creep.memory.target_room," memory.soldiers: ",Game.rooms[creep.memory.target_room].memory.soldiers)
+                                if(!Game.rooms[creep.memory.target_room].memory.soldiers.includes(creep.id))
+                                {
+                                    //creep.say("add")
+                                    Game.rooms[creep.memory.target_room].memory.soldiers.push(creep.id);
+                                }
                             }
-                        }*/
+                            else if(Array.isArray(Game.rooms[creep.memory.target_room].memory.soldiers)==false){
+                                Game.rooms[creep.memory.target_room].memory.soldiers=[];
+                            }
+                        }
 
                         if (spawn.memory.rooms_to_blockade != undefined && spawn.memory.rooms_to_blockade.length > 0) {
                             //console.log(creep.pos)
                             // creep.say()
                             for (a of spawn.memory.rooms_to_blockade) {
-                                //a.soldier_id=creep.id
-                                //console.log("a")
-                                //console.log(a.roomName)
-                                //creep.say(a.roomName)
                                 if (a.roomName == creep.memory.target_room) {
                                     //console.log(creep.id)
                                     a.soldier_id = creep.id;
@@ -1411,7 +1427,6 @@ module.exports.loop = function () {
                             spawn.memory.need_melee_soldier, home_room: spawn.room
                     }
                 }) == 0) {
-                    spawn.memory.soldiers_counter++;
                     continue;
                 }
             }

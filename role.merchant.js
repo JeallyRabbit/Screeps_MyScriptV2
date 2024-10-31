@@ -85,7 +85,7 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
             if (storage.store[RESOURCE_ENERGY] > 0) {
                 creep.withdraw(storage, RESOURCE_ENERGY)
             }
-            else if (terminal.store[RESOURCE_ENERGY] > 0) {
+            else if (terminal!=undefined && terminal.store[RESOURCE_ENERGY] > 0) {
                 creep.withdraw(terminal, RESOURCE_ENERGY)
             }
 

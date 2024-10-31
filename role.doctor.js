@@ -448,7 +448,7 @@ function defineLabs(creep) {
     }
 
     if (creep.room.memory.output_labs_id == undefined || (creep.room.memory.output_labs_id != undefined && creep.room.memory.output_labs_id.length == 0)
-        || Game.time & 3000 == 0) {
+        || Game.time % 3000 == 0) {
         creep.room.memory.output_labs_id = undefined;
         var lab = creep.room.find(FIND_MY_STRUCTURES, {
             filter: function (str) {
