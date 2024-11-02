@@ -191,8 +191,11 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 creep.say("Keepers");
                 is_keeper_room = true;
                 var sources = creep.room.find(FIND_SOURCES);
-                var sources_num = sources.length;
                 var mineral = creep.room.find(FIND_MINERALS);
+                //spawn.memory.src1=sources;
+                sources.push(mineral[0]);
+                //spawn.memory.src2=sources;
+                var sources_num = sources.length;
                 var max_farmers = 0;
                 for (let i = 0; i < sources_num; i++) {
                     max_farmers += sources[i].pos.getOpenPositions().length;
@@ -232,7 +235,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                                 }
                             }
                         }
-                        if (!is_already_scanned && !in_other_use && ret.path.length < 100) {
+                        if (!is_already_scanned && !in_other_use && ret.path.length < 125) {
                             spawn.memory.keepers_sources.push(new_keeper_source)
                         }
 

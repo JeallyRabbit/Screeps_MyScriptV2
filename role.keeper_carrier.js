@@ -5,6 +5,16 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
     /// creep.memory.tareget_room
     // creep.memory.target_source
     //creep.suicide()
+    if(creep.memory.mineral==undefined)
+    {
+        if(Game.rooms[creep.memory.target_room]!=undefined)
+        {
+            var mineral=Game.rooms[creep.memory.target_room].find(FIND_MINERALS);
+            if(mineral.length>0){
+                creep.memory.mineral=mineral[0].mineralType;
+            }
+        }
+    }
     //creep.say("🚚")
     if (creep.memory.home_container != undefined && Game.getObjectById(creep.memory.home_container) == null) {
         creep.memory.home_container = undefined
@@ -14,11 +24,11 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
         creep.memory.home_container = spawn.room.storage.id
     }
 
-    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+    if (creep.store.getUsedCapacity() < creep.store.getCapacity()) { // anything free
         creep.memory.collecting = true
 
     }
-    if (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+    if (creep.store.getUsedCapacity() == creep.store.getCapacity()) { // completly full
         creep.memory.collecting = false
     }
 
@@ -32,8 +42,17 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
 
     if (creep.memory.collecting == false) {
         //creep.say("bac")
-        var amount = creep.store[RESOURCE_ENERGY]
-        var transfer_result = creep.transfer(spawn.room.storage, RESOURCE_ENERGY)
+        var amount = creep.store.getUsedCapacity();
+        var transfer_result;
+        if(creep.store[RESOURCE_ENERGY]>0)
+        {
+            transfer_result = creep.transfer(spawn.room.storage, RESOURCE_ENERGY)
+        }
+        if(creep.memory.mineral!=undefined && creep.store[creep.memory.mineral]>0)
+        {
+            transfer_result = creep.transfer(spawn.room.storage, creep.memory.mineral)
+        }
+
         if (transfer_result == ERR_NOT_IN_RANGE) {
             //creep.say("bac")
             if ((Game.getObjectById(creep.memory.lair) != null && creep.pos.inRangeTo(Game.getObjectById(creep.memory.lair).pos, 7))
@@ -149,10 +168,12 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
                 if (lair != null) {
                     //creep.say("!null")
                     if (lair.ticksToSpawn > 10 && lair.ticksToSpawn < 285 &&
-                        Game.getObjectById(creep.memory.target_container).store[RESOURCE_ENERGY] >= CARRY_CAPACITY
+                        (Game.getObjectById(creep.memory.target_container).store[RESOURCE_ENERGY] >= CARRY_CAPACITY || 
+                    (creep.memory.mineral!=undefined && Game.getObjectById(creep.memory.target_container).store[creep.memory.mineral] >= CARRY_CAPACITY))
                     ) {
                         //creep.say("1")
-                        if (creep.withdraw(Game.getObjectById(creep.memory.target_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        if (creep.withdraw(Game.getObjectById(creep.memory.target_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE
+                    || (creep.memory.mineral!=undefined && creep.withdraw(Game.getObjectById(creep.memory.target_container), creep.memory.mineral))) {
                             var if_avoid_sk = true
                             if (creep.pos.inRangeTo(Game.getObjectById(creep.memory.target_container), 8)) {
                                 if_avoid_sk = false

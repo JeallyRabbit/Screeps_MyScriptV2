@@ -62,6 +62,21 @@ StructureTerminal.prototype.reactions = function reactions() {
         }
     }
 
+    if(storage.store["XLH2O"]<REQ_AMOUNT){ //9 REPAIR
+        if (this.store["LH2O"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
+            return ["LH2O", "X"]
+        }
+        else if (this.store["LH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT && this.store["LH2O"]<REQ_MID_AMOUNT) {
+            return ["LH", "OH"]
+        }
+        else if (this.store["L"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT && this.store["LH"]<REQ_MID_AMOUNT) {
+            return ["L", "H"]
+        }
+        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["OH"]<REQ_MID_AMOUNT) {
+            return ["H", "O"]
+        }
+    }
+
     if (storage.store["XGHO2"] < REQ_AMOUNT) { //4 tough
         if (this.store["GHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
             return ["GHO2", "X"]
@@ -131,35 +146,22 @@ StructureTerminal.prototype.reactions = function reactions() {
         }
     }
 
-    if(storage.store["XUHO2"]<REQ_AMOUNT){ //8 CAPACITY
+    if(storage.store["XUHO2"]<REQ_AMOUNT){ //8 HARVEST
         if (this.store["UHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
             return ["UHO2", "X"]
         }
-        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT && this.store["UHO2"]<REQ_MID_AMOUNT) {
-            return ["UH", "OH"]
+        else if (this.store["UO"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT && this.store["UHO2"]<REQ_MID_AMOUNT) {
+            return ["UO", "OH"]
         }
-        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT && this.store["UH"]<REQ_MID_AMOUNT) {
-            return ["U", "H"]
+        else if (this.store["U"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT && this.store["UO"]<REQ_MID_AMOUNT) {
+            return ["U", "O"]
         }
         else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["OH"]<REQ_MID_AMOUNT) {
             return ["H", "O"]
         }
     }
 
-    if(storage.store["XUHO2"]<REQ_AMOUNT){ //9 HARVEST
-        if (this.store["UHO2"] > MIN_AMOUNT && this.store["X"] > MIN_AMOUNT) {
-            return ["UHO2", "X"]
-        }
-        else if (this.store["UH"] > MIN_AMOUNT && this.store["OH"] > MIN_AMOUNT && this.store["UHO2"]<REQ_MID_AMOUNT) {
-            return ["UH", "OH"]
-        }
-        else if (this.store["U"] > MIN_AMOUNT && this.store["H"] > MIN_AMOUNT && this.store["UH"]<REQ_MID_AMOUNT) {
-            return ["U", "H"]
-        }
-        else if (this.store["H"] > MIN_AMOUNT && this.store["O"] > MIN_AMOUNT  && this.store["OH"]<REQ_MID_AMOUNT) {
-            return ["H", "O"]
-        }
-    }
+    
     
 
 
