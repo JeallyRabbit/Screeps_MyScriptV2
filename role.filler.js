@@ -144,7 +144,7 @@ Creep.prototype.roleFiller = function (creep, spawn) {
                         //}
 
                     }
-                    creep.say(all_full)
+                    //creep.say(all_full)
                     if (all_full && (Game.getObjectById(creep.memory.my_container) != null && Game.getObjectById(creep.memory.my_container).structureType == STRUCTURE_LINK)
                         && spawn.memory.filler_containers != undefined && spawn.memory.filler_containers.length > 0) {
                         //creep.say("cnt")
