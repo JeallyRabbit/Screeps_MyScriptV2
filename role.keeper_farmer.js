@@ -91,7 +91,8 @@ Creep.prototype.roleKeeperFarmer = function roleKeeperFarmer(creep, spawn) {
                     }
 
                 }
-                else if (creep.memory.closest_container != undefined && creep.store.getFreeCapacity(RESOURCE_ENERGY) <= creep.memory.harvesting_power) {
+                else if (creep.memory.closest_container != undefined && (creep.store.getFreeCapacity(RESOURCE_ENERGY) <= creep.memory.harvesting_power
+            || creep.ticksToLive<50)) {
 
                     /*
                     creep.say("transfer")
@@ -101,7 +102,13 @@ Creep.prototype.roleKeeperFarmer = function roleKeeperFarmer(creep, spawn) {
                     };
                     */
                     var energy_amount = creep.store[RESOURCE_ENERGY]
-                    var transfer_result = creep.transfer(Game.getObjectById(creep.memory.closest_container), RESOURCE_ENERGY)
+                    var transfer_result ;
+                    //creep.say("store")
+                    for(res in creep.store)
+                    {
+                        transfer_result = creep.transfer(Game.getObjectById(creep.memory.closest_container), res)
+                        //if(transfer_result==ERR_NOT_IN_RANGE){break;}
+                    }
                     if (transfer_result == ERR_NOT_IN_RANGE) {
                         creep.moveTo(Game.getObjectById(creep.memory.closest_container))
                         creep.say("C");
@@ -122,9 +129,10 @@ Creep.prototype.roleKeeperFarmer = function roleKeeperFarmer(creep, spawn) {
                 //}
                 // creep.say(Game.getObjectById(creep.memory.closest_container).structureType)
                 //creep.say(creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0)
-                if (Game.getObjectById(creep.memory.target_source) != null && Game.getObjectById(creep.memory.target_source).energy > 0
+                if (Game.getObjectById(creep.memory.target_source) != null && (Game.getObjectById(creep.memory.target_source).energy > 0
+                || Game.getObjectById(creep.memory.target_source).mineralAmount>0)
                     && creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                    creep.say("5")
+                    //creep.say("5")
                     if (creep.harvest(Game.getObjectById(creep.memory.target_source)) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(Game.getObjectById(creep.memory.target_source), { reusePath: 11, maxRooms: 1,avoidCreeps: true });
                         creep.say("harv");

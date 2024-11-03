@@ -160,17 +160,13 @@ module.exports.loop = function () {
             }
         }*/
 
-        for(roomName in Game.rooms)
-        {
-            var room=Game.rooms[roomName]
-            if(room.memory.soldiers!=undefined && room.memory.soldiers.length>0)
-            {
-                for(sol in room.memory.soldier)
-                {
-                    if(Game.getObjectById(sol)==null)
-                    {
-                        var index=room.memory.soldiers.indexOf(sol)
-                        room.memory.soldiers.splice(index,1)
+        for (roomName in Game.rooms) {
+            var room = Game.rooms[roomName]
+            if (room.memory.soldiers != undefined && room.memory.soldiers.length > 0) {
+                for (sol in room.memory.soldier) {
+                    if (Game.getObjectById(sol) == null) {
+                        var index = room.memory.soldiers.indexOf(sol)
+                        room.memory.soldiers.splice(index, 1)
                     }
                 }
             }
@@ -570,7 +566,7 @@ module.exports.loop = function () {
                     spawn.memory.farming_rooms[i].soldier = undefined;
                     spawn.memory.farming_rooms[i].reserver = undefined;
 
-                   
+
                 }
             }
 
@@ -686,20 +682,18 @@ module.exports.loop = function () {
                     else if (creep.memory.role == 'soldier') {
                         creep.roleSoldier(creep, spawn);
 
-                        
+
                         if (Game.rooms[creep.memory.target_room] != undefined) {
-                            if(Game.rooms[creep.memory.target_room].memory.soldiers!=undefined && Game.rooms[creep.memory.target_room].memory.soldiers.length>=0)
-                            {
+                            if (Game.rooms[creep.memory.target_room].memory.soldiers != undefined && Game.rooms[creep.memory.target_room].memory.soldiers.length >= 0) {
                                 //creep.say("asd")
                                 //console.log(creep.memory.target_room," memory.soldiers: ",Game.rooms[creep.memory.target_room].memory.soldiers)
-                                if(!Game.rooms[creep.memory.target_room].memory.soldiers.includes(creep.id))
-                                {
+                                if (!Game.rooms[creep.memory.target_room].memory.soldiers.includes(creep.id)) {
                                     //creep.say("add")
                                     Game.rooms[creep.memory.target_room].memory.soldiers.push(creep.id);
                                 }
                             }
-                            else if(Array.isArray(Game.rooms[creep.memory.target_room].memory.soldiers)==false){
-                                Game.rooms[creep.memory.target_room].memory.soldiers=[];
+                            else if (Array.isArray(Game.rooms[creep.memory.target_room].memory.soldiers) == false) {
+                                Game.rooms[creep.memory.target_room].memory.soldiers = [];
                             }
                         }
 
@@ -1131,7 +1125,8 @@ module.exports.loop = function () {
             spawn.room.visual.text("KeeperFarmers; " + pop_keeperFarmers, 4, 15, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperCarriers; " + pop_keeperCarriers, 4, 16, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperrRepairers; " + pop_keeperRepairers, 4, 17, { color: '#fc03b6' })
-            spawn.room.visual.text("Spawned Body parts: " + spawned_body_parts, 4, 18, { color: '#fc03b6' })
+            spawn.room.visual.text("Miners: " + pop_miners + "/" + spawn.memory.req_miners, 4, 18, { color: '#fc03b6' })
+            spawn.room.visual.text("Spawned Body parts: " + spawned_body_parts, 4, 19, { color: '#fc03b6' })
 
             spawn.room.visual.text("RampartRepairers: " + pop_rampart_repairers + "/" + spawn.memory.req_rampart_repairers, 20, 2, { color: '#fc03b6' })
             spawn.room.visual.text("MeleeDefenders: " + pop_melee_defenders + "/" + spawn.memory.need_melee_defenders, 20, 3, { color: '#fc03b6' })
@@ -1187,8 +1182,7 @@ module.exports.loop = function () {
                 }
 
             }
-            if(spawn.room.memory.mean_energy_on_creeps!=undefined)
-            {
+            if (spawn.room.memory.mean_energy_on_creeps != undefined) {
                 spawn.room.visual.text("energy on creeps/t: " + (spawn.room.memory.mean_energy_on_creeps), 41, 12, { color: 'lightblue' })
             }
 
@@ -1247,15 +1241,19 @@ module.exports.loop = function () {
                     }
                 }
 
-                if (spawn.spawning != null && spawn.spawning.remainingTime + 2 < spawn.spawning.needTime && Game.spawns[spawn.room.name + '_3'] != undefined) {
-                    if (spawn.spawning.remainingTime < spawn.spawning.needTime - 5
-                        && Game.spawns[spawn.room.name + '_3'].spawning == null) {
-                        var aux_memory = spawn.memory;
-                        spawn = Game.spawns[spawn.room.name + '_3'];
-                        spawn.memory = aux_memory;
-                        //console.log("passing spawning to another spawn");
+                //passing spawning to third spawn
+                if (spawn.spawning != null && spawn.spawning.remainingTime + 4 < spawn.spawning.needTime && Game.spawns[spawn.room.name + '_3'] != undefined) {
+                    if (spawn.spawning) {
+                        if (spawn.spawning.remainingTime < spawn.spawning.needTime - 5
+                            && Game.spawns[spawn.room.name + '_3'].spawning == null) {
+                            var aux_memory = spawn.memory;
+                            spawn = Game.spawns[spawn.room.name + '_3'];
+                            spawn.memory = aux_memory;
+                            //console.log("passing spawning to another spawn");
 
+                        }
                     }
+
                 }
 
             }
@@ -1272,7 +1270,7 @@ module.exports.loop = function () {
             spawn.memory.isSpawningSwarm = false;
             for (s of spawn.memory.swarms) {
                 if (!s.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers) {
-                   // console.log("trying to spawn swarms")
+                    // console.log("trying to spawn swarms")
                     spawn.memory.isSpawningSwarm = true
                     var spawn_result = spawn.spawnCreep(maxSoldier(energyCap), 'swarm' + spawn.room.name + '_' + Game.time, {
                         memory: {
@@ -1316,7 +1314,7 @@ module.exports.loop = function () {
                         }
                         else if (d.followerId == undefined) {
                             spawn.memory.isSpawningDuo = true
-                           // console.log("trying to spawn follower")
+                            // console.log("trying to spawn follower")
                             var followerBody = [MOVE, HEAL]
 
                             //followerBody=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL]
@@ -1580,8 +1578,11 @@ module.exports.loop = function () {
                 }
 
             }
-            
+
             if (pop_miners < spawn.memory.req_miners && spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power >= spawn.memory.farming_rooms[0].harvesting_power) {
+
+                console.log("Spaning miner ", spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Miner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }))
+
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn), 'Miner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }) == 0) {
                     continue;
                 }
@@ -1600,7 +1601,7 @@ module.exports.loop = function () {
                     continue;
                 }
             }
-            
+
             if (/* false && */ Game.shard.name == 'shard3' && spawn.room.name == 'W19N13' && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 100000) {
                 if (spawn.spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY], 'IsCar' + Game.time) == 0) {
                     continue;
@@ -1630,17 +1631,16 @@ module.exports.loop = function () {
         }
     });
 
-    for(spawnName in Game.spawns)
-    {
+    for (spawnName in Game.spawns) {
         if (Game.spawns[spawnName].spawning != null &&
-            Game.spawns[spawnName].spawning.remainingTime == Game.spawns[spawnName].spawning.needTime-1
+            Game.spawns[spawnName].spawning.remainingTime == Game.spawns[spawnName].spawning.needTime - 1
         ) {
-            console.log("Spawn: ", spawnName," is spawning creep")
+            console.log("Spawn: ", spawnName, " is spawning creep")
             if (Game.spawns[spawnName].room.memory.energy_on_creeps == undefined) {
                 Game.spawns[spawnName].room.memory.energy_on_creeps = 0;
             }
             if (Game.spawns[spawnName].room.memory.energy_on_creeps != undefined) {
-                creep=Game.creeps[Game.spawns[spawnName].spawning.name];
+                creep = Game.creeps[Game.spawns[spawnName].spawning.name];
                 Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: MOVE }).length * BODYPART_COST[MOVE];
                 Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: WORK }).length * BODYPART_COST[WORK];
                 Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: CARRY }).length * BODYPART_COST[CARRY];

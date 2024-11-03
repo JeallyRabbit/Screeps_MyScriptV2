@@ -92,6 +92,15 @@ Creep.prototype.roleFiller = function (creep, spawn) {
 
         }
 
+        if(creep.memory.my_container!=undefined && Game.getObjectById(creep.memory.my_container)!=null && Game.getObjectById(creep.memory.my_container).structureType==STRUCTURE_CONTAINER)
+        {
+            if(spawn.memory.filler_link_id!=undefined && Game.getObjectById(spawn.memory.filler_link_id)!=null && Game.getObjectById(spawn.memory.filler_link_id).store[RESOURCE_ENERGY]>0)
+            {
+                creep.memory.my_container=spawn.memory.filler_link_id;
+                //creep.say("C -> L")
+            }
+        }
+
 
 
         if (creep.memory.my_container != undefined) {
@@ -135,7 +144,7 @@ Creep.prototype.roleFiller = function (creep, spawn) {
                         //}
 
                     }
-                    //creep.say(all_full)
+                    creep.say(all_full)
                     if (all_full && (Game.getObjectById(creep.memory.my_container) != null && Game.getObjectById(creep.memory.my_container).structureType == STRUCTURE_LINK)
                         && spawn.memory.filler_containers != undefined && spawn.memory.filler_containers.length > 0) {
                         //creep.say("cnt")

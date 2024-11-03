@@ -28,7 +28,7 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
         creep.memory.collecting = true
 
     }
-    if (creep.store.getUsedCapacity() == creep.store.getCapacity()) { // completly full
+    if (creep.store.getUsedCapacity() == creep.store.getCapacity() || creep.ticksToLive<150) { // completly full
         creep.memory.collecting = false
     }
 
@@ -38,6 +38,26 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
     if (!creep.memory.target_room) {
         //console.log(" 2");
         return 0;
+    }
+
+    if(Game.time%3==0)
+    {
+        //console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        if(Game.rooms[creep.room.name].memory.dropped_energy!=undefined && Game.rooms[creep.room.name].memory.dropped_energy.length>0)
+        {
+            //console.log("-----------------")
+            for(dropped of Game.rooms[creep.room.name].memory.dropped_energy)
+            {
+                //console.log("dropped: ",dropped)
+                if(Game.getObjectById(dropped)!= null && creep.pickup(Game.getObjectById(dropped))==OK)
+                {
+                    //creep.say("picking")
+                    break;
+
+                }
+            }
+            
+        }
     }
 
     if (creep.memory.collecting == false) {
@@ -57,11 +77,11 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
             //creep.say("bac")
             if ((Game.getObjectById(creep.memory.lair) != null && creep.pos.inRangeTo(Game.getObjectById(creep.memory.lair).pos, 7))
                 || creep.memory.target_container == undefined) {
-                creep.say("whatever")
+                //creep.say("whatever")
                 creep.moveTo(Game.getObjectById(creep.memory.home_container).pos, { reusePath: 21, avoidCreeps: true })
             }
             else {
-                creep.say("careful")
+                //creep.say("careful")
                 creep.moveTo(Game.getObjectById(creep.memory.home_container).pos, { reusePath: 15, avoidSk: true, avoidCreeps: true })
             }
 
@@ -106,6 +126,7 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
             if (Game.rooms[creep.room.name].memory.droppedEnergy!=undefined && Game.rooms[creep.room.name].memory.droppedEnergy.length > 0
                 && creep.memory.target_container == undefined
             ) { // collect cropped energy
+                creep.say("dropen")
                 if (creep.memory.dropped_energy != undefined && Game.getObjectById(creep.memory.dropped_energy) == null) {
                     creep.memory.dropped_energy = undefined;
                 }

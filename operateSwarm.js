@@ -231,7 +231,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         }
                     }
                     else {
-                        // group
+                        // group on flag
                         for (m of swarm.members) {
                             if (Game.getObjectById(m) != null) {
 
@@ -248,15 +248,6 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                                         break;
                                     }
                                 }
-                                /*
-                                if (Game.flags['swarm'] != undefined && Game.flags['swarm'].room != undefined && Game.flags['swarm'].room.name == creep.room.name/* && !target_creep && !target_structure */
-                            //) {
-                                 /*   creep.moveTo(Game.flags['swarm'], { reusePath: 11, avoidCreeps: true, maxRooms: 1, ignoreDestructibleStructures: true })
-                                }
-                                else {
-                                    creep.moveTo(Game.getObjectById(m), { reusePath: 11, avoidCreeps: true, maxRooms: 1, range: swarm.members.length / 2, ignoreDestructibleStructures: true })
-                                }
-                                */
                                 break;
                             }
                         }
@@ -301,7 +292,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         break;
                     }
                 }
-                if (is_any_to_far) {
+                if (is_any_to_far && creep.room.name!=creep.memory.home_room.name) {
                     creep.moveTo(mean_pos, { avoidCreeps: false,swampCost: 1 })
                 }
             }

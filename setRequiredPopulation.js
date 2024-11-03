@@ -554,9 +554,9 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     if (spawn.memory.keepers_sources == undefined) {
         spawn.memory.keepers_sources = [];
     }
-    else if (spawn.memory.keepers_sources.length > 3) {
+    else if (spawn.memory.keepers_sources.length > 4) {
         spawn.memory.keepers_sources.sort((a, b) => a.distance - b.distance);
-        while (spawn.memory.keepers_sources.length > 3) {
+        while (spawn.memory.keepers_sources.length > 4) {
             spawn.memory.keepers_sources.pop();
         }
     }
@@ -934,7 +934,23 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                             }
                     })
                     spawn.memory.need_keeper_quad = new keeperQuad(myRoom, towers.length)
+                }   
+                else if (!inFarmingRooms && inKeepersRooms && invaders.length > 0) 
+                {// adding swarms to attack keepers rooms that are under invasion of invaders
+                    if(!spawn.memory.swarms.some(swarm => swarm.target_room === myRoom))
+                    {
+                        spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, 4, myRoom, spawn.room))
+                    }
                 }
+                else if (!inFarmingRooms && inKeepersRooms && invaders.length == 0) 
+                {// if there is no invaders remove swarm from memory
+                    var index=spawn.memory.swarms.findIndex(swarm => swarm.target_room === myRoom)
+                    if(index !==-1)
+                    {
+                        spawn.memory.swarms.splice(index,1);
+                    }
+                }
+
 
                 if (spawn.memory.rooms_to_blockade != undefined && spawn.memory.rooms_to_blockade.length > 0) {
                     for (r of spawn.memory.rooms_to_blockade) {
@@ -951,7 +967,34 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
                
             }
+
+            // finding dropped energy in all my rooms
+            if(Game.time%3==0)
+            {
+                Game.rooms[myRoom].memory.dropped_energy= [];
+                var en=Game.rooms[myRoom].find(FIND_DROPPED_RESOURCES,{filter:
+                    function (res){
+                        return res.resourceType==RESOURCE_ENERGY
+                    }
+                });
+                if(en.length>0)
+                {
+                    for(a of en)
+                    {
+                        Game.rooms[myRoom].memory.dropped_energy.push(a.id)
+                    }
+                }
+                
+            }
+
+
         }
+
+
+        
+
+
+
 
         // REPAIRERS //
         for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
