@@ -57,7 +57,6 @@ Movement.setConfig(movementConfig)
 */
 
 
-const profiler = require('screeps-profiler');
 const setRequiredPopulation = require('setRequiredPopulation');
 const setBaseState = require('setBaseState')
 const baseDefense = require('baseDefense')
@@ -85,7 +84,7 @@ const { pos_exchange } = require('./pos_exchange');
 const findRouteTest = require('./findRouteTest');
 const maxMerchant = require('./maxMerchant');
 //const move_avoid_hostile=require('./move_avoid_hostile')
-
+const profiler = require('screeps-profiler');
 
 
 class colonizeRoom {
