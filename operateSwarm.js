@@ -42,7 +42,13 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                 target_creep = creep.pos.findClosestByPath(enemy_creeps)
             }
             //creep.say(target_creep)
-
+            if(creep.room.name!=creep.memory.home_room.name && creep.room.name!=swarm.target_room)
+            {
+                if(Game.rooms[creep.room.name].memory.hostiles.length>0)
+                {
+                    creep.rangedMassAttack()
+                }
+            }
             
             for (other of swarm.members) {
                 if (other != id && Game.getObjectById(other) != null) {

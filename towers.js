@@ -88,7 +88,7 @@ towers = spawn.room.find(FIND_MY_STRUCTURES, {
         var tower = Game.getObjectById(tower_id);
         if (tower == null) { continue; }
 
-        if (spawn.memory.state.includes("STATE_UNDER_ATTACK") && most_damaged_defense_rampart!=null) {
+        if (spawn.memory.state.includes("STATE_UNDER_ATTACK") && most_damaged_defense_rampart!=null && most_damaged_defense_rampart.hits<50000) {
             tower.repair(most_damaged_defense_rampart)
             continue
         }

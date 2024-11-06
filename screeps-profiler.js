@@ -3,21 +3,15 @@
 let usedOnStart = 0;
 let enabled = false;
 let depth = 0;
-let parentFn = '(tick)';
 
-class ProfilerError extends Error {}
-
-// Hack to ensure the InterShardMemory constant exists in sim
-try {
-  // eslint-disable-next-line no-unused-expressions
-  InterShardMemory;
-} catch (e) {
-  global.InterShardMemory = undefined;
+function AlreadyWrappedError() {
+  this.name = 'AlreadyWrappedError';
+  this.message = 'Error attempted to double wrap a function.';
+  this.stack = ((new Error())).stack;
 }
 
 function setupProfiler() {
   depth = 0; // reset depth, this needs to be done each tick.
-  parentFn = '(tick)';
   Game.profiler = {
     stream(duration, filter) {
       setupMemory('stream', duration || 10, filter);
@@ -30,9 +24,6 @@ function setupProfiler() {
     },
     background(filter) {
       setupMemory('background', false, filter);
-    },
-    callgrind(duration, filter) {
-      setupMemory('callgrind', duration || 100, filter);
     },
     restart() {
       if (Profiler.isProfiling()) {
@@ -49,7 +40,6 @@ function setupProfiler() {
     },
     reset: resetMemory,
     output: Profiler.output,
-    downloadCallgrind: Profiler.downloadCallgrind,
   };
 
   overloadCPUCalc();
@@ -68,7 +58,6 @@ function setupMemory(profileType, duration, filter) {
       filter,
     };
   }
-  console.log(`Profiling type ${profileType} started at ${Game.time + 1} for ${duration} ticks`);
 }
 
 function resetMemory() {
@@ -93,38 +82,19 @@ const functionBlackList = [
   'constructor', // es6 class constructors need to be called with `new`
 ];
 
-const commonProperties = ['length', 'name', 'arguments', 'caller', 'prototype'];
-
 function wrapFunction(name, originalFunction) {
-  // wrappedFunction.__profiler = Profiler;
-
-  if (originalFunction.__profiler) {
-    // eslint-disable-next-line no-param-reassign
-    originalFunction.__profiler = Profiler;
-    return originalFunction;
-  }
-
+  if (originalFunction.profilerWrapped) { throw new AlreadyWrappedError(); }
   function wrappedFunction() {
-    const profiler = wrappedFunction.__profiler;
-    if (profiler.isProfiling()) {
+    if (Profiler.isProfiling()) {
       const nameMatchesFilter = name === getFilter();
       const start = Game.cpu.getUsed();
       if (nameMatchesFilter) {
         depth++;
       }
-      const curParent = parentFn;
-      parentFn = name;
-      let result;
-      if (this && this.constructor === wrappedFunction) {
-        // eslint-disable-next-line new-cap
-        result = new originalFunction(...arguments);
-      } else {
-        result = originalFunction.apply(this, arguments);
-      }
-      parentFn = curParent;
+      const result = originalFunction.apply(this, arguments);
       if (depth > 0 || !getFilter()) {
         const end = Game.cpu.getUsed();
-        profiler.record(name, end - start, parentFn);
+        Profiler.record(name, end - start);
       }
       if (nameMatchesFilter) {
         depth--;
@@ -132,46 +102,24 @@ function wrapFunction(name, originalFunction) {
       return result;
     }
 
-    if (this && this.constructor === wrappedFunction) {
-      // eslint-disable-next-line new-cap
-      return new originalFunction(...arguments);
-    }
     return originalFunction.apply(this, arguments);
   }
 
-  wrappedFunction.__profiler = Profiler;
+  wrappedFunction.profilerWrapped = true;
   wrappedFunction.toString = () =>
     `// screeps-profiler wrapped function:\n${originalFunction.toString()}`;
-
-  Object.getOwnPropertyNames(originalFunction).forEach(property => {
-    if (!commonProperties.includes(property)) {
-      wrappedFunction[property] = originalFunction[property];
-    }
-  });
 
   return wrappedFunction;
 }
 
 function hookUpPrototypes() {
-  for (const { name, val } of Profiler.prototypes) {
-    if (!val) {
-      console.log(`skipping prototype hook ${name}, object appears to be missing`);
-      continue;
-    }
-    profileObjectFunctions(val, name);
-  }
+  Profiler.prototypes.forEach(proto => {
+    profileObjectFunctions(proto.val, proto.name);
+  });
 }
 
 function profileObjectFunctions(object, label) {
-  if (!object || !(typeof object === 'object' || typeof object === 'function')) {
-    throw new ProfilerError(`Asked to profile non-object ${object} for ${label}
-     (${typeof object})`);
-  }
-
-  if (object.prototype) {
-    profileObjectFunctions(object.prototype, label);
-  }
-  const objectToWrap = object;
+  const objectToWrap = object.prototype ? object.prototype : object;
 
   Object.getOwnPropertyNames(objectToWrap).forEach(functionName => {
     const extendedLabel = `${label}.${functionName}`;
@@ -210,7 +158,7 @@ function profileObjectFunctions(object, label) {
     }
 
     const isFunction = typeof descriptor.value === 'function';
-    if (!isFunction || !descriptor.writable) {
+    if (!isFunction) {
       return;
     }
     const originalFunction = objectToWrap[functionName];
@@ -240,73 +188,6 @@ const Profiler = {
     Game.notify(Profiler.output(1000));
   },
 
-  downloadCallgrind() {
-    const id = `id${Math.random()}`;
-    const shardId = Game.shard.name + (Game.shard.ptr ? '-ptr' : '');
-    const filename = `callgrind.${shardId}.${Game.time}`;
-    const data = Profiler.callgrind();
-    if (!data) {
-      console.log('No profile data to download');
-      return;
-    }
-    /* eslint-disable */
-    const download = `
-    <script>
-    var element = document.getElementById('${id}');
-    if (!element) {
-      element = document.createElement('a');
-      element.setAttribute('id', '${id}');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,${encodeURIComponent(data)}');
-      element.setAttribute('download', '${filename}');
-
-      element.style.display = 'none';
-      document.body.appendChild(element);
-
-      element.click();
-    }
-    </script>
-    `;
-    /* eslint-enable */
-    console.log(
-      download
-      .split('\n')
-      .map((s) => s.trim())
-      .join('')
-    );
-  },
-
-  callgrind() {
-    if (!Memory.profiler || !Memory.profiler.enabledTick) return null;
-    const elapsedTicks = Game.time - Memory.profiler.enabledTick + 1;
-    Profiler.checkMapItem('(tick)');
-    Memory.profiler.map['(tick)'].calls = elapsedTicks;
-    Memory.profiler.map['(tick)'].time = Memory.profiler.totalTime;
-    Profiler.checkMapItem('(root)');
-    Memory.profiler.map['(root)'].calls = 1;
-    Memory.profiler.map['(root)'].time = Memory.profiler.totalTime;
-    Profiler.checkMapItem('(tick)', Memory.profiler.map['(root)'].subs);
-    Memory.profiler.map['(root)'].subs['(tick)'].calls = elapsedTicks;
-    Memory.profiler.map['(root)'].subs['(tick)'].time = Memory.profiler.totalTime;
-    let body = `events: ns\nsummary: ${Math.round(
-      Memory.profiler.totalTime * 1000000
-      )}\n`;
-    for (const fnName of Object.keys(Memory.profiler.map)) {
-      const fn = Memory.profiler.map[fnName];
-      let callsBody = '';
-      let callsTime = 0;
-      for (const callName of Object.keys(fn.subs)) {
-        const call = fn.subs[callName];
-        const ns = Math.round(call.time * 1000000);
-        callsBody += `cfn=${callName}\ncalls=${call.calls} 1\n1 ${ns}\n`;
-        callsTime += call.time;
-      }
-      body += `\nfn=${fnName}\n1 ${Math.round(
-        (fn.time - callsTime) * 1000000
-        )}\n${callsBody}`;
-    }
-    return body;
-  },
-
   output(passedOutputLengthLimit) {
     const outputLengthLimit = passedOutputLengthLimit || 1000;
     if (!Memory.profiler || !Memory.profiler.enabledTick) {
@@ -314,8 +195,8 @@ const Profiler = {
     }
 
     const endTick = Math.min(Memory.profiler.disableTick || Game.time, Game.time);
-    const startTick = Memory.profiler.enabledTick;
-    const elapsedTicks = endTick - startTick + 1;
+    const startTick = Memory.profiler.enabledTick + 1;
+    const elapsedTicks = endTick - startTick;
     const header = 'calls\t\ttime\t\tavg\t\tfunction';
     const footer = [
       `Avg: ${(Memory.profiler.totalTime / elapsedTicks).toFixed(2)}`,
@@ -367,72 +248,25 @@ const Profiler = {
   },
 
   prototypes: [
-    { name: 'ConstructionSite', val: ConstructionSite },
-    { name: 'Creep', val: Creep },
-    { name: 'Deposit', val: Deposit },
-    { name: 'Flag', val: Flag },
     { name: 'Game', val: Game },
-    { name: 'InterShardMemory', val: InterShardMemory },
-    { name: 'Mineral', val: Mineral },
-    { name: 'Nuke', val: Nuke },
-    { name: 'OwnedStructure', val: OwnedStructure },
-    { name: 'PathFinder', val: PathFinder },
-    { name: 'PowerCreep', val: PowerCreep },
-    { name: 'RawMemory', val: RawMemory },
-    { name: 'Resource', val: Resource },
     { name: 'Room', val: Room },
-    { name: 'RoomObject', val: RoomObject },
-    { name: 'RoomPosition', val: RoomPosition },
-    { name: 'RoomVisual', val: RoomVisual },
-    { name: 'Ruin', val: Ruin },
-    { name: 'Source', val: Source },
-    { name: 'Store', val: Store },
     { name: 'Structure', val: Structure },
-    { name: 'StructureContainer', val: StructureContainer },
-    { name: 'StructureController', val: StructureController },
-    { name: 'StructureExtension', val: StructureExtension },
-    { name: 'StructureExtractor', val: StructureExtractor },
-    { name: 'StructureFactory', val: StructureFactory },
-    { name: 'StructureInvaderCore', val: StructureInvaderCore },
-    { name: 'StructureKeeperLair', val: StructureKeeperLair },
-    { name: 'StructureLab', val: StructureLab },
-    { name: 'StructureLink', val: StructureLink },
-    { name: 'StructureNuker', val: StructureNuker },
-    { name: 'StructureObserver', val: StructureObserver },
-    { name: 'StructurePortal', val: StructurePortal },
-    { name: 'StructurePowerBank', val: StructurePowerBank },
-    { name: 'StructurePowerSpawn', val: StructurePowerSpawn },
-    { name: 'StructureRampart', val: StructureRampart },
-    { name: 'StructureRoad', val: StructureRoad },
-    { name: 'StructureSpawn', val: StructureSpawn },
-    { name: 'StructureStorage', val: StructureStorage },
-    { name: 'StructureTerminal', val: StructureTerminal },
-    { name: 'StructureTower', val: StructureTower },
-    { name: 'StructureWall', val: StructureWall },
-    { name: 'Tombstone', val: Tombstone },
+    { name: 'Spawn', val: Spawn },
+    { name: 'Creep', val: Creep },
+    { name: 'RoomPosition', val: RoomPosition },
+    { name: 'Source', val: Source },
+    { name: 'Flag', val: Flag },
   ],
 
-  checkMapItem(functionName, map = Memory.profiler.map) {
-    if (!map[functionName]) {
-      // eslint-disable-next-line no-param-reassign
-      map[functionName] = {
+  record(functionName, time) {
+    if (!Memory.profiler.map[functionName]) {
+      Memory.profiler.map[functionName] = {
         time: 0,
         calls: 0,
-        subs: {},
       };
     }
-  },
-
-  record(functionName, time, parent) {
-    this.checkMapItem(functionName);
     Memory.profiler.map[functionName].calls++;
     Memory.profiler.map[functionName].time += time;
-    if (parent) {
-      this.checkMapItem(parent);
-      this.checkMapItem(functionName, Memory.profiler.map[parent].subs);
-      Memory.profiler.map[parent].subs[functionName].calls++;
-      Memory.profiler.map[parent].subs[functionName].time += time;
-    }
   },
 
   endTick() {
@@ -448,8 +282,6 @@ const Profiler = {
       Profiler.printProfile();
     } else if (Profiler.shouldEmail()) {
       Profiler.emailProfile();
-    } else if (Profiler.shouldCallgrind()) {
-      Profiler.downloadCallgrind();
     }
   },
 
@@ -473,13 +305,6 @@ const Profiler = {
 
   shouldEmail() {
     return Profiler.type() === 'email' && Memory.profiler.disableTick === Game.time;
-  },
-
-  shouldCallgrind() {
-    return (
-      Profiler.type() === 'callgrind' &&
-      Memory.profiler.disableTick === Game.time
-    );
   },
 };
 
@@ -518,11 +343,8 @@ module.exports = {
   },
 
   output: Profiler.output,
-  callgrind: Profiler.callgrind,
 
   registerObject: profileObjectFunctions,
   registerFN: profileFunction,
   registerClass: profileObjectFunctions,
-
-  Error: ProfilerError,
 };
