@@ -1138,6 +1138,12 @@ module.exports.loop = function () {
             spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
             spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
                 44, 6, { color: 'lightblue' })
+            if (spawn.memory.progress_sum != undefined && spawn.memory.progress_counter != undefined) {
+                var ttu = (spawn.room.controller.progressTotal - spawn.room.controller.progress) / (Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100)
+                spawn.room.visual.text("Estimated time to upgrade: " + Math.round((ttu)),
+                    35, 6, { color: 'lightblue' })
+            }
+
 
             if (spawn.room.memory.energy_on_ramparts != undefined) {
                 spawn.room.visual.text("Energy spent on ramparts: " + (spawn.room.memory.energy_on_ramparts), 41, 7, { color: '#fc03b6' })
