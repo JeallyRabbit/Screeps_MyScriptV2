@@ -52,11 +52,13 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
             if (target_creep == undefined) {
                 target_creep = creep.pos.findClosestByPath(enemy_creeps)
             }
+            /*
             if (creep.room.name != creep.memory.home_room.name && creep.room.name != swarm.target_room) {
                 if (Game.rooms[creep.room.name].memory.hostiles.length > 0) {
-                    creep.rangedMassAttack()
+                    //creep.rangedMassAttack()
                 }
             }
+                */
 
             for (other of swarm.members) {
                 if (other != id && Game.getObjectById(other) != null) {
@@ -122,11 +124,14 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         }
                     });
                     
+                    //creep.say(target_creep)
+                    if (target_creep!=null) {
 
-                    if (target_creep) {
-
+                        //creep.say(target_creep.pos.x+' '+target_creep.pos.y)
                         if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
+                            
                             if (!allies_present) {
+                                //creep.say("Ra")
                                 creep.rangedMassAttack()
                             }
                         }
@@ -143,6 +148,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                             }
                             else if (creep.pos.isNearTo(target_creep.pos) && !allies_present) {
                                 if (!allies_present) {
+                                    creep.say("near")
                                     creep.rangedMassAttack()
                                 }
                             }
@@ -268,7 +274,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                     //creep.move(BOTTOM)
                     //return;
                     creep.moveTo(new RoomPosition(25, 25, swarm.target_room), { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
-                    //creep.rangedMassAttack()
+                    creep.rangedMassAttack()
                 }
 
                 var sum_x = 0;
