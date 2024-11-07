@@ -7,6 +7,8 @@ function boosting_driver(creep,spawn,boosting_list,body_type_to_boost)
         return -1;
     }
 
+    // change this to find first output lab (first output lab position should be stored in spawn.memory)
+    // also cache its id in spawn.memory so there will be no need to call Room.find() thath often
     var lab = creep.room.find(FIND_STRUCTURES, {
         filter: function (structure) {
             return structure.structureType == STRUCTURE_LAB
@@ -17,6 +19,7 @@ function boosting_driver(creep,spawn,boosting_list,body_type_to_boost)
 
     if (creep.memory.parts_to_boost != undefined && creep.memory.parts_to_boost.length>0 && lab != undefined) {
         creep.memory.need_boosting = true;
+        // store designed object (bosting_request - create it) in spawn.memory so boosting lab (first output lab) do not have to call room.find
         for (let i = 0; i < creep.memory.parts_to_boost.length; i++) {
             //console.log(typeof creep.memory.parts_to_boost[i].boost);
         }
@@ -34,6 +37,8 @@ function boosting_driver(creep,spawn,boosting_list,body_type_to_boost)
         }
     });
     //creep.say("BOS2");
+    //check for doctor should be done next to (before or after) checking for boosting_lab and it should be done by checking doctor_id in spawn.memory
+    // if there is no such field in spawn.memory - add it when runnig Creep.roleDoctor
     var doctor=creep.room.find(FIND_MY_CREEPS,{
         filter: function (doc)
         {
@@ -44,6 +49,10 @@ function boosting_driver(creep,spawn,boosting_list,body_type_to_boost)
     {
         return -1;
     }
+    /////////////////
+
+
+    // checkign for booster (order of boosters defined in Creep.role)
     for(const i in boosting_list)
     {
         //console.log("resource: ", boosting_list[i]);
