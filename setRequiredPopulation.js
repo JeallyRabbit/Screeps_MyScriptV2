@@ -153,7 +153,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
     for (room in Game.rooms) {
         var r = Game.rooms[room]
-        if (r != undefined) {
+        if (r != undefined ) {
             r.memory.hostiles = [];
             var hostiles = r.find(FIND_HOSTILE_CREEPS, {
                 filter:
