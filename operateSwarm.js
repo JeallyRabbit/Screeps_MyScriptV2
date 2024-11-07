@@ -52,7 +52,6 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
             if (target_creep == undefined) {
                 target_creep = creep.pos.findClosestByPath(enemy_creeps)
             }
-            //creep.say(target_creep)
             if (creep.room.name != creep.memory.home_room.name && creep.room.name != swarm.target_room) {
                 if (Game.rooms[creep.room.name].memory.hostiles.length > 0) {
                     creep.rangedMassAttack()
@@ -89,7 +88,6 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                 }
                 if (creep.room.name == swarm.target_room || true) {
 
-                    //creep.say("In target Room")
                     ///////////////////////////////
                     /*
                     var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
@@ -125,7 +123,6 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                     });
                     
 
-                    creep.say(Game.rooms[creep.room.name].memory.hostiles.length)
                     if (target_creep) {
 
                         if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
@@ -141,7 +138,6 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                             }).length > 0)) {
 
                                 // kiting
-                                //creep.say("kiting")
                                 creep.fleeFrom({ target_creep }, 3, { maxRooms: 1 })
                                 // goOutOfRange(creep, 3);
                             }
@@ -179,7 +175,6 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         //console.log("target_structure: ",target_structure);
                         //console.log("QWEQWEQWE")
                         if (target_creep) {
-                            //creep.say("fc")
                             //focus on creeps
                             if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
 
@@ -198,7 +193,6 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         }
                         else {
                             //focus on structures
-                            //creep.say("fs")
                             if (creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE) {
                                 if (allies_present) {
                                     creep.rangedAttack(target_structure)
@@ -231,12 +225,9 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         for (cr of Game.rooms[swarm.target_room].memory.damagedCreeps) {
                             damaged.push(Game.getObjectById(cr))
                         }
-                        //creep.say("A")
                         var toHeal = creep.pos.findClosestByRange(damaged)
                         if (toHeal != null) {
-                            //creep.say("healing my creep")
                             if (creep.heal(toHeal) == ERR_NOT_IN_RANGE) {
-                                //creep.say("ranged heal")
                                 if (target_creep == null) {
                                     creep.moveTo(toHeal, { maxRooms: 1 })
                                 }
