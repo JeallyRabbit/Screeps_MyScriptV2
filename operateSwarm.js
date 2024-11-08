@@ -148,12 +148,12 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                             }
                             else if (creep.pos.isNearTo(target_creep.pos) && !allies_present) {
                                 if (!allies_present) {
-                                    creep.say("near")
+                                    //creep.say("near")
                                     creep.rangedMassAttack()
                                 }
                             }
                             else {
-                                creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true, avoidCreeps: true, ignoreDestructibleStructures: true });
+                                creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true, avoidCreeps: false, ignoreDestructibleStructures: true });
                             }
                         }
 
@@ -213,12 +213,12 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         }
                         if (creep.memory.is_melee == true) {
                             if (creep.attack(target_structure) == ERR_NOT_IN_RANGE) {
-                                creep.moveTo(target_structure, { avoidCreeps: true, ignoreDestructibleStructures: true, avoidCreeps: true });
+                                creep.moveTo(target_structure, { avoidCreeps: false, ignoreDestructibleStructures: true, avoidCreeps: true });
                                 //console.log("structure to far");
                             }
                         }
                         else {
-                            creep.moveTo(target_structure, { avoidCreeps: true, ignoreDestructibleStructures: true });
+                            creep.moveTo(target_structure, { avoidCreeps: false, ignoreDestructibleStructures: true });
 
                         }
 
@@ -245,7 +245,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                             }
                         }
                     }
-                    else {
+                    //else {
                         // group on flag
                         for (m of swarm.members) {
                             if (Game.getObjectById(m) != null) {
@@ -258,7 +258,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                                     if (flag.room != undefined && flag.room.name == creep.room.name
                                         && flagName.startsWith('swarm')
                                     ) {
-                                        creep.moveTo(flag, { reusePath: 11, avoidCreeps: true, maxRooms: 1, ignoreDestructibleStructures: true });
+                                        creep.moveTo(flag, { reusePath: 11, avoidCreeps: false, maxRooms: 1, ignoreDestructibleStructures: true });
                                         //creep.say("flag")
                                         break;
                                     }
@@ -267,13 +267,13 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                             }
                         }
                         //creep.moveTo(Game.getObjectById(swa), { reusePath: 11, maxRooms: 1, range: 22 });
-                    }
+                    //}
                 }
                 //else 
                 if (creep.room.name != swarm.target_room && Game.rooms[creep.room.name].memory.hostiles.length == 0) {
                     //creep.move(BOTTOM)
                     //return;
-                    creep.moveTo(new RoomPosition(25, 25, swarm.target_room), { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
+                    creep.moveTo(new RoomPosition(25, 25, swarm.target_room), { reusePath: 21, avoidHostile: true, avoidCreeps: false, avoidSk: true })
                     creep.rangedMassAttack()
                 }
 
@@ -294,13 +294,14 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
 
                 }
 
+                //group
                 var mean_x = Math.floor(sum_x / counted)
                 var mean_y = Math.floor(sum_y / counted)
                 var mean_pos = new RoomPosition(mean_x, mean_y, creep.room.name)
 
                 var is_any_to_far = false
                 for (other of swarm.members) {
-                    if (Game.getObjectById(other).pos.getRangeTo(mean_pos) > swarm.members.length / 2
+                    if (Game.getObjectById(other).pos.getRangeTo(mean_pos) > swarm.members.length / 1.5
                         && Game.getObjectById(other).pos.x > 1 && Game.getObjectById(other).pos.x < 48 && Game.getObjectById(other).pos.y > 1 && Game.getObjectById(other).pos.y < 48
                         && sum_y != 0 && sum_x != 0
                         && Game.getObjectById(other).room.name == creep.room.name) {

@@ -806,7 +806,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     //console.log('ROom: ', spawn.memory.farming_sources[i].name, ' reserved by invader');
                     continue;
                 }
-                if(Game.rooms[spawn.memory.farming_sources[i].name]!=undefined && Game.rooms[spawn.memory.farming_sources[i].name].memory.hostiles.length<1 && spawn.memory.farming_sources[i].name!=spawn.room.name)
+                if(Game.rooms[spawn.memory.farming_sources[i].name]!=undefined && Game.rooms[spawn.memory.farming_sources[i].name].memory.hostiles.length>1 && spawn.memory.farming_sources[i].name!=spawn.room.name)
                 {
                     continue;
                 }
@@ -816,6 +816,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
 
+        //console.log(spawn.room.name," need ditance Carrier: ",spawn.memory.need_DistanceCarrier)
         //spawn.memory.need_farmer = undefined;
         //  FARMERS //
         for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
