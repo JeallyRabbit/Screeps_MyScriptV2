@@ -546,6 +546,7 @@ function plan_labs_stamp(spawn,roomCM)
         }
     }
     spawn.room.memory.output_labs_id = undefined
+    spawn.room.memory.labs_stamp_pos=new RoomPosition(pos_for_labs.x,pos_for_labs.y,spawn.room.name)
     return is_succes;
 
 
@@ -1200,6 +1201,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_road_to_target(spawn, roomCM_2, spawn.room.controller.pos.getNearbyPositions(), 2);
         var mineral = spawn.room.find(FIND_MINERALS);
         plan_road_to_target(spawn, roomCM_2, mineral[0].pos.getNearbyPositions(), 6);
+        plan_road_to_target(spawn,roomCM_2,spawn.room.memory.labs_stamp_pos.getNearbyPositions(),6)
         if (Game.shard.name != 'shard3') {
             plan_controller_ramparts(spawn);
         }

@@ -63,7 +63,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                 creep.memory.task = CLEAR_OUTPUTS
                 creep.memory.to_clear_output = isSomethingInOutputs(creep)
             }
-            else if (areInputsEmpty(creep) != true) {
+            else if (areInputsEmpty(creep) != true /* && areInputsEqual(creep)==false */) {
                 // (isOnlyOneInputNotEmpty(creep) == 1 || (inputMatchReaction(creep)!=true)) {
                 creep.say("clr in")
                 creep.memory.task = CLEAR_INPUT
@@ -163,7 +163,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             var lab = Game.getObjectById(creep.memory.to_clear_input)
             if (areInputsEmpty(creep) == true) {
                 creep.memory.task = undefined
-                
+
                 return
                 creep.say("no task")
             }
@@ -367,6 +367,30 @@ function ifLabsNeedEnergy(creep) {
         if (lab.store[RESOURCE_ENERGY] < lab.store.getCapacity(RESOURCE_ENERGY)) { return lab_id }
     }
     return false
+}
+
+function areInputsEqual(creep) {
+    var input1 = Game.getObjectById(creep.room.memory.input1_lab_id)
+    var input2 = Game.getObjectById(creep.room.memory.input2_lab_id)
+    var total_in_1 = 0;
+    var total_in_2 = 0;
+    for (res in input1.store) {
+        if (res == RESOURCE_ENERGY) { continue; }
+        else {
+            total_in_1 += input1.store[res]
+        }
+    }
+
+    for (res in input2.store) {
+        if (res == RESOURCE_ENERGY) { continue; }
+        else {
+            total_in_2 += input2.store[res]
+        }
+    }
+
+    if (total_in_1 == total_in_2 && total_in_1!=0) { return true }
+    else { return true; }
+
 }
 
 function areInputsEmpty(creep) {

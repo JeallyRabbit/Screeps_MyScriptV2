@@ -9,12 +9,19 @@ function boosting_driver(creep,spawn,boosting_list,body_type_to_boost)
 
     // change this to find first output lab (first output lab position should be stored in spawn.memory)
     // also cache its id in spawn.memory so there will be no need to call Room.find() thath often
+    var lab=undefined;
+    if(creep.room.memory.boosting_lab_id!=undefined)
+    {
+        lab=Game.getObjectById(creep.room.memory.boosting_lab_id)
+    }
+    /*
     var lab = creep.room.find(FIND_STRUCTURES, {
         filter: function (structure) {
             return structure.structureType == STRUCTURE_LAB
                 && (structure.pos.x==spawn.pos.x+4 && structure.pos.y==spawn.pos.y-0);
         }
     });
+    */
     creep.memory.parts_to_boost = _.filter(creep.body, part => _.isUndefined(part.boost) && part.type == body_type_to_boost);
 
     if (creep.memory.parts_to_boost != undefined && creep.memory.parts_to_boost.length>0 && lab != undefined) {
@@ -72,7 +79,7 @@ function boosting_driver(creep,spawn,boosting_list,body_type_to_boost)
         if(creep.memory.need_boosting==true && contains_booster==true)
         {
             creep.say("BOS");
-            creep.moveTo(lab[0]);
+            creep.moveTo(lab);
         }
         creep.memory.booster=booster;
     }

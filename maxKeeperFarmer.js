@@ -1,4 +1,4 @@
-function maxKeeperFarmer(cap)// return array with max possible work parts for builder
+function maxKeeperFarmer(cap,spawn)// return array with max possible work parts for builder
 {
     var parts=[]
     if(cap<1650)
@@ -20,6 +20,18 @@ function maxKeeperFarmer(cap)// return array with max possible work parts for bu
     parts.push(CARRY)
     cap-=600;
 
+    
+    if(spawn!=undefined && spawn.memory.is_for_mineral==true)
+    {
+        if(cap>3250){cap=3250}
+        for(let i=0;i<cap/250;i++)
+        {
+            parts.push(WORK)
+            parts.push(WORK)
+            parts.push(MOVE)
+        }
+        return parts
+    }
     if(cap>3000)
     {
         cap=3000

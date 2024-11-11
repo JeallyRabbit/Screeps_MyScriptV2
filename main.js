@@ -434,7 +434,8 @@ module.exports.loop = function () {
                 }
             }
 
-
+            //console.log(Game.getObjectById("66f9a1993188f3003b9310bf").density); // density of mineral - number
+            //console.log(Game.getObjectById("66f9a1993188f3003b9310c2").density); // density of source - undefined
             //console.log("----------------------------------------------", spawn, "----------------------------------------------");
 
 
@@ -913,7 +914,13 @@ module.exports.loop = function () {
                         for (let i = 0; i < spawn.memory.keepers_sources.length; i++) {
                             if (spawn.memory.keepers_sources[i].id == creep.memory.target_source) {
 
-                                spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance * 2);
+                                if (Game.getObjectById(spawn.memory.keepers_sources[i].id).density != undefined) {
+                                    spawn.memory.keepers_sources[i].carry_power += (creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance * 2)) * EXTRACTOR_COOLDOWN;
+                                }
+                                else {
+                                    spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance * 2);
+                                }
+
                                 //spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance );
                                 spawn.memory.keepers_sources[i].carriers++;
                                 break;
@@ -929,20 +936,31 @@ module.exports.loop = function () {
                         //creep.say(workParts);
                         creep.memory.harvesting_power = workParts * 2;
 
-                        for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
-                            if (spawn.memory.keepers_rooms[i].name == creep.memory.target_room) {
-                                spawn.memory.keepers_rooms[i].harvesting_power += creep.memory.harvesting_power;
-                                spawn.memory.keepers_rooms[i].farmers++;
-                                break;
+                        if (creep.ticksToLive > 50 || creep.spawning) {
+                            for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
+                                if (spawn.memory.keepers_rooms[i].name == creep.memory.target_room) {
+                                    spawn.memory.keepers_rooms[i].harvesting_power += creep.memory.harvesting_power;
+                                    spawn.memory.keepers_rooms[i].farmers++;
+                                    break;
+                                }
+                            }
+                            for (let i = 0; i < spawn.memory.keepers_sources.length; i++) {
+                                if (spawn.memory.keepers_sources[i].id == creep.memory.target_source) {
+
+                                    if (Game.getObjectById(spawn.memory.keepers_sources[i].id).density != undefined) {
+                                        spawn.memory.keepers_sources[i].harvesting_power += creep.memory.harvesting_power / EXTRACTOR_COOLDOWN;
+                                    }
+                                    else {
+                                        spawn.memory.keepers_sources[i].harvesting_power += creep.memory.harvesting_power;
+                                    }
+
+
+                                    spawn.memory.keepers_sources[i].farmers++;
+                                    break;
+                                }
                             }
                         }
-                        for (let i = 0; i < spawn.memory.keepers_sources.length; i++) {
-                            if (spawn.memory.keepers_sources[i].id == creep.memory.target_source) {
-                                spawn.memory.keepers_sources[i].harvesting_power += creep.memory.harvesting_power;
-                                spawn.memory.keepers_sources[i].farmers++;
-                                break;
-                            }
-                        }
+
 
                         pop_keeperFarmers++;
                     }
@@ -1375,7 +1393,7 @@ module.exports.loop = function () {
                 if (spawn.memory.need_keeperFarmer != undefined) {
                     // update target_source
 
-                    if (spawn.spawnCreep(maxKeeperFarmer(energyCap), 'KeeperFarmer_' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperFarmer', target_room: spawn.memory.need_keeperFarmer_room, home_room: spawn.room, target_source: spawn.memory.need_keeperFarmer } }) == 0) {
+                    if (spawn.spawnCreep(maxKeeperFarmer(energyCap, spawn), 'KeeperFarmer_' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperFarmer', target_room: spawn.memory.need_keeperFarmer_room, home_room: spawn.room, target_source: spawn.memory.need_keeperFarmer } }) == 0) {
                         //console.log("Spawning KeeperFarmer");
                         continue;
                     }

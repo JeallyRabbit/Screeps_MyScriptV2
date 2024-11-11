@@ -5,14 +5,10 @@ const STATE_NEED_ENERGY = 'STATE_NEED_ENERGY'
 const STATE_STATE_NEED_MILITARY_ENERGY = 'STATE_NEED_MILITARY_ENERGY'
 
 
-function contains_rooms(array,roomName)
-{
-    if(Array.isArray(array))
-    {
-        for(a of array)
-        {
-            if(a.roomName==roomName)
-            {
+function contains_rooms(array, roomName) {
+    if (Array.isArray(array)) {
+        for (a of array) {
+            if (a.roomName == roomName) {
                 return true
             }
         }
@@ -34,19 +30,15 @@ Array.prototype.contains_rooms = function contains_rooms(roomName) {
 }
     */
 
-function contains_target_room(array,roomName)
-{
-    if(Array.isArray(array))
-        {
-            for(a of array)
-            {
-                if(a.target_room==roomName)
-                {
-                    return true
-                }
+function contains_target_room(array, roomName) {
+    if (Array.isArray(array)) {
+        for (a of array) {
+            if (a.target_room == roomName) {
+                return true
             }
         }
-        return false
+    }
+    return false
 }
 /*
 Array.prototype.contains_target_room = function contains_target_room(roomName) {
@@ -153,7 +145,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
     for (room in Game.rooms) {
         var r = Game.rooms[room]
-        if (r != undefined ) {
+        if (r != undefined) {
             r.memory.hostiles = [];
             var hostiles = r.find(FIND_HOSTILE_CREEPS, {
                 filter:
@@ -650,6 +642,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         }
         //console.log("a: ",spawn.room.name)
         //keeper farmers and keeper Carriers
+        spawn.memory.is_for_mineral = false;
         if (spawn.memory.keepers_sources != undefined && spawn.memory.keepers_sources.length > 0 && spawn.room.controller.level >= 8) {
             // Finding keeper farmers
             //console.log("b ",spawn.room.name)
@@ -666,10 +659,28 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 }
 
 
+                // for mineral
+                if (Game.getObjectById(keeper_source.id).density != undefined) {
+                    if (Game.getObjectById(keeper_source.id).mineralAmount == 0) {
+                        console.log("mineral empty")
+                        continue;
+                    }
+                    if (keeper_source.harvesting_power == 0) {
+                        spawn.memory.is_for_mineral = true;
+                        spawn.memory.need_keeperFarmer = keeper_source.id
+                        spawn.memory.need_keeperFarmer_room = keeper_source.name
+                        console.log("need keeperFarmer for mineral ",keeper_source.id)
+                        break
+                    }
+
+                }
+
+                // for energy source
                 if (keeper_source.harvesting_power <= (SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME)
-                    && keeper_source.keeperKiller != undefined) {
+                    && keeper_source.keeperKiller != undefined && Game.getObjectById(keeper_source.id).density == undefined) {
                     //console.log("need keeperFarmer for: ",keeper_source.name," ",keeper_source.id)
                     //console.log(keeper_source.harvesting_power,"\\",SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME)
+
                     spawn.memory.need_keeperFarmer = keeper_source.id
                     spawn.memory.need_keeperFarmer_room = keeper_source.name
                     break;
@@ -742,8 +753,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         if (spawn.memory.manual_swarm != undefined) {
             if (spawn.memory.swarms != undefined) {
                 //if (spawn.memory.swarms.contains_target_room(spawn.memory.manual_swarm) == false) 
-                if(contains_target_room(spawn.memory.swarms,spawn.memory.manual_swarm)==false)
-                    {
+                if (contains_target_room(spawn.memory.swarms, spawn.memory.manual_swarm) == false) {
                     spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, 4, spawn.memory.manual_swarm, spawn.room))
                 }
 
@@ -760,9 +770,8 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     if (spawn.room.name == 'W3S38') {
         if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
         if (spawn.memory.duos != undefined) {
-           // if (spawn.memory.duos.contains_target_room('W3S37') == false) 
-           if(contains_target_room(spawn.memory.duos,'W3S37'))
-                {
+            // if (spawn.memory.duos.contains_target_room('W3S37') == false) 
+            if (contains_target_room(spawn.memory.duos, 'W3S37')) {
                 //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,'W3S37'))
             }
 
@@ -778,8 +787,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
     if (spawn.memory.manual_blockade != undefined) {
         //if (spawn.memory.rooms_to_blockade.contains_rooms(spawn.memory.manual_blockade) == false) 
-        if(contains_rooms(spawn.memory.rooms_to_blockade,spawn.memory.manual_blockade)==false)
-            {
+        if (contains_rooms(spawn.memory.rooms_to_blockade, spawn.memory.manual_blockade) == false) {
             console.log("new blockade room")
             spawn.memory.rooms_to_blockade.push(new blockadeRoom(spawn.memory.manual_blockade))
         }
@@ -806,8 +814,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     //console.log('ROom: ', spawn.memory.farming_sources[i].name, ' reserved by invader');
                     continue;
                 }
-                if(Game.rooms[spawn.memory.farming_sources[i].name]!=undefined && Game.rooms[spawn.memory.farming_sources[i].name].memory.hostiles.length>1 && spawn.memory.farming_sources[i].name!=spawn.room.name)
-                {
+                if (Game.rooms[spawn.memory.farming_sources[i].name] != undefined && Game.rooms[spawn.memory.farming_sources[i].name].memory.hostiles.length > 1 && spawn.memory.farming_sources[i].name != spawn.room.name) {
                     continue;
                 }
                 spawn.memory.need_DistanceCarrier = spawn.memory.farming_sources[i].name;
@@ -939,20 +946,16 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                             }
                     })
                     spawn.memory.need_keeper_quad = new keeperQuad(myRoom, towers.length)
-                }   
-                else if (!inFarmingRooms && inKeepersRooms && invaders.length > 0) 
-                {// adding swarms to attack keepers rooms that are under invasion of invaders
-                    if(!spawn.memory.swarms.some(swarm => swarm.target_room === myRoom))
-                    {
+                }
+                else if (!inFarmingRooms && inKeepersRooms && invaders.length > 0) {// adding swarms to attack keepers rooms that are under invasion of invaders
+                    if (!spawn.memory.swarms.some(swarm => swarm.target_room === myRoom)) {
                         spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, 4, myRoom, spawn.room))
                     }
                 }
-                else if (!inFarmingRooms && inKeepersRooms && invaders.length == 0) 
-                {// if there is no invaders remove swarm from memory
-                    var index=spawn.memory.swarms.findIndex(swarm => swarm.target_room === myRoom)
-                    if(index !==-1)
-                    {
-                        spawn.memory.swarms.splice(index,1);
+                else if (!inFarmingRooms && inKeepersRooms && invaders.length == 0) {// if there is no invaders remove swarm from memory
+                    var index = spawn.memory.swarms.findIndex(swarm => swarm.target_room === myRoom)
+                    if (index !== -1) {
+                        spawn.memory.swarms.splice(index, 1);
                     }
                 }
 
@@ -970,33 +973,31 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 }
 
 
-               
+
             }
 
             // finding dropped energy in all my rooms
-            if(Game.time%3==0)
-            {
-                Game.rooms[myRoom].memory.dropped_energy= [];
-                var en=Game.rooms[myRoom].find(FIND_DROPPED_RESOURCES,{filter:
-                    function (res){
-                        return res.resourceType==RESOURCE_ENERGY
-                    }
+            if (Game.time % 3 == 0) {
+                Game.rooms[myRoom].memory.dropped_energy = [];
+                var en = Game.rooms[myRoom].find(FIND_DROPPED_RESOURCES, {
+                    filter:
+                        function (res) {
+                            return res.resourceType == RESOURCE_ENERGY
+                        }
                 });
-                if(en.length>0)
-                {
-                    for(a of en)
-                    {
+                if (en.length > 0) {
+                    for (a of en) {
                         Game.rooms[myRoom].memory.dropped_energy.push(a.id)
                     }
                 }
-                
+
             }
 
 
         }
 
 
-        
+
 
 
 
