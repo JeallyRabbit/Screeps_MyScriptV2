@@ -698,6 +698,7 @@ function build_from_plan(spawn) {
 }
 
 function build_from_lists(spawn) {
+    spawn.room.memory.ramparts_amount=0;
     var rcl = spawn.room.controller.level;
     for (let i = 0; i < spawn.memory.building_list.length; i++) {
         if (Game.rooms[spawn.memory.building_list[i].roomName] != undefined && (spawn.memory.building_list[i].min_rcl <= rcl || spawn.memory.building_list[i] == undefined)) {
@@ -713,6 +714,7 @@ function build_from_lists(spawn) {
             }
             else if (spawn.memory.building_list[i].structureType == STRUCTURE_RAMPART && spawn.memory.building_list[i].min_rcl <= rcl) {
                 Game.rooms[spawn.memory.building_list[i].roomName].createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].structureType);
+                spawn.room.memory.ramparts_amount++;
             }
             else if (is_pos_free(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].roomName) == true
                 && spawn.memory.building_list[i].min_rcl <= rcl) {
@@ -722,6 +724,10 @@ function build_from_lists(spawn) {
 
         }
     }
+    var r_cost=(RAMPART_DECAY_AMOUNT/REPAIR_POWER)/RAMPART_DECAY_TIME;
+    spawn.room.memory.req_energy_for_ramparts=spawn.room.memory.ramparts_amount*r_cost
+
+
     for (let i = 0; i < spawn.memory.road_building_list.length; i++) {
 
         /*
@@ -1201,7 +1207,8 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_road_to_target(spawn, roomCM_2, spawn.room.controller.pos.getNearbyPositions(), 2);
         var mineral = spawn.room.find(FIND_MINERALS);
         plan_road_to_target(spawn, roomCM_2, mineral[0].pos.getNearbyPositions(), 6);
-        plan_road_to_target(spawn,roomCM_2,spawn.room.memory.labs_stamp_pos.getNearbyPositions(),6)
+        var labs_pos=new RoomPosition(spawn.room.memory.labs_stamp_pos.x,spawn.room.memory.labs_stamp_pos.y,spawn.room.name)
+        plan_road_to_target(spawn,roomCM_2,labs_pos.getNearbyPositions(),6)
         if (Game.shard.name != 'shard3') {
             plan_controller_ramparts(spawn);
         }

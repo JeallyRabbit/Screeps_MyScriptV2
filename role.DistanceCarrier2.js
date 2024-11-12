@@ -154,7 +154,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                             }
                             //creep.say(spawn.pos)
                             if (avoid.length == 0) {
-                                creep.sleep(((creep.store.getCapacity() - creep.store.getUsedCapacity()) - Game.getObjectById(creep.memory.max_container).store.getUsedCapacity()) / 20);
+                                creep.sleep(((creep.store.getCapacity() - creep.store.getUsedCapacity()) - Game.getObjectById(creep.memory.max_container).store.getUsedCapacity()) / 25);
 
                             }
                             else{

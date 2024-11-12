@@ -90,6 +90,13 @@ Spawn.prototype.terminal = function terminal(spawn) {
                 if (closest_to_send_energy != undefined) {
                     console.log("sending energy to: ", closest_to_send_energy)
                     terminal.send(RESOURCE_ENERGY, amount, closest_to_send_energy);
+                    if(spawn.room.memory.energy_sent==undefined)
+                    {
+                        spawn.room.memory.energy_sent=amount;
+                    }
+                    else{
+                        spawn.room.memory.energy_sent+=amount
+                    }
                 }
             }
         }

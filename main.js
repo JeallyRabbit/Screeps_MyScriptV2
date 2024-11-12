@@ -1209,6 +1209,12 @@ module.exports.loop = function () {
                 spawn.room.visual.text("energy on creeps/t: " + (spawn.room.memory.mean_energy_on_creeps), 41, 12, { color: 'lightblue' })
             }
 
+            if(spawn.room.memory.energy_sent!=undefined && Game.time%step==0)
+            {
+                spawn.room.memory.mean_energy_sent=spawn.room.memory.energy_sent/step
+                pawn.room.memory.energy_sent=0;
+            }
+
             //console.log(Game.time % step)
 
 
