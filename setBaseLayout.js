@@ -846,6 +846,7 @@ function plan_borders(spawn, roomCM, rcl) {
         */
 
     var if_visualize = true
+    /*
     outsideFieldFloodCM = spawn.room.floodFillToRamparts(seeds, spawn.memory.room_plan, if_visualize)
 
 
@@ -920,6 +921,7 @@ function plan_borders(spawn, roomCM, rcl) {
     for (r of rampart_entrances_list) {
         spawn.memory.room_plan[r.x][r.y] = STRUCTURE_RAMPART
     }
+        */
 }
 
 

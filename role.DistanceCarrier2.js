@@ -322,6 +322,12 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                     for (let res in creep.store) {
                         var amount =creep.store[RESOURCE_ENERGY]
                         var transfer_result = creep.transfer(Game.getObjectById(creep.memory.home_container), res);
+                        if(Game.getObjectById(creep.memory.home_container)!=null && Game.getObjectById(creep.memory.home_container).store.getFreeCapacity(RESOURCE_ENERGY)==0)
+                        {
+                            creep.fleeFrom([Game.getObjectById(creep.memory.home_container)],3)
+                            creep.memory.home_container=undefined
+                            break;
+                        }
                         if (transfer_result == ERR_NOT_IN_RANGE) {
                             
                             creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true,avoidCreeps: true  });
@@ -329,7 +335,8 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                             break;
                         }
                         else if (transfer_result == ERR_FULL) {
-                            creep.drop(res);
+                            //creep.drop(res);
+
 
                             //addEnergyIncome(creep,spawn,amount)
 

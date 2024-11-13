@@ -9,6 +9,23 @@ function maxFarmer(cap,spawn,limit)// return array with max possible work parts 
     {
         cap=2000;
     }
+    parts.push(MOVE)
+    parts.push(CARRY)
+    parts.push(WORK)
+    parts.push(WORK)
+    cap-=300;
+    if(cap>750)
+    {
+        cap=750
+    }
+
+    for(let i=0;i<Math.floor(cap/250);i++)
+    {
+        parts.push(MOVE)
+        parts.push(WORK)
+        parts.push(WORK)
+    }
+    /*
     if(cap>1100)
     {
         parts.push(CARRY);
@@ -38,6 +55,7 @@ function maxFarmer(cap,spawn,limit)// return array with max possible work parts 
         parts.push(MOVE);
         parts.push(WORK);
     }
+        */
     return parts;
 }
 module.exports = maxFarmer;

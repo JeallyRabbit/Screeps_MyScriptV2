@@ -246,8 +246,17 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
                 var construction_sites = spawn.room.find(FIND_CONSTRUCTION_SITES);
                 if (construction_sites.length > 0) {
-                    spawn.memory.building = true;
+                    if(spawn.room.controller.level>5 && ((spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]>40000) || spawn.room.storage==undefined))
+                    {
+                        spawn.memory.building = true;
+                        spawn.memory.upgrading = undefined;
+                    }
+                    if(spawn.room.controller.level<=5)
+                    {
+                        spawn.memory.building = true;
                     spawn.memory.upgrading = undefined;
+                    }
+                    
                 }
                 else {
                     spawn.memory.building = undefined;

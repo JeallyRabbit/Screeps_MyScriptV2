@@ -264,7 +264,7 @@ module.exports.loop = function () {
                 Memory.colonizing = false;
             }
 
-            //Memory.colonizing = false;
+            Memory.colonizing = false;
 
         }
 
@@ -316,11 +316,18 @@ module.exports.loop = function () {
             var spawn_start_cpu = Game.cpu.getUsed()
             var spawn = Game.getObjectById(Memory.main_spawns[spawn_num]);
 
-            if (spawn.memory.lvl_1_time == undefined && spawn.room.controller.level <= 2) {
+            if (spawn.memory.lvl_1_time == undefined /* && spawn.room.controller.level <= 2*/) {
                 spawn.memory.lvl_1_time = Game.time;
             }
             if (spawn.memory.lvl_2_time == undefined && spawn.room.controller.level == 2) {
-                spawn.memory.lvl_2_time = Game.time;
+                if(spawn.memory.lvl_1_time==Game.time)
+                {
+                    spawn.memory.lvl_2_time = Game.time;
+                }
+                else
+                {
+                    spawn.memory.lvl_2_time = Game.time-spawn.memory.lvl_1_time;
+                }
             }
             if (spawn.memory.lvl_3_time == undefined && spawn.room.controller.level == 3) {
                 spawn.memory.lvl_3_time = Game.time - spawn.memory.lvl_2_time;
@@ -1491,6 +1498,14 @@ module.exports.loop = function () {
             }
             //if (spawn.memory.need_farmer != undefined) {
             if (spawn.memory.need_source_farmer != undefined && spawn.memory.need_source_farmer != spawn.memory.need_soldier) {
+                console.log(spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
+                    memory: {
+                        role: 'farmer', home_room: spawn.room,
+                        source_id: spawn.memory.need_source_farmer,
+                        target_room: spawn.memory.need_source_farmer_room
+
+                    }
+                }))
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'farmer', home_room: spawn.room,
