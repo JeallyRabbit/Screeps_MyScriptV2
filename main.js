@@ -1219,7 +1219,7 @@ module.exports.loop = function () {
             if(spawn.room.memory.energy_sent!=undefined && Game.time%step==0)
             {
                 spawn.room.memory.mean_energy_sent=spawn.room.memory.energy_sent/step
-                pawn.room.memory.energy_sent=0;
+                spawn.room.memory.energy_sent=0;
             }
 
             //console.log(Game.time % step)

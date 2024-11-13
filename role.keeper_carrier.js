@@ -194,7 +194,7 @@ Creep.prototype.roleKeeperCarrier = function roleKeeperCarrier(creep, spawn) {
                     ) {
                         //creep.say("1")
                         if (creep.withdraw(Game.getObjectById(creep.memory.target_container), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE
-                    || (creep.memory.mineral!=undefined && creep.withdraw(Game.getObjectById(creep.memory.target_container), creep.memory.mineral))) {
+                    || (creep.memory.mineral!=undefined && creep.withdraw(Game.getObjectById(creep.memory.target_container), creep.memory.mineral)==ERR_NOT_IN_RANGE)) {
                             var if_avoid_sk = true
                             if (creep.pos.inRangeTo(Game.getObjectById(creep.memory.target_container), 8)) {
                                 if_avoid_sk = false
