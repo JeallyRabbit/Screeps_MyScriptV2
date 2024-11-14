@@ -148,7 +148,9 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
                     {
                         
                         //creep.say("pass")
+                        creep.upgradeController(creep.room.controller);
                         creep.transfer(cr,RESOURCE_ENERGY)
+                        
                         break;
                     }
                 }

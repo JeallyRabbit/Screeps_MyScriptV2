@@ -320,32 +320,25 @@ module.exports.loop = function () {
                 spawn.memory.lvl_1_time = Game.time;
             }
             if (spawn.memory.lvl_2_time == undefined && spawn.room.controller.level == 2) {
-                if(spawn.memory.lvl_1_time==Game.time)
-                {
-                    spawn.memory.lvl_2_time = Game.time;
-                }
-                else
-                {
-                    spawn.memory.lvl_2_time = Game.time-spawn.memory.lvl_1_time;
-                }
+                spawn.memory.lvl_2=Game.time-spawn.memory.lvl_1_time
             }
             if (spawn.memory.lvl_3_time == undefined && spawn.room.controller.level == 3) {
-                spawn.memory.lvl_3_time = Game.time - spawn.memory.lvl_2_time;
+                spawn.memory.lvl_3_time = Game.time - spawn.memory.lvl_1_time;
             }
             if (spawn.memory.lvl_4_time == undefined && spawn.room.controller.level == 4) {
-                spawn.memory.lvl_4_time = Game.time - spawn.memory.lvl_3_time;
+                spawn.memory.lvl_4_time = Game.time - spawn.memory.lvl_1_time;
             }
             if (spawn.memory.lvl_5_time == undefined && spawn.room.controller.level == 5) {
-                spawn.memory.lvl_5_time = Game.time - spawn.memory.lvl_4_time;;
+                spawn.memory.lvl_5_time = Game.time - spawn.memory.lvl_1_time;
             }
             if (spawn.memory.lvl_6_time == undefined && spawn.room.controller.level == 6) {
-                spawn.memory.lvl_6_time = Game.time - spawn.memory.lvl_5_time;;
+                spawn.memory.lvl_6_time = Game.time - spawn.memory.lvl_1_time;
             }
             if (spawn.memory.lvl_7_time == undefined && spawn.room.controller.level == 7) {
-                spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_6_time;;
+                spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_1_time;;
             }
             if (spawn.memory.lvl_8_time == undefined && spawn.room.controller.level == 8) {
-                spawn.memory.lvl_8_time = Game.time - spawn.memory.lvl_7_time;;
+                spawn.memory.lvl_8_time = Game.time - spawn.memory.lvl_1_time;;
             }
             if (spawn.memory.manual_colonize != undefined) {
                 for (let main_spawn_id of Memory.main_spawns) {

@@ -303,8 +303,8 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.req_doctors = 1;
     }
     if (spawn.room.storage != undefined && spawn.room.controller.level < 8 && spawn.room.controller.level > 3) {
-        if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 0) {
-            spawn.memory.req_upgraders_parts = Math.max(1, Math.floor(spawn.room.storage.store[RESOURCE_ENERGY] / 30000));
+        if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 5000) {
+            spawn.memory.req_upgraders_parts = Math.max(1, Math.floor(spawn.room.storage.store[RESOURCE_ENERGY] / 20000));
 
         }
         else {
