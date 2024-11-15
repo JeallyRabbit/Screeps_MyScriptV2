@@ -14,16 +14,16 @@ function maxFarmer(cap,spawn,limit)// return array with max possible work parts 
     parts.push(WORK)
     parts.push(WORK)
     cap-=300;
-    if(cap>500)
+    if(cap>750)
     {
-        cap=500
+        cap=750
     }
-
     for(let i=0;i<Math.floor(cap/250);i++)
     {
         parts.push(MOVE)
         parts.push(WORK)
         parts.push(WORK)
+        cap-=250
     }
     /*
     if(cap>1100)

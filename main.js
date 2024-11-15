@@ -1535,7 +1535,7 @@ module.exports.loop = function () {
                 }
             }
 
-            if (pop_builders < spawn.memory.req_builders && upgraders_parts > 0) // spawning new builder
+            if (pop_builders < spawn.memory.req_builders && upgraders_parts > 0 && farming_needs_satisfied) // spawning new builder
             {
                 spawn.spawnCreep(maxBuilder(energyCap, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } });
                 if (spawn.spawnCreep(maxBuilder(energyCap / 2, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } }) == 0) {
@@ -1560,6 +1560,7 @@ module.exports.loop = function () {
                 (spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power > spawn.memory.farming_rooms[0].sources_num * (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5)
             ) // spawning new upgrader
             {
+                //console.log("trying to spawn upgrader: ",spawn.spawnCreep(maxUpgrader(energyCap, spawn, Math.ceil(spawn.memory.req_upgraders_parts) * 200), 'Upgrader_' + spawn.room.name + '_' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }))
                 if (spawn.spawnCreep(maxUpgrader(energyCap, spawn, Math.ceil(spawn.memory.req_upgraders_parts) * 200), 'Upgrader_' + spawn.room.name + '_' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {
                     continue;
                 }
