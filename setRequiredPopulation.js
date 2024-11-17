@@ -246,17 +246,15 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
                 var construction_sites = spawn.room.find(FIND_CONSTRUCTION_SITES);
                 if (construction_sites.length > 0) {
-                    if(spawn.room.controller.level>5 && ((spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]>40000) || spawn.room.storage==undefined))
-                    {
+                    if (spawn.room.controller.level > 5 && ((spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 40000) || spawn.room.storage == undefined)) {
                         spawn.memory.building = true;
                         spawn.memory.upgrading = undefined;
                     }
-                    if(spawn.room.controller.level<=5)
-                    {
+                    if (spawn.room.controller.level <= 5) {
                         spawn.memory.building = true;
-                    spawn.memory.upgrading = undefined;
+                        spawn.memory.upgrading = undefined;
                     }
-                    
+
                 }
                 else {
                     spawn.memory.building = undefined;
@@ -678,7 +676,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                         spawn.memory.is_for_mineral = true;
                         spawn.memory.need_keeperFarmer = keeper_source.id
                         spawn.memory.need_keeperFarmer_room = keeper_source.name
-                        console.log("need keeperFarmer for mineral ",keeper_source.id)
+                        console.log("need keeperFarmer for mineral ", keeper_source.id)
                         break
                     }
 
@@ -1224,12 +1222,14 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
 
 
-
-    if (Game.time % 2000 == 0) {
+    if (Game.time % Memory.step == 0) {
         spawn.memory.progress = 0;
         spawn.memory.progress_old = 0;
         spawn.memory.progress_sum = 0;
         spawn.memory.progress_counter = 0;
+
+        spawn.room.memory.delivered_energy = 0;
+        spawn.room.memory.energy_on_creeps = 0;
     }
     if (spawn.memory.reservers_counter == undefined || spawn.memory.reservers_counter > 500) {
         spawn.memory.reservers_counter = 0;
