@@ -1165,13 +1165,13 @@ module.exports.loop = function () {
 
             if (spawn.room.memory.energy_on_ramparts != undefined) {
                 spawn.room.visual.text("Energy spent on ramparts: " + (spawn.room.memory.energy_on_ramparts), 41, 7, { color: '#fc03b6' })
-                if (Game.time % step == 0) {
-                    var temp_en_ramp = spawn.room.memory.energy_on_ramparts / step
+                
+                    var temp_en_ramp = spawn.room.memory.energy_on_ramparts / ((Game.time % step)+1)
                     temp_en_ramp = Math.round((temp_en_ramp) * 100) / 100
 
                     spawn.room.memory.mean_energy_on_ramparts = temp_en_ramp
-                    spawn.room.memory.energy_on_ramparts = 0;
-                }
+                   
+                
             }
             if (spawn.room.memory.mean_energy_on_ramparts != undefined) {
                 spawn.room.visual.text("Energy on ramparts/t: " + (spawn.room.memory.mean_energy_on_ramparts), 41, 8, { color: 'lightblue' })
@@ -1181,31 +1181,22 @@ module.exports.loop = function () {
             // it should be close to "Calculated final Income"
             if (spawn.room.memory.delivered_energy != undefined) {
                 spawn.room.visual.text("Delivered energy: " + (spawn.room.memory.delivered_energy), 41, 9, { color: '#fc03b6' })
-                var temp_energy = spawn.room.memory.delivered_energy / (step - (Game.time % step))
+                var temp_energy = spawn.room.memory.delivered_energy / ((Game.time % step)+1)
                 temp_energy = Math.round((temp_energy) * 100) / 100
                 spawn.room.memory.mean_delivered_energy = temp_energy
-                /*if (Game.time % step == 0) {
-                    var temp_energy = spawn.room.memory.delivered_energy / step
-                    temp_energy = Math.round((temp_energy) * 100) / 100
-
-                    spawn.room.memory.mean_delivered_energy = temp_energy
-                    spawn.room.memory.delivered_energy = 0;
-                }*/
             }
             if (spawn.room.memory.mean_delivered_energy != undefined) {
-                spawn.room.visual.text("Delivered energy/t: " + (spawn.room.memory.mean_delivered_energy), 41, 10, { color: 'lightblue' })
+                spawn.room.visual.text("Delivered energy/t: " + (spawn.room.memory.mean_delivered_energy)+"/"+(spawn.memory.farming_sources.length*(SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME)),
+                 41, 10, { color: 'lightblue' })
             }
 
 
             if (spawn.room.memory.energy_on_creeps != undefined) {
                 spawn.room.visual.text("energy spent on creeps: " + (spawn.room.memory.energy_on_creeps), 41, 11, { color: '#fc03b6' })
-                //if (Game.time % step == 0) {
-                var temp_energy = spawn.room.memory.energy_on_creeps / (step - (Game.time % step))
+                var temp_energy = spawn.room.memory.energy_on_creeps / ( (Game.time % step)+1)
                 temp_energy = Math.round((temp_energy) * 100) / 100
+                spawn.room.memory.mean_energy_on_creeps=temp_energy
 
-                //spawn.room.memory.mean_energy_on_creeps = temp_energy
-                //spawn.room.memory.energy_on_creeps = 0;
-                //}
 
             }
             if (spawn.room.memory.mean_energy_on_creeps != undefined) {
@@ -1217,19 +1208,18 @@ module.exports.loop = function () {
                 spawn.room.memory.energy_sent = 0;
             }
 
+            if(spawn.room.memory.mean_delivered_energy != undefined && spawn.room.memory.mean_energy_on_creeps!=undefined
+                && spawn.room.memory.mean_energy_on_ramparts != undefined)
+                {
+                    //spawn.room.memory.energy_income_t=(spawn.memory.farming_sources.length*(SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME))
+                    spawn.room.memory.energy_income_t= spawn.room.memory.mean_delivered_energy-spawn.room.memory.mean_energy_on_creeps
+                    -spawn.room.memory.mean_energy_on_ramparts-(Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100)
+                    spawn.room.visual.text("final energy income/t: " + Math.round(spawn.room.memory.energy_income_t*100)/100, 41, 13, { color: 'lightblue' })
+                }
             //console.log(Game.time % step)
 
 
 
-            if (spawn.memory.progress != 0 && spawn.memory.progress_old != 0 &&
-                spawn.memory.progress_sum != 0 && spawn.memory.progress_counter > 4 &&
-                spawn.memory.progress != spawn.memory.progress_old) {
-
-                //console.log("Progress/tick: ", (spawn.memory.progress_sum / spawn.memory.progress_counter));
-            }
-            //spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
-            //    spawn.room.controller.pos.x, spawn.room.controller.pos.y - 1, { color: '#fc03b6' })
-            //console.log(" ");
 
 
             for (let spawnName2 in Game.spawns) {

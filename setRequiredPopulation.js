@@ -1230,6 +1230,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
         spawn.room.memory.delivered_energy = 0;
         spawn.room.memory.energy_on_creeps = 0;
+        spawn.room.memory.energy_on_ramparts = 0;
     }
     if (spawn.memory.reservers_counter == undefined || spawn.memory.reservers_counter > 500) {
         spawn.memory.reservers_counter = 0;
