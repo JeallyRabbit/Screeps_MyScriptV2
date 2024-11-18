@@ -124,7 +124,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
         for (res of this.room.memory.need_resources_buy) {
             var buy_result = buy_resource(spawn, res, 2500)
-            console.log(this.room.name," ",res, " buying result: ", buy_result)
+            //console.log(this.room.name," ",res, " buying result: ", buy_result)
             if (buy_result == OK || this.cooldown != 0) { break; }
         }
 

@@ -164,10 +164,21 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
 
                 }
                 var source = creep.pos.findClosestByRange(containers);
-                if (creep.withdraw(source, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                var  withdraw_result=creep.withdraw(source, RESOURCE_ENERGY)
+                if (withdraw_result == ERR_NOT_IN_RANGE) {
                     //creep.say("Going to Cintainer");
                     creep.moveTo(source, { reusePath: 17,maxRooms:1 });
                     //move_avoid_hostile(creep, source.pos,1);
+                }
+                else if(withdraw_result==OK)
+                {
+                    if(spawn.room.memory.energy_on_repair!=undefined)
+                    {
+                        spawn.room.memory.energy_on_repair+=creep.store.getCapacity(RESOURCE_ENERGY)
+                    }
+                    else{
+                        spawn.room.memory.energy_on_repair=creep.store.getCapacity(RESOURCE_ENERGY)
+                    }
                 }
 
                 //console.log("qwert");
