@@ -1221,6 +1221,9 @@ module.exports.loop = function () {
                     - spawn.room.memory.mean_total_repairers_energy
                 spawn.room.visual.text("final energy income/t: " + Math.round(spawn.room.memory.energy_income_t * 100) / 100, 41, 14, { color: 'lightblue' })
             }
+            spawn.room.visual.text((Game.time%step)+1 +"/"+step, 48, 4, {fill: 'transparent', font: '0.5'})
+            spawn.room.visual.rect(48,4.5,1,11,{fill: 'transparent', stroke: '#fff'})
+            spawn.room.visual.rect(48,4.5,1,(((Game.time%step)+1)/step)*11,{ stroke: '#fff'})
             //console.log(Game.time % step)
 
 
