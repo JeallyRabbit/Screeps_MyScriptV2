@@ -1138,7 +1138,7 @@ module.exports.loop = function () {
             spawn.room.visual.text("Time: " + Game.time, 20, 0, { color: '#fc03b6' })
 
             spawn.room.visual.text("Calculated final income/t: " + spawn.memory.total_calculated_income_per_tick, 44, 3, { color: 'lightblue' })
-            spawn.room.visual.text("used Cpu: " + (spawn_end_cpu - spawn_start_cpu), 44, 4, { color: '#fc03b6' })
+            
             spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
             spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
                 44, 6, { color: 'lightblue' })
@@ -1659,6 +1659,7 @@ module.exports.loop = function () {
             else {
                 spawn.memory.mean_cpu_sum += spawn_end_cpu - spawn_start_cpu
             }
+            spawn.room.visual.text("used Cpu: " + Math.round(((spawn_end_cpu - spawn_start_cpu)) * 100) / 100 , 44, 4, { color: '#fc03b6' })
 
             if (Game.time % step == 0) {
                 spawn.memory.mean_cpu = spawn.memory.mean_cpu_sum / step

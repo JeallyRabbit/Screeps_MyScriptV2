@@ -667,7 +667,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
 
                 // for mineral
-                if (Game.getObjectById(keeper_source.id).density != undefined) {
+                if (Game.getObjectById(keeper_source.id)!=null && Game.getObjectById(keeper_source.id).density != undefined) {
                     if (Game.getObjectById(keeper_source.id).mineralAmount == 0) {
                         console.log("mineral empty")
                         continue;
@@ -684,7 +684,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
                 // for energy source
                 if (keeper_source.harvesting_power <= (SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME)
-                    && keeper_source.keeperKiller != undefined && Game.getObjectById(keeper_source.id).density == undefined) {
+                    && keeper_source.keeperKiller != undefined && Game.getObjectById(keeper_source.id)!=null &&  Game.getObjectById(keeper_source.id).density == undefined) {
                     //console.log("need keeperFarmer for: ",keeper_source.name," ",keeper_source.id)
                     //console.log(keeper_source.harvesting_power,"\\",SOURCE_ENERGY_KEEPER_CAPACITY / ENERGY_REGEN_TIME)
 
@@ -1231,6 +1231,14 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.room.memory.delivered_energy = 0;
         spawn.room.memory.energy_on_creeps = 0;
         spawn.room.memory.energy_on_ramparts = 0;
+
+        for (room in Game.rooms) {
+            var r = Game.rooms[room]
+            if (r != undefined) {
+                r.memory.energy_on_repair=0;
+            }
+        }
+        
     }
     if (spawn.memory.reservers_counter == undefined || spawn.memory.reservers_counter > 500) {
         spawn.memory.reservers_counter = 0;
