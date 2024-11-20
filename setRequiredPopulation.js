@@ -1232,6 +1232,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.room.memory.energy_on_creeps = 0;
         spawn.room.memory.energy_on_ramparts = 0;
 
+        spawn.room.memory.energy_on_repair=0;
         for (room in Game.rooms) {
             var r = Game.rooms[room]
             if (r != undefined) {
