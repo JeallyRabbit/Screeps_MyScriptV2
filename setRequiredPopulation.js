@@ -171,6 +171,8 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     r.memory.allies.push(a.id)
                 }
             }
+
+            r.memory.soldiers=[]
         }
     }
 
@@ -937,10 +939,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 // if there are towers do not send soldiers
                 //console.log(invaders.length > 0, " ", cores.length > 0, " ", Game.rooms[myRoom].memory.soldiers < 3)
                 //console.log("invaders: ", invaders.length)
-                if(Game.rooms[myRoom].memory.soldiers==undefined)
-                {
-                    Game.rooms[myRoom].memory.soldiers=[]
-                }
+                
                 if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers < 2) {
                     spawn.memory.need_soldier = myRoom;
                 }
