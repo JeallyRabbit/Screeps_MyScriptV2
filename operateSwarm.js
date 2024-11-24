@@ -112,7 +112,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
 
 
 
-                    var target_structure = creep.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
+                    var target_structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                         filter: function (structure) {
                             //return structure.my==false && 
                             //return structure.room.name != spawn.room.name && 
@@ -120,9 +120,10 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                                 //&& structure.structureType!=STRUCTURE_WALL
                                 && structure.structureType != STRUCTURE_CONTAINER
                                 && structure.structureType != STRUCTURE_ROAD
-                                && structure.my == false
+                                && structure.my !=true
                         }
                     });
+                    //creep.say(target_structure.my)
                     
                     //creep.say(target_creep)
                     if (target_creep!=null) {
@@ -177,11 +178,13 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
 
                     }
                     else if (target_structure) {
+                        //creep.say("STR")
                         //console.log(creep.room.name, " ", "fighting structures");
                         //console.log("target_structure: ",target_structure);
                         //console.log("QWEQWEQWE")
                         if (target_creep) {
                             //focus on creeps
+                            creep.say("B")
                             if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
 
                                 creep.moveTo(target_creep, { maxRooms: 1, ignoreDestructibleStructures: true })
@@ -199,14 +202,17 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                         }
                         else {
                             //focus on structures
-                            if (creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE) {
+                            //creep.say("A")
+                            var ranged_attack_result=creep.rangedAttack(target_structure)
+                            //if (ranged_attack_result == ERR_NOT_IN_RANGE) {
                                 if (allies_present) {
+                                    
                                     creep.rangedAttack(target_structure)
                                 }
                                 else {
                                     creep.rangedMassAttack()
                                 }
-                            }
+                            //}
                             
                             creep.moveTo(target_structure, { maxRooms: 1, ignoreDestructibleStructures: true, avoidCreeps: true })
 
