@@ -209,8 +209,12 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                                     
                                     creep.rangedAttack(target_structure)
                                 }
-                                else {
+                                else if(target_structure.structureType!=STRUCTURE_WALL){
                                     creep.rangedMassAttack()
+                                }
+                                else
+                                {
+                                    creep.rangedAttack(target_structure)
                                 }
                             //}
                             
