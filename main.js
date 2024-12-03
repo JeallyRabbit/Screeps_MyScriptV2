@@ -795,21 +795,26 @@ module.exports.loop = function () {
                     else if (creep.memory.role == 'distanceCarrier') {
                         //creep.suicide();
 
-                        for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
-                            if (spawn.memory.farming_rooms[i].name == creep.memory.target_room) {
+                        if (creep.ticksToLive > creep.memory.source_distance || creep.spawning) {
+                            for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
+                                if (spawn.memory.farming_rooms[i].name == creep.memory.target_room) {
 
-                                spawn.memory.farming_rooms[i].carry_power += creep.store.getCapacity() / (spawn.memory.farming_rooms[i].distance * 2);
-                                creep.memory.carry_power = creep.store.getCapacity() / (spawn.memory.farming_rooms[i].distance * 2);
+                                    spawn.memory.farming_rooms[i].carry_power += creep.store.getCapacity() / (spawn.memory.farming_rooms[i].distance * 2);
+                                    creep.memory.carry_power = creep.store.getCapacity() / (spawn.memory.farming_rooms[i].distance * 2);
+                                }
+                            }
+
+                            for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
+                                if (spawn.memory.farming_sources[i].id == creep.memory.source_id && spawn.memory.farming_sources[i].name == creep.memory.target_room) {
+
+                                    spawn.memory.farming_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.farming_sources[i].distance * 2);
+                                    creep.memory.carry_power = creep.store.getCapacity() / (spawn.memory.farming_sources[i].distance * 2);
+                                }
                             }
                         }
 
-                        for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
-                            if (spawn.memory.farming_sources[i].id == creep.memory.source_id && spawn.memory.farming_sources[i].name == creep.memory.target_room) {
 
-                                spawn.memory.farming_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.farming_sources[i].distance * 2);
-                                creep.memory.carry_power = creep.store.getCapacity() / (spawn.memory.farming_sources[i].distance * 2);
-                            }
-                        }
+
                         if (creep.ticksToLive > creep.memory.time_to_sleep) {
                             //creep.say('Dsleep')
                             if (creep.memory.time_to_sleep != null) {
@@ -1609,7 +1614,8 @@ module.exports.loop = function () {
                     memory: {
                         role: 'distanceCarrier', home_room: spawn.room,
                         target_room: spawn.memory.need_DistanceCarrier, path: undefined,
-                        source_id: spawn.memory.need_ddistance_carrier_source_id
+                        source_id: spawn.memory.need_ddistance_carrier_source_id,
+                        source_distance:spawn.memory.need_distance_carrier_source_distance
                     }
                 }) == 0) {
                     spawn.memory.distance_carriers_counter++;

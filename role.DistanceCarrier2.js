@@ -45,7 +45,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
             }
         }
 
-        if (creep.store.getFreeCapacity() == 0) {
+        if (creep.store.getFreeCapacity() == 0 || creep.ticksToLive<creep.memory.source_distance*1.1) {
             creep.memory.collecting = false;
         }
         else if (creep.store.getUsedCapacity() == 0 || creep.memory.collecting == undefined) {
@@ -133,7 +133,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                     // take all resources from container
                     for (let resource in Game.getObjectById(creep.memory.max_container).store) {
                         if (creep.withdraw(Game.getObjectById(creep.memory.max_container), resource) == ERR_NOT_IN_RANGE
-                    || creep.pos.inRangeTo(spawn,4)) {
+                    || creep.pos.inRangeTo(spawn,4 )) {
                             creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 21,avoidCreeps: true });
                             break;
                         }
