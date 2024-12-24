@@ -62,7 +62,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
             closest_to_send_energy = undefined
             min_distance = Infinity
             
-            if (spawn.memory.state.includes(STATE_NEED_ENERGY) == false && storage != null && storage.store[RESOURCE_ENERGY] > 400000
+            if (spawn.memory.state.includes(STATE_NEED_ENERGY) == false && storage != null && storage.store[RESOURCE_ENERGY] > 100000
                 && terminal.store[RESOURCE_ENERGY] > amount) {
 
 

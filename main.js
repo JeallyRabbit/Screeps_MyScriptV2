@@ -403,9 +403,77 @@ module.exports.loop = function () {
             var pop_keeperCarriers = 0;
             var pop_keeperRepairers = 0
 
+
+            for (var name in Game.creeps) {
+                var creep = Game.creeps[name];
+
+                if (creep.memory.role == 'soldier' && false) {
+                    //creep.roleSoldier(creep, spawn);
+
+
+                    if (Game.rooms[creep.memory.target_room] != undefined) {
+                        if (Game.rooms[creep.memory.target_room].memory.soldiers != undefined && Game.rooms[creep.memory.target_room].memory.soldiers.length >= 0) {
+                            //creep.say("asd")
+                            //console.log(creep.memory.target_room," memory.soldiers: ",Game.rooms[creep.memory.target_room].memory.soldiers)
+                            if (!Game.rooms[creep.memory.target_room].memory.soldiers.includes(creep.id)) {
+                                //creep.say("add")
+                                Game.rooms[creep.memory.target_room].memory.soldiers.push(creep.id);
+                            }
+                        }
+                        else if (Array.isArray(Game.rooms[creep.memory.target_room].memory.soldiers) == false) {
+                            Game.rooms[creep.memory.target_room].memory.soldiers = [];
+                        }
+                    }
+
+                    if (spawn.memory.rooms_to_blockade != undefined && spawn.memory.rooms_to_blockade.length > 0) {
+                        //console.log(creep.pos)
+                        // creep.say()
+                        for (a of spawn.memory.rooms_to_blockade) {
+                            if (a.roomName == creep.memory.target_room) {
+                                //console.log(creep.id)
+                                a.soldier_id = creep.id;
+                                break;
+                            }
+                        }
+                    }
+
+
+                    /*
+                    for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
+                        if (creep.memory.target_room == spawn.memory.farming_rooms[i].name) {
+                            if (creep.memory.is_melee == false) {
+                                if (creep.memory.target_room == spawn.memory.need_soldier) {
+                                    spawn.memory.need_soldier = undefined;
+                                }
+                                spawn.memory.farming_rooms[i].soldier = creep.id;
+
+                            }
+                            else if (creep.memory.is_melee == true) {
+                                if (creep.memory.target_room == spawn.memory.need_melee_soldier) {
+                                    spawn.memory.need_melee_soldier = undefined;
+                                    creep.say("ASD");
+                                }
+                                spawn.memory.farming_rooms[i].melee_soldier = creep.id;
+                            }
+
+                        }
+                    }
+                        */
+
+                    if (spawn.memory.to_colonize != undefined && creep.memory.target_room == spawn.memory.to_colonize.name) {
+                        spawn.memory.to_colonize.soldier = creep.id
+                    }
+
+
+                }
+            }
+
+
+
             spawn.setBaseState(spawn);
             spawn.baseDefense();
             spawn.operateKeepersRooms()
+            console.log("asdasd: ",Game.rooms['W6N3'].memory.soldiers.length)
             spawn.setRequiredPopulation(spawn);
 
 
@@ -680,6 +748,10 @@ module.exports.loop = function () {
                             }
                             else if (Array.isArray(Game.rooms[creep.memory.target_room].memory.soldiers) == false) {
                                 Game.rooms[creep.memory.target_room].memory.soldiers = [];
+                                if (!Game.rooms[creep.memory.target_room].memory.soldiers.includes(creep.id)) {
+                                    //creep.say("add")
+                                    Game.rooms[creep.memory.target_room].memory.soldiers.push(creep.id);
+                                }
                             }
                         }
 
@@ -1238,6 +1310,10 @@ module.exports.loop = function () {
 
 
 
+            console.log("spawn.memory.need_soldier: ",spawn.memory.need_soldier)
+
+
+
 
             for (let spawnName2 in Game.spawns) {
 
@@ -1445,7 +1521,8 @@ module.exports.loop = function () {
                 continue;
             }
 
-            if (spawn.memory.need_soldier != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK")) {
+            if (spawn.memory.need_soldier != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK")
+            && Game.rooms[spawn.memory.need_soldier]!=undefined /* && Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<5 */) {
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:
@@ -1456,7 +1533,9 @@ module.exports.loop = function () {
                 }
             }
 
-            if (spawn.memory.need_melee_soldier != undefined) {
+            if (spawn.memory.need_melee_soldier != undefined 
+                && Game.rooms[spawn.memory.need_soldier]!=undefined && Game.rooms[spawn.memory.need_soldier].memory.soldier.length<5
+            ) {
                 if (spawn.spawnCreep(maxMeleeSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:
@@ -1615,7 +1694,7 @@ module.exports.loop = function () {
                         role: 'distanceCarrier', home_room: spawn.room,
                         target_room: spawn.memory.need_DistanceCarrier, path: undefined,
                         source_id: spawn.memory.need_ddistance_carrier_source_id,
-                        source_distance:spawn.memory.need_distance_carrier_source_distance
+                        source_distance: spawn.memory.need_distance_carrier_source_distance
                     }
                 }) == 0) {
                     spawn.memory.distance_carriers_counter++;

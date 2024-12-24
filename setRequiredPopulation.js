@@ -809,7 +809,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     if (spawn.memory.state.includes(STATE_UNDER_ATTACK)) {
         spawn.memory.need_melee_defenders = spawn.room.controller.level * 2;
     }
-    //spawn.memory.need_melee_soldier = 'W41N15';
     spawn.memory.need_reserver = undefined;
     if (spawn.memory.farming_sources != undefined && spawn.memory.farming_sources.length > 0 &&
         (spawn.memory.rooms_to_scan != undefined)) {
@@ -940,11 +939,15 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 // if there are towers do not send soldiers
                 //console.log(invaders.length > 0, " ", cores.length > 0, " ", Game.rooms[myRoom].memory.soldiers < 3)
                 //console.log("invaders: ", invaders.length)
-                
+                if(Game.rooms[myRoom].memory.soldiers==undefined)
+                {
+                    Game.rooms[myRoom].memory.soldiers=[]
+                }
                 if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers < 2) {
                     spawn.memory.need_soldier = myRoom;
+                    console.log("need_soldier: ",myRoom," soldiers.length: ",Game.rooms[myRoom].memory.soldiers)
                 }
-                else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers < 2) {
+                else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers!=undefined && Game.rooms[myRoom].memory.soldiers.length < 2) {
                     spawn.memory.need_melee_soldier = myRoom;
                 }
 
@@ -1056,81 +1059,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
         }
 
-
-
-        /*
-        if (Game.time % 1 == 0) {
-            
-            loop1:
-            for (let myRoom in Game.rooms) {
-
-                
-
-
-                if (Game.rooms[myRoom].name != spawn.room.name) {
-                    var is_farming_room = false;
-                    for (let farmingRoom of spawn.memory.farming_rooms) {
-                        if (myRoom == farmingRoom.name) {
-                            is_farming_room = true;
-                            break;
-                        }
-                    }
-
-                    for (let farmingRoom of spawn.memory.farming_sources) {
-                        if (myRoom == farmingRoom.name) {
-                            is_farming_room = true;
-                            break;
-                        }
-                    }
-
-                    if (is_farming_room == true ||
-                        (is_farming_room == false && Game.rooms[myRoom].controller != undefined && Game.rooms[myRoom].my == true && Game.rooms[myRoom].controller.level < 4)) {
-                        if (Game.rooms[myRoom].soldier != undefined || Game.rooms[myRoom].melee_soldier != undefined) {
-                            continue loop1;
-                        }
-                        var hostile = Game.rooms[myRoom].find(FIND_HOSTILE_CREEPS, {
-                            filter:
-                                function (hostile) {
-                                    return hostile.owner.username == 'Invader'
-                                }
-                        });
-                        if (hostile != undefined) {
-                            if (hostile.length == 0) {
-                                hostile = Game.rooms[myRoom].find(FIND_STRUCTURES, {
-                                    filter: function (structure) {
-                                        return structure.structureType == STRUCTURE_INVADER_CORE;
-                                    }
-                                });
-                                if (hostile.length > 0) {
-                                    //found invaderCore
-                                    spawn.memory.need_melee_soldier = Game.rooms[myRoom].name;
-
-                                    break;
-                                }
-                            }
-                            else {
-                                //found hostile creeps
-                                if (hostile.length > 0) {
-                                    spawn.memory.need_soldier = Game.rooms[myRoom].name;
-                                    break;
-                                }
-                            }
-
-
-                        }
-                    }
-
-                }
-            }
-            
-
-            
-
-            //console.log("spawn.memory.need_soldier: ",spawn.memory.need_soldier)
-
-        }
-            */
-
         // RESERVERS //
 
 
@@ -1141,13 +1069,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 break;
             }
         }
-
-        /*
-        console.log('need DistanceCarrier: ', spawn.memory.need_DistanceCarrier, ' | need_distance_carrier_source_id: ', spawn.memory.need_ddistance_carrier_source_id,
-            ' | need source_farmer: ', spawn.memory.need_source_farmer,
-            ' | need distanceRepairer ', spawn.memory.need_distanceRepairer, ' | need soldier: ', spawn.memory.need_soldier,
-            ' | need reserver ', spawn.memory.need_reserver, ' | need melee_soldier: ', spawn.memory.need_melee_soldier);
-        */
 
 
 
@@ -1165,22 +1086,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.req_DistanceCarriers = 0;
         spawn.memory.req_soldiers = 0;
     }
-
-    /*
-    if (spawn.memory.claiming_rooms == undefined && spawn.memory.claiming_rooms.length > 0) {
-        spawn.memory.req_claimers = spawn.memory.claiming_rooms.length;
-        //spawn.memory.claiming_rooms.push('E3N59');
-        //spawn.memory.req_berserk = spawn.memory.claiming_rooms.length*2;
-        spawn.memory.req_distanceBuilders = 2 * spawn.memory.claiming_rooms.length;//role num12
-    }
-    else {
-        spawn.memory.req_claimers = 0;
-        //spawn.memory.req_berserk =0;
-        spawn.memory.req_distanceBuilders = 0;
-    }
-        */
-
-
 
 
     var terminal = spawn.room.terminal;
