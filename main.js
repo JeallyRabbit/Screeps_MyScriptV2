@@ -473,7 +473,6 @@ module.exports.loop = function () {
             spawn.setBaseState(spawn);
             spawn.baseDefense();
             spawn.operateKeepersRooms()
-            console.log("asdasd: ",Game.rooms['W6N3'].memory.soldiers.length)
             spawn.setRequiredPopulation(spawn);
 
 
