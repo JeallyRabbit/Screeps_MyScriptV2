@@ -799,7 +799,7 @@ module.exports.loop = function () {
                         //creep.suicide();
 
 
-                        if ( (creep.memory.source_distance!= undefined && creep.ticksToLive > creep.memory.source_distance) || creep.spawning) {
+                        if ( (creep.memory.source_distance!= undefined && creep.ticksToLive > (creep.memory.source_distance*2) + creep.body.length) || creep.spawning) {
                             if (creep.memory.harvesting_power == undefined) {
                                 const workParts = _.filter(creep.body, { type: WORK }).length;
                                 creep.memory.harvesting_power = workParts * 2;
@@ -1578,14 +1578,17 @@ module.exports.loop = function () {
             }
             //if (spawn.memory.need_farmer != undefined) {
             if (spawn.memory.need_source_farmer != undefined && spawn.memory.need_source_farmer != spawn.memory.need_soldier) {
+                /*
                 console.log(spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'farmer', home_room: spawn.room,
                         source_id: spawn.memory.need_source_farmer,
+                        source_distance: spawn.memory.need_source_farmer_distance,
                         target_room: spawn.memory.need_source_farmer_room
 
                     }
                 }))
+                    */
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'farmer', home_room: spawn.room,

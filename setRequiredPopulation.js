@@ -743,6 +743,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.need_ddistance_carrier_source_id = undefined
     spawn.memory.need_farmer = undefined;
     spawn.memory.need_source_farmer = undefined;
+    spawn.memory.need_source_farmer_distance=undefined;
     spawn.memory.need_source_farmer_room = undefined;
     spawn.memory.need_distanceRepairer = undefined;
     spawn.memory.need_soldier = undefined;
@@ -863,6 +864,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 spawn.memory.need_source_farmer = spawn.memory.farming_sources[i].id;
                 spawn.memory.need_source_farmer_room = spawn.memory.farming_sources[i].name;
                 spawn.memory.need_source_farmer_distance=spawn.memory.farming_sources[i].distance;
+                console.log("asdasdasdasd: ",spawn.memory.need_source_farmer_distance)
                 //consone.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 break;
             }
