@@ -406,7 +406,7 @@ module.exports.loop = function () {
 
             for (var name in Game.creeps) {
                 var creep = Game.creeps[name];
-
+                //creep.suicide()
                 if (creep.memory.role == 'soldier' && false) {
                     //creep.roleSoldier(creep, spawn);
 
@@ -799,7 +799,7 @@ module.exports.loop = function () {
                         //creep.suicide();
 
 
-                        if (creep.ticksToLive > 100 || creep.spawning) {
+                        if ( (creep.memory.source_distance!= undefined && creep.ticksToLive > creep.memory.source_distance) || creep.spawning) {
                             if (creep.memory.harvesting_power == undefined) {
                                 const workParts = _.filter(creep.body, { type: WORK }).length;
                                 creep.memory.harvesting_power = workParts * 2;
@@ -1590,6 +1590,7 @@ module.exports.loop = function () {
                     memory: {
                         role: 'farmer', home_room: spawn.room,
                         source_id: spawn.memory.need_source_farmer,
+                        source_distance: spawn.memory.need_source_farmer_distance,
                         target_room: spawn.memory.need_source_farmer_room
 
                     }

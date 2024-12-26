@@ -862,6 +862,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
                 spawn.memory.need_source_farmer = spawn.memory.farming_sources[i].id;
                 spawn.memory.need_source_farmer_room = spawn.memory.farming_sources[i].name;
+                spawn.memory.need_source_farmer_distance=spawn.memory.farming_sources[i].distance;
                 //consone.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 break;
             }

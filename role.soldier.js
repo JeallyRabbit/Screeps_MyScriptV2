@@ -4,7 +4,7 @@ const { goOutOfRange } = require("./goOutOfRange");
 Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
 
     //creep.rangedMassAttack()
-    creep.suicide();
+    //creep.suicide();
     ////creep.say("A");
     if (creep.memory.is_melee == undefined) {
         //creep.say("def");
