@@ -1045,8 +1045,13 @@ module.exports.loop = function () {
                         pop_scouts++;
                     }
                     else if (creep.memory.role == 'filler') {
-                        creep.roleFiller(creep, spawn);
                         pop_fillers++;
+                        if (creep.ticksToLive > creep.memory.time_to_sleep) {
+                            //creep.say('💤')
+                            continue;
+                        }
+                        creep.roleFiller(creep, spawn);
+                        
                     }
                     else if (creep.memory.role == 'scanner') {
                         creep.roleScanner(creep, spawn);
@@ -1309,11 +1314,6 @@ module.exports.loop = function () {
 
 
 
-            console.log("spawn.memory.need_soldier: ",spawn.memory.need_soldier)
-
-
-
-
             for (let spawnName2 in Game.spawns) {
 
                 if (spawnName2 != spawn.name) {
@@ -1533,7 +1533,8 @@ module.exports.loop = function () {
             }
 
             if (spawn.memory.need_melee_soldier != undefined 
-                && Game.rooms[spawn.memory.need_soldier]!=undefined && Game.rooms[spawn.memory.need_soldier].memory.soldier.length<5
+                && Game.rooms[spawn.memory.need_melee_soldier]!=undefined && Game.rooms[spawn.memory.need_melee_soldier].memory.soldiers!=undefined &&
+                 Game.rooms[spawn.memory.need_melee_soldier].memory.soldiers.length<5
             ) {
                 if (spawn.spawnCreep(maxMeleeSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
@@ -1578,17 +1579,7 @@ module.exports.loop = function () {
             }
             //if (spawn.memory.need_farmer != undefined) {
             if (spawn.memory.need_source_farmer != undefined && spawn.memory.need_source_farmer != spawn.memory.need_soldier) {
-                /*
-                console.log(spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
-                    memory: {
-                        role: 'farmer', home_room: spawn.room,
-                        source_id: spawn.memory.need_source_farmer,
-                        source_distance: spawn.memory.need_source_farmer_distance,
-                        target_room: spawn.memory.need_source_farmer_room
-
-                    }
-                }))
-                    */
+                
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'farmer', home_room: spawn.room,

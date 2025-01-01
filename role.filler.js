@@ -144,14 +144,26 @@ Creep.prototype.roleFiller = function (creep, spawn) {
                         //}
 
                     }
-                    //creep.say(all_full)
+                    creep.say(all_full)
+                    var is_container_full=true;
                     if (all_full && (Game.getObjectById(creep.memory.my_container) != null && Game.getObjectById(creep.memory.my_container).structureType == STRUCTURE_LINK)
                         && spawn.memory.filler_containers != undefined && spawn.memory.filler_containers.length > 0) {
                         //creep.say("cnt")
                         for (let i = 0; i < spawn.memory.filler_containers.length; i++) {
                             var result = creep.transfer(Game.getObjectById(spawn.memory.filler_containers[i]), RESOURCE_ENERGY)
-                            if (result == OK) { break; }
+                            if (result == OK) { is_container_full=false;break; }
                         }
+                    }
+                    if(is_container_full && all_full)
+                    {
+                        if(spawn.spawning!=null && spawn.spawning.remainingTime!=spawn.spawning.needTime)
+                        {
+                            creep.sleep(spawn.spawning.remainingTime)
+                        }
+                        else{
+                            creep.sleep(5)
+                        }
+                        
                     }
                 }
             }

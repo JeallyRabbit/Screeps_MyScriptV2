@@ -832,25 +832,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 break;
             }
         }
-
-        //console.log(spawn.room.name," need ditance Carrier: ",spawn.memory.need_DistanceCarrier)
-        //spawn.memory.need_farmer = undefined;
-        //  FARMERS //
-        for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
-            if (spawn.memory.farming_rooms[i].harvesting_power < spawn.memory.farming_rooms[i].sources_num * 11
-                && spawn.memory.farming_rooms[i].farmers < spawn.memory.farming_rooms[i].max_farmers) {
-
-                if (Game.rooms[spawn.memory.farming_rooms[i].name] != undefined
-                    && Game.rooms[spawn.memory.farming_rooms[i].name].controller.reservation != undefined
-                    && Game.rooms[spawn.memory.farming_rooms[i].name].controller.reservation.username == 'Invader') {
-                    continue;
-                }
-                spawn.memory.need_farmer = spawn.memory.farming_rooms[i].name;
-                //consone.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                break;
-            }
-        }
-
         // FARMERS AFTER UPGRADE //
         for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
             if (spawn.memory.farming_sources[i].harvesting_power < SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME &&
@@ -864,11 +845,26 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 spawn.memory.need_source_farmer = spawn.memory.farming_sources[i].id;
                 spawn.memory.need_source_farmer_room = spawn.memory.farming_sources[i].name;
                 spawn.memory.need_source_farmer_distance=spawn.memory.farming_sources[i].distance;
-                console.log("asdasdasdasd: ",spawn.memory.need_source_farmer_distance)
+                //console.log("asdasdasdasd: ",spawn.memory.need_source_farmer_distance)
                 //consone.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 break;
             }
         }
+
+        /*
+        for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
+            if(Game.rooms[spawn.memory.farming_sources[i].name].find(FIND_HOSTILE_STRUCTURES,{filter: function(str)
+                {
+                    return str.structureType==STRUCTURE_INVADER_CORE
+                }}).length>0 && Memory.rooms[spawn.memory.farming_sources[i].name].soldiers!=undefined && Memory.rooms[spawn.memory.farming_sources[i].name].soldiers.length<3)
+            {
+                spawn.memory.need_melee_soldier=spawn.memory.farming_sources[i].name;
+                console.log("need mele for inv core for: ",spawn.memory.need_melee_soldier)
+                break;
+            }
+        }
+            */
+
 
         // if room is under attack do not spawn farmers
         if (spawn.memory.state.includes("STATE_UNDER_ATTACK")) {
@@ -952,6 +948,20 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 }
                 else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers!=undefined && Game.rooms[myRoom].memory.soldiers.length < 2) {
                     spawn.memory.need_melee_soldier = myRoom;
+                    console.log("need melee soldier: ",spawn.memory.need_melee_soldier)
+                    if(spawn.memory.need_DistanceCarrier==myRoom)
+                    {
+                        spawn.memory.need_DistanceCarrier=undefined;
+                        spawn.memory.need_ddistance_carrier_source_id=undefined;
+                        spawn.memory.need_distance_carrier_source_distance=undefined;
+                    }
+                    if(spawn.memory.need_source_farmer==myRoom)
+                    {
+                        spawn.memory.need_source_farmer=undefined
+                        spawn.memory.need_source_farmer_distance=undefined
+                        spawn.memory.need_source_farmer_room=undefined
+                    }
+                    //console.log("need melee soldierr: ",spawn.memory.need_melee_soldier)
                 }
 
 
