@@ -53,10 +53,11 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
                     }
                 }
             }
-            if (creep.memory.damaged_structures_id == undefined && Game.time % 13 == 0) {
+            if (creep.memory.damaged_structures_id == undefined && Game.time % 7 == 0) {
                 creep.memory.damaged_structures_id = [];
                 for (let str of creep.memory.all_structures_id) {
-                    if (Game.getObjectById(str).hits < Game.getObjectById(str).hitsMax * 0.7) {
+                    if ((Game.getObjectById(str).hits < Game.getObjectById(str).hitsMax * 0.7 && Game.getObjectById(str).structureType!=STRUCTURE_CONTAINER)
+                    || (Game.getObjectById(str).hits < Game.getObjectById(str).hitsMax && Game.getObjectById(str).structureType==STRUCTURE_CONTAINER)) {
                         creep.memory.damaged_structures_id.push(str)
                     }
                 }
@@ -94,13 +95,13 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
 
 
 
-        if (((creep.memory.damaged_structures_id != undefined && creep.memory.damaged_structures_id.length < 3) || creep.memory.damaged_structures_id==undefined) && creep.name.startsWith('Builder') == false) {
+        if (((creep.memory.damaged_structures_id != undefined && creep.memory.damaged_structures_id.length < 1) || creep.memory.damaged_structures_id==undefined) && creep.name.startsWith('Builder') == false) {
             //creep.move(BOTTOM)
             //creep.say("b");
             creep.memory.damaged_structures_id = undefined
             creep.roleBuilder(creep, spawn);
         }
-        else if (creep.memory.damaged_structures_id != undefined && creep.memory.damaged_structures_id.length >= 3) {
+        else if (creep.memory.damaged_structures_id != undefined && creep.memory.damaged_structures_id.length >= 1) {
 
 
             creep.memory.repairing = true;
