@@ -158,7 +158,7 @@ Creep.prototype.roleFiller = function (creep, spawn) {
                     {
                         if(spawn.spawning!=null && spawn.spawning.remainingTime!=spawn.spawning.needTime)
                         {
-                            creep.sleep(spawn.spawning.remainingTime)
+                            creep.sleep(spawn.spawning.remainingTime/2)
                         }
                         else{
                             creep.sleep(5)

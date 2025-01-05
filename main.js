@@ -337,10 +337,21 @@ module.exports.loop = function () {
                 spawn.memory.lvl_6_time = Game.time - spawn.memory.lvl_1_time;
             }
             if (spawn.memory.lvl_7_time == undefined && spawn.room.controller.level == 7) {
-                spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_1_time;;
+                spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_1_time;
+                if(spawn.memory.scan_reset_7==undefined)
+                {
+                    spawn.memory.scan_reset_7=true;
+                    spawn.memory.rooms_to_scan=undefined;
+                }
             }
             if (spawn.memory.lvl_8_time == undefined && spawn.room.controller.level == 8) {
-                spawn.memory.lvl_8_time = Game.time - spawn.memory.lvl_1_time;;
+                spawn.memory.lvl_8_time = Game.time - spawn.memory.lvl_1_time;
+                spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_1_time;
+                if(spawn.memory.scan_reset_8==undefined)
+                {
+                    spawn.memory.scan_reset_8=true;
+                    spawn.memory.rooms_to_scan=undefined;
+                }
             }
             if (spawn.memory.manual_colonize != undefined) {
                 for (let main_spawn_id of Memory.main_spawns) {
@@ -1047,7 +1058,7 @@ module.exports.loop = function () {
                     else if (creep.memory.role == 'filler') {
                         pop_fillers++;
                         if (creep.ticksToLive > creep.memory.time_to_sleep) {
-                            //creep.say('💤')
+                            creep.say('💤')
                             continue;
                         }
                         creep.roleFiller(creep, spawn);
