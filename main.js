@@ -341,6 +341,7 @@ module.exports.loop = function () {
                 if(spawn.memory.scan_reset_7==undefined)
                 {
                     spawn.memory.scan_reset_7=true;
+                    spawn.memory.if_success_planning_base=false;
                     spawn.memory.rooms_to_scan=undefined;
                 }
             }
@@ -350,6 +351,7 @@ module.exports.loop = function () {
                 if(spawn.memory.scan_reset_8==undefined)
                 {
                     spawn.memory.scan_reset_8=true;
+                    spawn.memory.if_success_planning_base=false;
                     spawn.memory.rooms_to_scan=undefined;
                 }
             }
