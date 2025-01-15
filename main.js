@@ -420,7 +420,7 @@ module.exports.loop = function () {
             for (var name in Game.creeps) {
                 var creep = Game.creeps[name];
                 //creep.suicide()
-                if (creep.memory.role == 'soldier' && false) {
+                if (creep.memory.role == 'soldier' /* && false */) {
                     //creep.roleSoldier(creep, spawn);
 
 
@@ -1533,7 +1533,7 @@ module.exports.loop = function () {
                 continue;
             }
 
-            if (spawn.memory.need_soldier != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK")
+            if (spawn.memory.need_soldier != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK" && Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<3)
             && Game.rooms[spawn.memory.need_soldier]!=undefined /* && Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<5 */) {
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
@@ -1591,7 +1591,7 @@ module.exports.loop = function () {
                 continue;
             }
             //if (spawn.memory.need_farmer != undefined) {
-            if (spawn.memory.need_source_farmer != undefined && spawn.memory.need_source_farmer != spawn.memory.need_soldier) {
+            if (spawn.memory.need_source_farmer != undefined && (spawn.memory.need_source_farmer != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers>0)) {
                 
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
@@ -1694,7 +1694,7 @@ module.exports.loop = function () {
                 }
             }
             if (spawn.memory.need_DistanceCarrier != undefined && pop_distanceCarriers < 30
-                && spawn.memory.need_DistanceCarrier != spawn.memory.need_soldier && spawn.memory.need_DistanceCarrier != spawn.memory.need_melee_soldier) {
+                && (spawn.memory.need_DistanceCarrier != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers>0) && spawn.memory.need_DistanceCarrier != spawn.memory.need_melee_soldier) {
 
                 if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, false), 'distnaceCarrier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
