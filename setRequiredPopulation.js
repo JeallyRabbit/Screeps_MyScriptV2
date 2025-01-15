@@ -942,9 +942,9 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 {
                     Game.rooms[myRoom].memory.soldiers=[]
                 }
-                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers < 2) {
+                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers.length < 2) {
                     spawn.memory.need_soldier = myRoom;
-                    console.log("need_soldier: ",myRoom," soldiers.length: ",Game.rooms[myRoom].memory.soldiers)
+                    console.log("need_soldier: ",myRoom," soldiers.length: ",Game.rooms[myRoom].memory.soldiers.length)
                 }
                 else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers!=undefined && Game.rooms[myRoom].memory.soldiers.length < 2) {
                     spawn.memory.need_melee_soldier = myRoom;
