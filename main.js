@@ -1630,7 +1630,7 @@ module.exports.loop = function () {
                 }
             }
 
-            if (pop_builders < spawn.memory.req_builders && upgraders_parts > 0 && farming_needs_satisfied) // spawning new builder
+            if (pop_builders < spawn.memory.req_builders && upgraders_parts > 0 /* && farming_needs_satisfied*/) // spawning new builder
             {
                 spawn.spawnCreep(maxBuilder(energyCap, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } });
                 if (spawn.spawnCreep(maxBuilder(energyCap / 2, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } }) == 0) {

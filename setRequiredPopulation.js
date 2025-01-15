@@ -281,8 +281,8 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             if (spawn.memory.farming_sources != undefined && spawn.memory.farming_sources.length > 0) {
                 sources_num = spawn.memory.farming_sources.length
                 if (spawn.memory.total_calculated_income_per_tick != undefined && (spawn.memory.farming_sources[sources_num - 1].carry_power >= spawn.memory.farming_sources[sources_num - 1].harvesting_power
-                    || spawn.memory.farming_sources[sources_num - 1].carry_power >= SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME)
-                    && spawn.memory.farming_sources[sources_num - 1].harvesting_power > (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) / 2
+                    || spawn.memory.farming_sources[sources_num - 1].carry_power >= SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) /2
+                    && (spawn.memory.farming_sources[sources_num - 1].harvesting_power > (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) / 2 || spawn.memory.farming_sources[sources_num - 1].farmers>=spawn.memory.farming_sources[sources_num - 1].max_farmers)
                     && spawn.memory.building != true
                 ) {
                     spawn.memory.req_upgraders_parts = Math.round((spawn.memory.total_calculated_income_per_tick / 1.5) * 100) / 100
