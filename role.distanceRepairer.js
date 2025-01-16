@@ -57,7 +57,7 @@ Creep.prototype.roleDistanceRepairer = function roleDistanceRepairer(creep, spaw
                 creep.memory.damaged_structures_id = [];
                 for (let str of creep.memory.all_structures_id) {
                     if ((Game.getObjectById(str).hits < Game.getObjectById(str).hitsMax * 0.7 && Game.getObjectById(str).structureType!=STRUCTURE_CONTAINER)
-                    || (Game.getObjectById(str).hits < Game.getObjectById(str).hitsMax && Game.getObjectById(str).structureType==STRUCTURE_CONTAINER)) {
+                    || (Game.getObjectById(str).hits < Game.getObjectById(str).hitsMax*0.8 && Game.getObjectById(str).structureType==STRUCTURE_CONTAINER)) {
                         creep.memory.damaged_structures_id.push(str)
                     }
                 }
