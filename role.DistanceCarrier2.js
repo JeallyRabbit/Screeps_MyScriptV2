@@ -45,7 +45,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
             }
         }
 
-        if (creep.store.getFreeCapacity() == 0) {
+        if (creep.store.getFreeCapacity() == 0 || creep.ticksToLive<creep.memory.source_distance*1.1) {
             creep.memory.collecting = false;
         }
         else if (creep.store.getUsedCapacity() == 0 || creep.memory.collecting == undefined) {
@@ -133,7 +133,7 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                     // take all resources from container
                     for (let resource in Game.getObjectById(creep.memory.max_container).store) {
                         if (creep.withdraw(Game.getObjectById(creep.memory.max_container), resource) == ERR_NOT_IN_RANGE
-                    || creep.pos.inRangeTo(spawn,4)) {
+                    || creep.pos.inRangeTo(spawn,4 )) {
                             creep.moveTo(Game.getObjectById(creep.memory.max_container).pos, { reusePath: 21,avoidCreeps: true });
                             break;
                         }
@@ -153,8 +153,8 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                                 avoid.push(Game.getObjectById(creep.memory.home_container));
                             }
                             //creep.say(spawn.pos)
-                            if (avoid.length == 0) {
-                                creep.sleep(((creep.store.getCapacity() - creep.store.getUsedCapacity()) - Game.getObjectById(creep.memory.max_container).store.getUsedCapacity()) / 20);
+                            if (avoid.length == 0 && creep.pos.inRangeTo(Game.getObjectById(creep.memory.max_container).pos.x,Game.getObjectById(creep.memory.max_container).pos.y,3)) {
+                                creep.sleep(((creep.store.getCapacity() - creep.store.getUsedCapacity()) - Game.getObjectById(creep.memory.max_container).store.getUsedCapacity()) / 25);
 
                             }
                             else{
@@ -307,7 +307,13 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                         else if (transfer_result == OK) {
 
                             //addEnergyIncome(creep,spawn,amount)
-
+                            if(spawn.room.memory.delivered_energy==undefined)
+                            {
+                                spawn.room.memory.delivered_energy=creep.store[RESOURCE_ENERGY]
+                            }
+                            else{
+                                spawn.room.memory.delivered_energy+=creep.store[RESOURCE_ENERGY]
+                            }
                             creep.memory.max_container = undefined;
                         }
                     }
@@ -316,6 +322,12 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                     for (let res in creep.store) {
                         var amount =creep.store[RESOURCE_ENERGY]
                         var transfer_result = creep.transfer(Game.getObjectById(creep.memory.home_container), res);
+                        if(Game.getObjectById(creep.memory.home_container)!=null && Game.getObjectById(creep.memory.home_container).store.getFreeCapacity(RESOURCE_ENERGY)==0)
+                        {
+                            creep.fleeFrom([Game.getObjectById(creep.memory.home_container)],3)
+                            creep.memory.home_container=undefined
+                            break;
+                        }
                         if (transfer_result == ERR_NOT_IN_RANGE) {
                             
                             creep.moveTo(Game.getObjectById(creep.memory.home_container), { reusePath: 21, avoidSk: true,avoidCreeps: true  });
@@ -323,7 +335,8 @@ Creep.prototype.roleDistanceCarrier2 = function roleDistanceCarrier2(creep, spaw
                             break;
                         }
                         else if (transfer_result == ERR_FULL) {
-                            creep.drop(res);
+                            //creep.drop(res);
+
 
                             //addEnergyIncome(creep,spawn,amount)
 

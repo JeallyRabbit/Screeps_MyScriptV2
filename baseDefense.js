@@ -20,7 +20,7 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
         var hostile_not_invader = this.room.find(FIND_HOSTILE_CREEPS, {
             filter:
                 function (hostile) {
-                    return hostile.owner.username != 'Invader'
+                    return hostile.owner.username != 'Invader' && Memory.allies.includes(hostile.owner.username)==false
                 }
         })
         if (hostile_not_invader.length > 0 && this.room.controller.level < 4) {
@@ -39,6 +39,14 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
 
 
         }
+        else if(hostile_not_invader.length>0 && (this.room.controller.safeMode < 500 ||  this.room.controller.safeMode==undefined))
+        {
+            if (this.memory.state.includes(STATE_UNDER_ATTACK) == false) {
+                this.memory.state.push(STATE_UNDER_ATTACK)
+                console.log(this.room.name, " is underattack")
+            }
+        }
+        console.log(this.room.name," ",hostile_not_invader.length," ", this.room.controller.safeMode)
         /*
         if (this.memory.state.includes(STATE_UNDER_ATTACK) == false
     && hostile_not_invader.length==hostiles.length) {

@@ -17,7 +17,7 @@ Creep.prototype.roleMeleeDefender = function roleMeleeDefender(creep, spawn) {
         {
             if (creep.attack(closest_hostile) == ERR_NOT_IN_RANGE) {
             var path = creep.pos.findPathTo(closest_hostile.pos, {
-                range: 1, maxRooms: 1,
+                range: 1, maxRooms: 1, avoidCreeps: true,
                 costCallback: function (roomName, costMatrix) {
                     console.log("bbbbbbbb")
     
@@ -32,27 +32,6 @@ Creep.prototype.roleMeleeDefender = function roleMeleeDefender(creep, spawn) {
         {
             creep.moveTo(closest_hostile,{range:6})
         }
-        
-            
-        /*
-        //console.log(closest_hostile.id)
-        if (creep.attack(closest_hostile) == ERR_NOT_IN_RANGE) {
-            creep.say("c")
-            console.log("closest hostile: ",closest_hostile.id)
-            
-            console.log("moveTo result: ",creep.moveTo(closest_hostile.pos, {
-                range: 1, maxRooms: 1,
-                visualizePathStyle: {stroke: '#ffffff'}
-                ,
-                costCallback: function (roomName, costMatrix) {
-                    console.log("aaaaa")
-                    return storedCostMatrix
-                }
-            }))
-        }
-            */
-
-
     }
 
 };

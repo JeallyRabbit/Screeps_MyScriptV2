@@ -546,6 +546,7 @@ function plan_labs_stamp(spawn,roomCM)
         }
     }
     spawn.room.memory.output_labs_id = undefined
+    spawn.room.memory.labs_stamp_pos=new RoomPosition(pos_for_labs.x,pos_for_labs.y,spawn.room.name)
     return is_succes;
 
 
@@ -697,6 +698,7 @@ function build_from_plan(spawn) {
 }
 
 function build_from_lists(spawn) {
+    spawn.room.memory.ramparts_amount=0;
     var rcl = spawn.room.controller.level;
     for (let i = 0; i < spawn.memory.building_list.length; i++) {
         if (Game.rooms[spawn.memory.building_list[i].roomName] != undefined && (spawn.memory.building_list[i].min_rcl <= rcl || spawn.memory.building_list[i] == undefined)) {
@@ -712,6 +714,7 @@ function build_from_lists(spawn) {
             }
             else if (spawn.memory.building_list[i].structureType == STRUCTURE_RAMPART && spawn.memory.building_list[i].min_rcl <= rcl) {
                 Game.rooms[spawn.memory.building_list[i].roomName].createConstructionSite(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].structureType);
+                spawn.room.memory.ramparts_amount++;
             }
             else if (is_pos_free(spawn.memory.building_list[i].x, spawn.memory.building_list[i].y, spawn.memory.building_list[i].roomName) == true
                 && spawn.memory.building_list[i].min_rcl <= rcl) {
@@ -721,6 +724,10 @@ function build_from_lists(spawn) {
 
         }
     }
+    var r_cost=(RAMPART_DECAY_AMOUNT/REPAIR_POWER)/RAMPART_DECAY_TIME;
+    spawn.room.memory.req_energy_for_ramparts=spawn.room.memory.ramparts_amount*r_cost
+
+
     for (let i = 0; i < spawn.memory.road_building_list.length; i++) {
 
         /*
@@ -758,7 +765,7 @@ function plan_borders(spawn, roomCM, rcl) {
             && building.structureType != STRUCTURE_CONTAINER && building.structureType != STRUCTURE_LINK && building.structureType != STRUCTURE_EXTRACTOR
             && building.x > 4 && building.x < 46 && building.y > 4 && building.y < 46) {
             sources2.push({ x: building.x, y: building.y });
-            costMap.set(building.x, building.y, 200);
+            costMap.set(building.x, building.y, 255);
         }
     }
 
@@ -839,6 +846,7 @@ function plan_borders(spawn, roomCM, rcl) {
         */
 
     var if_visualize = true
+    /*
     outsideFieldFloodCM = spawn.room.floodFillToRamparts(seeds, spawn.memory.room_plan, if_visualize)
 
 
@@ -913,6 +921,7 @@ function plan_borders(spawn, roomCM, rcl) {
     for (r of rampart_entrances_list) {
         spawn.memory.room_plan[r.x][r.y] = STRUCTURE_RAMPART
     }
+        */
 }
 
 
@@ -1160,7 +1169,9 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_main_spawn_stamp(spawn, roomCM);
 
         plan_manager_stamp(spawn, roomCM);
+        plan_controller_container(spawn,roomCM)
 
+        
         //plan_road_to_controller(spawn, roomCM);
         plan_extension_stamp(spawn, roomCM, 4);
         plan_extension_stamp(spawn, roomCM, 5);
@@ -1183,7 +1194,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     {
         var cpu_before = Game.cpu.getUsed()
         let roomCM_1 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
-        if (Game.shard.name != 'shard3') {
+        if (Game.shard.name != 'shard3' && Game.shard.name!='jaysee') {
             plan_borders(spawn, roomCM_1, 4);
         }
         spawn.memory.roomCM = roomCM_1.serialize();
@@ -1198,11 +1209,13 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_road_to_target(spawn, roomCM_2, spawn.room.controller.pos.getNearbyPositions(), 2);
         var mineral = spawn.room.find(FIND_MINERALS);
         plan_road_to_target(spawn, roomCM_2, mineral[0].pos.getNearbyPositions(), 6);
-        if (Game.shard.name != 'shard3') {
+        var labs_pos=new RoomPosition(spawn.room.memory.labs_stamp_pos.x,spawn.room.memory.labs_stamp_pos.y,spawn.room.name)
+        plan_road_to_target(spawn,roomCM_2,labs_pos.getNearbyPositions(),6)
+        if (Game.shard.name != 'shard3' && Game.shard.name!='jaysee') {
             plan_controller_ramparts(spawn);
         }
 
-        plan_controller_container(spawn,roomCM_2)
+        
 
         //planning roads to sources (in all farming rooms including main room)
         if ((spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length == 0) || spawn.room.controller.level >= 4) {

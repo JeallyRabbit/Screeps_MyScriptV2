@@ -4,6 +4,12 @@ const { boosting_driver } = require('boosting_driver');
 Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
 
     //creep.suicide();
+    if(spawn.memory.state.includes("STATE_UNDER_ATTACK") && spawn.room.controller.ticksToDowngrade>2000)
+    {
+        creep.say("rep")
+        creep.roleRampartRepairer(creep, spawn);
+        return;
+    }
     if(creep.memory.work_parts_num==undefined)
     {
         creep.memory.work_parts_num=_.filter(creep.body, { type: WORK }).length
@@ -33,7 +39,7 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
     }
 
     if (creep.memory.boosting_list == undefined) {
-        creep.memory.boosting_list = ["GH", "XGH2O", "GH2O"];//boost types that creep accepts
+        creep.memory.boosting_list = ["XGH2O", "GH2O","GH"];//boost types that creep accepts
     }
     // else 
     if (boosting_driver(creep, spawn, creep.memory.boosting_list, WORK) == -1) {
@@ -142,7 +148,9 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
                     {
                         
                         //creep.say("pass")
+                        creep.upgradeController(creep.room.controller);
                         creep.transfer(cr,RESOURCE_ENERGY)
+                        
                         break;
                     }
                 }

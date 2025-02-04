@@ -11,13 +11,13 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
     //creep.suicide()
     var terminal = spawn.room.terminal;
     var storage = spawn.room.storage;
-    //creep.withdraw(terminal,RESOURCE_LEMERGIUM)
-    //creep.transfer(storage,RESOURCE_LEMERGIUM)
-    //creep.transfer(storage,RESOURCE_ENERGY)
-    //return;
     creep.memory.task = undefined;
     if (spawn.memory.manager_link_id != undefined) {
         var manager_link = Game.getObjectById(spawn.memory.manager_link_id);
+        if(manager_link==null)
+        {
+            spawn.memory.manager_link_id=undefined
+        }
     }
     //creep.say(creep.moveTo(terminal.pos.x + 1, terminal.pos.y - 1));
     //return;
@@ -48,11 +48,13 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
                 creep.memory.energy_from_terminal = -1;
                 creep.memory.energy_to_terminal = -1;
             }
+            
         }
             if (manager_link != undefined) {
                 if (manager_link.store[RESOURCE_ENERGY] < 700 && storage != undefined) {
                     //creep.say(FILL_LINK)
                     creep.memory.task = FILL_LINK;
+                    
                 }
                 if (spawn.memory.sources_links_id != undefined && spawn.memory.sources_links_id.length > 0) {
                     var energy_at_source_link = 0;
@@ -85,7 +87,7 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
             if (storage.store[RESOURCE_ENERGY] > 0) {
                 creep.withdraw(storage, RESOURCE_ENERGY)
             }
-            else if (terminal.store[RESOURCE_ENERGY] > 0) {
+            else if (terminal!=undefined && terminal.store[RESOURCE_ENERGY] > 0) {
                 creep.withdraw(terminal, RESOURCE_ENERGY)
             }
 

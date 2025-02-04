@@ -147,7 +147,15 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
     if (spawn.memory.rooms_to_scan == undefined) {
         spawn.memory.rooms_to_scan = [];
-        spawn.memory.rooms_to_scan = generateAdjacentRooms(spawn.room.name);
+        var rooms_around=generateAdjacentRooms(spawn.room.name)
+        for(r of rooms_around)
+        {
+            if(Game.map.findRoute(spawn.room.name,r).length<=2)
+            {
+                spawn.memory.rooms_to_scan.push(r)
+            }
+        }
+        //spawn.memory.rooms_to_scan = generateAdjacentRooms(spawn.room.name);
     }
     else if (spawn.memory.rooms_to_scan.length == 0) {
         spawn.memory.if_success_planning_base = false
@@ -164,26 +172,8 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
             const exitDir = creep.room.findExitTo(spawn.memory.rooms_to_scan[0]);
             const exit = creep.pos.findClosestByRange(exitDir);
             creep.moveTo(exit, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true });
-            /*
-            if(creep.memory.destination==undefined)
-                {
-                    creep.say("destination unknown")
-                    var destination=[];
-                    for(var i=1;i<50;i++)
-                    {
-                        for(var j=1;j<50;j++)
-                        {
-                            destination.push(new RoomPosition(i,j,spawn.memory.rooms_to_scan[0]))
-                        }
-                    }
-                    creep.memory.destination=destination;
-                }
-    
-                if(creep.memory.destination!=undefined)
-                {
-                    creep.move_avoid_hostile(creep,creep.memory.destination,30,true)
-                }
-                    */
+            
+
 
 
         }
@@ -201,8 +191,11 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 creep.say("Keepers");
                 is_keeper_room = true;
                 var sources = creep.room.find(FIND_SOURCES);
-                var sources_num = sources.length;
                 var mineral = creep.room.find(FIND_MINERALS);
+                //spawn.memory.src1=sources;
+                sources.push(mineral[0]);
+                //spawn.memory.src2=sources;
+                var sources_num = sources.length;
                 var max_farmers = 0;
                 for (let i = 0; i < sources_num; i++) {
                     max_farmers += sources[i].pos.getOpenPositions().length;
@@ -242,7 +235,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                                 }
                             }
                         }
-                        if (!is_already_scanned && !in_other_use && ret.path.length < 100) {
+                        if (!is_already_scanned && !in_other_use && ret.path.length < 125) {
                             spawn.memory.keepers_sources.push(new_keeper_source)
                         }
 

@@ -2,7 +2,7 @@
 //test git 3
 //duo git test
 var roleHauler = require('role.hauler');
-var roleHauler2=require('role.hauler2')
+var roleHauler2 = require('role.hauler2')
 var roleBuilder = require('role.builder');
 var roleUpgrader = require('role.upgrader');
 var roleSoldier = require('role.soldier');
@@ -37,6 +37,8 @@ var roleDistanceCarrier2 = require('role.DistanceCarrier2')
 var roleDuoLeader = require('role.duoLeader')
 var roleDuoFollower = require('role.duoFollower')
 var operateDuo = require('operateDuo')
+var operateSwarm = require('operateSwarm')
+var roleSponge = require('roleSponge')
 
 var roleIntershardClaimer = require('role.intershardClaimer')
 var roleIntershardColonizer = require('role.intershardColonizer')
@@ -55,7 +57,6 @@ Movement.setConfig(movementConfig)
 */
 
 
-const profiler = require('screeps-profiler');
 const setRequiredPopulation = require('setRequiredPopulation');
 const setBaseState = require('setBaseState')
 const baseDefense = require('baseDefense')
@@ -70,6 +71,7 @@ const maxDistanceCarrier = require('maxDistanceCarrier');
 const maxFarmer = require('maxFarmer');
 const maxClaimer = require('maxClaimer');
 const maxDuoHealer = require('maxDuoHealer')
+const maxSponge = require('maxSponge')
 
 var RoomPositionFunctions = require('roomPositionFunctions');
 const maxSoldier = require('./maxSoldier');
@@ -80,8 +82,9 @@ const setBaseLayout = require('./setBaseLayout');
 const maxKeeperFarmer = require('./maxKeeperFarmer');
 const { pos_exchange } = require('./pos_exchange');
 const findRouteTest = require('./findRouteTest');
+const maxMerchant = require('./maxMerchant');
 //const move_avoid_hostile=require('./move_avoid_hostile')
-
+const profiler = require('screeps-profiler');
 
 
 class colonizeRoom {
@@ -111,12 +114,22 @@ class farmingRoom {
 }
 
 class Duo {
-    constructor(duoId, duoHome,target_room) {
+    constructor(duoId, duoHome, target_room) {
         this.id = duoId;
         this.home = duoHome;
-        this.target_room=target_room
+        this.target_room = target_room
         //this.leaderId =duoleaderId 
         //this.followerId=duoFollowerId
+    }
+}
+
+class Swarm {
+    constructor(swarmId, reqPopulation, target_room, home_room) {
+        this.id = swarmId;
+        this.req_population = reqPopulation;
+        this.target_room = target_room;
+        this.home_rom = home_room;
+        this.members = [];
     }
 }
 
@@ -134,7 +147,7 @@ module.exports.loop = function () {
         console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
         console.log("GCL: ", Game.gcl.level, Math.round((Game.gcl.progress / Game.gcl.progressTotal) * 100), "% to next")
 
-
+        Memory.allies = ["Alphonzo"];
 
         /*
         //REMOVE ALL CONSTRUCTION SITES
@@ -146,18 +159,21 @@ module.exports.loop = function () {
             }
         }*/
 
-
-
-        var step = 6000
-        if (Game.time % step == 0 && false) {
-            //console.log("rooms: ")
-            for (var roomName in Game.rooms) {
-                var room = Game.rooms[roomName]
-                //console.log("roomName: ", roomName)
-                room.memory.raw_energy_income = 0;
-                room.memory.raw_last_mean_energy_income = 0;
+        for (roomName in Game.rooms) {
+            var room = Game.rooms[roomName]
+            if (room.memory.soldiers != undefined && room.memory.soldiers.length > 0) {
+                for (sol in room.memory.soldier) {
+                    if (Game.getObjectById(sol) == null) {
+                        var index = room.memory.soldiers.indexOf(sol)
+                        room.memory.soldiers.splice(index, 1)
+                    }
+                }
             }
         }
+
+        Memory.step = 10000
+
+        var step = Memory.step;
 
         if (Game.time % step == 0) {
             for (var roomName in Game.rooms) {
@@ -173,6 +189,8 @@ module.exports.loop = function () {
                     room.memory.raw_last_mean_keepers_energy_income = room.memory.raw_keepers_energy_income / step
                     room.memory.raw_keepers_energy_income = 0
                 }
+
+
             }
 
         }
@@ -203,25 +221,6 @@ module.exports.loop = function () {
                 creep.roleIntershardUpgrader(creep);
             }
         }
-        //return;
-        /*
-        spawning intershard claimer
-        //claimer W17N21
-        
-        Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,CLAIM],'IsCLA'+Game.time)
-
-        //colonizer W17N21
-Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY],'IsCol'+Game.time)
-
-        */
-
-        //chartCPU()
-
-        /*
-        Game.spawns['W18N22_2'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY],'IsCol'+Game.time)
-        */
-        //Game.spawns['W17N21_2'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY,CARRY],'IsCol'+Game.time)
-
         for (var i in Memory.creeps) {  //clearing data about dead creeps
             if (!Game.creeps[i]) {
                 delete Memory.creeps[i];
@@ -255,28 +254,21 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
         }
 
         Memory.colonizing = false;
-        if (Game.shard.name == 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < 4) {
-            Memory.colonizing = false;
+        if (Game.shard.name == 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < 3) {
+            Memory.colonizing = true;
         }
-
+        console.log("shardname: ", Game.shard.name)
         if (Game.shard.name != 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15 && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.gcl.level) {
             Memory.colonizing = true;
-            Memory.colonizing = false;
+            if (Game.shard.name == 'newbieland' && Memory.main_spawns.length + Memory.rooms_to_colonize.length >= 3) {
+                Memory.colonizing = false;
+            }
+
+            //Memory.colonizing = false;
+
         }
-        // console.log(Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15)
 
 
-        /*
-        if (Memory.main_spawns.length + Memory.rooms_to_colonize.length <= Math.floor((Game.gcl.level + 2) / 2)
-        || Memory.main_spawns.length + Memory.rooms_to_colonize.length <4) {
-            Memory.colonizing = true;
-        }
-        else {
-            Memory.colonizing = false;
-
-            // console.log(Memory.main_spawns.length," + ",Memory.rooms_to_colonize.length," < ",(Game.gcl.level+2)/2);
-        } 
-            */
 
         if (Memory.rooms_to_colonize != undefined && Memory.rooms_to_colonize.length > 0) {
             var closest_distance = Infinity;
@@ -317,37 +309,51 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
         }
         */
 
+
+
         spawn_num = 0;
-        //for (let spawn_id of Memory.main_spawns) 
         console.log("i have: ", Memory.main_spawns.length, " rooms");
         for (spawn_num; spawn_num < Memory.main_spawns.length; spawn_num++) {
 
             var spawn_start_cpu = Game.cpu.getUsed()
             var spawn = Game.getObjectById(Memory.main_spawns[spawn_num]);
 
-            if (spawn.memory.lvl_1_time == undefined && spawn.room.controller.level <= 2) {
+            if (spawn.memory.lvl_1_time == undefined /* && spawn.room.controller.level <= 2*/) {
                 spawn.memory.lvl_1_time = Game.time;
             }
             if (spawn.memory.lvl_2_time == undefined && spawn.room.controller.level == 2) {
-                spawn.memory.lvl_2_time = Game.time;
+                spawn.memory.lvl_2 = Game.time - spawn.memory.lvl_1_time
             }
             if (spawn.memory.lvl_3_time == undefined && spawn.room.controller.level == 3) {
-                spawn.memory.lvl_3_time = Game.time - spawn.memory.lvl_2_time;
+                spawn.memory.lvl_3_time = Game.time - spawn.memory.lvl_1_time;
             }
             if (spawn.memory.lvl_4_time == undefined && spawn.room.controller.level == 4) {
-                spawn.memory.lvl_4_time = Game.time - spawn.memory.lvl_3_time;
+                spawn.memory.lvl_4_time = Game.time - spawn.memory.lvl_1_time;
             }
             if (spawn.memory.lvl_5_time == undefined && spawn.room.controller.level == 5) {
-                spawn.memory.lvl_5_time = Game.time - spawn.memory.lvl_4_time;;
+                spawn.memory.lvl_5_time = Game.time - spawn.memory.lvl_1_time;
             }
             if (spawn.memory.lvl_6_time == undefined && spawn.room.controller.level == 6) {
-                spawn.memory.lvl_6_time = Game.time - spawn.memory.lvl_5_time;;
+                spawn.memory.lvl_6_time = Game.time - spawn.memory.lvl_1_time;
             }
             if (spawn.memory.lvl_7_time == undefined && spawn.room.controller.level == 7) {
-                spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_6_time;;
+                spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_1_time;
+                if(spawn.memory.scan_reset_7==undefined)
+                {
+                    spawn.memory.scan_reset_7=true;
+                    spawn.memory.if_success_planning_base=false;
+                    spawn.memory.rooms_to_scan=undefined;
+                }
             }
             if (spawn.memory.lvl_8_time == undefined && spawn.room.controller.level == 8) {
-                spawn.memory.lvl_8_time = Game.time - spawn.memory.lvl_7_time;;
+                spawn.memory.lvl_8_time = Game.time - spawn.memory.lvl_1_time;
+                spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_1_time;
+                if(spawn.memory.scan_reset_8==undefined)
+                {
+                    spawn.memory.scan_reset_8=true;
+                    spawn.memory.if_success_planning_base=false;
+                    spawn.memory.rooms_to_scan=undefined;
+                }
             }
             if (spawn.memory.manual_colonize != undefined) {
                 for (let main_spawn_id of Memory.main_spawns) {
@@ -410,6 +416,73 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             var pop_keeperCarriers = 0;
             var pop_keeperRepairers = 0
 
+
+            for (var name in Game.creeps) {
+                var creep = Game.creeps[name];
+                //creep.suicide()
+                if (creep.memory.role == 'soldier' /* && false */) {
+                    //creep.roleSoldier(creep, spawn);
+
+
+                    if (Game.rooms[creep.memory.target_room] != undefined) {
+                        if (Game.rooms[creep.memory.target_room].memory.soldiers != undefined && Game.rooms[creep.memory.target_room].memory.soldiers.length >= 0) {
+                            //creep.say("asd")
+                            //console.log(creep.memory.target_room," memory.soldiers: ",Game.rooms[creep.memory.target_room].memory.soldiers)
+                            if (!Game.rooms[creep.memory.target_room].memory.soldiers.includes(creep.id)) {
+                                //creep.say("add")
+                                Game.rooms[creep.memory.target_room].memory.soldiers.push(creep.id);
+                            }
+                        }
+                        else if (Array.isArray(Game.rooms[creep.memory.target_room].memory.soldiers) == false) {
+                            Game.rooms[creep.memory.target_room].memory.soldiers = [];
+                        }
+                    }
+
+                    if (spawn.memory.rooms_to_blockade != undefined && spawn.memory.rooms_to_blockade.length > 0) {
+                        //console.log(creep.pos)
+                        // creep.say()
+                        for (a of spawn.memory.rooms_to_blockade) {
+                            if (a.roomName == creep.memory.target_room) {
+                                //console.log(creep.id)
+                                a.soldier_id = creep.id;
+                                break;
+                            }
+                        }
+                    }
+
+
+                    /*
+                    for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
+                        if (creep.memory.target_room == spawn.memory.farming_rooms[i].name) {
+                            if (creep.memory.is_melee == false) {
+                                if (creep.memory.target_room == spawn.memory.need_soldier) {
+                                    spawn.memory.need_soldier = undefined;
+                                }
+                                spawn.memory.farming_rooms[i].soldier = creep.id;
+
+                            }
+                            else if (creep.memory.is_melee == true) {
+                                if (creep.memory.target_room == spawn.memory.need_melee_soldier) {
+                                    spawn.memory.need_melee_soldier = undefined;
+                                    creep.say("ASD");
+                                }
+                                spawn.memory.farming_rooms[i].melee_soldier = creep.id;
+                            }
+
+                        }
+                    }
+                        */
+
+                    if (spawn.memory.to_colonize != undefined && creep.memory.target_room == spawn.memory.to_colonize.name) {
+                        spawn.memory.to_colonize.soldier = creep.id
+                    }
+
+
+                }
+            }
+
+
+
             spawn.setBaseState(spawn);
             spawn.baseDefense();
             spawn.operateKeepersRooms()
@@ -437,8 +510,14 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
 
+            if (spawn.memory.swarms != undefined && spawn.memory.swarms.length > 0) {
+                for (sw of spawn.memory.swarms) {
+                    sw.members = []
+                }
+            }
 
-
+            //console.log(Game.getObjectById("66f9a1993188f3003b9310bf").density); // density of mineral - number
+            //console.log(Game.getObjectById("66f9a1993188f3003b9310c2").density); // density of source - undefined
             //console.log("----------------------------------------------", spawn, "----------------------------------------------");
 
 
@@ -469,8 +548,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             /////////////////////////////////////
 
             if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0) {
-                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 40, 8, { color: '#fc03b6' })
-                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 41, 9, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 25, 13, { color: '#fc03b6' })
+                spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 25, 14, { color: 'lightblue' })
 
             }
 
@@ -484,13 +563,16 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             if ((Game.time % 1500 == spawn_num /* * 7 */ && Game.cpu.bucket > 200
                 && Object.keys(Game.constructionSites).length < 100)
-                // || spawn.room.name == 'E14S58'
+                // || spawn.room.name == 'E16N13'
             ) {
 
 
                 spawn.setBaseLayout(spawn);
                 //return;
             }
+
+
+
 
             if (spawn.memory.forced_upgrades == undefined) {
                 spawn.memory.forced_upgrades = []
@@ -550,13 +632,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     spawn.memory.farming_rooms[i].soldier = undefined;
                     spawn.memory.farming_rooms[i].reserver = undefined;
 
-                    //console.log("farming room name: ",spawn.memory.farming_rooms[i].name, 
-                    //    Game.rooms[spawn.memory.farming_rooms[i].name]!=undefined)
 
-                    if (Game.rooms[spawn.memory.farming_rooms[i].name] != undefined) {
-                        //console.log("resseting soldiers for: ",spawn.memory.farming_rooms[i].name)
-                        Game.rooms[spawn.memory.farming_rooms[i].name].memory.soldiers = 0;
-                    }
                 }
             }
 
@@ -580,10 +656,12 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
                     //console.log("keeper room nameL: ",spawn.memory.keepers_rooms[i].name,
                     //    Game.rooms[spawn.memory.keepers_rooms[i].name]!=undefined)
+                    /*
                     if (Game.rooms[spawn.memory.keepers_rooms[i].name] != undefined) {
                         //console.log("resseting soldiers for: ",spawn.memory.keepers_rooms[i].name)
                         Game.rooms[spawn.memory.keepers_rooms[i].name].memory.soldiers = 0;
                     }
+                        */
                     //Game.rooms[myRoom].memory.soldiers
                 }
             }
@@ -604,25 +682,10 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     d.leaderId = undefined;
                 }
             }
-            /*
-            spawn.memory.farming_rooms = [];
-            for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
-                var found = false
-                for (let j = 0; j < spawn.memory.farming_rooms.length; j++) {
-                    if (spawn.memory.farming_sources[i].name == spawn.memory.farming_rooms[j].name) {
-                        spawn.memory.farming_rooms[j].sources_num++;
-                        spawn.memory.farming_rooms[j].max_farmers += spawn.memory.farming_sources[i].max_farmers;
-                        found = true
-                        continue;
-                    }
 
-                }
-                if (found == false) {
-                    spawn.memory.farming_rooms.push(new farmingRoom(spawn.memory.farming_sources[i].name, 0, 0, 1, spawn.memory.farming_sources[i].distance,
-                        spawn.memory.farming_sources[i].max_farmers));
-                }
-            }
-            */
+            spawn.memory.sponge_id = undefined;
+
+
 
             for (var name in Game.creeps) {
 
@@ -645,22 +708,21 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             upgraders_parts += _.filter(creep.body, { type: WORK }).length;
 
                         }
-                        
-                        if (upgraders_parts > 0 && spawn.memory.building==true && spawn.room.controller.ticksToDowngrade>5000
-                            && spawn.room.controller.level>=2
+
+                        if (upgraders_parts > 0 && spawn.memory.building == true && spawn.room.controller.ticksToDowngrade > 5000
+                            && spawn.room.controller.level >= 2
                         )//spawn.memory.req_builders > 0 && false) {
                         {
                             pop_builders++;
                             creep.roleBuilder(creep, spawn)
                             //continue;
                         }
-                        else
-                        {
-                           creep.roleUpgrader(creep, spawn); 
+                        else {
+                            creep.roleUpgrader(creep, spawn);
                         }
 
-                        
-                        
+
+
                     }
                     else if (creep.memory.role == 'hauler') {
                         if (creep.ticksToLive > 50 || creep.spawning) {
@@ -670,9 +732,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                             //creep.say('💤')
                             continue;
                         }
-                        if(creep.store.getCapacity(RESOURCE_ENERGY)<200)
-                        {
-                            spawn.memory.req_haulers=2;
+                        if (creep.store.getCapacity(RESOURCE_ENERGY) < 200) {
+                            spawn.memory.req_haulers = 2;
                         }
                         creep.roleHauler2(creep, spawn);
 
@@ -687,31 +748,32 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     else if (creep.memory.role == 'soldier') {
                         creep.roleSoldier(creep, spawn);
 
-                        if (Game.rooms[creep.memory.target_room] != undefined) {
-                            Game.rooms[creep.memory.target_room].memory.soldiers++;
-                        }
-                        /*
-                        for (let myRoom in Game.rooms) {
-                            if (myRoom == creep.memory.target_room) {
-                                Game.rooms[myRoom].memory.soldiers++;
-                                break;
-                            }
-                        }*/
 
-                        if(spawn.memory.rooms_to_blockade!=undefined && spawn.memory.rooms_to_blockade.length>0)
-                        {
+                        if (Game.rooms[creep.memory.target_room] != undefined) {
+                            if (Game.rooms[creep.memory.target_room].memory.soldiers != undefined && Game.rooms[creep.memory.target_room].memory.soldiers.length >= 0) {
+                                //creep.say("asd")
+                                //console.log(creep.memory.target_room," memory.soldiers: ",Game.rooms[creep.memory.target_room].memory.soldiers)
+                                if (!Game.rooms[creep.memory.target_room].memory.soldiers.includes(creep.id)) {
+                                    //creep.say("add")
+                                    Game.rooms[creep.memory.target_room].memory.soldiers.push(creep.id);
+                                }
+                            }
+                            else if (Array.isArray(Game.rooms[creep.memory.target_room].memory.soldiers) == false) {
+                                Game.rooms[creep.memory.target_room].memory.soldiers = [];
+                                if (!Game.rooms[creep.memory.target_room].memory.soldiers.includes(creep.id)) {
+                                    //creep.say("add")
+                                    Game.rooms[creep.memory.target_room].memory.soldiers.push(creep.id);
+                                }
+                            }
+                        }
+
+                        if (spawn.memory.rooms_to_blockade != undefined && spawn.memory.rooms_to_blockade.length > 0) {
                             //console.log(creep.pos)
-                           // creep.say()
-                            for(a of spawn.memory.rooms_to_blockade)
-                            {
-                                //a.soldier_id=creep.id
-                                //console.log("a")
-                                //console.log(a.roomName)
-                                //creep.say(a.roomName)
-                                if(a.roomName==creep.memory.target_room)
-                                {
+                            // creep.say()
+                            for (a of spawn.memory.rooms_to_blockade) {
+                                if (a.roomName == creep.memory.target_room) {
                                     //console.log(creep.id)
-                                    a.soldier_id=creep.id;
+                                    a.soldier_id = creep.id;
                                     break;
                                 }
                             }
@@ -750,27 +812,31 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         //creep.suicide();
 
 
+                        if ( (creep.memory.source_distance!= undefined && creep.ticksToLive > (creep.memory.source_distance*2) + creep.body.length) || creep.spawning) {
+                            if (creep.memory.harvesting_power == undefined) {
+                                const workParts = _.filter(creep.body, { type: WORK }).length;
+                                creep.memory.harvesting_power = workParts * 2;
+                            }
 
-                        if (creep.memory.harvesting_power == undefined) {
-                            const workParts = _.filter(creep.body, { type: WORK }).length;
-                            creep.memory.harvesting_power = workParts * 2;
-                        }
+                            for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
+                                if (spawn.memory.farming_rooms[i].name == creep.memory.target_room) {
+                                    spawn.memory.farming_rooms[i].harvesting_power += creep.memory.harvesting_power;
+                                    spawn.memory.farming_rooms[i].farmers++;
+                                    break;
+                                }
+                            }
 
-                        for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
-                            if (spawn.memory.farming_rooms[i].name == creep.memory.target_room) {
-                                spawn.memory.farming_rooms[i].harvesting_power += creep.memory.harvesting_power;
-                                spawn.memory.farming_rooms[i].farmers++;
-                                break;
+                            for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
+                                if (spawn.memory.farming_sources[i].id == creep.memory.source_id) {
+                                    spawn.memory.farming_sources[i].harvesting_power += creep.memory.harvesting_power;
+                                    spawn.memory.farming_sources[i].farmers++;
+                                    break;
+                                }
                             }
                         }
 
-                        for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
-                            if (spawn.memory.farming_sources[i].id == creep.memory.source_id) {
-                                spawn.memory.farming_sources[i].harvesting_power += creep.memory.harvesting_power;
-                                spawn.memory.farming_sources[i].farmers++;
-                                break;
-                            }
-                        }
+
+
                         if (creep.ticksToLive > creep.memory.time_to_sleep) {
                             creep.say('💤')
                             continue;
@@ -813,21 +879,26 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     else if (creep.memory.role == 'distanceCarrier') {
                         //creep.suicide();
 
-                        for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
-                            if (spawn.memory.farming_rooms[i].name == creep.memory.target_room) {
+                        if (creep.ticksToLive > creep.memory.source_distance || creep.spawning) {
+                            for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
+                                if (spawn.memory.farming_rooms[i].name == creep.memory.target_room) {
 
-                                spawn.memory.farming_rooms[i].carry_power += creep.store.getCapacity() / (spawn.memory.farming_rooms[i].distance * 2);
-                                creep.memory.carry_power = creep.store.getCapacity() / (spawn.memory.farming_rooms[i].distance * 2);
+                                    spawn.memory.farming_rooms[i].carry_power += creep.store.getCapacity() / (spawn.memory.farming_rooms[i].distance * 2);
+                                    creep.memory.carry_power = creep.store.getCapacity() / (spawn.memory.farming_rooms[i].distance * 2);
+                                }
+                            }
+
+                            for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
+                                if (spawn.memory.farming_sources[i].id == creep.memory.source_id && spawn.memory.farming_sources[i].name == creep.memory.target_room) {
+
+                                    spawn.memory.farming_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.farming_sources[i].distance * 2);
+                                    creep.memory.carry_power = creep.store.getCapacity() / (spawn.memory.farming_sources[i].distance * 2);
+                                }
                             }
                         }
 
-                        for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
-                            if (spawn.memory.farming_sources[i].id == creep.memory.source_id && spawn.memory.farming_sources[i].name == creep.memory.target_room) {
 
-                                spawn.memory.farming_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.farming_sources[i].distance * 2);
-                                creep.memory.carry_power = creep.store.getCapacity() / (spawn.memory.farming_sources[i].distance * 2);
-                            }
-                        }
+
                         if (creep.ticksToLive > creep.memory.time_to_sleep) {
                             //creep.say('Dsleep')
                             if (creep.memory.time_to_sleep != null) {
@@ -922,7 +993,13 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         for (let i = 0; i < spawn.memory.keepers_sources.length; i++) {
                             if (spawn.memory.keepers_sources[i].id == creep.memory.target_source) {
 
-                                spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance * 2);
+                                if (Game.getObjectById(spawn.memory.keepers_sources[i].id).density != undefined) {
+                                    spawn.memory.keepers_sources[i].carry_power += (creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance * 2)) * EXTRACTOR_COOLDOWN;
+                                }
+                                else {
+                                    spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance * 2);
+                                }
+
                                 //spawn.memory.keepers_sources[i].carry_power += creep.store.getCapacity() / (spawn.memory.keepers_sources[i].distance );
                                 spawn.memory.keepers_sources[i].carriers++;
                                 break;
@@ -938,20 +1015,31 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         //creep.say(workParts);
                         creep.memory.harvesting_power = workParts * 2;
 
-                        for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
-                            if (spawn.memory.keepers_rooms[i].name == creep.memory.target_room) {
-                                spawn.memory.keepers_rooms[i].harvesting_power += creep.memory.harvesting_power;
-                                spawn.memory.keepers_rooms[i].farmers++;
-                                break;
+                        if (creep.ticksToLive > 50 || creep.spawning) {
+                            for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
+                                if (spawn.memory.keepers_rooms[i].name == creep.memory.target_room) {
+                                    spawn.memory.keepers_rooms[i].harvesting_power += creep.memory.harvesting_power;
+                                    spawn.memory.keepers_rooms[i].farmers++;
+                                    break;
+                                }
+                            }
+                            for (let i = 0; i < spawn.memory.keepers_sources.length; i++) {
+                                if (spawn.memory.keepers_sources[i].id == creep.memory.target_source) {
+
+                                    if (Game.getObjectById(spawn.memory.keepers_sources[i].id).density != undefined) {
+                                        spawn.memory.keepers_sources[i].harvesting_power += creep.memory.harvesting_power / EXTRACTOR_COOLDOWN;
+                                    }
+                                    else {
+                                        spawn.memory.keepers_sources[i].harvesting_power += creep.memory.harvesting_power;
+                                    }
+
+
+                                    spawn.memory.keepers_sources[i].farmers++;
+                                    break;
+                                }
                             }
                         }
-                        for (let i = 0; i < spawn.memory.keepers_sources.length; i++) {
-                            if (spawn.memory.keepers_sources[i].id == creep.memory.target_source) {
-                                spawn.memory.keepers_sources[i].harvesting_power += creep.memory.harvesting_power;
-                                spawn.memory.keepers_sources[i].farmers++;
-                                break;
-                            }
-                        }
+
 
                         pop_keeperFarmers++;
                     }
@@ -970,8 +1058,13 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         pop_scouts++;
                     }
                     else if (creep.memory.role == 'filler') {
-                        creep.roleFiller(creep, spawn);
                         pop_fillers++;
+                        if (creep.ticksToLive > creep.memory.time_to_sleep) {
+                            creep.say('💤')
+                            continue;
+                        }
+                        creep.roleFiller(creep, spawn);
+                        
                     }
                     else if (creep.memory.role == 'scanner') {
                         creep.roleScanner(creep, spawn);
@@ -1016,20 +1109,50 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         }
 
                     }
+                    else if (creep.memory.role == 'swarmMember') {
+                        if (spawn.memory.swarms != undefined) {
+                            for (s of spawn.memory.swarms) {
+                                if (s.id == creep.memory.swarmId) {
+                                    if (!s.members.includes(creep.id)) {
+                                        s.members.push(creep.id)
+                                    }
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     else if (creep.memory.role == 'energySupport') {
                         creep.roleEnergySupport(creep, spawn)
                     }
-
-
+                    else if (creep.memory.role == 'sponge') {
+                        creep.roleSponge(creep, spawn)
+                        spawn.memory.sponge_id = creep.id
+                        spawn.memory.need_sponge = undefined
+                    }
                     else {
                         //creep.say('no role');
                     }
+
+                    /*
+                    
+                        */
                     //pos_exchange(creep);
                 }
             }
 
 
-            
+            //swarms
+            if (spawn.memory.swarms == undefined) {
+                spawn.memory.swarms = [];
+            }
+            if (spawn.memory.swarms != undefined && spawn.memory.swarms.length > 0) {
+                for (let i = 0; i < spawn.memory.swarms.length; i++) {
+                    var swarm = spawn.memory.swarms[i]
+                    spawn.operateSwarm(swarm)
+                }
+            }
+
 
 
             // proceeding with duos
@@ -1103,7 +1226,8 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             spawn.room.visual.text("KeeperFarmers; " + pop_keeperFarmers, 4, 15, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperCarriers; " + pop_keeperCarriers, 4, 16, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperrRepairers; " + pop_keeperRepairers, 4, 17, { color: '#fc03b6' })
-            spawn.room.visual.text("Spawned Body parts: " + spawned_body_parts, 4, 18, { color: '#fc03b6' })
+            spawn.room.visual.text("Miners: " + pop_miners + "/" + spawn.memory.req_miners, 4, 18, { color: '#fc03b6' })
+            spawn.room.visual.text("Spawned Body parts: " + spawned_body_parts, 4, 19, { color: '#fc03b6' })
 
             spawn.room.visual.text("RampartRepairers: " + pop_rampart_repairers + "/" + spawn.memory.req_rampart_repairers, 20, 2, { color: '#fc03b6' })
             spawn.room.visual.text("MeleeDefenders: " + pop_melee_defenders + "/" + spawn.memory.need_melee_defenders, 20, 3, { color: '#fc03b6' })
@@ -1111,23 +1235,96 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
             spawn.room.visual.text("Time: " + Game.time, 20, 0, { color: '#fc03b6' })
 
-            spawn.room.visual.text("Calculated final income/t: " + spawn.memory.total_calculated_income_per_tick, 44, 3, { color: '#fc03b6' })
-            spawn.room.visual.text("used Cpu: " + (spawn_end_cpu - spawn_start_cpu), 44, 4, { color: '#fc03b6' })
+            spawn.room.visual.text("Calculated final income/t: " + spawn.memory.total_calculated_income_per_tick, 44, 3, { color: 'lightblue' })
+
             spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
             spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
-                44, 6, { color: '#fc03b6' })
-
-
-
-            if (spawn.memory.progress != 0 && spawn.memory.progress_old != 0 &&
-                spawn.memory.progress_sum != 0 && spawn.memory.progress_counter > 4 &&
-                spawn.memory.progress != spawn.memory.progress_old) {
-
-                //console.log("Progress/tick: ", (spawn.memory.progress_sum / spawn.memory.progress_counter));
+                44, 6, { color: 'lightblue' })
+            if (spawn.memory.progress_sum != undefined && spawn.memory.progress_counter != undefined) {
+                var ttu = (spawn.room.controller.progressTotal - spawn.room.controller.progress) / (Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100)
+                spawn.room.visual.text("Estimated time to upgrade: " + Math.round((ttu)),
+                    35, 6, { color: 'lightblue' })
             }
-            //spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
-            //    spawn.room.controller.pos.x, spawn.room.controller.pos.y - 1, { color: '#fc03b6' })
-            //console.log(" ");
+
+
+            if (spawn.room.memory.energy_on_ramparts != undefined) {
+                spawn.room.visual.text("Energy spent on ramparts: " + (spawn.room.memory.energy_on_ramparts), 41, 7, { color: '#fc03b6' })
+
+                var temp_en_ramp = spawn.room.memory.energy_on_ramparts / ((Game.time % step) + 1)
+                temp_en_ramp = Math.round((temp_en_ramp) * 100) / 100
+
+                spawn.room.memory.mean_energy_on_ramparts = temp_en_ramp
+
+
+            }
+            if (spawn.room.memory.mean_energy_on_ramparts != undefined) {
+                spawn.room.visual.text("Energy on ramparts/t: " + (spawn.room.memory.mean_energy_on_ramparts), 41, 8, { color: 'lightblue' })
+            }
+
+            // delivered energy works only with storage and distanceCarriers2 - not including links at rcl8
+            // it should be close to "Calculated final Income"
+            if (spawn.room.memory.delivered_energy != undefined) {
+                spawn.room.visual.text("Delivered energy: " + (spawn.room.memory.delivered_energy), 41, 9, { color: '#fc03b6' })
+                var temp_energy = spawn.room.memory.delivered_energy / ((Game.time % step) + 1)
+                temp_energy = Math.round((temp_energy) * 100) / 100
+                spawn.room.memory.mean_delivered_energy = temp_energy
+            }
+            if (spawn.room.memory.mean_delivered_energy != undefined) {
+                spawn.room.visual.text("Delivered energy/t: " + (spawn.room.memory.mean_delivered_energy) + "/" + (spawn.memory.farming_sources.length * (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME)),
+                    41, 10, { color: 'lightblue' })
+            }
+
+
+            if (spawn.room.memory.energy_on_creeps != undefined) {
+                spawn.room.visual.text("energy spent on creeps: " + (spawn.room.memory.energy_on_creeps), 41, 11, { color: '#fc03b6' })
+                var temp_energy = spawn.room.memory.energy_on_creeps / ((Game.time % step) + 1)
+                temp_energy = Math.round((temp_energy) * 100) / 100
+                spawn.room.memory.mean_energy_on_creeps = temp_energy
+
+
+            }
+            if (spawn.room.memory.mean_energy_on_creeps != undefined) {
+                spawn.room.visual.text("energy on creeps/t: " + (spawn.room.memory.mean_energy_on_creeps), 41, 12, { color: 'lightblue' })
+            }
+
+            if (spawn.room.memory.energy_sent != undefined && Game.time % step == 0) {
+                spawn.room.memory.mean_energy_sent = spawn.room.memory.energy_sent / step
+                spawn.room.memory.energy_sent = 0;
+            }
+            spawn.room.memory.total_repairers_energy = 0;
+            for (farming_room of spawn.memory.farming_rooms) {
+                //console.log(farming_room.name)
+                if (Game.rooms[farming_room.name] != undefined) {
+                    if (Game.rooms[farming_room.name].memory.energy_on_repair != undefined) {
+                        if (spawn.room.memory.total_repairers_energy != undefined) {
+                            spawn.room.memory.total_repairers_energy += Game.rooms[farming_room.name].memory.energy_on_repair
+                        }
+                        else {
+                            spawn.room.memory.total_repairers_energy = Game.rooms[farming_room.name].memory.energy_on_repair
+                        }
+                    }
+                }
+            }
+            if (spawn.room.memory.total_repairers_energy != undefined) {
+                var temp_energy = spawn.room.memory.total_repairers_energy / ((Game.time % step) + 1)
+                spawn.room.memory.mean_total_repairers_energy = Math.round((temp_energy) * 100) / 100
+                // energy on repair in all farming rooms
+                spawn.room.visual.text("energy on repair/t: " + (spawn.room.memory.mean_total_repairers_energy), 41, 13, { color: 'lightblue' })
+            }
+            if (spawn.room.memory.mean_delivered_energy != undefined && spawn.room.memory.mean_energy_on_creeps != undefined
+                && spawn.room.memory.mean_energy_on_ramparts != undefined) {
+                //spawn.room.memory.energy_income_t=(spawn.memory.farming_sources.length*(SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME))
+                spawn.room.memory.energy_income_t = spawn.room.memory.mean_delivered_energy - spawn.room.memory.mean_energy_on_creeps
+                    - spawn.room.memory.mean_energy_on_ramparts - (Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100)
+                    - spawn.room.memory.mean_total_repairers_energy
+                spawn.room.visual.text("final energy income/t: " + Math.round(spawn.room.memory.energy_income_t * 100) / 100, 41, 14, { color: 'lightblue' })
+            }
+            spawn.room.visual.text((Game.time % step) + 1 + "/" + step, 48, 4, { fill: 'transparent', font: '0.5' })
+            spawn.room.visual.rect(48, 4.5, 1, 11, { fill: 'transparent', stroke: '#fff' })
+            spawn.room.visual.rect(48, 4.5, 1, (((Game.time % step) + 1) / step) * 11, { stroke: '#fff' })
+            //console.log(Game.time % step)
+
+
 
 
             for (let spawnName2 in Game.spawns) {
@@ -1170,20 +1367,59 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     }
                 }
 
-                if (spawn.spawning != null && spawn.spawning.remainingTime + 2 < spawn.spawning.needTime && Game.spawns[spawn.room.name + '_3'] != undefined) {
-                    if (spawn.spawning.remainingTime < spawn.spawning.needTime - 5
-                        && Game.spawns[spawn.room.name + '_3'].spawning == null) {
-                        var aux_memory = spawn.memory;
-                        spawn = Game.spawns[spawn.room.name + '_3'];
-                        spawn.memory = aux_memory;
-                        //console.log("passing spawning to another spawn");
+                //passing spawning to third spawn
+                if (spawn.spawning != null && spawn.spawning.remainingTime + 4 < spawn.spawning.needTime && Game.spawns[spawn.room.name + '_3'] != undefined) {
+                    if (spawn.spawning) {
+                        if (spawn.spawning.remainingTime < spawn.spawning.needTime - 5
+                            && Game.spawns[spawn.room.name + '_3'].spawning == null) {
+                            var aux_memory = spawn.memory;
+                            spawn = Game.spawns[spawn.room.name + '_3'];
+                            spawn.memory = aux_memory;
+                            //console.log("passing spawning to another spawn");
 
+                        }
                     }
+
                 }
 
             }
 
+            var farming_needs_satisfied = false;
+            var farming_sources_length = Math.floor(spawn.memory.farming_sources.length / 2);
+            if (spawn.memory.farming_rooms != undefined && spawn.memory.farming_sources.length > 0 && Math.ceil(spawn.memory.farming_sources[farming_sources_length].carry_power) >= spawn.memory.farming_sources[farming_sources_length].harvesting_power * 0.5
+                && spawn.memory.farming_sources[farming_sources_length].harvesting_power > (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5
+            ) {
+                farming_needs_satisfied = true
+            }
+            //spawning swarm
+            //console.log(spawn.room.name, " farming_needs_satisfied: ",farming_needs_satisfied," ",farming_sources_length)
+            spawn.memory.isSpawningSwarm = false;
+            for (s of spawn.memory.swarms) {
+                if (!s.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers) {
+                    // console.log("trying to spawn swarms")
+                    spawn.memory.isSpawningSwarm = true
+                    var spawn_result = spawn.spawnCreep(maxSoldier(energyCap), 'swarm' + spawn.room.name + '_' + Game.time, {
+                        memory: {
+                            role: 'swarmMember',
+                            home_room: spawn.room,
+                            swarmId: s.id
+                        }
+                    })
+                    //console.log("swarm spawning result: ", spawn_result)
+                    if (spawn_result == 0) {
+                        spawn.memory.isSpawningSwarm = true
+                        continue;
+                    }
+                }
+            }
 
+
+
+
+
+
+
+            //spawning duo
             spawn.memory.isSpawningDuo = false
             // loop for spawning duos
             if (spawn.spawning == null || true) {
@@ -1192,7 +1428,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     {
                         if (d.leaderId == undefined) {
                             spawn.memory.isSpawningDuo = true
-                            console.log("trying to spawn leader")
+                            //console.log("trying to spawn leader")
                             //var leaderBody = [MOVE, RANGED_ATTACK]
                             var leaderBody = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL, HEAL, HEAL, HEAL];
                             leaderBody = maxSoldier(energyCap)
@@ -1204,7 +1440,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                         }
                         else if (d.followerId == undefined) {
                             spawn.memory.isSpawningDuo = true
-                            console.log("trying to spawn follower")
+                            // console.log("trying to spawn follower")
                             var followerBody = [MOVE, HEAL]
 
                             //followerBody=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL]
@@ -1228,7 +1464,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
                 */
 
-            if (spawn.memory.isSpawningDuo == true) { continue; }
+            if (spawn.memory.isSpawningDuo == true || spawn.memory.isSpawningSwarm == true) { continue; }
 
             if (pop_haulers > 0 && pop_merchants > 0) {
                 if (spawn.memory.need_keeperHealer != undefined && false) {
@@ -1260,7 +1496,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 if (spawn.memory.need_keeperFarmer != undefined) {
                     // update target_source
 
-                    if (spawn.spawnCreep(maxKeeperFarmer(energyCap), 'KeeperFarmer_' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperFarmer', target_room: spawn.memory.need_keeperFarmer_room, home_room: spawn.room, target_source: spawn.memory.need_keeperFarmer } }) == 0) {
+                    if (spawn.spawnCreep(maxKeeperFarmer(energyCap, spawn), 'KeeperFarmer_' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperFarmer', target_room: spawn.memory.need_keeperFarmer_room, home_room: spawn.room, target_source: spawn.memory.need_keeperFarmer } }) == 0) {
                         //console.log("Spawning KeeperFarmer");
                         continue;
                     }
@@ -1274,7 +1510,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             }
 
             if (pop_melee_defenders < spawn.memory.need_melee_defenders) {
-                console.log("trying to spawn melee Defender")
+                //console.log("trying to spawn melee Defender")
                 if (spawn.spawnCreep(maxMeleeSoldier(energyCap), 'MS_' + Game.time, { memory: { role: 'meleeDefender', home_room: spawn.room } }) == OK) {
                     continue;
                 }
@@ -1297,33 +1533,36 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 continue;
             }
 
-            if (spawn.memory.need_soldier != undefined) {
+            if (spawn.memory.need_soldier != undefined && spawn.memory.state!=undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK" && Game.rooms[spawn.memory.need_soldier]!=undefined && 
+            Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<3)
+            && Game.rooms[spawn.memory.need_soldier]!=undefined /* && Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<5 */) {
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:
                             spawn.memory.need_soldier, home_room: spawn.room
                     }
                 }) == 0) {
-                    spawn.memory.soldiers_counter++;
                     continue;
                 }
             }
 
-            if (spawn.memory.need_melee_soldier != undefined) {
+            if (spawn.memory.need_melee_soldier != undefined 
+                && Game.rooms[spawn.memory.need_melee_soldier]!=undefined && Game.rooms[spawn.memory.need_melee_soldier].memory.soldiers!=undefined &&
+                 Game.rooms[spawn.memory.need_melee_soldier].memory.soldiers.length<5
+            ) {
                 if (spawn.spawnCreep(maxMeleeSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:
                             spawn.memory.need_melee_soldier, home_room: spawn.room
                     }
                 }) == 0) {
-                    spawn.memory.soldiers_counter++;
                     continue;
                 }
             }
 
 
             if (pop_scouts < spawn.memory.req_scouts) {
-                console.log(spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }))
+                //console.log(spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }))
                 if (spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }) == 0) {
                 }
                 continue;
@@ -1333,6 +1572,11 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 if (spawn.spawnCreep([MOVE], 'Scanner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scanner', home_room: spawn.room } }) == 0) {
                 }
                 continue;
+            }
+            if (spawn.memory.need_sponge != undefined && farming_needs_satisfied) {
+                if (spawn.spawnCreep(maxSponge(energyCap, spawn), 'Sp_' + spawn.room.name + '_' + Game.time, { memory: { role: 'sponge', home_room: spawn.room, target_room: spawn.memory.need_sponge } }) == OK) {
+                    continue;
+                }
             }
             if (pop_colonizers < spawn.memory.req_colonizers && pop_claimers > 0 && spawn.room.controller.level >= 4
                 && spawn.memory.to_colonize != undefined
@@ -1348,11 +1592,13 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 continue;
             }
             //if (spawn.memory.need_farmer != undefined) {
-            if (spawn.memory.need_source_farmer != undefined && spawn.memory.need_source_farmer != spawn.memory.need_soldier) {
+            if (spawn.memory.need_source_farmer != undefined && (spawn.memory.need_source_farmer != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers>0)) {
+                
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'farmer', home_room: spawn.room,
                         source_id: spawn.memory.need_source_farmer,
+                        source_distance: spawn.memory.need_source_farmer_distance,
                         target_room: spawn.memory.need_source_farmer_room
 
                     }
@@ -1379,8 +1625,13 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     continue;
                 }
             }
-            //console.log("need_distanceRepairer in main: ",spawn.memory.need_distanceRepairer)
-            if (pop_builders < spawn.memory.req_builders && upgraders_parts > 0) // spawning new builder
+            if (pop_merchants < spawn.memory.req_merchants /* && spawn.room.terminal != undefined*/) {
+                if (spawn.spawnCreep(maxMerchant(energyCap), 'Merchant_' + spawn.room.name + '_' + Game.time, { memory: { role: 'merchant', home_room: spawn.room } }) == 0) {
+                    continue;
+                }
+            }
+
+            if (pop_builders < spawn.memory.req_builders && upgraders_parts > 0 /* && farming_needs_satisfied*/) // spawning new builder
             {
                 spawn.spawnCreep(maxBuilder(energyCap, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } });
                 if (spawn.spawnCreep(maxBuilder(energyCap / 2, spawn), 'Builder_' + spawn.room.name + '_' + Game.time, { memory: { role: 'builder', home_room: spawn.room } }) == 0) {
@@ -1405,6 +1656,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 (spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power > spawn.memory.farming_rooms[0].sources_num * (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5)
             ) // spawning new upgrader
             {
+                //console.log("trying to spawn upgrader: ",spawn.spawnCreep(maxUpgrader(energyCap, spawn, Math.ceil(spawn.memory.req_upgraders_parts) * 200), 'Upgrader_' + spawn.room.name + '_' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }))
                 if (spawn.spawnCreep(maxUpgrader(energyCap, spawn, Math.ceil(spawn.memory.req_upgraders_parts) * 200), 'Upgrader_' + spawn.room.name + '_' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {
                     continue;
                 }
@@ -1443,13 +1695,14 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
             }
             if (spawn.memory.need_DistanceCarrier != undefined && pop_distanceCarriers < 30
-                && spawn.memory.need_DistanceCarrier != spawn.memory.need_soldier && spawn.memory.need_DistanceCarrier != spawn.memory.need_melee_soldier) {
+                && (spawn.memory.need_DistanceCarrier != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers>0) && spawn.memory.need_DistanceCarrier != spawn.memory.need_melee_soldier) {
 
                 if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, false), 'distnaceCarrier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'distanceCarrier', home_room: spawn.room,
                         target_room: spawn.memory.need_DistanceCarrier, path: undefined,
-                        source_id: spawn.memory.need_ddistance_carrier_source_id
+                        source_id: spawn.memory.need_ddistance_carrier_source_id,
+                        source_distance: spawn.memory.need_distance_carrier_source_distance
                     }
                 }) == 0) {
                     spawn.memory.distance_carriers_counter++;
@@ -1460,13 +1713,11 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                 }
 
             }
-            if (pop_merchants < spawn.memory.req_merchants /* && spawn.room.terminal != undefined*/) {
-                if (spawn.spawnCreep([MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
-                    CARRY, CARRY, CARRY, CARRY], 'Merchant_' + spawn.room.name + '_' + Game.time, { memory: { role: 'merchant', home_room: spawn.room } }) == 0) {
-                    continue;
-                }
-            }
+
             if (pop_miners < spawn.memory.req_miners && spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power >= spawn.memory.farming_rooms[0].harvesting_power) {
+
+                console.log("Spaning miner ", spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Miner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }))
+
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn), 'Miner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }) == 0) {
                     continue;
                 }
@@ -1485,11 +1736,17 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
                     continue;
                 }
             }
+
             if (/* false && */ Game.shard.name == 'shard3' && spawn.room.name == 'W19N13' && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 100000) {
                 if (spawn.spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY], 'IsCar' + Game.time) == 0) {
                     continue;
                 }
             }
+
+
+
+
+
 
             var spawn_end_cpu = Game.cpu.getUsed()
             if (spawn.memory.mean_cpu_sum == undefined) {
@@ -1499,6 +1756,7 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
             else {
                 spawn.memory.mean_cpu_sum += spawn_end_cpu - spawn_start_cpu
             }
+            spawn.room.visual.text("used Cpu: " + Math.round(((spawn_end_cpu - spawn_start_cpu)) * 100) / 100, 44, 4, { color: '#fc03b6' })
 
             if (Game.time % step == 0) {
                 spawn.memory.mean_cpu = spawn.memory.mean_cpu_sum / step
@@ -1508,6 +1766,28 @@ Game.spawns['W17N21_1'].spawnCreep([MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE
 
         }
     });
+
+    for (spawnName in Game.spawns) {
+        if (Game.spawns[spawnName].spawning != null &&
+            Game.spawns[spawnName].spawning.remainingTime == Game.spawns[spawnName].spawning.needTime - 1
+        ) {
+            console.log("Spawn: ", spawnName, " is spawning creep")
+            if (Game.spawns[spawnName].room.memory.energy_on_creeps == undefined) {
+                Game.spawns[spawnName].room.memory.energy_on_creeps = 0;
+            }
+            if (Game.spawns[spawnName].room.memory.energy_on_creeps != undefined) {
+                creep = Game.creeps[Game.spawns[spawnName].spawning.name];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: MOVE }).length * BODYPART_COST[MOVE];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: WORK }).length * BODYPART_COST[WORK];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: CARRY }).length * BODYPART_COST[CARRY];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: ATTACK }).length * BODYPART_COST[ATTACK];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: RANGED_ATTACK }).length * BODYPART_COST[RANGED_ATTACK];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: HEAL }).length * BODYPART_COST[HEAL];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: CLAIM }).length * BODYPART_COST[CLAIM];
+                Game.spawns[spawnName].room.memory.energy_on_creeps += _.filter(creep.body, { type: TOUGH }).length * BODYPART_COST[TOUGH];
+            }
+        }
+    }
 
     bucket.push(Game.cpu.bucket)
     if (bucket.length > 500) {

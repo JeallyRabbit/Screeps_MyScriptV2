@@ -18,64 +18,38 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
                         return cr.memory.role != undefined && cr.memory.role == 'colonizer'
                     }
             })
-            //creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 15, avoidSk: true });
-            //creep.moveTo(Game.rooms[creep.memory.target_room].controller,{reusePath:15,avoidSk:true});
+
             if (Game.rooms[creep.memory.target_room] && colonizers.length > 0) {
-                //creep.say(creep.claimController(creep.room.controller));
-                //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room));
-                //creep.say(creep.claimController(Game.rooms[creep.memory.target_room].controller))
+
                 if (creep.claimController(Game.rooms[creep.memory.target_room].controller) == ERR_NOT_IN_RANGE) {
                     //creep.say("QWE");
-                    creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 15, avoidSk: true, maxRooms: 1});
+                    creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 15, avoidSk: true, maxRooms: 1 });
                 }
                 if (creep.claimController(Game.rooms[creep.memory.target_room].controller) == ERR_INVALID_TARGET &&
-                    (Game.rooms[creep.memory.target_room].controller.owner!=undefined && Game.rooms[creep.memory.target_room].controller.owner.username != 'JeallyRabbit' && Game.rooms[creep.memory.target_room].controller.owner.username != 'Jeally_Rabbit')) {
+                    (Game.rooms[creep.memory.target_room].controller.owner != undefined && Game.rooms[creep.memory.target_room].controller.owner.username != 'JeallyRabbit' && Game.rooms[creep.memory.target_room].controller.owner.username != 'Jeally_Rabbit')) {
                     //creep.say("QWE");
                     //creep.say(creep.claimController(creep.room.controller));
                     creep.attackController(Game.rooms[creep.memory.target_room].controller);
 
                 }
-                if(creep.room.controller.reservation!=undefined && creep.room.controller.reservation.username!='Jeally_Rabbit' && creep.room.controller.reservation.username!='JeallyRabbit')
-                {
+                if (creep.room.controller.reservation != undefined && creep.room.controller.reservation.username != 'Jeally_Rabbit' && creep.room.controller.reservation.username != 'JeallyRabbit') {
                     creep.attackController(Game.rooms[creep.memory.target_room].controller);
                 }
-                
-                /*creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y,
-                    STRUCTURE_SPAWN, creep.room.name + "_1");
-                    creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y,STRUCTURE_RAMPART)
-                    */
-                //creep.say(creep.room.createConstructionSite(creep.memory.to_colonize.spawn_pos_x, creep.memory.to_colonize.spawn_pos_y + 2,
-                //STRUCTURE_SPAWN, creep.room.name + "_1"))
+
+                var signText = "Error: undefined ? To define is to limit."
+
+                if (creep.room.controller.text != signText) {
+                    creep.signController(creep.room.controller, signText)
+                }
+
             }
             creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 15, maxRooms: 1 });
             //creep.move(LEFT)
         }
         else { // not in target room - go claim
-            //creep.say(creep.moveTo(new RoomPosition(25,25, creep.memory.target_room), {visualizePathStyle: { stroke: '#ff00ff' } }));
-            //creep.moveTo(new RoomPosition(25,25, creep.memory.target_room,{reusePath:15,avoidSk:true}),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);
-            //creep.say("mov")
-            //creep.moveToRoom(creep.memory.target_room,{avoidSk: true,avoidHostileRooms: true, reusePath: 21});
-            /*
-            var reusePath = 100;
 
-            if (creep.memory.destination == undefined) {
-                creep.say("destination unknown")
-                var destination = [];
-                for (var i = 1; i < 50; i++) {
-                    for (var j = 1; j < 50; j++) {
-                        destination.push(new RoomPosition(i, j, creep.memory.target_room))
-                    }
-                }
-                creep.memory.destination = destination;
-            }
 
-            if (creep.memory.destination != undefined) {
-                //creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
-                creep.say("mov")
-                creep.moveTo(creep.memory.destination,{reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true})
-            }*/
-
-            creep.moveToRoom(creep.memory.target_room,{reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true})
+            creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
         }
     }
     else {

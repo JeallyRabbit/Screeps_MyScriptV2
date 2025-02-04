@@ -108,6 +108,7 @@ Spawn.prototype.links=function links (spawn){
 
         var manager_link = Game.getObjectById(spawn.memory.manager_link_id)
         var filler_link = Game.getObjectById(spawn.memory.filler_link_id)
+        
         var controller_link = Game.getObjectById(spawn.memory.controller_link_id)
         var sources_links = []
         for (let link_id of spawn.memory.sources_links_id) {

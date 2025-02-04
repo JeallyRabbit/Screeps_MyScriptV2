@@ -16,6 +16,11 @@ Creep.prototype.roleReserver = function roleReserver(creep, spawn) {
                     || creep.room.controller.reservation == undefined) {
                     //creep.say("res")
                     //creep.move(RIGHT)
+                    var signText = "Error: undefined ? To define is to limit."
+
+                    if (creep.room.controller.text != signText) {
+                        creep.signController(creep.room.controller, signText)
+                    }
                     if (creep.reserveController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                         //creep.say("QWE");
                         creep.moveTo(creep.room.controller, { reusePath: 11, range: 1 });
@@ -55,9 +60,8 @@ Creep.prototype.roleReserver = function roleReserver(creep, spawn) {
                 creep.moveTo(Game.rooms[creep.memory.target_room].controller, { reusePath: 8 });
                 //creep.move(BOTTOM)
             }
-
             else {
-                //creep.moveTo(Game.rooms[creep.memory.target_room], { reusePath: 19 });
+                creep.moveTo(new RoomPosition(25,25,creep.memory.target_room), {range: 21, reusePath: 19 });
                 //creep.moveToRoom(creep.memory.target_room)
             }
 

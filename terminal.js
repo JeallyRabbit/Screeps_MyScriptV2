@@ -62,7 +62,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
             closest_to_send_energy = undefined
             min_distance = Infinity
             
-            if (spawn.memory.state.includes(STATE_NEED_ENERGY) == false && storage != null && storage.store[RESOURCE_ENERGY] > 400000
+            if (spawn.memory.state.includes(STATE_NEED_ENERGY) == false && storage != null && storage.store[RESOURCE_ENERGY] > 100000
                 && terminal.store[RESOURCE_ENERGY] > amount) {
 
 
@@ -90,6 +90,13 @@ Spawn.prototype.terminal = function terminal(spawn) {
                 if (closest_to_send_energy != undefined) {
                     console.log("sending energy to: ", closest_to_send_energy)
                     terminal.send(RESOURCE_ENERGY, amount, closest_to_send_energy);
+                    if(spawn.room.memory.energy_sent==undefined)
+                    {
+                        spawn.room.memory.energy_sent=amount;
+                    }
+                    else{
+                        spawn.room.memory.energy_sent+=amount
+                    }
                 }
             }
         }
@@ -117,7 +124,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
         for (res of this.room.memory.need_resources_buy) {
             var buy_result = buy_resource(spawn, res, 2500)
-            console.log(res, " buying result: ", buy_result)
+            //console.log(this.room.name," ",res, " buying result: ", buy_result)
             if (buy_result == OK || this.cooldown != 0) { break; }
         }
 

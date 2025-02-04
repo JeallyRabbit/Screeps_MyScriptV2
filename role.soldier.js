@@ -3,6 +3,7 @@ const { goOutOfRange } = require("./goOutOfRange");
 
 Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
 
+    //creep.rangedMassAttack()
     //creep.suicide();
     ////creep.say("A");
     if (creep.memory.is_melee == undefined) {
@@ -22,9 +23,66 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
     if (creep.hits < creep.hitsMax) {
         creep.heal(creep);
     }
+    //creep.say("a")
+    ///////////////////////////////
+    /*
+    if (Game.rooms[creep.memory.target_room] != undefined) {
+        creep.say("1")
+        if (Game.rooms[creep.memory.target_room].memory.soldiers != undefined && Game.rooms[creep.memory.target_room].memory.soldiers.length > 0) {
+            for (sol of Game.rooms[creep.memory.target_room].memory.soldiers) {
+                if (Game.getObjectById(sol) == null) {
+                    creep.say("3")
+                    creep.room.memory.soldiers = undefined
+                    break;
+                }
+            }
+        }
+
+
+        creep.say("2")
+        if (Game.rooms[creep.memory.target_room].memory.soldiers == undefined) {
+            var soldiers = Game.rooms[creep.memory.target_room].find(FIND_MY_CREEPS, {
+                filter:
+                    function (cre) {
+                        return cre.memory.role == 'soldier' && cre.memory.target_room==creep.memory.target_creep
+                    }
+            })
+            console.log("soldiers at: ",creep.memory.target_room," ",soldiers.length)
+            if (soldiers.length > 0) {
+                Game.rooms[creep.memory.target_room].memory.soldiers = [];
+                creep.say("4")
+                for (a of soldiers) {
+                    Game.rooms[creep.memory.target_room].memory.soldiers.push(a.id)
+                }
+            }
+        }
+
+        /*
+        if (Game.rooms[creep.memory.target_room].memory.soldiers!= undefined && Game.rooms[creep.memory.target_room].memory.soldiers.length > 0 && creep.hits == creep.hitsMax) {
+            var in_range_soldiers = [];
+            for (a of Game.rooms[creep.memory.target_room].memory.soldiers) {
+                if (Game.getObjectById(a) != null && Game.getObjectById(a).pos.inRangeTo(creep.pos, 3)) {
+                    if (Game.getObjectById(a).pos.isNearTo(creep.pos) && Game.getObjectById(a).hits < Game.getObjectById(a).hitsMax) {
+                        creep.heal(Game.getObjectById(a))
+                    }
+                    else {
+                       // creep.rangedHeal(Game.getObjectById(a))
+                    }
+                    break;
+                }
+            }
+        }
+            
+    }
+    */
+    /////////////////////////
+
+
+
     if (creep.room.name == creep.memory.target_room) {
 
-
+        ///////////////////////////
+        /*
         if (creep.room.memory.soldiers != undefined && creep.room.memory.soldiers.length > 0) {
             for (sol of creep.room.memory.soldiers) {
                 if (Game.getObjectById(sol) == null) {
@@ -63,22 +121,22 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
                 }
             }
         }
-
+            */
+        ///////////////////////////
 
 
         var target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
             filter:
                 function (cr) {
-                    return cr.owner.username != 'Alphonzo' &&
-                    (cr.getActiveBodyparts(ATTACK) > 0 || cr.getActiveBodyparts(RANGED_ATTACK) > 0 || cr.getActiveBodyparts(HEAL) > 0)
+                    return !Memory.allies.includes(cr.owner.username) &&
+                        (cr.getActiveBodyparts(ATTACK) > 0 || cr.getActiveBodyparts(RANGED_ATTACK) > 0 || cr.getActiveBodyparts(HEAL) > 0)
                 }
         });
-        if(target_creep==null)
-        {
+        if (target_creep == null) {
             target_creep = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
                 filter:
                     function (cr) {
-                        return cr.owner.username != 'Alphonzo'
+                        return !Memory.allies.includes(cr.owner.username)
                     }
             });
         }
@@ -99,15 +157,16 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
         //}
         if (target_creep) {
             //creep.say(target_creep.pos.x);
-
+            //creep.move(BOTTOM_RIGHT)
 
 
 
             if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
+                //creep.say("2")
+                creep.moveTo(target_creep.pos, { maxRooms: 1, avoidSk: true, avoidCreeps: true });
             }
             //creep.rangedMassAttack()
-            creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
+            //creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true });
             //}
 
             if (creep.memory.is_melee == false) {
@@ -117,7 +176,7 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
                     return part.type === ATTACK && part.hits > 0;
                 }).length > 0)) {
                     creep.fleeFrom({ target_creep }, 3, { maxRooms: 1 })
-                    // goOutOfRange(creep, 3);
+                    creep.say("flee")
                 }
                 else if (creep.pos.isNearTo(target_creep.pos)) {
                     creep.rangedMassAttack()
@@ -131,83 +190,60 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
 
         }
         else if (target_structure) {
+            creep.say("3")
             //console.log(creep.room.name, " ", "fighting structures");
             ////creep.say("STR");
             //console.log("target_structure: ",target_structure);
             if (creep.memory.is_melee == true) {
+                creep.say("4")
                 if (creep.attack(target_structure) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target_structure);
-                    //console.log("structure to far");
+                    creep.say("5")
+                    creep.moveTo(target_structure, { maxRooms: 1, avoidCreeps: true, reusePath: 11, range: 1 });
                 }
+
             }
             else {
-                creep.moveTo(target_structure);
+                creep.moveTo(target_structure, { maxRooms: 1, avoidCreeps: true });
                 creep.rangedMassAttack()
-                /* if (creep.rangedAttack(target_structure) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target_structure);
-                    //console.log("structure to far");
-                } */
             }
 
-            ////creep.say(creep.rangedAttack(target_structure));
-            /*
-            else if(creep.attack(target_structure)==ERR_NO_BODYPART)
-            {
-                if(creep.rangedAttack(target_structure)==ERR_NOT_IN_RANGE)
-                {
-                    creep.moveTo(target_structure);
-                }
-            }*/
             if (creep.hits < creep.hitsMax) {
                 creep.heal(creep);
             }
         }
-        else if(Game.rooms[creep.memory.target_room]!=undefined && Game.rooms[creep.memory.target_room].memory.damagedCreeps.length>0)
-        {
-            var damaged=[];
-            for(cr of Game.rooms[creep.memory.target_room].memory.damagedCreeps)
-            {
+        if (Game.rooms[creep.memory.target_room] != undefined && Game.rooms[creep.memory.target_room].memory.damagedCreeps.length > 0) {
+            var damaged = [];
+            for (cr of Game.rooms[creep.memory.target_room].memory.damagedCreeps) {
                 damaged.push(Game.getObjectById(cr))
             }
-            var toHeal=creep.pos.findClosestByRange(damaged)
-            if(toHeal!=null)
-            {
+            var toHeal = creep.pos.findClosestByRange(damaged)
+            if (toHeal != null) {
                 creep.say("healing my creep")
-                if(creep.heal(toHeal)==ERR_NOT_IN_RANGE)
-                {
-                    creep.moveTo(toHeal)
+                if (creep.heal(toHeal) == ERR_NOT_IN_RANGE) {
+                    //creep.say("ranged heal")
+                    if (target_creep == null) {
+                        creep.say("6")
+                        creep.moveTo(toHeal)
+                    }
+
                     creep.rangedHeal(toHeal)
                 }
             }
         }
         else {
-            creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 11, maxRooms: 1, range: 22 });
+            //creep.say("7")
+            //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 11, maxRooms: 1, range: 22 });
         }
     }
     else {
-        //move_avoid_hostile(creep,new RoomPosition(25,25,creep.memory.target_room),25,false,8000);
-        //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room));
-        /*
-        var reusePath = 100;
 
-        if (creep.memory.destination == undefined) {
-            creep.say("destination unknown")
-            var destination = [];
-            for (var i = 1; i < 50; i++) {
-                for (var j = 1; j < 50; j++) {
-                    destination.push(new RoomPosition(i, j, creep.memory.target_room))
-                }
-            }
-            creep.memory.destination = destination;
+        if (Game.rooms[creep.room.name].memory.hostiles != undefined && Game.rooms[creep.room.name].memory.hostiles.length > 0) {
+            creep.rangedMassAttack()
+            creep.heal(creep)
         }
-
-        if (creep.memory.destination != undefined) {
-            creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
-        }
-            */
-
-        creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
-
+        creep.say("7")
+        //creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
+        creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { reusePath: 25, avoidCreeps: true, range: 22 });
 
     }
 

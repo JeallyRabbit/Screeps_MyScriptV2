@@ -6,8 +6,8 @@ function maxRepairer(cap, if_limit)// return array with max possible work parts 
     parts.push(CARRY);
     parts.push(WORK);
     cap -= 250;
-    if (cap > 800 && if_limit == true) {
-        cap = 800;
+    if (cap + 250 > 800 && if_limit == true) {
+        cap = 800-250;
     }
     else {
         if (cap >= 250) {
