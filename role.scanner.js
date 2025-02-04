@@ -447,7 +447,18 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
                 var is_to_close = false;
                 if (Game.shard.name != 'shard3' && (spawn.memory.to_colonize != undefined && creep.room.name == spawn.memory.to_colonize)) {
                     for (let my_room in Game.rooms) {
-                        if (Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[my_room].name) < 2 && my_room != creep.room.name) {
+                        
+                        min_distance=1000;
+                        for(let a in Game.rooms)
+                        {
+                            if(Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[a].name) < min_distance)
+                            {
+                                min_distance=Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[a].name) 
+                            }
+                        }
+                        
+                        
+                        if (min_distance < 2 && my_room != creep.room.name) {
                             console.log(" ");
                             console.log("distance between: ", creep.room.name, " and ", Game.rooms[my_room].name,
                                 " = ", Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[my_room].name));

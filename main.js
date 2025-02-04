@@ -254,8 +254,8 @@ module.exports.loop = function () {
         }
 
         Memory.colonizing = false;
-        if (Game.shard.name == 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < 4) {
-            Memory.colonizing = false;
+        if (Game.shard.name == 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < 3) {
+            Memory.colonizing = true;
         }
         console.log("shardname: ", Game.shard.name)
         if (Game.shard.name != 'shard3' && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.cpu.limit / 15 && Memory.main_spawns.length + Memory.rooms_to_colonize.length < Game.gcl.level) {
@@ -264,7 +264,7 @@ module.exports.loop = function () {
                 Memory.colonizing = false;
             }
 
-            Memory.colonizing = false;
+            //Memory.colonizing = false;
 
         }
 
@@ -1533,7 +1533,8 @@ module.exports.loop = function () {
                 continue;
             }
 
-            if (spawn.memory.need_soldier != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK" && Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<3)
+            if (spawn.memory.need_soldier != undefined && spawn.memory.state!=undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK" && Game.rooms[spawn.memory.need_soldier]!=undefined && 
+            Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<3)
             && Game.rooms[spawn.memory.need_soldier]!=undefined /* && Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<5 */) {
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
