@@ -102,7 +102,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
                     
                 }
                 else{// there is no room to send energy via terminal
-                    console.log(terminal.store[RESOURCE_ENERGY]>30000 && storage.store[RESOURCE_ENERGY]>300000,"asdaaaaaaaaaaaaaaaaaaaaaaaaaa")
+                    // /console.log(terminal.store[RESOURCE_ENERGY]>30000 && storage.store[RESOURCE_ENERGY]>300000,"asdaaaaaaaaaaaaaaaaaaaaaaaaaa")
                     if(terminal.store[RESOURCE_ENERGY]>30000 && storage.store[RESOURCE_ENERGY]>300000)
                     {
 
