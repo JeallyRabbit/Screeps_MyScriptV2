@@ -137,7 +137,6 @@ class Swarm {
 
 Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
-
     if (Memory.allies == undefined) {
         Memory.allies = [];
     }
@@ -920,7 +919,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 var enemy_creeps = Game.rooms[myRoom].find(FIND_HOSTILE_CREEPS, {
                     filter:
                         function (en) {
-                            return en.owner.username != 'Alphonzo' &&
+                            return  !Memory.allies.includes(en.owner.username) &&
                                 (en.getActiveBodyparts(WORK) > 0 || en.getActiveBodyparts(ATTACK) > 0 || en.getActiveBodyparts(RANGED_ATTACK) > 0 || en.getActiveBodyparts(CLAIM) > 0)
                         }
                 })

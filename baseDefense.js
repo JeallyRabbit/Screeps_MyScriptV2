@@ -6,7 +6,12 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
         //console.log("asdasd")
         //return;
     }
-    var hostiles = this.room.find(FIND_HOSTILE_CREEPS);
+    var hostiles = this.room.find(FIND_HOSTILE_CREEPS,{
+        filter: function (cr)
+        {
+            return !Memory.allies.includes(cr.owner.username);
+        }
+    });
     //console.log(this.room.name," ",hostiles.length)
     this.memory.weakest_any = undefined;
     this.memory.weakest_healer = undefined;
@@ -20,7 +25,7 @@ Spawn.prototype.baseDefense = function baseDefense(spawn) {
         var hostile_not_invader = this.room.find(FIND_HOSTILE_CREEPS, {
             filter:
                 function (hostile) {
-                    return hostile.owner.username != 'Invader' && Memory.allies.includes(hostile.owner.username)==false
+                    return hostile.owner.username != 'Invader' && !Memory.allies.includes(hostile.owner.username)
                 }
         })
         if (hostile_not_invader.length > 0 && this.room.controller.level < 4) {
