@@ -137,7 +137,6 @@ class Swarm {
 
 Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
-
     if (Memory.allies == undefined) {
         Memory.allies = [];
     }
@@ -777,6 +776,15 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
 
     //manually adding duo
+    if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
+    if(spawn.memory.manual_duo!=undefined)
+    {
+        if (!contains_target_room(spawn.memory.duos, spawn.memory.manual_duo)) {
+            spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,spawn.memory.manual_duo))
+        }
+    }
+
+    /*
     if (spawn.room.name == 'W3S38') {
         if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
         if (spawn.memory.duos != undefined) {
@@ -790,6 +798,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
     }
+        */
 
 
     if (spawn.memory.rooms_to_blockade == undefined) {
@@ -920,7 +929,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 var enemy_creeps = Game.rooms[myRoom].find(FIND_HOSTILE_CREEPS, {
                     filter:
                         function (en) {
-                            return en.owner.username != 'Alphonzo' &&
+                            return  !Memory.allies.includes(en.owner.username) &&
                                 (en.getActiveBodyparts(WORK) > 0 || en.getActiveBodyparts(ATTACK) > 0 || en.getActiveBodyparts(RANGED_ATTACK) > 0 || en.getActiveBodyparts(CLAIM) > 0)
                         }
                 })

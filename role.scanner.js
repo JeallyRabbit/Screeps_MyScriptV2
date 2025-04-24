@@ -451,7 +451,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
                         min_distance=1000;
                         for(let a in Game.rooms)
                         {
-                            if(Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[a].name) < min_distance)
+                            if(Game.map.getRoomLinearDistance(creep.room.name, a) < min_distance)
                             {
                                 min_distance=Game.map.getRoomLinearDistance(creep.room.name, Game.rooms[a].name) 
                             }

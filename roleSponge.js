@@ -22,6 +22,16 @@ Creep.prototype.roleSponge = function roleSponge(creep, spawn) {
         creep.moveTo(spawn)
         
     }
+    if(creep.hits==creep.hitsMax && creep.room.name==creep.memory.target_room)
+        {
+            //var flee=new RoomPosition(25,25,creep.memory.target_room)
+            //creep.fleeFrom({flee},{range:26})
+            creep.say("close")
+            creep.moveTo(creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES))
+            //creep.moveTo(spawn)
+            
+        }
+
     if(creep.hits<=creep.hitsMax/2 && creep.room.name!=creep.memory.target_room)
     {
         if(creep.pos.x==49){creep.move(LEFT)}
@@ -41,7 +51,7 @@ Creep.prototype.roleSponge = function roleSponge(creep, spawn) {
     if(Game.rooms[creep.room.name].memory.hostiles!=undefined && Game.rooms[creep.room.name].memory.hostiles.length>0)
     {
         var a=Game.rooms[creep.room.name].memory.hostiles
-        creep.say(creep.fleeFrom(a))
+        creep.fleeFrom(a)
         //creep.say("flee")
     }
 
