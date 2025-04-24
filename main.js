@@ -38,6 +38,7 @@ var roleDuoLeader = require('role.duoLeader')
 var roleDuoFollower = require('role.duoFollower')
 var operateDuo = require('operateDuo')
 var operateSwarm = require('operateSwarm')
+var operateQuad = require('operateQuad')
 var roleSponge = require('roleSponge')
 
 var roleIntershardClaimer = require('role.intershardClaimer')
@@ -130,6 +131,15 @@ class Swarm {
         this.target_room = target_room;
         this.home_rom = home_room;
         this.members = [];
+    }
+}
+
+class Quad{
+    constructor(quadId,target_room, home_room)
+    {
+        this.id=quadId;
+        this.target_room=target_room;
+        this.home_room=home_room
     }
 }
 
@@ -1122,6 +1132,45 @@ module.exports.loop = function () {
                             }
                         }
                     }
+                    else if(creep.memory.role=='quadMember')
+                    {
+                        if(spawn.memory.quads!=undefined)
+                        {
+                            for(q of spawn.memory.quads)
+                            {
+                                if(q.members==undefined)
+                                {
+                                    q.members=[];
+                                }
+                                if (!q.members.includes(creep.id)) {
+                                    q.members.push(creep.id)
+                                }
+                                if(q.id==creep.memory.quadId)
+                                {
+                                    if(q.topLeftId==undefined || q.topLeftId==creep.id)
+                                    {
+                                        q.topLeftId=creep.id
+                                        break;
+                                    }
+                                    else if(q.topRightId==undefined || q.topRightId==creep.id)
+                                    {
+                                        q.topRightId=creep.id
+                                        break;
+                                    }
+                                    else if(q.bottomLeftId==undefined || q.bottomLeftId==creep.id)
+                                    {
+                                        q.bottomLeftId=creep.id
+                                        break;
+                                    }
+                                    else if(q.bottomRightId==undefined || q.bottomRightId==creep.id)
+                                    {
+                                        q.bottomRightId=creep.id
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                     else if (creep.memory.role == 'energySupport') {
                         creep.roleEnergySupport(creep, spawn)
                     }
@@ -1150,6 +1199,20 @@ module.exports.loop = function () {
                 for (let i = 0; i < spawn.memory.swarms.length; i++) {
                     var swarm = spawn.memory.swarms[i]
                     spawn.operateSwarm(swarm)
+                }
+            }
+
+            //quads
+            if(spawn.memory.quads==undefined)
+            {
+                spawn.memory.quads=[];
+            }
+            if(spawn.memory.quads!=undefined && spawn.memory.quads.length>0)
+            {
+                for(let i=0;i<spawn.memory.quads.length;i++)
+                {
+                    var quad=spawn.memory.quads[i]
+                    spawn.operateQuad(quad)
                 }
             }
 
@@ -1413,6 +1476,27 @@ module.exports.loop = function () {
                 }
             }
 
+            spawn.memory.isSpawningQuad=false;
+            for(q of spawn.memory.quads){
+                console.log(q.id)
+                if(!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers)
+                {
+                    spawn.memory.isSpawningQuad=true;
+                    var spawn_result = spawn.spawnCreep(/*maxSoldier(energyCap)*/[MOVE], 'quad' + spawn.room.name + '_' + Game.time, {
+                        memory: {
+                            role: 'quadMember',
+                            home_room: spawn.room,
+                            quadId: q.id
+                        }
+                    })
+                    console.log("quad spawning result: ",spawn_result)
+                    if (spawn_result == 0) {
+                        spawn.memory.isSpawningQuad = true
+                        continue;
+                    }
+                }
+            }
+
 
 
 
@@ -1464,7 +1548,7 @@ module.exports.loop = function () {
             }
                 */
 
-            if (spawn.memory.isSpawningDuo == true || spawn.memory.isSpawningSwarm == true) { continue; }
+            if (spawn.memory.isSpawningDuo == true || spawn.memory.isSpawningSwarm == true || spawn.memory.isSpawningQuad) { continue; }
 
             if (pop_haulers > 0 && pop_merchants > 0) {
                 if (spawn.memory.need_keeperHealer != undefined && false) {

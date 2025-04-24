@@ -347,6 +347,59 @@ function plan_extension_stamp(spawn, roomCM, rcl) {
 
 }
 
+function plan_quad_grouping_pos(spawn,roomCM)
+{
+    var is_succes = false;
+    for (let i = 0; i < 50; i++) {
+        for (let j = 0; j < 50; j++) {
+            if (spawn.memory.room_plan[i][j] != 0) {
+                roomCM.set(i, j, 255);
+            }
+
+        }
+    }
+    let distanceCM = spawn.room.diagonalDistanceTransform(roomCM, false);
+
+    //Seeds - starting positions for floodfill (it have to be an array - somethink iterable)
+    var seeds = [];
+    if (spawn.room.storage != undefined || true) {
+
+        //seeds.push(spawn.room.storage.pos);
+        seeds.push(spawn.memory.storage_pos);
+        //seeds.push(spawn.pos);
+        //seeds.push(spawn.room.controller.pos);
+        var floodCM = spawn.room.floodFill(seeds);
+
+        var pos_for_quad = new RoomPosition(0, 0, spawn.room.name);
+        var min_distance_from_spawn = 100;
+        for (i = 0; i < 50; i++) {
+            for (let j = 0; j < 50; j++) {
+                if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < min_distance_from_spawn
+                    && (i > 5 && i < 45) && (j > 5 && j < 45)) {
+                    min_distance_from_spawn = floodCM.get(i, j);
+                    pos_for_quad.x = i;
+                    pos_for_quad.y = j;
+                }
+            }
+        }
+
+        spawn.memory.pos_for_quad=pos_for_quad
+
+        /*
+        for (let i = 0; i < 50; i++) {
+            for (let j = 0; j < 50; j++) {
+                if (spawn.memory.room_plan[i][j] != 0) {
+                    roomCM.set(i, j, 255);
+                    is_succes = true;
+                }
+            }
+        }
+            */
+
+        return is_succes;
+    }
+}
+
 function plan_manager_stamp(spawn, roomCM) {
     var is_succes = false;
     for (let i = 0; i < 50; i++) {
@@ -1275,7 +1328,8 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
             }
 
         }
-
+        plan_quad_grouping_pos();
+        
         spawn.memory.roomCM = roomCM_2.serialize();
         spawn.memory.building_stage++;
         var cpu_after = Game.cpu.getUsed()
@@ -1296,6 +1350,8 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         spawn.memory.building_stage++;
         spawn.memory.if_success_planning_base = true
         console.log("success plannig base: ", spawn.memory.if_success_planning_base)
+
+        
 
         delete spawn.memory.roomCM
     }

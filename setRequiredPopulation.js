@@ -133,6 +133,16 @@ class Swarm {
     }
 }
 
+class Quad{
+    constructor(quadId,target_room, home_room,grouping_pos)
+    {
+        this.id=quadId;
+        this.target_room=target_room;
+        this.home_room=home_room
+        this.grouping_pos=grouping_pos
+    }
+}
+
 
 
 Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
@@ -755,6 +765,15 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.need_sponge = spawn.memory.manual_sponge
     }
 
+    // manual adding swarms
+    if(spawn.memory.quads==undefined){spawn.memory.quads=[]}
+    if(spawn.memory.manual_quad!=undefined)
+    {
+        if (contains_target_room(spawn.memory.quads, spawn.memory.manual_quad) == false && spawn.memory.pos_for_quad!=undefined) {
+            spawn.memory.quads.push(new Quad(spawn.room.name + "_" + Game.time, spawn.memory.manual_quad, spawn.room,spawn.memory.pos_for_quad))
+        }
+    }
+
     //manuall adding swarm
     if (spawn.room.name == 'W3N7' || true) {
         if (spawn.memory.swarms == undefined) { spawn.memory.swarms = []; }
@@ -764,10 +783,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 //if (spawn.memory.swarms.contains_target_room(spawn.memory.manual_swarm) == false) 
                 if (contains_target_room(spawn.memory.swarms, spawn.memory.manual_swarm) == false) {
                     spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, 4, spawn.memory.manual_swarm, spawn.room))
-                }
-
-                if (spawn.memory.swarms.length == 1) {
-                    // spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, spawn.room,'W2S37'))
                 }
             }
         }
