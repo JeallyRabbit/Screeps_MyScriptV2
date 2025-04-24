@@ -555,7 +555,7 @@ module.exports.loop = function () {
 
 
 
-            if ((Game.shard.name == 'shard2' || Game.shard.name == 'shard1') && Game.cpu.bucket == 10000) {
+            if ((Game.shard.name == 'shard2' || Game.shard.name == 'shard1' || Game.shard.name == 'shard0') && Game.cpu.bucket == 10000) {
                 Game.cpu.generatePixel();
             }
 
