@@ -147,7 +147,7 @@ module.exports.loop = function () {
         console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
         console.log("GCL: ", Game.gcl.level, Math.round((Game.gcl.progress / Game.gcl.progressTotal) * 100), "% to next")
 
-        Memory.allies = ["Alphonzo"];
+        Memory.allies = ["Alphonzo","insain","noe"];
 
         /*
         //REMOVE ALL CONSTRUCTION SITES
@@ -420,7 +420,7 @@ module.exports.loop = function () {
             for (var name in Game.creeps) {
                 var creep = Game.creeps[name];
                 //creep.suicide()
-                if (creep.memory.role == 'soldier' /* && false */) {
+                if (creep.memory.role == 'soldier') {
                     //creep.roleSoldier(creep, spawn);
 
 
@@ -433,7 +433,7 @@ module.exports.loop = function () {
                                 Game.rooms[creep.memory.target_room].memory.soldiers.push(creep.id);
                             }
                         }
-                        else if (Array.isArray(Game.rooms[creep.memory.target_room].memory.soldiers) == false) {
+                        else /* if (Array.isArray(Game.rooms[creep.memory.target_room].memory.soldiers) == false)*/ {
                             Game.rooms[creep.memory.target_room].memory.soldiers = [];
                         }
                     }

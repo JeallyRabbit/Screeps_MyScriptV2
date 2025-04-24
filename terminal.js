@@ -22,7 +22,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
     //console.log("orders num: ",Game.market.getAllOrders().length)
     //console.log("creditas: ",Game.market.credits)
 
-    if (terminal != undefined && storage != undefined && Game.time%4==0) {
+    if (terminal != undefined && storage != undefined && Game.time%1==0) {
 
 
 
@@ -87,15 +87,28 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
 
                 }
+                console.log("closestToSendEnergy: ",closest_to_send_energy)
                 if (closest_to_send_energy != undefined) {
                     console.log("sending energy to: ", closest_to_send_energy)
-                    terminal.send(RESOURCE_ENERGY, amount, closest_to_send_energy);
+                    send_result=terminal.send(RESOURCE_ENERGY, amount, closest_to_send_energy);
                     if(spawn.room.memory.energy_sent==undefined)
                     {
                         spawn.room.memory.energy_sent=amount;
                     }
                     else{
                         spawn.room.memory.energy_sent+=amount
+                    }
+
+                    
+                }
+                else{// there is no room to send energy via terminal
+                    // /console.log(terminal.store[RESOURCE_ENERGY]>30000 && storage.store[RESOURCE_ENERGY]>300000,"asdaaaaaaaaaaaaaaaaaaaaaaaaaa")
+                    if(terminal.store[RESOURCE_ENERGY]>30000 && storage.store[RESOURCE_ENERGY]>300000)
+                    {
+
+                        cost=undefined;
+                        cost=sell_resource(terminal,cost,spawn,RESOURCE_ENERGY);
+                        console.log(terminal.room.name," selling energy cost: ",cost);
                     }
                 }
             }
@@ -218,31 +231,25 @@ function sell_resource(terminal, cost, spawn, res) {
     for (let i = 1; i < energy_orders.length; i++) {
         var trade_amount = Math.min(terminal.store[res], energy_orders[i].amount)
         var cost = Game.market.calcTransactionCost(trade_amount, energy_orders[i].roomName, spawn.room.name)
-        //console.log(energy_orders[i].id);
-        //console.log("Cost to trade energy: ",cost);
         var profit = (energy_orders[i].price * trade_amount) - cost
-        //console.log("Profit: ",profit);
         var profit_per_unit = profit / trade_amount
-        //console.log("profit per unit: ", profit_per_unit);
         if (profit_per_unit > best_profit) {
             best_profit = profit_per_unit
             best_order_id = energy_orders[i].id
-            // console.log(energy_orders[i].id);
-            //console.log("Cost to trade energy: ",cost);
-            //console.log("Profit: ",profit);
-            //console.log("profit per unit: ", profit_per_unit);
         }
     }
+    console.log("best order id: ",best_order_id)
     if (best_order_id != undefined) {
 
         //onsole.log("best offer: ",best_order_id);
         var trade_amount = Math.min(terminal.store[res], Game.market.getOrderById(best_order_id).amount)
+        trade_amount=1000
         var cost = Game.market.calcTransactionCost(trade_amount, Game.market.getOrderById(best_order_id).roomName,
             spawn.room.name)
         var profit = (Game.market.getOrderById(best_order_id).price * trade_amount) - cost
         var profit_per_unit = profit / trade_amount
         //console.log("profit per unit: ",profit_per_unit)
-        if (profit_per_unit > 10) {
+        if (profit_per_unit > 10 || true) {
             console.log(res, " selling result: ", Game.market.deal(best_order_id, trade_amount, spawn.room.name))
             //console.log("trade_amount: ",trade_amount);
             //console.log("cost: ",cost);
