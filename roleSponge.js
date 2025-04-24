@@ -3,6 +3,16 @@
 
 Creep.prototype.roleSponge = function roleSponge(creep, spawn) {
 
+    if(creep.memory.creep_cost==undefined)
+    {
+        var creep_cost=0;
+        creep_cost+=_.filter(creep.body, { type: TOUGH }).length*BODYPART_COST["tough"];
+        creep_cost+=_.filter(creep.body, { type: MOVE }).length*BODYPART_COST["move"];
+        creep_cost+=_.filter(creep.body, { type: RANGED_ATTACK }).length*BODYPART_COST["ranged_attack"];
+        creep_cost+=_.filter(creep.body, { type: HEAL }).length*BODYPART_COST["heal"];
+        creep.memory.creep_cost=creep_cost
+    }
+
     creep.heal(creep)
     for(a of Game.rooms[creep.room.name].memory.hostiles)
     {
@@ -30,12 +40,28 @@ Creep.prototype.roleSponge = function roleSponge(creep, spawn) {
     {
         creep.say("get close")
         
-        creep.moveTo(creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES))
+        creep.moveTo(creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES),{maxRooms: 1})
     }
 
     if(creep.memory.healing==true && creep.room.name==creep.memory.target_room)
     {
         creep.moveTo(spawn)
+    }
+
+
+    if(creep.room.name==creep.memory.target_room)
+    {
+        let eventLog=creep.room.getEventLog();
+        let attackEvents=_.filter(eventLog,{ event: EVENT_ATTACK});
+        console.log("asd ",attackEvents.length)
+        creep.say(attackEvents.length)
+        if(creep.memory.drained_energy==undefined)
+        {
+            creep.memory.drained_energy=attackEvents.length*TOWER_ENERGY_COST
+        }
+        else{
+            creep.memory.drained_energy+=attackEvents.length*TOWER_ENERGY_COST
+        }
     }
     //////////////////
     /*
