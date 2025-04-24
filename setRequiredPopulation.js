@@ -783,12 +783,12 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,spawn.memory.manual_duo))
         }
     }
-
+  
     /*
     if (spawn.room.name == 'W3S38') {
         if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
         if (spawn.memory.duos != undefined) {
-            // if (spawn.memory.duos.contains_target_room('W3S37') == false) 
+            // if (spawn.memory.duos.contains_target_room('W3S37') == false) asdasds
             if (contains_target_room(spawn.memory.duos, 'W3S37')) {
                 //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,'W3S37'))
             }
