@@ -56,48 +56,61 @@ function transformCosts(costs, roomName, swampCost = 5, plainCost = 1) {
             result.set(x, y, cost)
         }
     }
+
+    Game.rooms[roomName].find(FIND_STRUCTURES).forEach(function (struct) {
+        if (struct.structureType === STRUCTURE_ROAD) {
+            // Favor roads over plain tiles
+            //costs.set(struct.pos.x, struct.pos.y, 1);
+        } else if (struct.structureType !== STRUCTURE_CONTAINER &&
+            (struct.structureType !== STRUCTURE_RAMPART ||
+                !struct.my)) {
+            // Can't walk through non-walkable buildings
+            result.set(struct.pos.x, struct.pos.y, 255);
+        }
+    });
+
     return result
 }
 
 function moveQuad(quad, targetPos) {
     var topLeft = Game.getObjectById(quad.topLeftId);
-    if(topLeft==null){return -1;}
-    const existingCostMatrix=new PathFinder.CostMatrix;
-    const roomName=topLeft.room.name
-    console.log("topLeft.pos: ",topLeft.pos)
+    if (topLeft == null) { return -1; }
+    const existingCostMatrix = new PathFinder.CostMatrix;
+    const roomName = topLeft.room.name
+    console.log("topLeft.pos: ", topLeft.pos)
     const costMatrix = transformCosts(existingCostMatrix, roomName)
-    for(var i=0;i<50;i++)
-    {
+    /*
+    for (var i = 0; i < 50; i++) {
         {
-            for(var j=0;j<50;j++)
-            {
+            for (var j = 0; j < 50; j++) {
                 topLeft.room.visual.text(costMatrix.get(i,j), i, j, { color: '#ffffff' })
             }
         }
-        
+
     }
+        */
     const path = PathFinder.search(
         topLeft.pos,
         targetPos,
-        {range: 1 },
+        //{ range: 1 },
         {
+            range:1,
             plainCost: 1,
             swampCost: 5,
             roomCallback: () => costMatrix,
         },
     )
-    console.log("path: ",path.path)
-    for(p of path.path)
-    {
-
-        console.log(p)
+    //console.log("path: ",path.path)
+    for (p of path.path) {
+        topLeft.room.visual.circle(p.x, p.y, { fill: 'transparent', radius: 0.55, stroke: 'red' })
+        //console.log(p)
     }
-    const direction=topLeft.pos.getDirectionTo(path.path[0])
-    console.log("direction: ",direction)
+    const direction = topLeft.pos.getDirectionTo(path.path[0])
+    console.log("direction: ", direction)
     for (q of quad.members) {
-        cr=Game.getObjectById(q)
-        if(cr==null){continue}
-        
+        cr = Game.getObjectById(q)
+        if (cr == null) { continue }
+
         cr.move(direction)
     }
 }
@@ -116,20 +129,18 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     }
 
     //checking if quad is dead
-    var dead_counter=0;
-    for(m of quad.members)
-    {
-        if(Game.getObjectById(m)==null){dead_counter++;}
+    var dead_counter = 0;
+    for (m of quad.members) {
+        if (Game.getObjectById(m) == null) { dead_counter++; }
     }
-    if(dead_counter==4)
-    {
-        quad.members=[];
-        quad.packed=false;
-        quad.completed=false;
-        quad.topLeftId=undefined;
-        quad.topRightId=undefined;
-        quad.bottomLeftId=undefined;
-        quad.bottomRightId=undefined;
+    if (dead_counter == 4) {
+        quad.members = [];
+        quad.packed = false;
+        quad.completed = false;
+        quad.topLeftId = undefined;
+        quad.topRightId = undefined;
+        quad.bottomLeftId = undefined;
+        quad.bottomRightId = undefined;
     }
 
     if (quad.packed != true) {
@@ -167,7 +178,41 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         return;
     }
 
-    moveQuad(quad,Game.flags["quad"])
+
+
+    //DEBUGGING
+    if (!isQuadPacked(quad.members)) {
+        quad.packed = false;
+    }
+
+
+    for (q of quad.members) {
+        if (quad.members.length >= 4) {
+            quad.completed = true
+        }
+        creep = Game.getObjectById(q)
+        if (creep == null) { continue }
+        if (topLeft != null && creep.id == topLeft.id) {
+            creep.say("TL")
+            //creep.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y, quad.grouping_pos.roomName))
+        }
+        if (topRight != null && creep.id == topRight.id) {
+            creep.say("BL")
+            //creep.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
+        }
+        if (bottomLeft != null && creep.id == bottomLeft.id) {
+            creep.say("TR")
+            //creep.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y, quad.grouping_pos.roomName))
+        }
+        if (bottomRight != null && creep.id == bottomRight.id) {
+            creep.say("BR")
+            //creep.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
+        }
+    }
+    //END OF DEBUGGING
+    ////
+
+    moveQuad(quad, Game.flags["quad"])
     /*
     if (swarm.members == undefined) {
         swarm.members = [];
