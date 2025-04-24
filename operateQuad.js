@@ -11,7 +11,7 @@ function isQuadPacked(creeps) {
     return true
 }
 
-function transformCosts(costs, roomName, swampCost = 5, plainCost = 1) {
+function transformCosts(quad,costs, roomName, swampCost = 5, plainCost = 1) {
     const terrain = Game.map.getRoomTerrain(roomName)
     const result = new PathFinder.CostMatrix()
     const formationVectors = [
@@ -69,6 +69,17 @@ function transformCosts(costs, roomName, swampCost = 5, plainCost = 1) {
         }
     });
 
+    Game.rooms[roomName].find(FIND_CREEPS).forEach(function (creep) {
+        if (!quad.members.includes(creep.id)) {
+            // Favor roads over plain tiles
+            result.set(creep.pos.x, creep.pos.y, 255);
+            result.set(creep.pos.x-1, creep.pos.y, 255);
+            result.set(creep.pos.x-1, creep.pos.y-1, 255);
+            result.set(creep.pos.x, creep.pos.y-1, 255);
+        } 
+    });
+
+
     return result
 }
 
@@ -78,7 +89,7 @@ function moveQuad(quad, targetPos) {
     const existingCostMatrix = new PathFinder.CostMatrix;
     const roomName = topLeft.room.name
     console.log("topLeft.pos: ", topLeft.pos)
-    const costMatrix = transformCosts(existingCostMatrix, roomName)
+    const costMatrix = transformCosts(quad,existingCostMatrix, roomName)
     /*
     for (var i = 0; i < 50; i++) {
         {
@@ -151,19 +162,19 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             creep = Game.getObjectById(q)
             if (creep == null) { continue }
             if (topLeft != null && creep.id == topLeft.id) {
-                creep.say("TL")
+                //creep.say("TL")
                 creep.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y, quad.grouping_pos.roomName))
             }
             if (topRight != null && creep.id == topRight.id) {
-                creep.say("BL")
+                //creep.say("BL")
                 creep.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
             }
             if (bottomLeft != null && creep.id == bottomLeft.id) {
-                creep.say("TR")
+                //creep.say("TR")
                 creep.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y, quad.grouping_pos.roomName))
             }
             if (bottomRight != null && creep.id == bottomRight.id) {
-                creep.say("BR")
+                //creep.say("BR")
                 creep.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
             }
         }
@@ -185,7 +196,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         quad.packed = false;
     }
 
-
+    /*
     for (q of quad.members) {
         if (quad.members.length >= 4) {
             quad.completed = true
@@ -209,6 +220,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             //creep.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
         }
     }
+        */
     //END OF DEBUGGING
     ////
 
