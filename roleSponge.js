@@ -52,9 +52,7 @@ Creep.prototype.roleSponge = function roleSponge(creep, spawn) {
     if(creep.room.name==creep.memory.target_room)
     {
         let eventLog=creep.room.getEventLog();
-        let attackEvents=_.filter(eventLog,{ event: EVENT_ATTACK});
-        console.log("asd ",attackEvents.length)
-        creep.say(attackEvents.length)
+        let attackEvents=_.filter(eventLog,{ event: EVENT_ATTACK,objectId: creep.id});
         if(creep.memory.drained_energy==undefined)
         {
             creep.memory.drained_energy=attackEvents.length*TOWER_ENERGY_COST
