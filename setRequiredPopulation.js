@@ -898,17 +898,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     }
             })
 
+
             Game.rooms[myRoom].memory.damagedCreeps = [];
             for (cr of creeps_to_heal) {
                 Game.rooms[myRoom].memory.damagedCreeps.push(cr.id);
             }
-
-
-
-
-
-
-
 
 
 
