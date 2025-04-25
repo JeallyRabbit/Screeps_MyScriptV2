@@ -97,11 +97,12 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
         */
         
         
+        
 
     return result
 }
 
-function moveQuad(quad, targetPos, reusePath = 1, myFlee = false) {
+function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
 
     //if all can move - fatique==0
     for (q of quad.members) {
@@ -122,7 +123,7 @@ function moveQuad(quad, targetPos, reusePath = 1, myFlee = false) {
 
 
     var movePath;
-    if (Game.time % reusePath == 0 || quad.path == undefined) {
+    if (Game.time % reusePath == 0 || quad.path == undefined || (topLeft.pos.x==49 || topLeft.pos.y==49 || topLeft.pos.x==0 || topLeft.pos.y==0)) {
         /*
         const existingCostMatrix = new PathFinder.CostMatrix;
         const roomName = topLeft.room.name
@@ -160,7 +161,7 @@ function moveQuad(quad, targetPos, reusePath = 1, myFlee = false) {
     if (movePath != undefined) {
         topLeft.say(movePath.length)
         //console.log("path: ",path.path)
-        /*
+        
         for (p of movePath) {
             // if (p.roomName == topLeft.room.name) {
             if (Game.rooms[p.roomName] != undefined) {
@@ -171,7 +172,7 @@ function moveQuad(quad, targetPos, reusePath = 1, myFlee = false) {
 
             //console.log(p)
         }
-            */
+            
         var direction = topLeft.pos.getDirectionTo(movePath[0])
 
         //console.log("direction: ", direction)
