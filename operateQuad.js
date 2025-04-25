@@ -85,7 +85,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
         }
     });
 
-    
+    /*
     for (var i = 0; i < 50; i++) {
         {
             for (var j = 0; j < 50; j++) {
@@ -94,6 +94,8 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
         }
 
     }
+        */
+        
         
 
     return result
@@ -158,6 +160,7 @@ function moveQuad(quad, targetPos, reusePath = 1, myFlee = false) {
     if (movePath != undefined) {
         topLeft.say(movePath.length)
         //console.log("path: ",path.path)
+        /*
         for (p of movePath) {
             // if (p.roomName == topLeft.room.name) {
             if (Game.rooms[p.roomName] != undefined) {
@@ -168,6 +171,7 @@ function moveQuad(quad, targetPos, reusePath = 1, myFlee = false) {
 
             //console.log(p)
         }
+            */
         var direction = topLeft.pos.getDirectionTo(movePath[0])
 
         //console.log("direction: ", direction)
