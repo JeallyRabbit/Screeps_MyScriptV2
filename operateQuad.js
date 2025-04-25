@@ -89,7 +89,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
     return result
 }
 
-function moveQuad(quad, targetPos, reusePath = 5) {
+function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
 
     //if all can move - fatique==0
     for (q of quad.members) {
@@ -101,8 +101,17 @@ function moveQuad(quad, targetPos, reusePath = 5) {
 
     var topLeft = Game.getObjectById(quad.topLeftId);
     if (topLeft == null) { return -1; }
+
+    if(topLeft.pos.isNearTo(targetPos)){return }
+    if(quad.lastTargetPos!=targetPos)
+    {
+        quad.lastTargetPos=targetPos;
+        quad.path=undefined
+    }
+
+
     var movePath;
-    if (Game.time % reusePath == 0) {
+    if (Game.time % reusePath == 0 || quad.path == undefined) {
         const existingCostMatrix = new PathFinder.CostMatrix;
         const roomName = topLeft.room.name
         //console.log("topLeft.pos: ", topLeft.pos)
@@ -123,6 +132,7 @@ function moveQuad(quad, targetPos, reusePath = 5) {
             //{ range: 1 },
             {
                 range: 1,
+                flee: myFlee,
                 plainCost: 1,
                 swampCost: 5,
                 roomCallback: () => costMatrix,
@@ -130,24 +140,37 @@ function moveQuad(quad, targetPos, reusePath = 5) {
         )
         quad.path = path;
     }
-    else {
-
-    }
     movePath = quad.path.path;
-    //console.log("path: ",path.path)
-    for (p of movePath) {
-        topLeft.room.visual.circle(p.x, p.y, { fill: 'transparent', radius: 0.55, stroke: 'red' })
-        //console.log(p)
-    }
-    const direction = topLeft.pos.getDirectionTo(movePath[0])
-    //console.log("direction: ", direction)
+    if (movePath != undefined) {
+        topLeft.say(movePath.length)
+        //console.log("path: ",path.path)
+        for (p of movePath) {
+            topLeft.room.visual.circle(p.x, p.y, { fill: 'transparent', radius: 0.55, stroke: 'red' })
+            //console.log(p)
+        }
+        var direction = topLeft.pos.getDirectionTo(movePath[0])
 
+        topLeft.room.visual.circle(topLeft.pos.x, topLeft.pos.y, { fill: 'transparent', radius: 0.55, stroke: 'pink' })
+        topLeft.room.visual.circle(movePath[0].x, movePath[0].y, { fill: 'solid', radius: 0.55, stroke: 'white' })
+        //console.log("direction: ", direction)
+        topLeft.say(direction)
+        topLeft.say(movePath.length)
+        var move_result = 0;
+        for (q of quad.members) {
+            cr = Game.getObjectById(q)
+            if (cr == null) { continue }
 
-    for (q of quad.members) {
-        cr = Game.getObjectById(q)
-        if (cr == null) { continue }
+            //cr.say(cr.move(direction))
 
-        cr.move(direction)
+            move_result += cr.move(direction)
+            //cr.say(cr.move(direction))
+        }
+        if (move_result > 0) {
+            quad.path = undefined
+        }
+        else if (move_result == 0) {
+            movePath.shift()
+        }
     }
 
 
@@ -367,11 +390,9 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                         }
                     });
                     //creep.say(target_structure.my)
-                    topLeft.say("ASD")
                     //creep.say(target_creep)
                     if (target_creep != null) {
 
-                        topLeft.say("tc")
                         //creep.say(target_creep.pos.x+' '+target_creep.pos.y)
                         if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
 
@@ -395,11 +416,11 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                             else if (creep.pos.isNearTo(target_creep.pos) && !allies_present) {
                                 if (!allies_present) {
                                     //creep.say("near")
-                                    creep.rangedMassAttack()
+                                    //creep.rangedMassAttack()
+                                    quadRangedMassAttack(quad)
                                 }
                             }
                             else {
-                                topLeft.say("mv tC")
                                 moveQuad(quad, target_creep.pos)
                                 //creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true, avoidCreeps: false, ignoreDestructibleStructures: true });
                             }
@@ -425,10 +446,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
                     }
                     else if (target_structure) {
-                        topLeft.say("QWE")
                         if (target_creep) {
                             //focus on creeps
-                            creep.say("B")
                             if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
 
                                 //creep.moveTo(target_creep, { maxRooms: 1, ignoreDestructibleStructures: true })
@@ -450,7 +469,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                         }
                         else {
                             //focus on structures
-                            topLeft.say("asd")
                             //if (ranged_attack_result == ERR_NOT_IN_RANGE) {
                             if (allies_present) {
 
@@ -458,7 +476,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                                 quadRangedAttack(quad, target_structure)
                             }
                             else if (target_structure.structureType != STRUCTURE_WALL) {
-                                //creep.rangedMassAttack()
+                                // rangedMassAttack() hits only owned structures so it not affects walls
                                 quadRangedMassAttack(quad)
                             }
                             else {
@@ -507,21 +525,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                         }
                     }
                     //else {
-                    // group on flag
-                    for (flagName in Game.flags) {
-
-                        var flag = Game.flags[flagName]
-                        if (flag == undefined) { continue; }
-
-                        if (flag.room != undefined && flag.room.name == creep.room.name
-                            && flagName.startsWith('quad')
-                        ) {
-                            //creep.moveTo(flag, { reusePath: 11, avoidCreeps: false, maxRooms: 1, ignoreDestructibleStructures: true });
-                            moveQuad(quad, flag.pos)
-                            //creep.say("flag")
-                            break;
-                        }
-                    }
+                    
                 }
                 //else 
                 if (creep.room.name != quad.target_room && Game.rooms[creep.room.name].memory.hostiles.length == 0) {
@@ -536,6 +540,23 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                 //rand <1;6>
                 creep.fleeFrom([this], 8, { maxRooms: 1 })
             }
+
+            // group on flag
+            for (flagName in Game.flags) {
+
+                var flag = Game.flags[flagName]
+                if (flag == undefined) { continue; }
+
+                if (flag.room != undefined && flag.room.name == creep.room.name
+                    && flagName.startsWith('quad')
+                ) {
+                    //creep.moveTo(flag, { reusePath: 11, avoidCreeps: false, maxRooms: 1, ignoreDestructibleStructures: true });
+                    moveQuad(quad, flag.pos)
+                    //creep.say("flag")
+                    break;
+                }
+            }
+            
 
             break;
         }
