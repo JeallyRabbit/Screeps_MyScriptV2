@@ -85,6 +85,16 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
         }
     });
 
+    /*
+    for (var i = 0; i < 50; i++) {
+        {
+            for (var j = 0; j < 50; j++) {
+                Game.rooms[roomName].visual.text(result.get(i, j), i, j, { color: '#ffffff' })
+            }
+        }
+
+    }
+        */
 
     return result
 }
@@ -102,30 +112,23 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
     var topLeft = Game.getObjectById(quad.topLeftId);
     if (topLeft == null) { return -1; }
 
-    if(topLeft.pos.isNearTo(targetPos)){return }
-    if(quad.lastTargetPos!=targetPos)
-    {
-        quad.lastTargetPos=targetPos;
-        quad.path=undefined
+    if (topLeft.pos.isNearTo(targetPos)) { return }
+    if (quad.lastTargetPos != targetPos) {
+        quad.lastTargetPos = targetPos;
+        quad.path = undefined
     }
 
 
     var movePath;
     if (Game.time % reusePath == 0 || quad.path == undefined) {
+        /*
         const existingCostMatrix = new PathFinder.CostMatrix;
         const roomName = topLeft.room.name
         //console.log("topLeft.pos: ", topLeft.pos)
         const costMatrix = transformCosts(quad, existingCostMatrix, roomName)
-        /*
-        for (var i = 0; i < 50; i++) {
-            {
-                for (var j = 0; j < 50; j++) {
-                    topLeft.room.visual.text(costMatrix.get(i,j), i, j, { color: '#ffffff' })
-                }
-            }
+        */
 
-        }
-            */
+
         const path = PathFinder.search(
             topLeft.pos,
             targetPos,
@@ -135,7 +138,18 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
                 flee: myFlee,
                 plainCost: 1,
                 swampCost: 5,
-                roomCallback: () => costMatrix,
+                maxRooms: 32,
+                //roomCallback: () => costMatrix,
+                roomCallback: function (roomName) {
+                    let room = Game.rooms[roomName];
+                    if (!room) { return; }
+
+                    const existingCostMatrix = new PathFinder.CostMatrix;
+                    const terrain = room.getTerrain()
+                    const costMatrix = transformCosts(quad, existingCostMatrix, roomName)
+
+                    return costMatrix
+                }
             },
         )
         quad.path = path;
@@ -145,13 +159,21 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
         topLeft.say(movePath.length)
         //console.log("path: ",path.path)
         for (p of movePath) {
-            topLeft.room.visual.circle(p.x, p.y, { fill: 'transparent', radius: 0.55, stroke: 'red' })
+            // if (p.roomName == topLeft.room.name) {
+            if (Game.rooms[p.roomName] != undefined) {
+                Game.rooms[p.roomName].visual.circle(p.x, p.y, { fill: 'transparent', radius: 0.55, stroke: 'red' })
+            }
+
+            //}
+
             //console.log(p)
         }
         var direction = topLeft.pos.getDirectionTo(movePath[0])
 
-        topLeft.room.visual.circle(topLeft.pos.x, topLeft.pos.y, { fill: 'transparent', radius: 0.55, stroke: 'pink' })
-        topLeft.room.visual.circle(movePath[0].x, movePath[0].y, { fill: 'solid', radius: 0.55, stroke: 'white' })
+        if (p.roomName == topLeft.room.name) {
+            topLeft.room.visual.circle(topLeft.pos.x, topLeft.pos.y, { fill: 'transparent', radius: 0.55, stroke: 'pink' })
+            topLeft.room.visual.circle(movePath[0].x, movePath[0].y, { fill: 'solid', radius: 0.55, stroke: 'white' })
+        }
         //console.log("direction: ", direction)
         topLeft.say(direction)
         topLeft.say(movePath.length)
@@ -439,7 +461,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                                 creep.rangedAttack(target_structure)
                             }
                             else {
-                                creep.rangedMassAttack()
+                                //creep.rangedMassAttack()
+                                quadRangedMassAttack(quad)
                             }
                         }
 
@@ -525,7 +548,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                         }
                     }
                     //else {
-                    
+
                 }
                 //else 
                 if (creep.room.name != quad.target_room && Game.rooms[creep.room.name].memory.hostiles.length == 0) {
@@ -533,7 +556,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                     //return;
                     //creep.moveTo(new RoomPosition(25, 25, quad.target_room), { reusePath: 21, avoidHostile: true, avoidCreeps: false, avoidSk: true })
                     moveQuad(quad, new RoomPosition(25, 25, quad.target_room))
-                    creep.rangedMassAttack()
+
+                    //creep.rangedMassAttack()
                 }
             }
             else {
@@ -551,12 +575,12 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                     && flagName.startsWith('quad')
                 ) {
                     //creep.moveTo(flag, { reusePath: 11, avoidCreeps: false, maxRooms: 1, ignoreDestructibleStructures: true });
-                    moveQuad(quad, flag.pos)
+                    //moveQuad(quad, flag.pos)
                     //creep.say("flag")
                     break;
                 }
             }
-            
+
 
             break;
         }
