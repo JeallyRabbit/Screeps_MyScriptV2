@@ -153,8 +153,7 @@ function moveQuad(quad, targetPos, reusePath = 5) {
 
 }
 
-function quadRangedAttack(quad,target)
-{
+function quadRangedAttack(quad, target) {
     for (q of quad.members) {
         cr = Game.getObjectById(q)
         if (cr == null) { continue }
@@ -163,8 +162,7 @@ function quadRangedAttack(quad,target)
     }
 }
 
-function quadRangedMassAttack(quad)
-{
+function quadRangedMassAttack(quad) {
     for (q of quad.members) {
         cr = Game.getObjectById(q)
         if (cr == null) { continue }
@@ -173,8 +171,7 @@ function quadRangedMassAttack(quad)
     }
 }
 
-function quadEqualHeal(quad)
-{
+function quadEqualHeal(quad) {
     for (q of quad.members) {
         cr = Game.getObjectById(q)
         if (cr == null) { continue }
@@ -440,7 +437,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                                 if (creep.pos.isNearTo(target_structure)) {
                                     if (allies_present) {
                                         //creep.rangedAttack(target_structure)
-                                        quadRangedAttack(quad,target_structure)
+                                        quadRangedAttack(quad, target_structure)
                                     }
                                     else {
                                         //creep.rangedMassAttack()
@@ -458,15 +455,15 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                             if (allies_present) {
 
                                 //creep.rangedAttack(target_structure)
-                                quadRangedAttack(quad,target_structure)
+                                quadRangedAttack(quad, target_structure)
                             }
-                            else if (target_structure.structureType != STRUCTURE_WALL || true) {
+                            else if (target_structure.structureType != STRUCTURE_WALL) {
                                 //creep.rangedMassAttack()
                                 quadRangedMassAttack(quad)
                             }
                             else {
                                 //creep.rangedAttack(target_structure)
-                                quadRangedAttack(quad,target_structure)
+                                quadRangedAttack(quad, target_structure)
                             }
                             //}
 
@@ -511,28 +508,20 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                     }
                     //else {
                     // group on flag
-                    for (m of quad.members) {
-                        if (Game.getObjectById(m) != null) {
+                    for (flagName in Game.flags) {
 
-                            for (flagName in Game.flags) {
+                        var flag = Game.flags[flagName]
+                        if (flag == undefined) { continue; }
 
-                                var flag = Game.flags[flagName]
-                                if (flag == undefined) { continue; }
-
-                                if (flag.room != undefined && flag.room.name == creep.room.name
-                                    && flagName.startsWith('quad')
-                                ) {
-                                    //creep.moveTo(flag, { reusePath: 11, avoidCreeps: false, maxRooms: 1, ignoreDestructibleStructures: true });
-                                    moveQuad(quad, flag.pos)
-                                    //creep.say("flag")
-                                    break;
-                                }
-                            }
+                        if (flag.room != undefined && flag.room.name == creep.room.name
+                            && flagName.startsWith('quad')
+                        ) {
+                            //creep.moveTo(flag, { reusePath: 11, avoidCreeps: false, maxRooms: 1, ignoreDestructibleStructures: true });
+                            moveQuad(quad, flag.pos)
+                            //creep.say("flag")
                             break;
                         }
                     }
-                    //creep.moveTo(Game.getObjectById(swa), { reusePath: 11, maxRooms: 1, range: 22 });
-                    //}
                 }
                 //else 
                 if (creep.room.name != quad.target_room && Game.rooms[creep.room.name].memory.hostiles.length == 0) {
@@ -542,31 +531,12 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                     moveQuad(quad, new RoomPosition(25, 25, quad.target_room))
                     creep.rangedMassAttack()
                 }
-
-                var sum_x = 0;
-                var sum_y = 0
-                var counted = 0;
-                //console.log(creep.id)
-                for (other of quad.members) {
-                    if (Game.getObjectById(other) != null) {
-                        if (Game.getObjectById(other).room.name == creep.room.name) {
-                            //console.log("adding other: ", other)
-                            counted++;
-                            sum_x += Game.getObjectById(other).pos.x
-                            sum_y += Game.getObjectById(other).pos.y
-                        }
-
-                    }
-
-                }
-
-
             }
             else {
                 //rand <1;6>
                 creep.fleeFrom([this], 8, { maxRooms: 1 })
             }
-            
+
             break;
         }
     }
