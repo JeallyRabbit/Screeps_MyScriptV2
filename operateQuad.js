@@ -77,7 +77,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
 
     Game.rooms[roomName].find(FIND_CREEPS).forEach(function (creep) {
         if (!quad.members.includes(creep.id)) {
-            // Favor roads over plain tiles
+            
             result.set(creep.pos.x, creep.pos.y, 255);
             result.set(creep.pos.x - 1, creep.pos.y, 255);
             result.set(creep.pos.x - 1, creep.pos.y - 1, 255);
@@ -85,7 +85,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
         }
     });
 
-    /*
+    
     for (var i = 0; i < 50; i++) {
         {
             for (var j = 0; j < 50; j++) {
@@ -94,12 +94,12 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
         }
 
     }
-        */
+        
 
     return result
 }
 
-function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
+function moveQuad(quad, targetPos, reusePath = 1, myFlee = false) {
 
     //if all can move - fatique==0
     for (q of quad.members) {
@@ -147,7 +147,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
                     const existingCostMatrix = new PathFinder.CostMatrix;
                     const terrain = room.getTerrain()
                     const costMatrix = transformCosts(quad, existingCostMatrix, roomName)
-
+                    //console.log("QWEQWEQWE")
                     return costMatrix
                 }
             },
@@ -170,10 +170,6 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
         }
         var direction = topLeft.pos.getDirectionTo(movePath[0])
 
-        if (p.roomName == topLeft.room.name) {
-            topLeft.room.visual.circle(topLeft.pos.x, topLeft.pos.y, { fill: 'transparent', radius: 0.55, stroke: 'pink' })
-            topLeft.room.visual.circle(movePath[0].x, movePath[0].y, { fill: 'solid', radius: 0.55, stroke: 'white' })
-        }
         //console.log("direction: ", direction)
         topLeft.say(direction)
         topLeft.say(movePath.length)
@@ -293,6 +289,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         quad.packed = false;
     }
 
+
     /*
     for (q of quad.members) {
         if (quad.members.length >= 4) {
@@ -321,7 +318,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //END OF DEBUGGING
     ////
 
-    //moveQuad(quad, Game.flags["quad"])
+    moveQuad(quad, Game.flags["quad"])
 
     var enemy_creeps = [];
 
@@ -564,23 +561,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                 //rand <1;6>
                 creep.fleeFrom([this], 8, { maxRooms: 1 })
             }
-
-            // group on flag
-            for (flagName in Game.flags) {
-
-                var flag = Game.flags[flagName]
-                if (flag == undefined) { continue; }
-
-                if (flag.room != undefined && flag.room.name == creep.room.name
-                    && flagName.startsWith('quad')
-                ) {
-                    //creep.moveTo(flag, { reusePath: 11, avoidCreeps: false, maxRooms: 1, ignoreDestructibleStructures: true });
-                    //moveQuad(quad, flag.pos)
-                    //creep.say("flag")
-                    break;
-                }
-            }
-
 
             break;
         }

@@ -1482,7 +1482,7 @@ module.exports.loop = function () {
                 if(!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers)
                 {
                     spawn.memory.isSpawningQuad=true;
-                    var spawn_result = spawn.spawnCreep([MOVE] /* maxSoldier(energyCap) */, 'quad' + spawn.room.name + '_' + Game.time, {
+                    var spawn_result = spawn.spawnCreep(maxSoldier(energyCap) , 'quad' + spawn.room.name + '_' + Game.time, {
                         memory: {
                             role: 'quadMember',
                             home_room: spawn.room,
