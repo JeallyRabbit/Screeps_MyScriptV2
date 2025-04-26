@@ -77,7 +77,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
 
     Game.rooms[roomName].find(FIND_CREEPS).forEach(function (creep) {
         if (!quad.members.includes(creep.id)) {
-            
+
             result.set(creep.pos.x, creep.pos.y, 255);
             result.set(creep.pos.x - 1, creep.pos.y, 255);
             result.set(creep.pos.x - 1, creep.pos.y - 1, 255);
@@ -95,9 +95,9 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
 
     }
         */
-        
-        
-        
+
+
+
 
     return result
 }
@@ -123,7 +123,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
 
 
     var movePath;
-    if (Game.time % reusePath == 0 || quad.path == undefined || (topLeft.pos.x==49 || topLeft.pos.y==49 || topLeft.pos.x==0 || topLeft.pos.y==0)) {
+    if (Game.time % reusePath == 0 || quad.path == undefined || (topLeft.pos.x == 49 || topLeft.pos.y == 49 || topLeft.pos.x == 0 || topLeft.pos.y == 0)) {
         /*
         const existingCostMatrix = new PathFinder.CostMatrix;
         const roomName = topLeft.room.name
@@ -161,7 +161,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
     if (movePath != undefined) {
         topLeft.say(movePath.length)
         //console.log("path: ",path.path)
-        
+
         for (p of movePath) {
             // if (p.roomName == topLeft.room.name) {
             if (Game.rooms[p.roomName] != undefined) {
@@ -172,7 +172,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
 
             //console.log(p)
         }
-            
+
         var direction = topLeft.pos.getDirectionTo(movePath[0])
 
         //console.log("direction: ", direction)
@@ -293,18 +293,22 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //DEBUGGING
     if (!isQuadPacked(quad.members)) {
         //quad.packed = false;
-        if(quad.completed && topLeft.pos.x>1 && topLeft.pos.x<48 && topLeft.pos.y>1 && topLeft.pos.y<48)
-        {
+        if (quad.completed && topLeft.pos.x > 1 && topLeft.pos.x < 48 && topLeft.pos.y > 1 && topLeft.pos.y < 48 && topLeft != null) {
             topLeft.say("Grouping")
-            
-            console.log(topLeft.pos)
-            topRight.moveTo(new RoomPosition(topLeft.pos.x+1,topLeft.pos.y,topRight.pos.roomName))
-            topRight.say("TR")
-            bottomLeft.moveTo(new RoomPosition(topLeft.pos.x,topLeft.pos.y+1,topRight.pos.roomName))
-            bottomLeft.say("bl")
-            bottomRight.moveTo(new RoomPosition(topLeft.pos.x+1,topLeft.pos.y+1,topRight.pos.roomName))
-            bottomRight.say("br")
-            quad.path=false
+            if (topRight != null) {
+                topRight.moveTo(new RoomPosition(topLeft.pos.x + 1, topLeft.pos.y, topRight.pos.roomName))
+                topRight.say("TR")
+            }
+            if (bottomLeft != null) {
+                bottomLeft.moveTo(new RoomPosition(topLeft.pos.x, topLeft.pos.y + 1, topRight.pos.roomName))
+                bottomLeft.say("bl")
+            }
+            if (bottomRight != null) {
+                bottomRight.moveTo(new RoomPosition(topLeft.pos.x + 1, topLeft.pos.y + 1, topRight.pos.roomName))
+                bottomRight.say("br")
+            }
+
+            quad.path = false
             return;
         }
     }
@@ -339,7 +343,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //END OF DEBUGGING
     ////
 
-    
+
 
     var enemy_creeps = [];
 
@@ -451,6 +455,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
                                 // kiting
                                 creep.fleeFrom({ target_creep }, 3, { maxRooms: 1 })
+                                moveQuad(quad, target_creep.pos, 5, true)
                                 // goOutOfRange(creep, 3);
                             }
                             else if (creep.pos.isNearTo(target_creep.pos) && !allies_present) {
@@ -536,7 +541,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                             moveQuad(quad, target_structure.pos)
                         }
 
-                        if (creep.hits < creep.hitsMax) {
+                        if (creep.hits < creep.hitsMax || true) {
                             creep.heal(creep);
                         }
                     }
@@ -573,7 +578,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             }
             else {
                 //rand <1;6>
-                creep.fleeFrom([this], 8, { maxRooms: 1 })
+                //creep.fleeFrom([this], 8, { maxRooms: 1 })
             }
 
             break;
@@ -582,6 +587,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
     }
     //moving to flag
-    moveQuad(quad, Game.flags["quad"])
+    //moveQuad(quad, Game.flags["quad"])
 
 }
