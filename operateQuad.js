@@ -287,12 +287,28 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         return;
     }
 
-
+    //topLeft.move(RIGHT)
+    //return
 
     //DEBUGGING
     if (!isQuadPacked(quad.members)) {
-        quad.packed = false;
+        //quad.packed = false;
+        if(quad.completed && topLeft.pos.x>1 && topLeft.pos.x<48 && topLeft.pos.y>1 && topLeft.pos.y<48)
+        {
+            topLeft.say("Grouping")
+            
+            console.log(topLeft.pos)
+            topRight.moveTo(new RoomPosition(topLeft.pos.x+1,topLeft.pos.y,topRight.pos.roomName))
+            topRight.say("TR")
+            bottomLeft.moveTo(new RoomPosition(topLeft.pos.x,topLeft.pos.y+1,topRight.pos.roomName))
+            bottomLeft.say("bl")
+            bottomRight.moveTo(new RoomPosition(topLeft.pos.x+1,topLeft.pos.y+1,topRight.pos.roomName))
+            bottomRight.say("br")
+            quad.path=false
+            return;
+        }
     }
+
 
 
     /*
@@ -323,7 +339,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //END OF DEBUGGING
     ////
 
-    moveQuad(quad, Game.flags["quad"])
+    
 
     var enemy_creeps = [];
 
@@ -446,7 +462,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                             }
                             else {
                                 moveQuad(quad, target_creep.pos)
-                                //creep.moveTo(target_creep, { maxRooms: 1, avoidSk: true, avoidCreeps: false, ignoreDestructibleStructures: true });
                             }
                         }
 
@@ -475,7 +490,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                             //focus on creeps
                             if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
 
-                                //creep.moveTo(target_creep, { maxRooms: 1, ignoreDestructibleStructures: true })
                                 moveQuad(quad, target_creep.pos)
 
                                 if (creep.pos.isNearTo(target_structure)) {
@@ -510,18 +524,15 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                             }
                             //}
 
-                            //creep.moveTo(target_structure, { maxRooms: 1, ignoreDestructibleStructures: true, avoidCreeps: true })
                             moveQuad(quad, target_structure.pos)
                         }
                         if (creep.memory.is_melee == true) {
                             if (creep.attack(target_structure) == ERR_NOT_IN_RANGE) {
-                                //creep.moveTo(target_structure, { avoidCreeps: false, ignoreDestructibleStructures: true, avoidCreeps: true });
                                 moveQuad(quad, target_structure.pos)
                                 //console.log("structure to far");
                             }
                         }
                         else {
-                            //creep.moveTo(target_structure, { avoidCreeps: false, ignoreDestructibleStructures: true });
                             moveQuad(quad, target_structure.pos)
                         }
 
@@ -538,7 +549,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                         if (toHeal != null && toHeal.memory.role != 'sponge') {
                             if (creep.heal(toHeal) == ERR_NOT_IN_RANGE) {
                                 if (target_creep == null) {
-                                    //creep.moveTo(toHeal, { maxRooms: 1 })
                                     moveQuad(quad, toHeal.pos)
                                 }
 
@@ -556,7 +566,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                 if (creep.room.name != quad.target_room && Game.rooms[creep.room.name].memory.hostiles.length == 0) {
                     //creep.move(BOTTOM)
                     //return;
-                    //creep.moveTo(new RoomPosition(25, 25, quad.target_room), { reusePath: 21, avoidHostile: true, avoidCreeps: false, avoidSk: true })
                     moveQuad(quad, new RoomPosition(25, 25, quad.target_room))
 
                     //creep.rangedMassAttack()
@@ -569,6 +578,10 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
             break;
         }
+
+
     }
+
+    moveQuad(quad, Game.flags["quad"])
 
 }
