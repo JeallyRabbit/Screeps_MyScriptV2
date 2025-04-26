@@ -581,7 +581,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
     }
-
+    //moving to flag
     moveQuad(quad, Game.flags["quad"])
 
 }
