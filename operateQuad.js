@@ -1,3 +1,7 @@
+const { groupBy } = require("lodash");
+const { distanceTransform } = require("./distanceTransform");
+const { floodFill } = require("./floodFill");
+
 function isQuadPacked(creeps) {
     if (creeps == undefined) { return false }
     if (creeps.length !== 4) return false
@@ -174,6 +178,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
         }
 
         var direction = topLeft.pos.getDirectionTo(movePath[0])
+        console.log("quad is moving from: ", topLeft.pos, " to ", movePath[0])
 
         //console.log("direction: ", direction)
         topLeft.say(direction)
@@ -232,7 +237,18 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     var topRight = Game.getObjectById(quad.topRightId);
     var bottomLeft = Game.getObjectById(quad.bottomLeftId);
     var bottomRight = Game.getObjectById(quad.bottomRightId);
+    //console.log("TOP LEFT POS:", topLeft.pos)
+    if(topLeft==null || topRight==null || bottomLeft==null || bottomRight==null){
+        if(topLeft!=null){topLeft.suicide(); quad.topLeft=undefined}
+        if(topRight!=null){topRight.suicide(); quad.topRight=undefined}
+        if(bottomLeft!=null){bottomLeft.suicide(); quad.bottomLeft=undefined}
+        if(bottomRight!=null){bottomRight.suicide(); quad.bottomRight=undefined}
+        quad.members=[];
+        quad.completed=false;
+        quad.packed=false;
 
+        return
+    }
     if (quad.members == undefined) {
         quad.members = [];
     }
@@ -293,23 +309,55 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //DEBUGGING
     if (!isQuadPacked(quad.members)) {
         //quad.packed = false;
+
         if (quad.completed && topLeft.pos.x > 1 && topLeft.pos.x < 48 && topLeft.pos.y > 1 && topLeft.pos.y < 48 && topLeft != null) {
             topLeft.say("Grouping")
             if (topRight != null) {
-                topRight.moveTo(new RoomPosition(topLeft.pos.x + 1, topLeft.pos.y, topRight.pos.roomName))
+                topRight.moveTo(new RoomPosition(topLeft.pos.x + 1, topLeft.pos.y, topLeft.pos.roomName))
                 topRight.say("TR")
             }
             if (bottomLeft != null) {
-                bottomLeft.moveTo(new RoomPosition(topLeft.pos.x, topLeft.pos.y + 1, topRight.pos.roomName))
+                bottomLeft.moveTo(new RoomPosition(topLeft.pos.x, topLeft.pos.y + 1, topLeft.pos.roomName))
                 bottomLeft.say("bl")
             }
             if (bottomRight != null) {
-                bottomRight.moveTo(new RoomPosition(topLeft.pos.x + 1, topLeft.pos.y + 1, topRight.pos.roomName))
+                bottomRight.moveTo(new RoomPosition(topLeft.pos.x + 1, topLeft.pos.y + 1, topLeft.pos.roomName))
                 bottomRight.say("br")
             }
 
             quad.path = false
             return;
+        }
+        else {
+            console.log("grouping 2")
+            var seeds = [];
+            seeds.push(topLeft.pos);
+            let roomCM = new PathFinder.CostMatrix;
+            //setting roomCM with terrain data
+            const terrain = new Room.Terrain(topLeft.room.name);
+            for (let i = 0; i < 50; i++) {
+                for (let j = 0; j < 50; j++) {
+                    if (terrain.get(i, j) == 1) {
+                        roomCM.set(i, j, 255);
+                    }
+                }
+            }
+
+            var floodCM = topLeft.room.floodFill(seeds);
+            let distanceCM = topLeft.room.diagonalDistanceTransform(roomCM, false);
+            var min_distance = Infinity
+            grouping_pos = new RoomPosition(25, 25, topLeft.room.name)
+            for (let i = 2; i < 48; i++) {
+                for (let j = 2; j < 48; j++) {
+                    if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < min_distance) {
+                        min_distance = floodCM.get(i, j);
+                        grouping_pos.x = i;
+                        grouping_pos.y = j;
+                    }
+                }
+            }
+            console.log("grouping position: ",grouping_pos)
+            topLeft.moveTo(grouping_pos)
         }
     }
 

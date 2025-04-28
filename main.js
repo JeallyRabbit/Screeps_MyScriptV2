@@ -134,12 +134,11 @@ class Swarm {
     }
 }
 
-class Quad{
-    constructor(quadId,target_room, home_room)
-    {
-        this.id=quadId;
-        this.target_room=target_room;
-        this.home_room=home_room
+class Quad {
+    constructor(quadId, target_room, home_room) {
+        this.id = quadId;
+        this.target_room = target_room;
+        this.home_room = home_room
     }
 }
 
@@ -157,7 +156,7 @@ module.exports.loop = function () {
         console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
         console.log("GCL: ", Game.gcl.level, Math.round((Game.gcl.progress / Game.gcl.progressTotal) * 100), "% to next")
 
-        Memory.allies = ["Alphonzo","insain","noe"];
+        Memory.allies = ["Alphonzo", "insain", "noe"];
 
         /*
         //REMOVE ALL CONSTRUCTION SITES
@@ -348,21 +347,19 @@ module.exports.loop = function () {
             }
             if (spawn.memory.lvl_7_time == undefined && spawn.room.controller.level == 7) {
                 spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_1_time;
-                if(spawn.memory.scan_reset_7==undefined)
-                {
-                    spawn.memory.scan_reset_7=true;
-                    spawn.memory.if_success_planning_base=false;
-                    spawn.memory.rooms_to_scan=undefined;
+                if (spawn.memory.scan_reset_7 == undefined) {
+                    spawn.memory.scan_reset_7 = true;
+                    spawn.memory.if_success_planning_base = false;
+                    spawn.memory.rooms_to_scan = undefined;
                 }
             }
             if (spawn.memory.lvl_8_time == undefined && spawn.room.controller.level == 8) {
                 spawn.memory.lvl_8_time = Game.time - spawn.memory.lvl_1_time;
                 spawn.memory.lvl_7_time = Game.time - spawn.memory.lvl_1_time;
-                if(spawn.memory.scan_reset_8==undefined)
-                {
-                    spawn.memory.scan_reset_8=true;
-                    spawn.memory.if_success_planning_base=false;
-                    spawn.memory.rooms_to_scan=undefined;
+                if (spawn.memory.scan_reset_8 == undefined) {
+                    spawn.memory.scan_reset_8 = true;
+                    spawn.memory.if_success_planning_base = false;
+                    spawn.memory.rooms_to_scan = undefined;
                 }
             }
             if (spawn.memory.manual_colonize != undefined) {
@@ -523,6 +520,12 @@ module.exports.loop = function () {
             if (spawn.memory.swarms != undefined && spawn.memory.swarms.length > 0) {
                 for (sw of spawn.memory.swarms) {
                     sw.members = []
+                }
+            }
+
+            if (spawn.memory.quads != undefined && spawn.memory.quads.length > 0) {
+                for (q of spawn.memory.quads) {
+                    q.members = []
                 }
             }
 
@@ -822,7 +825,7 @@ module.exports.loop = function () {
                         //creep.suicide();
 
 
-                        if ( (creep.memory.source_distance!= undefined && creep.ticksToLive > (creep.memory.source_distance*2) + creep.body.length) || creep.spawning) {
+                        if ((creep.memory.source_distance != undefined && creep.ticksToLive > (creep.memory.source_distance * 2) + creep.body.length) || creep.spawning) {
                             if (creep.memory.harvesting_power == undefined) {
                                 const workParts = _.filter(creep.body, { type: WORK }).length;
                                 creep.memory.harvesting_power = workParts * 2;
@@ -1074,7 +1077,7 @@ module.exports.loop = function () {
                             continue;
                         }
                         creep.roleFiller(creep, spawn);
-                        
+
                     }
                     else if (creep.memory.role == 'scanner') {
                         creep.roleScanner(creep, spawn);
@@ -1132,39 +1135,32 @@ module.exports.loop = function () {
                             }
                         }
                     }
-                    else if(creep.memory.role=='quadMember')
-                    {
-                        if(spawn.memory.quads!=undefined)
-                        {
-                            for(q of spawn.memory.quads)
-                            {
-                                if(q.members==undefined)
-                                {
-                                    q.members=[];
+                    else if (creep.memory.role == 'quadMember') {
+                        //creep.suicide()
+                        if (spawn.memory.quads != undefined) {
+                            for (q of spawn.memory.quads) {
+                                if (q.members == undefined) {
+                                    q.members = [];
                                 }
-                                if (!q.members.includes(creep.id)) {
+                                if (!q.members.includes(creep.id) && q.id === creep.memory.quadId) {
                                     q.members.push(creep.id)
-                                }
-                                if(q.id==creep.memory.quadId)
-                                {
-                                    if(q.topLeftId==undefined || q.topLeftId==creep.id)
-                                    {
-                                        q.topLeftId=creep.id
+                                    //}
+                                    //if(q.id==creep.memory.quadId)
+                                    //{
+                                    if (q.topLeftId == undefined || q.topLeftId == creep.id) {
+                                        q.topLeftId = creep.id
                                         break;
                                     }
-                                    else if(q.topRightId==undefined || q.topRightId==creep.id)
-                                    {
-                                        q.topRightId=creep.id
+                                    else if (q.topRightId == undefined || q.topRightId == creep.id) {
+                                        q.topRightId = creep.id
                                         break;
                                     }
-                                    else if(q.bottomLeftId==undefined || q.bottomLeftId==creep.id)
-                                    {
-                                        q.bottomLeftId=creep.id
+                                    else if (q.bottomLeftId == undefined || q.bottomLeftId == creep.id) {
+                                        q.bottomLeftId = creep.id
                                         break;
                                     }
-                                    else if(q.bottomRightId==undefined || q.bottomRightId==creep.id)
-                                    {
-                                        q.bottomRightId=creep.id
+                                    else if (q.bottomRightId == undefined || q.bottomRightId == creep.id) {
+                                        q.bottomRightId = creep.id
                                         break;
                                     }
                                 }
@@ -1203,15 +1199,12 @@ module.exports.loop = function () {
             }
 
             //quads
-            if(spawn.memory.quads==undefined)
-            {
-                spawn.memory.quads=[];
+            if (spawn.memory.quads == undefined) {
+                spawn.memory.quads = [];
             }
-            if(spawn.memory.quads!=undefined && spawn.memory.quads.length>0)
-            {
-                for(let i=0;i<spawn.memory.quads.length;i++)
-                {
-                    var quad=spawn.memory.quads[i]
+            if (spawn.memory.quads != undefined && spawn.memory.quads.length > 0) {
+                for (let i = 0; i < spawn.memory.quads.length; i++) {
+                    var quad = spawn.memory.quads[i]
                     spawn.operateQuad(quad)
                 }
             }
@@ -1476,20 +1469,19 @@ module.exports.loop = function () {
                 }
             }
 
-            spawn.memory.isSpawningQuad=false;
-            for(q of spawn.memory.quads){
+            spawn.memory.isSpawningQuad = false;
+            for (q of spawn.memory.quads) {
                 console.log(q.id)
-                if(!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers)
-                {
-                    spawn.memory.isSpawningQuad=true;
-                    var spawn_result = spawn.spawnCreep( maxSoldier(energyCap) , 'quad' + spawn.room.name + '_' + Game.time, {
+                if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers) {
+                    spawn.memory.isSpawningQuad = true;
+                    var spawn_result = spawn.spawnCreep([MOVE] /*maxSoldier(energyCap) */, 'quad' + spawn.room.name + '_' + Game.time, {
                         memory: {
                             role: 'quadMember',
                             home_room: spawn.room,
                             quadId: q.id
                         }
                     })
-                    console.log("quad spawning result: ",spawn_result)
+                    console.log("quad spawning result: ", spawn_result)
                     if (spawn_result == 0) {
                         spawn.memory.isSpawningQuad = true
                         continue;
@@ -1617,9 +1609,9 @@ module.exports.loop = function () {
                 continue;
             }
 
-            if (spawn.memory.need_soldier != undefined && spawn.memory.state!=undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK" && Game.rooms[spawn.memory.need_soldier]!=undefined && 
-            Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<3)
-            && Game.rooms[spawn.memory.need_soldier]!=undefined /* && Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<5 */) {
+            if (spawn.memory.need_soldier != undefined && spawn.memory.state != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK" && Game.rooms[spawn.memory.need_soldier] != undefined &&
+                Game.rooms[spawn.memory.need_soldier].memory.soldiers.length < 3)
+                && Game.rooms[spawn.memory.need_soldier] != undefined /* && Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<5 */) {
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:
@@ -1630,9 +1622,9 @@ module.exports.loop = function () {
                 }
             }
 
-            if (spawn.memory.need_melee_soldier != undefined 
-                && Game.rooms[spawn.memory.need_melee_soldier]!=undefined && Game.rooms[spawn.memory.need_melee_soldier].memory.soldiers!=undefined &&
-                 Game.rooms[spawn.memory.need_melee_soldier].memory.soldiers.length<5
+            if (spawn.memory.need_melee_soldier != undefined
+                && Game.rooms[spawn.memory.need_melee_soldier] != undefined && Game.rooms[spawn.memory.need_melee_soldier].memory.soldiers != undefined &&
+                Game.rooms[spawn.memory.need_melee_soldier].memory.soldiers.length < 5
             ) {
                 if (spawn.spawnCreep(maxMeleeSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
@@ -1676,8 +1668,8 @@ module.exports.loop = function () {
                 continue;
             }
             //if (spawn.memory.need_farmer != undefined) {
-            if (spawn.memory.need_source_farmer != undefined && (spawn.memory.need_source_farmer != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers>0)) {
-                
+            if (spawn.memory.need_source_farmer != undefined && (spawn.memory.need_source_farmer != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers > 0)) {
+
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'farmer', home_room: spawn.room,
@@ -1779,7 +1771,7 @@ module.exports.loop = function () {
                 }
             }
             if (spawn.memory.need_DistanceCarrier != undefined && pop_distanceCarriers < 30
-                && (spawn.memory.need_DistanceCarrier != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers>0) && spawn.memory.need_DistanceCarrier != spawn.memory.need_melee_soldier) {
+                && (spawn.memory.need_DistanceCarrier != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers > 0) && spawn.memory.need_DistanceCarrier != spawn.memory.need_melee_soldier) {
 
                 if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, false), 'distnaceCarrier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
