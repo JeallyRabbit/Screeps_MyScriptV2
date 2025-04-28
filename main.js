@@ -523,6 +523,14 @@ module.exports.loop = function () {
                 }
             }
 
+            if(spawn.memory.req_quads==undefined)
+            {
+                spawn.memory.req_quads=[];
+            }
+            else{
+                //spawn.memory.req_quads={"W3N7":2}
+            }
+
             if (spawn.memory.quads != undefined && spawn.memory.quads.length > 0) {
                 for (q of spawn.memory.quads) {
                     //q.members = []
@@ -1114,7 +1122,7 @@ module.exports.loop = function () {
                                 //}
                                 if (q.id === creep.memory.quadId && !q.members.includes(creep.id)) {
                                     q.members.push(creep.id)
-                                    
+
                                     if (q.topLeftId == undefined || q.topLeftId == creep.id) {
                                         q.topLeftId = creep.id
                                         break;
@@ -1439,7 +1447,6 @@ module.exports.loop = function () {
 
             spawn.memory.isSpawningQuad = false;
             for (q of spawn.memory.quads) {
-                console.log(q.id)
                 if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers) {
                     spawn.memory.isSpawningQuad = true;
                     var spawn_result = spawn.spawnCreep([MOVE] /*maxSoldier(energyCap) */, 'quad' + spawn.room.name + '_' + Game.time, {
@@ -1449,7 +1456,7 @@ module.exports.loop = function () {
                             quadId: q.id
                         }
                     })
-                    console.log("quad spawning result: ", spawn_result)
+                    //console.log("quad spawning result: ", spawn_result)
                     if (spawn_result == 0) {
                         spawn.memory.isSpawningQuad = true
                         continue;

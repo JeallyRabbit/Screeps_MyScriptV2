@@ -128,13 +128,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
 
     var movePath;
     if (Game.time % reusePath == 0 || quad.path == undefined || (topLeft.pos.x == 49 || topLeft.pos.y == 49 || topLeft.pos.x == 0 || topLeft.pos.y == 0)) {
-        /*
-        const existingCostMatrix = new PathFinder.CostMatrix;
-        const roomName = topLeft.room.name
-        //console.log("topLeft.pos: ", topLeft.pos)
-        const costMatrix = transformCosts(quad, existingCostMatrix, roomName)
-        */
-
+        
 
         const path = PathFinder.search(
             topLeft.pos,
@@ -155,7 +149,6 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
                     const existingCostMatrix = new PathFinder.CostMatrix;
                     const terrain = room.getTerrain()
                     const costMatrix = transformCosts(quad, existingCostMatrix, roomName)
-                    //console.log("QWEQWEQWE")
                     return costMatrix
                 }
             },
@@ -165,7 +158,6 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
     movePath = quad.path.path;
     if (movePath != undefined) {
         topLeft.say(movePath.length)
-        //console.log("path: ",path.path)
 
         for (p of movePath) {
             // if (p.roomName == topLeft.room.name) {
@@ -174,14 +166,11 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
             }
 
             //}
-
-            //console.log(p)
         }
 
         var direction = topLeft.pos.getDirectionTo(movePath[0])
         console.log("quad is moving from: ", topLeft.pos, " to ", movePath[0])
 
-        //console.log("direction: ", direction)
         topLeft.say(direction)
         topLeft.say(movePath.length)
         var move_result = 0;
@@ -238,8 +227,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     var topRight = Game.getObjectById(quad.topRightId);
     var bottomLeft = Game.getObjectById(quad.bottomLeftId);
     var bottomRight = Game.getObjectById(quad.bottomRightId);
-    console.log("TOP LEFT: ", topLeft)
-    //console.log("TOP LEFT POS:", topLeft.pos)
     
     if(quad.completed==true && (topLeft==null || topRight==null || bottomLeft==null || bottomRight==null)){
         console.log("clearing quad data")
@@ -266,7 +253,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         quad.members = [];
     }
 
-    console.log("quad.members")
     //checking if quad is dead
     var dead_counter = 0;
     for (m of quad.members) {
@@ -284,13 +270,9 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     }
 
     if (quad.packed != true) {
-        //console.log("quad.members")
-        //for (q of quad.members) {
             if (quad.members.length >= 4) {
                 quad.completed = true
             }
-            //creep = Game.getObjectById(q)
-            //if (creep == null) { console.log("skipping : ",creep.id);continue }
             if (topLeft != null /* && creep.id == topLeft.id */) {
                 topLeft.say("TL")
                 topLeft.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y, quad.grouping_pos.roomName))
@@ -309,7 +291,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             }
         //}
 
-        console.log("quad packet: ", isQuadPacked(quad.members))
 
         if (isQuadPacked(quad.members) == true) {
             quad.packed = true;
@@ -651,6 +632,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
     }
     //moving to flag
-    //moveQuad(quad, Game.flags["quad"])
+    moveQuad(quad, Game.flags["quad"])
 
 }

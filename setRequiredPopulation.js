@@ -777,6 +777,30 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         }
     }
 
+    //console.log("req_quads:")
+    if(spawn.memory.req_quads!=undefined)
+    {
+        for(var key in spawn.memory.req_quads)
+        {
+            quads_amount=0;
+            for(q of spawn.memory.quads)
+            {
+                //console.log("q.target_room: ",q.id," ",q.target_room," <-> key: ",key)
+                if(q.target_room===key)
+                {
+                    quads_amount++
+                }
+            }
+            //console.log(quads_amount," -- ",key," -- ",spawn.memory.req_quads[key])
+            if(quads_amount<spawn.memory.req_quads[key])
+            {
+                spawn.memory.quads.push(new Quad(spawn.room.name + "_" + Game.time, key, spawn.room,spawn.memory.pos_for_quad))
+                break
+            }
+            //console.log(spawn.memory.req_quads[key])
+        }
+    }
+
     //manuall adding swarm
     if (spawn.room.name == 'W3N7' || true) {
         if (spawn.memory.swarms == undefined) { spawn.memory.swarms = []; }
