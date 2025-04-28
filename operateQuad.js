@@ -145,7 +145,8 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
                 flee: myFlee,
                 plainCost: 1,
                 swampCost: 5,
-                maxRooms: 32,
+                maxRooms: 64,
+                maxOps: 4000,
                 //roomCallback: () => costMatrix,
                 roomCallback: function (roomName) {
                     let room = Game.rooms[roomName];
@@ -237,28 +238,42 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     var topRight = Game.getObjectById(quad.topRightId);
     var bottomLeft = Game.getObjectById(quad.bottomLeftId);
     var bottomRight = Game.getObjectById(quad.bottomRightId);
+    console.log("TOP LEFT: ", topLeft)
     //console.log("TOP LEFT POS:", topLeft.pos)
-    if(topLeft==null || topRight==null || bottomLeft==null || bottomRight==null){
-        if(topLeft!=null){topLeft.suicide(); quad.topLeft=undefined}
-        if(topRight!=null){topRight.suicide(); quad.topRight=undefined}
-        if(bottomLeft!=null){bottomLeft.suicide(); quad.bottomLeft=undefined}
-        if(bottomRight!=null){bottomRight.suicide(); quad.bottomRight=undefined}
+    
+    if(quad.completed==true && (topLeft==null || topRight==null || bottomLeft==null || bottomRight==null)){
+        console.log("clearing quad data")
+        
+        if(topLeft!=null){
+            topLeft.suicide(); quad.topLeftId=undefined
+        }
+        if(topRight!=null){topRight.suicide(); quad.topRightId=undefined}
+        if(bottomLeft!=null){bottomLeft.suicide(); quad.bottomLeftId=undefined}
+        if(bottomRight!=null){bottomRight.suicide(); quad.bottomRightId=undefined}
+        
+        quad.topLeftId=undefined
+        quad.topRightId=undefined
+        quad.bottomLeftId=undefined
+        quad.bottomRightId=undefined
         quad.members=[];
         quad.completed=false;
         quad.packed=false;
 
         return
     }
+        
     if (quad.members == undefined) {
         quad.members = [];
     }
 
+    console.log("quad.members")
     //checking if quad is dead
     var dead_counter = 0;
     for (m of quad.members) {
         if (Game.getObjectById(m) == null) { dead_counter++; }
     }
     if (dead_counter == 4) {
+        console.log("quad is dead")
         quad.members = [];
         quad.packed = false;
         quad.completed = false;
@@ -269,29 +284,30 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     }
 
     if (quad.packed != true) {
-        for (q of quad.members) {
+        //console.log("quad.members")
+        //for (q of quad.members) {
             if (quad.members.length >= 4) {
                 quad.completed = true
             }
-            creep = Game.getObjectById(q)
-            if (creep == null) { continue }
-            if (topLeft != null && creep.id == topLeft.id) {
-                //creep.say("TL")
-                creep.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y, quad.grouping_pos.roomName))
+            //creep = Game.getObjectById(q)
+            //if (creep == null) { console.log("skipping : ",creep.id);continue }
+            if (topLeft != null /* && creep.id == topLeft.id */) {
+                topLeft.say("TL")
+                topLeft.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y, quad.grouping_pos.roomName))
             }
-            if (topRight != null && creep.id == topRight.id) {
-                //creep.say("BL")
-                creep.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
+            if (topRight != null /* && creep.id == topRight.id */) {
+                topRight.say("BL")
+                topRight.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
             }
-            if (bottomLeft != null && creep.id == bottomLeft.id) {
-                //creep.say("TR")
-                creep.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y, quad.grouping_pos.roomName))
+            if (bottomLeft != null /* && creep.id == bottomLeft.id */ ) {
+                bottomLeft.say("TR")
+                bottomLeft.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y, quad.grouping_pos.roomName))
             }
-            if (bottomRight != null && creep.id == bottomRight.id) {
-                //creep.say("BR")
-                creep.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
+            if (bottomRight != null /* && creep.id == bottomRight.id */) {
+                bottomRight.say("BR")
+                bottomRight.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
             }
-        }
+        //}
 
         console.log("quad packet: ", isQuadPacked(quad.members))
 

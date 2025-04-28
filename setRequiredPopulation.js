@@ -765,12 +765,15 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.need_sponge = spawn.memory.manual_sponge
     }
 
-    // manual adding swarms
+    // manual adding quads
     if(spawn.memory.quads==undefined){spawn.memory.quads=[]}
     if(spawn.memory.manual_quad!=undefined)
     {
         if (contains_target_room(spawn.memory.quads, spawn.memory.manual_quad) == false && spawn.memory.pos_for_quad!=undefined) {
             spawn.memory.quads.push(new Quad(spawn.room.name + "_" + Game.time, spawn.memory.manual_quad, spawn.room,spawn.memory.pos_for_quad))
+            //Game.spawns["Spawn1"]
+            
+            //Game.spawns["Spawn1"].memory.quads.push(new Quad(Game.spawns["Spawn1"].room.name + "_" + Game.time, Game.spawns["Spawn1"].memory.manual_quad, Game.spawns["Spawn1"].room,Game.spawns["Spawn1"].memory.pos_for_quad))
         }
     }
 

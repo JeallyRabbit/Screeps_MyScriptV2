@@ -525,40 +525,10 @@ module.exports.loop = function () {
 
             if (spawn.memory.quads != undefined && spawn.memory.quads.length > 0) {
                 for (q of spawn.memory.quads) {
-                    q.members = []
+                    //q.members = []
                 }
             }
 
-            //console.log(Game.getObjectById("66f9a1993188f3003b9310bf").density); // density of mineral - number
-            //console.log(Game.getObjectById("66f9a1993188f3003b9310c2").density); // density of source - undefined
-            //console.log("----------------------------------------------", spawn, "----------------------------------------------");
-
-
-            /*
-
-            //////////////////////////////
-            console.log("reactions ")
-            //
-            var req_resources_amount = 10000
-
-            function getMaxLevelResources() {
-                const maxLevelResources = [];
-            
-                // Iterate over the reactions object of 'X'
-                for (const key in REACTIONS.X) {
-                    if (REACTIONS.X.hasOwnProperty(key)) {
-                        maxLevelResources.push(REACTIONS.X[key]);
-                    }
-                }
-            
-                return maxLevelResources;
-            }
-            
-            // Get and log the array of max level resources
-            const maxLevelResources = getMaxLevelResources();
-            console.log(maxLevelResources);
-            */
-            /////////////////////////////////////
 
             if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0) {
                 spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 25, 13, { color: '#fc03b6' })
@@ -1139,14 +1109,12 @@ module.exports.loop = function () {
                         //creep.suicide()
                         if (spawn.memory.quads != undefined) {
                             for (q of spawn.memory.quads) {
-                                if (q.members == undefined) {
-                                    q.members = [];
-                                }
-                                if (!q.members.includes(creep.id) && q.id === creep.memory.quadId) {
+                                //if (q.members == undefined) {
+                                //    q.members = [];
+                                //}
+                                if (q.id === creep.memory.quadId && !q.members.includes(creep.id)) {
                                     q.members.push(creep.id)
-                                    //}
-                                    //if(q.id==creep.memory.quadId)
-                                    //{
+                                    
                                     if (q.topLeftId == undefined || q.topLeftId == creep.id) {
                                         q.topLeftId = creep.id
                                         break;
