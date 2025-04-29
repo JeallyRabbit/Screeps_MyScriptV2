@@ -1247,5 +1247,5 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
 
 
-
+    module.exports = Quad;
 }
