@@ -118,12 +118,12 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
     var movePath;
     if (Game.time % reusePath == 0 || quad.path == undefined || (topLeft.pos.x == 49 || topLeft.pos.y == 49 || topLeft.pos.x == 0 || topLeft.pos.y == 0)) {
 
-
-        console.log("topLeft.pos: ",topLeft.pos)
-        console.log("target.pos: ",targetPos)
+        console.log("Calculating path for quad")
+        console.log("topLeft.pos: ", topLeft.pos)
+        console.log("target.pos: ", targetPos)
         const path = PathFinder.search(
             topLeft.pos,
-            {pos: targetPos, range: myRange},
+            { pos: targetPos, range: myRange },
             //{ range: 1 },
             {
                 flee: myFlee,
@@ -150,9 +150,8 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
     if (movePath != undefined) {
         //topLeft.say(movePath.length)
         myStroke = 'red'
-        if(myFlee)
-        {
-            myStroke='yellow'
+        if (myFlee) {
+            myStroke = 'yellow'
         }
         for (p of movePath) {
             // if (p.roomName == topLeft.room.name) {
@@ -178,7 +177,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
             move_result += cr.move(direction)
             //cr.say(cr.move(direction))
         }
-        if (move_result > 0) {
+        if (move_result > 0 && move_result%11!=0) {
             quad.path = undefined
         }
         else if (move_result == 0) {
@@ -474,89 +473,97 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
     var currentRoon = topLeft.room.name
-    var hostileCreeps = []
-    for (h of Game.rooms[currentRoon].memory.hostiles) {
-        if (Game.getObjectById(h) != null) {
-            hostileCreeps.push(Game.getObjectById(h))
-        }
-    }
-    var hostilesFound = false
-    if (hostileCreeps.length > 0) { hostilesFound = true }
+    if (currentRoon == quad.target_room && isQuadPacked(quad.members)) {
 
-    var hostileStructures = Game.rooms[currentRoon].memory.hostileStructures;
 
-    var towers = []
-    var extensions = []
-    var spawns = []
+        var hostileCreeps = []
+        for (h of Game.rooms[currentRoon].memory.hostiles) {
+            if (Game.getObjectById(h) != null) {
+                hostileCreeps.push(Game.getObjectById(h))
+            }
+        }
+        var hostilesFound = false
+        if (hostileCreeps.length > 0) { hostilesFound = true }
 
-    for (str in hostileStructures) {
-        aux = Game.getObjectById(str)
-        if (aux == null) { continue; }
-        if (aux.structureType == STRUCTURE_TOWER) {
-            towers.push(aux)
-        }
-        else if (aux.structureType == STRUCTURE_EXTENSION) {
-            extensions.push(aux)
-        }
-        else if (aux.structureType == STRUCTURE_SPAWN) {
-            spawns.push(aux)
-        }
-    }
+        var hostileStructures = Game.rooms[currentRoon].memory.hostileStructures;
 
-    var target = null;
-    if (hostileStructures.length > 0) {
-        target = topLeft.pos.findClosestByPath(towers)
-        if (target == null) {
+        var towers = []
+        var extensions = []
+        var spawns = []
+
+        for (str in hostileStructures) {
+            aux = Game.getObjectById(str)
+            if (aux == null) { continue; }
+            if (aux.structureType == STRUCTURE_TOWER) {
+                towers.push(aux)
+            }
+            else if (aux.structureType == STRUCTURE_EXTENSION) {
+                extensions.push(aux)
+            }
+            else if (aux.structureType == STRUCTURE_SPAWN) {
+                spawns.push(aux)
+            }
+        }
+
+        var target = null;
+        if (hostileStructures.length > 0) {
             target = topLeft.pos.findClosestByPath(towers)
+            if (target == null) {
+                target = topLeft.pos.findClosestByPath(towers)
+            }
+            if (target == null) {
+                target = topLeft.pos.findClosestByPath(towers)
+            }
+
         }
+
+        //Debugging
+        if (target != null) {
+            topLeft.say(target.structureType)
+        }
+        //End of debugging
+
+
         if (target == null) {
-            target = topLeft.pos.findClosestByPath(towers)
+            target = topLeft.pos.findClosestByRange(hostileCreeps);
         }
 
-    }
-
-    //Debugging
-    if (target != null) {
-        topLeft.say(target.structureType)
-    }
-    //End of debugging
-
-
-    if (target == null) {
-        target = topLeft.pos.findClosestByRange(hostileCreeps);
-    }
-
-    if (target != null) {
-        //topLeft.say(target)
-    }
-
-    if (target != null) {
-        topLeft.say(quadRangedAttack(quad, target))
-        if (quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE) {
-            moveQuad(quad,target.pos)
+        if (target != null) {
+            //topLeft.say(target)
         }
-        else if (quadNearTo(quad, target)) {
-            quadRangedMassAttack(quad)
+
+        if (target != null) {
+            topLeft.say(quadRangedAttack(quad, target))
+            if (quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE) {
+                moveQuad(quad, target.pos)
+            }
+            else if (quadNearTo(quad, target)) {
+                quadRangedMassAttack(quad)
+            }
+        }
+        var target_creep = undefined;
+        var allies_present = false;
+
+
+        console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
+        if (quadHits(quad) < quadHitsMax(quad)) {
+            topLeft.say("retreat")
+            quadRetreat(quad, target.pos)
         }
     }
-    var target_creep = undefined;
-    var allies_present = false;
-
-
-    console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
-    if (quadHits(quad) < quadHitsMax(quad)) {
-        topLeft.say("retreat")
-        quadRetreat(quad, target.pos)
+    else{
+        moveQuad(quad,new RoomPosition(25,25,quad.target_room))
     }
+
 
     quadSelfHeal(quad)
     //moving to flag
     //moveQuad(quad, Game.flags["quad"])
 
     //running from flag
-    if (Game.flags["quadFlee"]!=undefined) {
+    if (Game.flags["quadFlee"] != undefined) {
         topLeft.say("flee")
-        quadRetreat(quad,Game.flags["quadFlee"].pos)
+        quadRetreat(quad, Game.flags["quadFlee"].pos)
     }
 
 
