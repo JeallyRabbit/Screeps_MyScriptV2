@@ -1,6 +1,8 @@
-const { groupBy } = require("lodash");
+const { groupBy, range } = require("lodash");
 const { distanceTransform } = require("./distanceTransform");
 const { floodFill } = require("./floodFill");
+
+const ERR_NOT_IN_FULL_RANGE=-20
 
 function isQuadPacked(creeps) {
     if (creeps == undefined) { return false }
@@ -89,16 +91,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
         }
     });
 
-    /*
-    for (var i = 0; i < 50; i++) {
-        {
-            for (var j = 0; j < 50; j++) {
-                Game.rooms[roomName].visual.text(result.get(i, j), i, j, { color: '#ffffff' })
-            }
-        }
 
-    }
-        */
 
 
 
@@ -106,7 +99,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
     return result
 }
 
-function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
+function moveQuad(quad, targetPos, reusePath = 5, myFlee = false, myRange=1) {
 
     //if all can move - fatique==0
     for (q of quad.members) {
@@ -135,7 +128,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
             targetPos,
             //{ range: 1 },
             {
-                range: 1,
+                range: myRange,
                 flee: myFlee,
                 plainCost: 1,
                 swampCost: 5,
@@ -156,13 +149,18 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
         quad.path = path;
     }
     movePath = quad.path.path;
+    console.log("myFlee: ",myFlee," movePath: ",movePath.length)
     if (movePath != undefined) {
         topLeft.say(movePath.length)
-
+        myStroke='red'
+        if(myFlee==true)
+        {
+            myStroke='yellow'
+        }
         for (p of movePath) {
             // if (p.roomName == topLeft.room.name) {
             if (Game.rooms[p.roomName] != undefined) {
-                Game.rooms[p.roomName].visual.circle(p.x, p.y, { fill: 'transparent', radius: 0.55, stroke: 'red' })
+                Game.rooms[p.roomName].visual.circle(p.x, p.y, { fill: 'transparent', radius: 0.55, stroke: myStroke })
             }
 
             //}
@@ -171,8 +169,8 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
         var direction = topLeft.pos.getDirectionTo(movePath[0])
         console.log("quad is moving from: ", topLeft.pos, " to ", movePath[0])
 
-        topLeft.say(direction)
-        topLeft.say(movePath.length)
+        //topLeft.say(direction)
+        //topLeft.say(movePath.length)
         var move_result = 0;
         for (q of quad.members) {
             cr = Game.getObjectById(q)
@@ -192,24 +190,41 @@ function moveQuad(quad, targetPos, reusePath = 5, myFlee = false) {
     }
 
 
+
+}
+
+function quadRetreat(quad,position)
+{
+    moveQuad(quad,position,3,true,20)
 }
 
 function quadRangedAttack(quad, target) {
+    var resultSum=0;
+    var result=0;
+    var notInRange=false
     for (q of quad.members) {
         cr = Game.getObjectById(q)
         if (cr == null) { continue }
 
-        cr.rangedAttack(target)
+        result = cr.rangedAttack(target)
+        resultSum+=result
+        if(result==ERR_NOT_IN_RANGE){notInRange=true;}
+        else if(result==ERR_INVALID_TARGET){return ERR_INVALID_TARGET}
     }
+    if(resultSum==0){return OK}
+    else if(resultSum >0 && resultSum<36 && resultSum%9==0){return ERR_NOT_IN_FULL_RANGE}
+    else if(notInRange==true){return ERR_NOT_IN_RANGE}
 }
 
 function quadRangedMassAttack(quad) {
+    var result=0;
     for (q of quad.members) {
         cr = Game.getObjectById(q)
         if (cr == null) { continue }
 
-        cr.rangedMassAttack();
+        result =cr.rangedMassAttack();
     }
+    if(result==0){return OK;}
 }
 
 function quadEqualHeal(quad) {
@@ -220,6 +235,91 @@ function quadEqualHeal(quad) {
         cr.heal();
     }
 }
+
+function quadHeal(quad,target)
+{
+    var ranged_res=OK;
+    for (q of quad.members) {
+        cr = Game.getObjectById(q)
+        if (cr == null) { continue }
+        var res=cr.heal(target)
+        if(res==ERR_NOT_IN_RANGE)
+        {
+            ranged_res=cr.rangedHeal(target)
+        }
+        if(ranged_res==ERR_NOT_IN_RANGE){}
+    }
+    return ranged_res;
+}
+
+function quadMinHeal(quad)
+{
+    var minHealth=1;
+    var minHealthId=null
+    for(q of quad.members)
+    {
+        cr=Game.getObjectById(q)    
+        if(cr==null){continue}
+        if(cr.hits/cr.hitsMax<minHealth)
+            {
+                minHealth=cr.hits/cr.hitsMax
+                minHealthId=q;
+            }
+    }
+    
+    return minHealthId
+}
+
+function quadSelfHeal(quad)
+{
+    var minHeal=quadMinHeal(quad)
+    if(minHeal==null)
+    {
+        quadEqualHeal(quad)
+    }
+    else{
+        quadHeal(quad,Game.getObjectById(minHeal))
+    }
+}
+
+function quadHits(quad)
+{
+    var hits=0;
+    for (q of quad.members) {
+        cr = Game.getObjectById(q)
+        if (cr == null) { continue }
+        hits+=cr.hits;
+    }
+    return hits
+}
+
+function quadHitsMax(quad)
+{
+    var hitsMax=0;
+    for (q of quad.members) {
+        cr = Game.getObjectById(q)
+        if (cr == null) { continue }
+        hitsMax+=cr.hitsMax;
+    }
+    return hitsMax;
+}
+
+
+
+function quadNearTo(quad,target)
+{
+    for (q of quad.members)
+    {
+        cr=Game.getObjectById(q)
+        if(cr==null){continue}
+        {
+            if(cr.pos.isNearTo(target.pos.x,target.pos.y)==true){return true;}
+        }
+    }
+    return false;
+}
+
+
 
 Spawn.prototype.operateQuad = function operateQuad(quad) {
 
@@ -300,12 +400,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         return;
     }
 
-    //topLeft.move(RIGHT)
-    //return
-
-    //DEBUGGING
     if (!isQuadPacked(quad.members)) {
-        //quad.packed = false;
 
         if (quad.completed && topLeft.pos.x > 1 && topLeft.pos.x < 48 && topLeft.pos.y > 1 && topLeft.pos.y < 48 && topLeft != null) {
             topLeft.say("Grouping")
@@ -389,249 +484,108 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     ////
 
 
-
-    var enemy_creeps = [];
-
-    var target_creep = undefined;
-    //target_creep=creep.room.findClosestByRange(enemy_creeps)
-
-    var allies_present = false;
-    /*
-    if (Game.rooms[quad.target_room] != undefined && Game.rooms[quad.target_room].memory.allies.length > 0) {
-        allies_present = true
-    }
-    */
-
-    var enemy_creeps = [];
-    var enemy_creeps_found = false
-
-
-
-
-    for (id of quad.members) {
-
-        creep = Game.getObjectById(id)
-
-        if (creep != null) {
-
-            if (enemy_creeps_found == false) {
-                enemy_creeps_found = true
-                if (Game.rooms[creep.room.name] != undefined) {
-                    for (en of Game.rooms[creep.room.name].memory.hostiles) {
-                        enemy_creeps.push(Game.getObjectById(en))
-                    }
-
-                }
-            }
-
-            if (_.filter(creep.body, { type: ATTACK }).length > 0) {
-                creep.memory.is_melee = true;
-            }
-            else {
-                creep.memory.is_melee = false;
-            }
-            if (target_creep == undefined) {
-                target_creep = creep.pos.findClosestByPath(enemy_creeps)
-            }
-
-            for (other of quad.members) {
-                if (other != id && Game.getObjectById(other) != null) {
-                    if (creep.hits == creep.hitsMax && Game.getObjectById(other).hits < Game.getObjectById(other).hitsMax) {
-
-
-                        if (creep.heal(Game.getObjectById(other)) == ERR_NOT_IN_RANGE) {
-                            if (creep.rangedHeal(Game.getObjectById(other)) == OK) {
-                                break;
-                            }
-
-                        }
-                        else if (creep.heal(Game.getObjectById(other)) == OK) {
-                            break;
-                        }
-                    }
-                }
-            }
-
-
-
-
-
-
-            if (quad.completed) {
-
-                if (creep.hits < creep.hitsMax) {
-                    creep.heal(creep);
-                }
-                if (creep.room.name == quad.target_room || true) {
-
-
-
-
-                    var target_structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                        filter: function (structure) {
-                            //return structure.my==false && 
-                            //return structure.room.name != spawn.room.name && 
-                            return structure.structureType != STRUCTURE_CONTROLLER
-                                //&& structure.structureType!=STRUCTURE_WALL
-                                && structure.structureType != STRUCTURE_CONTAINER
-                                && structure.structureType != STRUCTURE_ROAD
-                                && structure.my != true
-                        }
-                    });
-                    //creep.say(target_structure.my)
-                    //creep.say(target_creep)
-                    if (target_creep != null) {
-
-                        //creep.say(target_creep.pos.x+' '+target_creep.pos.y)
-                        if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
-
-                            if (!allies_present) {
-                                //creep.say("Ra")
-                                //creep.rangedMassAttack()
-                                quadRangedMassAttack(quad);
-                            }
-                        }
-                        if (creep.memory.is_melee == false) {
-                            if (creep.pos.inRangeTo(target_creep, 3) && (_.filter(target_creep.body, function (part) {
-                                return part.type === RANGED_ATTACK && part.hits > 0;
-                            }).length > 0 || _.filter(target_creep.body, function (part) {
-                                return part.type === ATTACK && part.hits > 0;
-                            }).length > 0)) {
-
-                                // kiting
-                                creep.fleeFrom({ target_creep }, 3, { maxRooms: 1 })
-                                moveQuad(quad, target_creep.pos, 5, true)
-                                // goOutOfRange(creep, 3);
-                            }
-                            else if (creep.pos.isNearTo(target_creep.pos) && !allies_present) {
-                                if (!allies_present) {
-                                    //creep.say("near")
-                                    //creep.rangedMassAttack()
-                                    quadRangedMassAttack(quad)
-                                }
-                            }
-                            else {
-                                moveQuad(quad, target_creep.pos)
-                            }
-                        }
-
-                        if ((_.filter(creep.body, function (part) {
-                            return part.type === RANGED_ATTACK && part.hits > 0;
-                        }).length == 0 && _.filter(creep.body, function (part) {
-                            return part.type === ATTACK && part.hits == 0;
-                        }).length > 0) && Game.rooms[creep.room.name].memory.hostiles != undefined) {
-                            //creep.fleeFrom(Game.rooms[creep.room.name].memory.hostiles, 6, { maxRooms: 1 })
-                        }
-
-                        if (target_structure && creep.pos.isNearTo(target_structure)) {
-                            if (allies_present) {
-                                creep.rangedAttack(target_structure)
-                            }
-                            else {
-                                //creep.rangedMassAttack()
-                                quadRangedMassAttack(quad)
-                            }
-                        }
-
-
-                    }
-                    else if (target_structure) {
-                        if (target_creep) {
-                            //focus on creeps
-                            if (creep.rangedAttack(target_creep) == ERR_NOT_IN_RANGE) {
-
-                                moveQuad(quad, target_creep.pos)
-
-                                if (creep.pos.isNearTo(target_structure)) {
-                                    if (allies_present) {
-                                        //creep.rangedAttack(target_structure)
-                                        quadRangedAttack(quad, target_structure)
-                                    }
-                                    else {
-                                        //creep.rangedMassAttack()
-                                        quadRangedMassAttack()
-                                    }
-                                }
-
-                            }
-
-                        }
-                        else {
-                            //focus on structures
-                            //if (ranged_attack_result == ERR_NOT_IN_RANGE) {
-                            if (allies_present) {
-
-                                //creep.rangedAttack(target_structure)
-                                quadRangedAttack(quad, target_structure)
-                            }
-                            else if (target_structure.structureType != STRUCTURE_WALL) {
-                                // rangedMassAttack() hits only owned structures so it not affects walls
-                                quadRangedMassAttack(quad)
-                            }
-                            else {
-                                //creep.rangedAttack(target_structure)
-                                quadRangedAttack(quad, target_structure)
-                            }
-                            //}
-
-                            moveQuad(quad, target_structure.pos)
-                        }
-                        if (creep.memory.is_melee == true) {
-                            if (creep.attack(target_structure) == ERR_NOT_IN_RANGE) {
-                                moveQuad(quad, target_structure.pos)
-                                //console.log("structure to far");
-                            }
-                        }
-                        else {
-                            moveQuad(quad, target_structure.pos)
-                        }
-
-                        if (creep.hits < creep.hitsMax || true) {
-                            creep.heal(creep);
-                        }
-                    }
-                    if (Game.rooms[quad.target_room] != undefined && Game.rooms[quad.target_room].memory.damagedCreeps.length > 0) {
-                        var damaged = [];
-                        for (cr of Game.rooms[quad.target_room].memory.damagedCreeps) {
-                            damaged.push(Game.getObjectById(cr))
-                        }
-                        var toHeal = creep.pos.findClosestByRange(damaged)
-                        if (toHeal != null && toHeal.memory.role != 'sponge') {
-                            if (creep.heal(toHeal) == ERR_NOT_IN_RANGE) {
-                                if (target_creep == null) {
-                                    moveQuad(quad, toHeal.pos)
-                                }
-
-                                if (!target_creep) {
-                                    creep.rangedHeal(toHeal)
-                                }
-
-                            }
-                        }
-                    }
-                    //else {
-
-                }
-                //else 
-                if (creep.room.name != quad.target_room && Game.rooms[creep.room.name].memory.hostiles.length == 0) {
-                    //creep.move(BOTTOM)
-                    //return;
-                    moveQuad(quad, new RoomPosition(25, 25, quad.target_room))
-
-                    //creep.rangedMassAttack()
-                }
-            }
-            else {
-                //rand <1;6>
-                //creep.fleeFrom([this], 8, { maxRooms: 1 })
-            }
-
-            break;
+    var currentRoon=topLeft.room.name
+    var hostileCreeps = []
+    for (h of Game.rooms[currentRoon].memory.hostiles)
+    {
+        if(Game.getObjectById(h)!=null)
+        {
+            hostileCreeps.push(Game.getObjectById(h))
         }
-
-
     }
+    var hostilesFound = false
+    if(hostileCreeps.length>0){hostilesFound=true}
+
+    var hostileStructures=Game.rooms[currentRoon].memory.hostileStructures;
+
+    var towers=[]
+    var extensions=[]
+    var spawns=[]
+
+    for(str in hostileStructures)
+    {
+        aux=Game.getObjectById(str)
+        if(aux==null){continue;}
+        if(aux.structureType==STRUCTURE_TOWER)
+        {
+            towers.push(aux)
+        }
+        else if(aux.structureType==STRUCTURE_EXTENSION)
+        {
+            extensions.push(aux)
+        }
+        else if(aux.structureType==STRUCTURE_SPAWN)
+        {
+            spawns.push(aux)
+        }
+    }
+
+    var target=null;
+    if(hostileStructures.length>0)
+    {
+        target=topLeft.pos.findClosestByPath(towers)
+        if(target==null)
+        {
+            target=topLeft.pos.findClosestByPath(towers)
+        }
+        if(target==null)
+        {
+            target=topLeft.pos.findClosestByPath(towers)
+        }
+        
+    }
+
+    //Debugging
+    if(target!=null)
+    {
+        topLeft.say(target.structureType)
+    }
+    //End of debugging
+    
+
+    if(target==null)
+    {
+        target=topLeft.pos.findClosestByRange(hostileCreeps);
+    }
+
+    if(target!=null)
+    {
+        //topLeft.say(target)
+    }
+
+    if(target!=null)
+    {
+        topLeft.say(quadRangedAttack(quad,target))
+        if(quadRangedAttack(quad,target)==ERR_NOT_IN_RANGE)
+        {
+            //moveQuad(quad,target)
+        }
+        else if(quadNearTo(quad,target))
+        {
+            quadRangedMassAttack(quad)
+        }
+    }
+    var target_creep = undefined;
+    var allies_present = false;
+
+
+    console.log(quad.id," hits: ",quadHits(quad)," / ",quadHitsMax(quad))
+    if(quadHits(quad)<quadHitsMax(quad) || true)
+    {
+        topLeft.say("retreat")
+        quadRetreat(quad,target.pos)
+    }
+
+    quadSelfHeal(quad)
     //moving to flag
-    moveQuad(quad, Game.flags["quad"])
+    //moveQuad(quad, Game.flags["quad"])
+
+    //running from flag
+    if(Game.flags["quadFlee"].pos)
+    {
+        topLeft.say("flee")
+        //quadRetreat(quad,Game.flags["quadFlee"].pos)
+    }
+    
 
 }

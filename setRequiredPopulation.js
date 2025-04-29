@@ -181,6 +181,24 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 }
             }
 
+            r.memory.hostileStructures=[];
+            var str=r.find(FIND_HOSTILE_STRUCTURES,{
+                filter:
+                    function (s) {
+                        return !Memory.allies.includes(s.owner.username) //&& enemy.owner.username!='Alphonzo'
+                    }
+            })
+
+            if (str.length > 0) {
+                for (s of str) {
+                    r.memory.hostileStructures.push(s.id)
+                }
+            }
+
+
+
+
+
             r.memory.soldiers=[]
         }
     }
