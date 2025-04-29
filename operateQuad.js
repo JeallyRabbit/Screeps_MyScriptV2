@@ -473,7 +473,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
     var currentRoon = topLeft.room.name
-    if (currentRoon == quad.target_room && isQuadPacked(quad.members)) {
+    if (currentRoon == quad.target_room) {
 
 
         var hostileCreeps = []
