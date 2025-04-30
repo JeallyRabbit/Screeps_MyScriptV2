@@ -1222,7 +1222,6 @@ module.exports.loop = function () {
             //console.log("farming_rooms[0].harvesting power ------------------------------ ",spawn.memory.farming_rooms[0].harvesting_power)
 
 
-            ///////it is also in setRequiredPOpulation(spawn) but reseting rooms farming_powers,carry_powers etc is before reseting those values
             if (spawn.memory.sources_links_id != undefined && spawn.memory.sources_links_id.length > 0) {
                 for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
                     if (spawn.memory.farming_rooms[i].name == spawn.room.name) {
