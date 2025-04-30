@@ -1620,7 +1620,7 @@ module.exports.loop = function () {
                 continue;
             }
 
-            if (pop_scanners < spawn.memory.req_scanners /* && Memory.main_spawns.length + Memory.rooms_to_colonize.length < 4*/) {
+            if (pop_scanners < spawn.memory.req_scanners && farming_needs_satisfied /* && Memory.main_spawns.length + Memory.rooms_to_colonize.length < 4*/) {
                 if (spawn.spawnCreep([MOVE], 'Scanner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scanner', home_room: spawn.room } }) == 0) {
                 }
                 continue;
