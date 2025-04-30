@@ -335,7 +335,7 @@ function calculateTowersDamage(quad, towers) {
                 damageMatrix.set(i, j, tileCost)
 
                 //debugging - coloring room
-                Game.rooms[quad.target_room].visual.rect(i-0.5, j-0.5, 1, 1, { fill: 'red', opacity: tileCost })
+                Game.rooms[quad.target_room].visual.rect(i - 0.5, j - 0.5, 1, 1, { fill: 'red', opacity: tileCost })
                 //console.log("tileCost at (", i, ":", j, ") => ", tileCost)
                 //Game.rooms[quad.target_room].visual.text(totalDamage, i, j)
             }
@@ -350,19 +350,60 @@ function caluclateRampartsCosts(quad, structures) {
     if (quad.rampartsCM == undefined || true) {
         const rampartsMatrix = new PathFinder.CostMatrix
         for (s of structures) {
-            str=Game.getObjectById(s)
-            if(str==null){continue}
+            str = Game.getObjectById(s)
+            if (str == null) { continue }
             if (str.structureType == STRUCTURE_RAMPART) {
-                console.log("rampart at: ",str.pos.x," ",str.pos.y)
-                var tileCost = (str.hits / str.hitsMax)
+                var tileCost = 1 + (str.hits / str.hitsMax)
+
                 rampartsMatrix.set(str.pos.x, str.pos.y, tileCost)
-                Game.rooms[quad.target_room].visual.rect(str.pos.x-0.5, str.pos.y-0.5, 1, 1, { fill: 'blue', opacity: tileCost })
+                Game.rooms[quad.target_room].visual.rect(str.pos.x - 0.5, str.pos.y - 0.5, 1, 1, { fill: 'blue', opacity: tileCost })
                 //Game.rooms[quad.target_room].visual.text(tileCost,i,j)
             }
         }
     }
 }
 
+function findTargetStructure(quad, structures, room) {
+
+    if (structures == undefined || structures.length < 1) {
+        return -1;
+    }
+    if (room == undefined) { room = quad.target_room }
+    var targetStructure = null
+    var minHits = Infinity
+    //var auxStructures=[];
+
+    for (str of structures) {
+        var isCovered = false;
+        var s = Game.getObjectById(str)
+        if (s == null) { continue }
+        var type = s.structureType
+        if (type != STRUCTURE_RAMPART && type != STRUCTURE_CONTROLLER) {
+            structuresAt = Game.rooms[room].lookForAt(LOOK_STRUCTURES, s.pos)
+            var rampHits = 0
+            for (at of structuresAt) {
+                if (at.structureType == STRUCTURE_RAMPART) {
+                    rampHits = at.hits
+
+                    //auxStructures.push({id:myHits})
+                }
+            }
+            id = s.id
+            myHits = rampHits + s.hits
+            if (myHits < minHits) {
+                minHits = myHits
+                targetStructure = s
+            }
+        }
+
+    }
+    if (targetStructure == null) {
+        //console.log("no target Structure"); 
+        return -1
+    }
+    //console.log("targetStructure: ", targetStructure.structureType, " at: ", targetStructure.pos)
+    return targetStructure
+}
 
 
 Spawn.prototype.operateQuad = function operateQuad(quad) {
@@ -542,7 +583,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                 if (hos.pos.inRangeTo(topLeft.pos.x, topLeft.pos.y, 3) || hos.pos.inRangeTo(topLeft.pos.x + 1, topLeft.pos.y, 3)
                     || hos.pos.inRangeTo(topLeft.pos.x, topLeft.pos.y + 1, 3) || hos.pos.inRangeTo(topLeft.pos.x + 1, topLeft.pos.y + 1, 3)) {
                     hostileNotProtectedCreeps.push(hos)
-                    console.log("hos in range: ", h)
+                    //console.log("hos in range: ", h)
                 }
             }
 
@@ -551,7 +592,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         if (hostileCreeps.length > 0) { hostilesFound = true }
 
         var hostileStructures = Game.rooms[currentRoom].memory.hostileStructures;
-        console.log("hostileStructures.length: ", hostileStructures.length)
+        //console.log("hostileStructures.length: ", hostileStructures.length)
         var towers = []
         var extensions = []
         var spawns = []
@@ -559,7 +600,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         for (str of hostileStructures) {
             aux = Game.getObjectById(str)
             if (aux == null) {
-                console.log("skipping: ", str);
+                //console.log("skipping: ", str);
                 continue;
             }
             if (aux.structureType == STRUCTURE_TOWER) {
@@ -577,34 +618,28 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
         calculateTowersDamage(quad, towers)
         caluclateRampartsCosts(quad, hostileStructures)
-        if (hostileStructures.length > 0) {
-            target = topLeft.pos.findClosestByPath(towers)
-            if (target == null) {
-                target = topLeft.pos.findClosestByPath(towers)
+
+
+
+        if (quad.targetStructureId == undefined || Game.time % 7 == 0 || Game.getObjectById(quad.targetStructureId) == null) {
+            var aux = findTargetStructure(quad, hostileStructures, currentRoom)
+            if (aux != -1) {
+                quad.targetStructureId = aux.id
             }
-            if (target == null) {
-                target = topLeft.pos.findClosestByPath(towers)
+            else {
+                quad.targetStructureId = undefined
             }
-
         }
 
-        //Debugging
-        if (target != null) {
-            topLeft.say(target.structureType)
-        }
-        //End of debugging
-
-
-        if (target == null) {
-            target = topLeft.pos.findClosestByRange(hostileCreeps);
+        var target = undefined
+        if (quad.targetStructureId != undefined) {
+            target = Game.getObjectById(quad.targetStructureId)
         }
 
         if (target != null) {
-            //topLeft.say(target)
-        }
 
-        if (target != null) {
             topLeft.say(quadRangedAttack(quad, target))
+            console.log("quad is attacking: ",target)
             if (quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE) {
                 moveQuad(quad, target.pos)
             }
@@ -612,7 +647,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                 quadRangedMassAttack(quad)
             }
         }
-        var target_creep = undefined;
         var allies_present = false;
 
 
