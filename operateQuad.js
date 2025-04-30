@@ -266,12 +266,24 @@ function quadMinHeal(quad) {
 
 function quadSelfHeal(quad) {
     var minHeal = quadMinHeal(quad)
+    console.log("quad equal healing")
     if (minHeal == null) {
         quadEqualHeal(quad)
     }
     else {
+        console.log("quad is healing ",minHeal)
         quadHeal(quad, Game.getObjectById(minHeal))
     }
+}
+
+function quadHealPower(quad){
+    var healPower = 0;
+    for (q of quad.members) {
+        cr = Game.getObjectById(q)
+        if (cr == null) { continue }
+        healPower += _.filter(cr.body, { type: HEAL }).length*HEAL_POWER;
+    }
+    return healPower
 }
 
 function quadHits(quad) {
@@ -297,13 +309,15 @@ function quadHitsMax(quad) {
 
 
 function quadNearTo(quad, target) {
+    var nearCounter=0;
     for (q of quad.members) {
         cr = Game.getObjectById(q)
         if (cr == null) { continue }
         {
-            if (cr.pos.isNearTo(target.pos.x, target.pos.y) == true) { return true; }
+            if (cr.pos.isNearTo(target.pos.x, target.pos.y) == true) {nearCounter++; }
         }
     }
+    if(nearCounter>=2){return true}
     return false;
 }
 
@@ -335,7 +349,7 @@ function calculateTowersDamage(quad, towers) {
                 damageMatrix.set(i, j, tileCost)
 
                 //debugging - coloring room
-                Game.rooms[quad.target_room].visual.rect(i - 0.5, j - 0.5, 1, 1, { fill: 'red', opacity: tileCost })
+                //Game.rooms[quad.target_room].visual.rect(i - 0.5, j - 0.5, 1, 1, { fill: 'red', opacity: tileCost })
                 //console.log("tileCost at (", i, ":", j, ") => ", tileCost)
                 //Game.rooms[quad.target_room].visual.text(totalDamage, i, j)
             }
@@ -356,7 +370,7 @@ function caluclateRampartsCosts(quad, structures) {
                 var tileCost = 1 + (str.hits / str.hitsMax)
 
                 rampartsMatrix.set(str.pos.x, str.pos.y, tileCost)
-                Game.rooms[quad.target_room].visual.rect(str.pos.x - 0.5, str.pos.y - 0.5, 1, 1, { fill: 'blue', opacity: tileCost })
+                //Game.rooms[quad.target_room].visual.rect(str.pos.x - 0.5, str.pos.y - 0.5, 1, 1, { fill: 'blue', opacity: tileCost })
                 //Game.rooms[quad.target_room].visual.text(tileCost,i,j)
             }
         }
@@ -368,6 +382,7 @@ function findTargetStructure(quad, structures, room) {
     if (structures == undefined || structures.length < 1) {
         return -1;
     }
+    console.log("quad: ",quad.id," is searching for targetStructure")
     if (room == undefined) { room = quad.target_room }
     var targetStructure = null
     var minHits = Infinity
@@ -453,6 +468,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         quad.bottomLeftId = undefined;
         quad.bottomRightId = undefined;
     }
+
+    quadSelfHeal(quad)
 
     if (quad.packed != true) {
         if (quad.members.length >= 4) {
@@ -639,8 +656,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         if (target != null) {
 
             topLeft.say(quadRangedAttack(quad, target))
-            console.log("quad is attacking: ",target)
-            if (quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE) {
+            console.log("quad is attacking: ",target," result ",quadRangedAttack(quad, target))
+            if ((quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE || quadNearTo(quad, target)==false ) && quadHits(quad)==quadHitsMax(quad)) {
                 moveQuad(quad, target.pos)
             }
             else if (quadNearTo(quad, target)) {
@@ -651,7 +668,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
         console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
-        if (quadHits(quad) < quadHitsMax(quad)) {
+        if (quadHits(quad) < quadHitsMax(quad) && quadHits(quad)<quadHealPower(quad)) {
             topLeft.say("retreat")
             quadRetreat(quad, target.pos)
         }
@@ -661,10 +678,10 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     }
 
     if (Game.rooms[currentRoom].memory.allies_present == undefined || Game.rooms[currentRoom].memory.allies_present.length < 0) {
-        quadRangedMassAttack(quad)
+        //quadRangedMassAttack(quad)
     }
 
-    quadSelfHeal(quad)
+    
     //moving to flag
     //moveQuad(quad, Game.flags["quad"])
 
