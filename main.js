@@ -1458,7 +1458,7 @@ module.exports.loop = function () {
                     })
                     //console.log("quad spawning result: ", spawn_result)
                     if (spawn_result == 0) {
-                        if(q.minEnergyOnCreep==-1){q.minEnergyOnCreep}
+                        if(q.minEnergyOnCreep == -1){q.minEnergyOnCreep=energyCap}
                         spawn.memory.isSpawningQuad = true
                         continue;
                     }

@@ -99,7 +99,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
         if(quad.rampartsCM!=undefined)
         {
             rampartsCM=new PathFinder.CostMatrix
-            rampartsCM=PathFinder.CostMatrix.deserialise(quad.rampartsCM)
+            rampartsCM=PathFinder.CostMatrix.deserialize(quad.rampartsCM)
         }
         var towersCM=undefined
         if(quad.towerDamageCM!=undefined)
@@ -115,10 +115,14 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
                     var currentCost=result.get(i,j)
                     var towerCost=towersCM.get(i,j)
                     var rampartsCost=rampartsCM.get(i,j)
-                    console.log("current cost: ",currentCost)
-                    console.log("towerCost: ",towerCost)
-                    console.log("rampartsCost: ",rampartsCost)
-                    result.set(i,j,currentCost*towerCost*ramprampartsCostartsCM)
+                    if(towerCost!=0 || rampartsCost!=0)
+                    {
+                        console.log("current cost: ",currentCost)
+                        console.log("towerCost: ",towerCost)
+                        console.log("rampartsCost: ",rampartsCost)
+                    }
+                    
+                    result.set(i,j,currentCost*towerCost*rampartsCost)
                 }
             }        
     }
@@ -592,9 +596,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         }
     }
 
-    //topLeft.move(BOTTOM)
-    //topRight.move(BOTTOM)
-    //return
 
 
 

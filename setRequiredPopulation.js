@@ -804,7 +804,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             quads_amount=0;
             for(q of spawn.memory.quads)
             {
-                if(q.minEnergyOnCreep==undefined){q.minEnergyOnCreep=-1}
                 //console.log("q.target_room: ",q.id," ",q.target_room," <-> key: ",key)
                 if(q.target_room===key)
                 {
