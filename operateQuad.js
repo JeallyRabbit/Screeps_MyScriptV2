@@ -92,6 +92,39 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
         }
     });
 
+    //adding towers and ramparts costs
+    if(roomName==quad.target_room)
+    {
+        var rampartsCM=undefined
+        if(quad.rampartsCM!=undefined)
+        {
+            rampartsCM=new PathFinder.CostMatrix
+            rampartsCM=PathFinder.CostMatrix.deserialise(quad.rampartsCM)
+        }
+        var towersCM=undefined
+        if(quad.towerDamageCM!=undefined)
+        {
+            towersCM=new PathFinder.CostMatrix
+            towersCM=PathFinder.CostMatrix.deserialize(quad.towerDamageCM)
+        }
+
+        for(var i=0;i<50;i++)
+            {
+                for (var j=0;j<50;j++)
+                {
+                    var currentCost=result.get(i,j)
+                    var towerCost=towersCM.get(i,j)
+                    var rampartsCost=rampartsCM.get(i,j)
+                    console.log("current cost: ",currentCost)
+                    console.log("towerCost: ",towerCost)
+                    console.log("rampartsCost: ",rampartsCost)
+                    result.set(i,j,currentCost*towerCost*ramprampartsCostartsCM)
+                }
+            }        
+    }
+
+
+
     return result
 }
 
@@ -135,7 +168,6 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
                 roomCallback: function (roomName) {
                     let room = Game.rooms[roomName];
                     if (!room) { return; }
-
                     const existingCostMatrix = new PathFinder.CostMatrix;
                     const terrain = room.getTerrain()
                     const costMatrix = transformCosts(quad, existingCostMatrix, roomName)
@@ -374,6 +406,8 @@ function caluclateRampartsCosts(quad, structures) {
                 //Game.rooms[quad.target_room].visual.text(tileCost,i,j)
             }
         }
+        quad.rampartsCM=rampartsMatrix.serialize();
+
     }
 }
 
@@ -467,6 +501,9 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         quad.topRightId = undefined;
         quad.bottomLeftId = undefined;
         quad.bottomRightId = undefined;
+        quad.minEnergyOnCreep=-1;
+        quad.towerDamageCM=undefined;
+        quad.rampartsCM=undefined;
     }
 
     quadSelfHeal(quad)
@@ -554,6 +591,10 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             topLeft.moveTo(grouping_pos)
         }
     }
+
+    //topLeft.move(BOTTOM)
+    //topRight.move(BOTTOM)
+    //return
 
 
 

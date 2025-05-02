@@ -1449,7 +1449,7 @@ module.exports.loop = function () {
             for (q of spawn.memory.quads) {
                 if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers) {
                     spawn.memory.isSpawningQuad = true;
-                    var spawn_result = spawn.spawnCreep(maxSoldier(energyCap) , 'quad' + spawn.room.name + '_' + Game.time, {
+                    var spawn_result = spawn.spawnCreep(maxSoldier(Math.max(energyCap,q.minEnergyOnCreep)) , 'quad' + spawn.room.name + '_' + Game.time, {
                         memory: {
                             role: 'quadMember',
                             home_room: spawn.room,
@@ -1458,6 +1458,7 @@ module.exports.loop = function () {
                     })
                     //console.log("quad spawning result: ", spawn_result)
                     if (spawn_result == 0) {
+                        if(q.minEnergyOnCreep==-1){q.minEnergyOnCreep}
                         spawn.memory.isSpawningQuad = true
                         continue;
                     }
