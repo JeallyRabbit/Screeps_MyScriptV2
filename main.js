@@ -1121,7 +1121,7 @@ module.exports.loop = function () {
                                 //if (q.members == undefined) {
                                 //    q.members = [];
                                 //}
-                                if (q.id === creep.memory.quadId && !q.members.includes(creep.id)) {
+                                if (q.members!=undefined && q.id === creep.memory.quadId && !q.members.includes(creep.id)) {
                                     q.members.push(creep.id)
 
                                     if (q.topLeftId == undefined || q.topLeftId == creep.id) {
@@ -1447,7 +1447,9 @@ module.exports.loop = function () {
 
             spawn.memory.isSpawningQuad = false;
             for (q of spawn.memory.quads) {
-                if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers) {
+                if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
+                    && (q.members!=undefined && q.members.length<4)
+                ) {
                     spawn.memory.isSpawningQuad = true;
                     var spawn_result = spawn.spawnCreep(maxSoldier(Math.max(energyCap,q.minEnergyOnCreep)) , 'quad' + spawn.room.name + '_' + Game.time, {
                         memory: {

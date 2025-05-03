@@ -11,7 +11,6 @@ const CLEAR_CREEP = 'clear_creep'
 
 Creep.prototype.roleDoctor = function roleDoctor(creep) {
 
-
     //room.memory.input_lab_1_pos
     //define input lab1
     //defineInputLabs();
@@ -436,7 +435,7 @@ function defineLabs(creep) {
         creep.room.memory.input1_lab_id = undefined;
     }
 
-    if (creep.room.memory.input1_lab_id == undefined) {
+    if (creep.room.memory.input1_lab_id == undefined && creep.room.memory.input_lab_1_pos!=undefined) {
         var lab = creep.room.find(FIND_MY_STRUCTURES, {
             filter: function (str) {
                 return str.structureType == STRUCTURE_LAB && str.pos.x == creep.room.memory.input_lab_1_pos.x && str.pos.y == creep.room.memory.input_lab_1_pos.y
@@ -453,7 +452,7 @@ function defineLabs(creep) {
         creep.room.memory.input2_lab_id = undefined;
     }
 
-    if (creep.room.memory.input2_lab_id == undefined) {
+    if (creep.room.memory.input2_lab_id == undefined && creep.room.memory.input_lab_2_pos!=undefined) {
         var lab = creep.room.find(FIND_MY_STRUCTURES, {
             filter: function (str) {
                 return str.structureType == STRUCTURE_LAB && str.pos.x == creep.room.memory.input_lab_2_pos.x && str.pos.y == creep.room.memory.input_lab_2_pos.y
@@ -479,7 +478,7 @@ function defineLabs(creep) {
                 return str.structureType == STRUCTURE_LAB;
             }
         });
-        if (lab.length > 0) {
+        if (lab.length > 0 && creep.room.memory.input_lab_1_pos!=undefined) {
             creep.room.memory.output_labs_id = [];
             var input_1_pos = new RoomPosition(creep.room.memory.input_lab_1_pos.x, creep.room.memory.input_lab_1_pos.y, creep.room.memory.input_lab_1_pos.roomName)
             var input_2_pos = new RoomPosition(creep.room.memory.input_lab_2_pos.x, creep.room.memory.input_lab_2_pos.y, creep.room.memory.input_lab_2_pos.roomName)
