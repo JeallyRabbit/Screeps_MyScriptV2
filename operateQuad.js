@@ -2,6 +2,7 @@ const { groupBy, range } = require("lodash");
 const { distanceTransform } = require("./distanceTransform");
 const { floodFill } = require("./floodFill");
 
+
 const ERR_NOT_IN_FULL_RANGE = -20
 const DAMAGE_MATRIX_FACTOR = 10
 
@@ -149,10 +150,17 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
     for (var i = 0; i < 50; i++) {
         for (var j = 0; j < 50; j++) {
             var tileCost = result.get(i, j)
-            if (tileCost > 1 && i==19) {
+            if (tileCost > 1 && i == 19) {
                 //console.log(i, " ", j, " tileCost: ", tileCost)
             }
-            Game.rooms[quad.target_room].visual.rect(i - 0.5, j - 0.5, 1, 1, { fill: 'red', opacity: (tileCost / 255) * 0.7 })
+            if (Game.rooms[quad.target_room] != undefined) {
+                if (i > 10 && i < 30 && j > 1 && j < 20) {
+                    //Game.rooms[quad.target_room].visual.rect(i - 0.5, j - 0.5, 1, 1, { fill: 'red', opacity: (tileCost / 255) * 0.7 })
+                    Game.rooms[quad.target_room].visual.text(tileCost, i, j, { font: 0.5 })
+                }
+                //
+            }
+
         }
     }
 
@@ -454,65 +462,131 @@ function calculateHealPower(quad) {
     for (m of quad.members) {
         member = Game.getObjectById(m)
         if (member == null) { continue }
-        if (_.filter(member.body, { type: HEAL }).length*HEAL_POWER < minHealPower) { minHealPower = _.filter(member.body, { type: HEAL }).length * HEAL_POWER }
-        if (member.hitsMax < minHp) { minHp == member.hitsMax }
+        if (_.filter(member.body, { type: HEAL }).length * HEAL_POWER < minHealPower) { minHealPower = _.filter(member.body, { type: HEAL }).length * HEAL_POWER }
+        if (member.hitsMax < minHp) { minHp = member.hitsMax }
         totalHealPower += _.filter(member.body, { type: HEAL }).length * HEAL_POWER
 
-        console.log(m,".healPower: ",(_.filter(member.body, { type: HEAL }).length*HEAL_POWER )< minHealPower)
     }
     quad.minHealPower = minHealPower;
     quad.totalHealPower = totalHealPower;
     quad.minHp = minHp;
 }
 
+function getRangedAttackPower(body) {
+    var attackSum = 0;
+    for (b of body) {
+        if (b.type == RANGED_ATTACK) {
+            if (b.boost == undefined) {
+                attackSum += RANGED_ATTACK_POWER;
+                continue;
+            }
+            else if (b.boost == RESOURCE_KEANIUM_OXIDE) {
+                attackSum += RANGED_ATTACK_POWER * 2;
+            }
+            else if (b.boost == RESOURCE_KEANIUM_ALKALIDE) {
+                attackSum += RANGED_ATTACK_POWER * 3;
+            }
+            else if (b.boost == RESOURCE_CATALYZED_KEANIUM_ALKALIDE) {
+                attackSum += RANGED_ATTACK_POWER * 4;
+            }
+        }
+    }
+    return attackSum
+}
+function getAttackPower(body) {
+    var attackSum = 0;
+    for (b of body) {
+        if (b.type == ATTACK) {
+            if (b.boost == undefined) {
+                attackSum += ATTACK_POWER;
+                continue;
+            }
+            else if (b.boost == RESOURCE_UTRIUM_HYDRIDE) {
+                attackSum += ATTACK_POWER * 2;
+            }
+            else if (b.boost == RESOURCE_UTRIUM_ACID) {
+                attackSum += ATTACK_POWER * 3;
+            }
+            else if (b.boost == RESOURCE_CATALYZED_UTRIUM_ACID) {
+                attackSum += ATTACK_POWER * 4;
+            }
+        }
+    }
+    return attackSum
+}
+
 function calculateHostileCreepsCost(quad, hostiles) {
     if (hostiles.length < 1) { return -1; }
     if (quad.hostilesCM == undefined || true) {
         const hostilesMatrix = new PathFinder.CostMatrix
-        console.log("hostiles.length: ",hostiles.length)
+        console.log("hostiles.length: ", hostiles.length)
         for (h of hostiles) {
-            var meleeAttack = _.filter(h.body, { type: ATTACK }).length * ATTACK_POWER
-            var rangedAttack = _.filter(h.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER
-            var maxAttack = 50 * ATTACK_POWER
-            var maxRangedAttack = 50 * RANGED_ATTACK_POWER
+            //TODO add counting boosted body parts
+            var meleeAttack = getAttackPower(h.body)
 
-            if (meleeAttack >= quad.minHits + quad.minHealPower)//quad member will het one shoted by enemy creep 
+            var rangedAttack = getRangedAttackPower(h.body)
+            var maxAttack = 200 * ATTACK_POWER
+            var maxRangedAttack = 200 * RANGED_ATTACK_POWER
+
+            if (meleeAttack >= quad.minHp + quad.minHealPower)//quad member will het one shoted by enemy creep 
             {
                 console.log("Melle will oneShot me")
+                for (var i = h.pos.x - 1; i <= h.pos.x + 1; i++) {
+                    for (var j = h.pos.y - 1; h <= h.pos.y + 1; j++) {
+                        hostilesMatrix.set(i, j, 255)
+                    }
+                }
+
+                /*
                 for (var i = -1; i <= 1; i++) {
                     for (var j = -1; j <= 1; j++) {
                         hostilesMatrix.set(h.pos.x + i, h.pos.y + j, 255)
                     }
                 }
+                    */
             }
-            else if(meleeAttack>0){
-                
+            else if (meleeAttack > 0) {
+
                 var tileCost = (meleeAttack / maxAttack) * DAMAGE_MATRIX_FACTOR
-                console.log("Melle will not oneShot me: ",tileCost)
-                for (var i = -1; i <= 1; i++) {
-                    for (var j = -1; j <= 1; j++) {
-                        hostilesMatrix.set(h.pos.x + i, h.pos.y + j, tileCost)
+                console.log("Melle will not oneShot me: ", tileCost)
+                console.log("meleeAttack: ", meleeAttack)
+                console.log("quad can take: ", quad.minHp + quad.minHealPower, " damage")
+
+                for (var i = h.pos.x - 1; i <= h.pos.x + 1; i++) {
+                    for (var j = h.pos.y - 1; h <= h.pos.y + 1; j++) {
+                        hostilesMatrix.set(i, j, tileCost)
                     }
                 }
+                /*
+            for (var i = -1; i <= 1; i++) {
+                for (var j = -1; j <= 1; j++) {
+                    hostilesMatrix.set(h.pos.x + i, h.pos.y + j, tileCost)
+                }
+            }
+                */
+
             }
 
-            if (rangedAttack >= quad.minHits + quad.minHealPower)//quad member will het one shoted by enemy creep (RANGED_ATTACK)
+            const RANGED_ATTACK_RANGE = 4
+            if (rangedAttack >= quad.minHp + quad.minHealPower)//quad member will het one shoted by enemy creep (RANGED_ATTACK)
             {
-                console.log("Ranged will oneShot me: ",tileCost)
-                for (var i = -2; i <= 2; i++) {
-                    for (var j = -2; j <= 2; j++) {
-                        hostilesMatrix.set(h.pos.x + i, h.pos.y + j, 255)
+                console.log("Ranged will oneShot me: ", 255)
+                console.log("rangedAttack: ", rangedAttack)
+                console.log("quad.minHp + quad.minHealPower = ", quad.minHp, " + ", quad.minHealPower, quad.minHp + quad.minHealPower)
+                for (var i = h.pos.x-RANGED_ATTACK_RANGE; i <= h.pos.x+RANGED_ATTACK_RANGE; i++) {
+                    for (var j = h.pos.y-RANGED_ATTACK_RANGE; j <= h.pos.y+RANGED_ATTACK_RANGE; j++) {
+                        hostilesMatrix.set( i,  j, 255)
                     }
                 }
 
             }
-            else if(rangedAttack>0){
+            else if (rangedAttack > 0) {
                 var tileCost = (rangedAttack / maxRangedAttack) * DAMAGE_MATRIX_FACTOR
-                console.log("Ranged will not oneShot me: ",tileCost)
-                console.log("RangedAttackPower: ",rangedAttack," quad.minHealPower: ",quad.minHealPower)
-                for (var i = -2; i <= 2; i++) {
-                    for (var j = -2; j <= 2; j++) {
-                        hostilesMatrix.set(h.pos.x + i, h.pos.y + j, tileCost)
+                console.log("Ranged will not oneShot me: ", tileCost)
+                console.log("RangedAttackPower: ", rangedAttack, " quad can take: ", quad.minHp + quad.minHealPower)
+                for (var i = h.pos.x-RANGED_ATTACK_RANGE; i <= h.pos.x+RANGED_ATTACK_RANGE; i++) {
+                    for (var j = h.pos.y-RANGED_ATTACK_RANGE; j <= h.pos.y+RANGED_ATTACK_RANGE; j++) {
+                        hostilesMatrix.set( i,  j, tileCost)
                     }
                 }
             }
@@ -655,28 +729,25 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                     }
                 })
 
-                for(other of myOtherCreeps)
-                {
-                    roomCM.set(other.pos.x,other.pos.y,255)
-                    roomCM.set(other.pos.x-1,other.pos.y,255)
-                    roomCM.set(other.pos.x-1,other.pos.y-1,255)
-                    roomCM.set(other.pos.x,other.pos.y-1,255)
+                for (other of myOtherCreeps) {
+                    roomCM.set(other.pos.x, other.pos.y, 255)
+                    roomCM.set(other.pos.x - 1, other.pos.y, 255)
+                    roomCM.set(other.pos.x - 1, other.pos.y - 1, 255)
+                    roomCM.set(other.pos.x, other.pos.y - 1, 255)
                 }
 
-                var structures=topLeft.room.find(FIND_STRUCTURES,{
-                    filter:function(str)
-                    {
-                        return str.structureType!=STRUCTURE_ROAD
+                var structures = topLeft.room.find(FIND_STRUCTURES, {
+                    filter: function (str) {
+                        return str.structureType != STRUCTURE_ROAD
                     }
                 })
 
-                for(s of structures)
-                    {
-                        roomCM.set(s.pos.x,s.pos.y,255)
-                        roomCM.set(s.pos.x-1,s.pos.y,255)
-                        roomCM.set(s.pos.x-1,s.pos.y-1,255)
-                        roomCM.set(s.pos.x,s.pos.y-1,255)
-                    }
+                for (s of structures) {
+                    roomCM.set(s.pos.x, s.pos.y, 255)
+                    roomCM.set(s.pos.x - 1, s.pos.y, 255)
+                    roomCM.set(s.pos.x - 1, s.pos.y - 1, 255)
+                    roomCM.set(s.pos.x, s.pos.y - 1, 255)
+                }
 
                 var floodCM = topLeft.room.floodFill(seeds);
                 let distanceCM = topLeft.room.diagonalDistanceTransform(roomCM, false);
@@ -703,8 +774,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         quad.path = false
 
         console.log("grouping position: ", quad.grouping_pos)
-        if (topLeft != null) {
-            topLeft.say(quad.grouping_pos.x+ " "+ quad.grouping_pos.y)
+        if (topLeft != null && quad.grouping_pos != undefined) {
+            topLeft.say(quad.grouping_pos.x + " " + quad.grouping_pos.y)
             topLeft.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y, quad.grouping_pos.roomName))
         }
         if (topRight != null) {
