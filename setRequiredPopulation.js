@@ -141,6 +141,7 @@ class Quad{
         this.home_room=home_room
         this.grouping_pos=grouping_pos
         this.minEnergyOnCreep=-1;
+        this.members=[];
     }
 }
 
