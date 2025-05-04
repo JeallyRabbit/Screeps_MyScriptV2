@@ -523,12 +523,11 @@ module.exports.loop = function () {
                 }
             }
 
-            if(spawn.memory.req_quads==undefined)
-            {
-                aux=spawn.room.name
-                spawn.memory.req_quads={aux:0};
+            if (spawn.memory.req_quads == undefined) {
+                aux = spawn.room.name
+                spawn.memory.req_quads = { aux: 0 };
             }
-            else{
+            else {
                 //spawn.memory.req_quads={"W3N7":2}
             }
 
@@ -1121,7 +1120,7 @@ module.exports.loop = function () {
                                 //if (q.members == undefined) {
                                 //    q.members = [];
                                 //}
-                                if (q.members!=undefined && q.id === creep.memory.quadId && !q.members.includes(creep.id)) {
+                                if (q.members != undefined && q.id === creep.memory.quadId && !q.members.includes(creep.id)) {
                                     q.members.push(creep.id)
 
                                     if (q.topLeftId == undefined || q.topLeftId == creep.id) {
@@ -1448,10 +1447,10 @@ module.exports.loop = function () {
             spawn.memory.isSpawningQuad = false;
             for (q of spawn.memory.quads) {
                 if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
-                    && (q.members!=undefined && q.members.length<4)
+                    && (q.members != undefined && q.members.length < 4)
                 ) {
                     spawn.memory.isSpawningQuad = true;
-                    var spawn_result = spawn.spawnCreep(maxSoldier(Math.max(energyCap,q.minEnergyOnCreep)) , 'quad' + spawn.room.name + '_' + Game.time, {
+                    var spawn_result = spawn.spawnCreep(maxSoldier(Math.max(energyCap, q.minEnergyOnCreep)), 'quad' + spawn.room.name + '_' + Game.time, {
                         memory: {
                             role: 'quadMember',
                             home_room: spawn.room,
@@ -1460,9 +1459,8 @@ module.exports.loop = function () {
                     })
                     //console.log("quad spawning result: ", spawn_result)
                     if (spawn_result == 0) {
-                        if(energyCap>q.minEnergyOnCreep )
-                        {
-                            q.minEnergyOnCreep=energyCap
+                        if (energyCap > q.minEnergyOnCreep) {
+                            q.minEnergyOnCreep = energyCap
                         }
                         spawn.memory.isSpawningQuad = true
                         continue;
@@ -1520,8 +1518,20 @@ module.exports.loop = function () {
                 console.log("spawning duo: ",spawn.memory.isSpawningDuo)
             }
                 */
+            if (pop_haulers < spawn.memory.req_haulers)//spawning new hauler
+            {
+                var limit = false;
+                if (spawn.room.controller.level == 8) {
+                    limit = true;
+                }
+                if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, limit), 'hauler_' + spawn.room.name + '_' + Game.time, { memory: { role: 'hauler', home_room: spawn.room } }) == 0) {
+                    continue;
+                }
+            }
 
-            if (spawn.memory.isSpawningDuo == true || spawn.memory.isSpawningSwarm == true || spawn.memory.isSpawningQuad) { continue; }
+            if ((spawn.memory.isSpawningDuo == true || spawn.memory.isSpawningSwarm == true || spawn.memory.isSpawningQuad)
+                //&& pop_haulers>0
+            ) { continue; }
 
             if (pop_haulers > 0 && pop_merchants > 0) {
                 if (spawn.memory.need_keeperHealer != undefined && false) {
@@ -1696,16 +1706,6 @@ module.exports.loop = function () {
 
                 }
                 continue;
-            }
-            if (pop_haulers < spawn.memory.req_haulers)//spawning new hauler
-            {
-                var limit = false;
-                if (spawn.room.controller.level == 8) {
-                    limit = true;
-                }
-                if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, limit), 'hauler_' + spawn.room.name + '_' + Game.time, { memory: { role: 'hauler', home_room: spawn.room } }) == 0) {
-                    continue;
-                }
             }
             if (//pop_upgraders < spawn.memory.req_upgraders 
                 upgraders_parts < spawn.memory.req_upgraders_parts

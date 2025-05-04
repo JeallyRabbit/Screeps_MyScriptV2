@@ -531,8 +531,8 @@ function calculateHostileCreepsCost(quad, hostiles) {
             if (meleeAttack >= quad.minHp + quad.minHealPower)//quad member will het one shoted by enemy creep 
             {
                 console.log("Melle will oneShot me")
-                for (var i = h.pos.x - 1; i <= h.pos.x + 1; i++) {
-                    for (var j = h.pos.y - 1; j <= h.pos.y + 1; j++) {
+                for (var i = h.pos.x - 2; i <= h.pos.x + 1; i++) {
+                    for (var j = h.pos.y - 2; j <= h.pos.y + 1; j++) {
                         hostilesMatrix.set(i, j, 255)
                     }
                 }
@@ -552,8 +552,9 @@ function calculateHostileCreepsCost(quad, hostiles) {
                 console.log("meleeAttack: ", meleeAttack)
                 console.log("quad can take: ", quad.minHp + quad.minHealPower, " damage")
 
-                for (var i = h.pos.x - 1; i <= h.pos.x + 1; i++) {
-                    for (var j = h.pos.y - 1; j <= h.pos.y + 1; j++) {
+                // -2 in this loop because additional tile for quad
+                for (var i = h.pos.x - 2; i <= h.pos.x + 1; i++) {
+                    for (var j = h.pos.y - 2; j <= h.pos.y + 1; j++) {
                         var currentCost=hostilesMatrix.get(i,j)
                         hostilesMatrix.set(i, j, currentCost+tileCost)
                     }
@@ -669,7 +670,7 @@ function findTargetCreepInRange(quad,hostiles)
             }
         }
 
-        if(closeNotCovered.length>0){return closeNotCovered[0]}
+        if(closeNotCovered.length>0){return member.pos.findClosestByRange(closeNotCovered)}
     }
     return null;
 }
@@ -689,11 +690,33 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         while (quad.members.length > 4) { quad.members.pop() }
     }
 
+    if(topLeft==null && topRight!=null)
+    {
+        topLeft=topRight
+        topLeftId=topRightId
+
+        topRight=bottomRight
+        topRightId=bottomRightId
+
+        bottomRight=bottomLeft
+        bottomRightId=bottomLeftId
+
+        bottomLeft=undefined
+        bottomLeftId=undefined
+
+    }
+
+    if(topLeft==null)
+    {
+        return;
+    }
+    /*
     if (quad.completed == true && (topLeft == null || topRight == null || bottomLeft == null || bottomRight == null)) {
         console.log("clearing quad data")
 
+
         if (topLeft != null) {
-            topLeft.suicide(); quad.topLeftId = undefined
+            //topLeft.suicide(); quad.topLeftId = undefined
         }
         if (topRight != null) { topRight.suicide(); quad.topRightId = undefined }
         if (bottomLeft != null) { bottomLeft.suicide(); quad.bottomLeftId = undefined }
@@ -718,6 +741,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         console.log("quad: topLeft==null")
         return
     }
+        */
 
     //checking if quad is dead
     var dead_counter = 0;
@@ -736,6 +760,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         quad.minEnergyOnCreep = -1;
         quad.towerDamageCM = undefined;
         quad.rampartsCM = undefined;
+        return
     }
 
     quadSelfHeal(quad)
@@ -814,13 +839,13 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             topLeft.say(quad.grouping_pos.x + " " + quad.grouping_pos.y)
             topLeft.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y, quad.grouping_pos.roomName))
         }
-        if (topRight != null) {
+        if (topRight != null && quad.grouping_pos != undefined ) {
             topRight.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y, quad.grouping_pos.roomName))
         }
-        if (bottomLeft != null) {
+        if (bottomLeft != null && quad.grouping_pos != undefined) {
             bottomLeft.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
         }
-        if (bottomRight != null) {
+        if (bottomRight != null && quad.grouping_pos != undefined) {
             bottomRight.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y + 1, quad.grouping_pos.roomName))
         }
 
@@ -947,7 +972,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //running from flag
     if (Game.flags["quadFlee"] != undefined) {
         topLeft.say("flee")
-        quadRetreat(quad, Game.flags["quadFlee"].pos)
+        //quadRetreat(quad, Game.flags["quadFlee"].pos)
     }
 
 
