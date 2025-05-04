@@ -21,6 +21,7 @@ function isQuadPacked(creeps) {
 
 function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
 
+    console.log("transformCost")
     const terrain = Game.map.getRoomTerrain(roomName)
     const result = new PathFinder.CostMatrix()
     const formationVectors = [
@@ -154,10 +155,10 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
                 //console.log(i, " ", j, " tileCost: ", tileCost)
             }
             if (Game.rooms[quad.target_room] != undefined && roomName==quad.target_room) {
-                if (i > 10 && i < 30 && j > 1 && j < 20) {
+                //if (i > 5 && i < 25 && j > 18 && j < 30 || true) {
                     //Game.rooms[quad.target_room].visual.rect(i - 0.5, j - 0.5, 1, 1, { fill: 'red', opacity: (tileCost / 255) * 0.7 })
                     Game.rooms[quad.target_room].visual.text(tileCost, i, j, { font: 0.5 })
-                }
+                //}
                 //
             }
 
@@ -182,7 +183,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
     var topLeft = Game.getObjectById(quad.topLeftId);
     if (topLeft == null) { return -1; }
 
-    if (topLeft.pos.isNearTo(targetPos)) { return }
+    if (topLeft.pos.isNearTo(targetPos) && myFlee==false) { return }
     if (quad.lastTargetPos != targetPos) {
         quad.lastTargetPos = targetPos;
         quad.path = undefined
@@ -254,7 +255,9 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
             quad.path = undefined
         }
         else if (move_result == 0) {
+
             movePath.shift()
+            return move_result
         }
     }
     else {
@@ -267,7 +270,8 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
 
 function quadRetreat(quad, position, range = 30) {
     console.log("retreating1")
-    moveQuad(quad, position, 1, range, true)
+    retreatResult=moveQuad(quad, position, 1, range, true)
+    console.log("retreatResult: ",retreatResult)
 }
 
 function quadRangedAttack(quad, target) {
@@ -339,12 +343,12 @@ function quadMinHeal(quad) {
 
 function quadSelfHeal(quad) {
     var minHeal = quadMinHeal(quad)
-    console.log("quad equal healing")
+    //console.log("quad equal healing")
     if (minHeal == null) {
         quadEqualHeal(quad)
     }
     else {
-        console.log("quad is healing ", minHeal)
+        //console.log("quad is healing ", minHeal)
         quadHeal(quad, Game.getObjectById(minHeal))
     }
 }
@@ -397,7 +401,7 @@ function quadNearTo(quad, target) {
 
 //calculates damage on quad target room
 function calculateTowersDamage(quad, towers) {
-    console.log("calculating towers damage")
+    //console.log("calculating towers damage")
     if (towers.length < 1) { return -1; }
 
     if (quad.towerDamageCM == undefined || true) {
@@ -605,7 +609,7 @@ function findTargetStructure(quad, structures, room) {
     if (structures == undefined || structures.length < 1) {
         return -1;
     }
-    console.log("quad: ", quad.id, " is searching for targetStructure")
+    //console.log("quad: ", quad.id, " is searching for targetStructure")
     if (room == undefined) { room = quad.target_room }
     var targetStructure = null
     var minHits = Infinity
@@ -693,16 +697,16 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     if(topLeft==null && topRight!=null)
     {
         topLeft=topRight
-        topLeftId=topRightId
+        quad.topLeftId=quad.topRightId
 
         topRight=bottomRight
-        topRightId=bottomRightId
+        quad.topRightId=quad.bottomRightId
 
         bottomRight=bottomLeft
-        bottomRightId=bottomLeftId
+        quad.bottomRightId=quad.bottomLeftId
 
         bottomLeft=undefined
-        bottomLeftId=undefined
+        quad.bottomLeftId=undefined
 
     }
 
@@ -745,9 +749,9 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     for (m of quad.members) {
         if (Game.getObjectById(m) == null) { dead_counter++; }
     }
-    console.log("DEAD COUNTER: ",dead_counter)
+    //console.log("DEAD COUNTER: ",dead_counter)
     if (dead_counter == 4 || topLeft==null) {
-        console.log("quad is dead")
+        //console.log("quad is dead")
         quad.members = [];
         quad.packed = false;
         quad.completed = false;
@@ -938,7 +942,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         if (target != null) {
 
             topLeft.say(quadRangedAttack(quad, target))
-            console.log("quad is attacking: ", target, " result ", quadRangedAttack(quad, target))
+            //console.log("quad is attacking: ", target, " result ", quadRangedAttack(quad, target))
             if ((quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE || quadNearTo(quad, target) == false) && quadHits(quad) == quadHitsMax(quad)) {
                 moveQuad(quad, target.pos)
             }
@@ -955,7 +959,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             quadRetreat(quad, target.pos)
         }
     }
-    else {
+    else if(quadHits(quad)==quadHitsMax(quad)){
         moveQuad(quad, new RoomPosition(25, 25, quad.target_room))
     }
 
