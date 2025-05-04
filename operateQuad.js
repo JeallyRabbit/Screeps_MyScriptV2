@@ -706,10 +706,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
     }
 
-    if(topLeft==null)
-    {
-        return;
-    }
+    
     /*
     if (quad.completed == true && (topLeft == null || topRight == null || bottomLeft == null || bottomRight == null)) {
         console.log("clearing quad data")
@@ -748,7 +745,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     for (m of quad.members) {
         if (Game.getObjectById(m) == null) { dead_counter++; }
     }
-    if (dead_counter == 4) {
+    console.log("DEAD COUNTER: ",dead_counter)
+    if (dead_counter == 4 || topLeft==null) {
         console.log("quad is dead")
         quad.members = [];
         quad.packed = false;
