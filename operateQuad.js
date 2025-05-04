@@ -532,7 +532,7 @@ function calculateHostileCreepsCost(quad, hostiles) {
             {
                 console.log("Melle will oneShot me")
                 for (var i = h.pos.x - 1; i <= h.pos.x + 1; i++) {
-                    for (var j = h.pos.y - 1; h <= h.pos.y + 1; j++) {
+                    for (var j = h.pos.y - 1; j <= h.pos.y + 1; j++) {
                         hostilesMatrix.set(i, j, 255)
                     }
                 }
@@ -553,7 +553,7 @@ function calculateHostileCreepsCost(quad, hostiles) {
                 console.log("quad can take: ", quad.minHp + quad.minHealPower, " damage")
 
                 for (var i = h.pos.x - 1; i <= h.pos.x + 1; i++) {
-                    for (var j = h.pos.y - 1; h <= h.pos.y + 1; j++) {
+                    for (var j = h.pos.y - 1; j <= h.pos.y + 1; j++) {
                         var currentCost=hostilesMatrix.get(i,j)
                         hostilesMatrix.set(i, j, currentCost+tileCost)
                     }
@@ -568,7 +568,7 @@ function calculateHostileCreepsCost(quad, hostiles) {
 
             }
 
-            const RANGED_ATTACK_RANGE = 4
+            const RANGED_ATTACK_RANGE = 3
             if (rangedAttack >= quad.minHp + quad.minHealPower)//quad member will het one shoted by enemy creep (RANGED_ATTACK)
             {
                 console.log("Ranged will oneShot me: ", 255)
@@ -588,7 +588,7 @@ function calculateHostileCreepsCost(quad, hostiles) {
                 for (var i = h.pos.x-RANGED_ATTACK_RANGE; i <= h.pos.x+RANGED_ATTACK_RANGE; i++) {
                     for (var j = h.pos.y-RANGED_ATTACK_RANGE; j <= h.pos.y+RANGED_ATTACK_RANGE; j++) {
                         var currentCost=hostilesMatrix.get(i,j)
-                        hostilesMatrix.set( i,  j, currentCost+tileCost)
+                        hostilesMatrix.set( i,  j, Math.min(255,currentCost+tileCost))
                     }
                 }
             }
@@ -652,7 +652,7 @@ function findTargetCreepInRange(quad,hostiles)
         for(h of hostiles)
         {
             isCovered=false
-            if(member.pos.inRangeTo(h.pos.x,h.pos.y,3))
+            if(member.pos.inRangeTo(h.pos.x,h.pos.y,4))
             {
                 var str=member.room.lookForAt(LOOK_STRUCTURES,h.pos.x,h.pos.y)
                 for(s of str)
@@ -927,7 +927,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
         console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
-        if (quadHits(quad) < quadHitsMax(quad)+quadHealPower(quad)) {
+        if (quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad))*2>quadHealPower(quad)) {
             topLeft.say("retreat")
             quadRetreat(quad, target.pos)
         }
