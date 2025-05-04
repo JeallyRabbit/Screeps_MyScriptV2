@@ -157,7 +157,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
             if (Game.rooms[quad.target_room] != undefined && roomName==quad.target_room) {
                 //if (i > 5 && i < 25 && j > 18 && j < 30 || true) {
                     //Game.rooms[quad.target_room].visual.rect(i - 0.5, j - 0.5, 1, 1, { fill: 'red', opacity: (tileCost / 255) * 0.7 })
-                    Game.rooms[quad.target_room].visual.text(tileCost, i, j, { font: 0.5 })
+                    //Game.rooms[quad.target_room].visual.text(tileCost, i, j, { font: 0.5 })
                 //}
                 //
             }
@@ -954,7 +954,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
         console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
-        if (quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad))*2>quadHealPower(quad)) {
+        if (quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad))>quadHealPower(quad)) {
             topLeft.say("retreat")
             quadRetreat(quad, target.pos)
         }
