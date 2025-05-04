@@ -37,7 +37,10 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
         creep.memory.container_to_fill = undefined;
 
         
-        if (creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 0) {
+        if (creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 0
+            //for testing - do not fill filler  containers on rcl 8
+            && creep.room.controller.level<8
+        ) {
             var min_energy = CONTAINER_CAPACITY
             for (cont of creep.memory.filler_containers) {
                 if (Game.getObjectById(cont) != null && Game.getObjectById(cont).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
