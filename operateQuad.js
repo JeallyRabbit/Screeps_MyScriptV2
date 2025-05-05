@@ -21,7 +21,7 @@ function isQuadPacked(creeps) {
 
 function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
 
-    console.log("transformCost")
+    //console.log("transformCost")
     const terrain = Game.map.getRoomTerrain(roomName)
     const result = new PathFinder.CostMatrix()
     const formationVectors = [
@@ -68,21 +68,19 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
     }
 
     Game.rooms[roomName].find(FIND_STRUCTURES).forEach(function (struct) {
-        if (struct.structureType === STRUCTURE_ROAD) {
-            // Favor roads over plain tiles
-            //costs.set(struct.pos.x, struct.pos.y, 1);
-        } else if (struct.structureType !== STRUCTURE_CONTAINER &&
-            (struct.structureType !== STRUCTURE_RAMPART ||
-                !struct.my)) {
+        if (struct.structureType !== STRUCTURE_CONTAINER &&
+            (struct.structureType !== STRUCTURE_RAMPART /* || !struct.my */)) {
             // Can't walk through non-walkable buildings
             result.set(struct.pos.x, struct.pos.y, 255);
             result.set(struct.pos.x - 1, struct.pos.y, 255);
             result.set(struct.pos.x - 1, struct.pos.y - 1, 255);
             result.set(struct.pos.x, struct.pos.y - 1, 255);
         }
+        /*
         else if ((struct.structureType == STRUCTURE_RAMPART || struct.structureType == STRUCTURE_WALL) && !struct.my) {
             result.set(struct.pos.x, struct.pos.y, struct.hits / struct.hitsMax);
-        }
+        }*/
+
     });
 
     Game.rooms[roomName].find(FIND_CREEPS).forEach(function (creep) {
@@ -131,7 +129,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
                     hostileCost = hostilesCM.get(i, j)
                 }
 
-                if (towerCost != 0 || rampartCost != 0 || hostileCost != 0) {
+                if (rampartCost != 0) {
                     /*
                     console.log("current cost: ", currentCost)
                     console.log("towerCost: ", towerCost)
@@ -141,6 +139,11 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
                 }
                 var currentCost = result.get(i, j)
                 result.set(i, j, Math.max(currentCost, Math.min(currentCost + towerCost + rampartCost + hostileCost, 255)))
+                if (currentCost != 255) {
+                    console.log("cost at: ", i, " ", j, Math.max(currentCost, Math.min(currentCost + towerCost + rampartCost + hostileCost, 255)))
+                    console.log("current Cost: ", currentCost, " Math.max(): ", Math.max(currentCost, Math.min(currentCost + towerCost + rampartCost + hostileCost, 255)))
+                }
+
 
             }
         }
@@ -157,7 +160,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
             if (Game.rooms[quad.target_room] != undefined && roomName == quad.target_room) {
                 //if (i > 5 && i < 25 && j > 18 && j < 30 || true) {
                 //Game.rooms[quad.target_room].visual.rect(i - 0.5, j - 0.5, 1, 1, { fill: 'red', opacity: (tileCost / 255) * 0.7 })
-                //Game.rooms[quad.target_room].visual.text(tileCost, i, j, { font: 0.5 })
+                Game.rooms[quad.target_room].visual.text(tileCost, i, j, { font: 0.5 })
                 //}
                 //
             }
@@ -238,6 +241,18 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
 
         var direction = topLeft.pos.getDirectionTo(movePath[0])
         console.log("quad is moving from: ", topLeft.pos, " to ", movePath[0])
+
+        //if (movePath != undefined) {
+            structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[0].x, movePath[0].y)
+            isBlocked = false;
+            for (s of structuresAtPath) {
+                if (s.my == false && (s.structureType == STRUCTURE_RAMPART || s.structureType == STRUCTURE_WALL)) {
+                    isBlocked = true;
+                    quad.path = undefined
+                    return -13;//path in reality is blocked by rampart/wall
+                }
+            }
+        //}
 
         //topLeft.say(direction)
         //topLeft.say(movePath.length)
@@ -444,7 +459,7 @@ function caluclateRampartsCosts(quad, structures) {
         for (s of structures) {
             str = Game.getObjectById(s)
             if (str == null) { continue }
-            if (str.structureType == STRUCTURE_RAMPART) {
+            if (str.structureType == STRUCTURE_RAMPART || str.structureType == STRUCTURE_WALL) {
                 var tileCost = (str.hits / str.hitsMax) * DAMAGE_MATRIX_FACTOR
 
                 rampartsMatrix.set(str.pos.x, str.pos.y, tileCost)
@@ -794,9 +809,10 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                     roomCM.set(other.pos.x, other.pos.y - 1, 255)
                 }
 
+                /*
                 var structures = topLeft.room.find(FIND_STRUCTURES, {
                     filter: function (str) {
-                        return str.structureType != STRUCTURE_ROAD
+                        return str.structureType != STRUCTURE_ROAD && str.structureType!=STRUCTURE_RAMPART && str.structureType!=STRUCTURE_WALL
                     }
                 })
 
@@ -806,6 +822,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                     roomCM.set(s.pos.x - 1, s.pos.y - 1, 255)
                     roomCM.set(s.pos.x, s.pos.y - 1, 255)
                 }
+                    */
 
                 var floodCM = topLeft.room.floodFill(seeds);
                 let distanceCM = topLeft.room.diagonalDistanceTransform(roomCM, false);
@@ -889,6 +906,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         var towers = []
         var extensions = []
         var spawns = []
+        var ramparts = []
 
         for (str of hostileStructures) {
             aux = Game.getObjectById(str)
@@ -904,6 +922,9 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             }
             else if (aux.structureType == STRUCTURE_SPAWN) {
                 spawns.push(aux)
+            }
+            else if (aux.structureType == STRUCTURE_RAMPART) {
+                ramparts.push(aux)
             }
         }
 
@@ -931,12 +952,16 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             target = Game.getObjectById(quad.targetStructureId)
         }
 
+
         var targetCreep = findTargetCreepInRange(quad, hostileCreeps)
         if (targetCreep != null) { target = targetCreep }
 
         if (target != null) {
 
-            topLeft.say(quadRangedAttack(quad, target))
+
+            console.log("quad: ", quad.id, " is targeting: ", target, " at: ", target.pos)
+
+            topLeft.say(quadRangedMassAttack(quad, target))
             //console.log("quad is attacking: ", target, " result ", quadRangedAttack(quad, target))
             if ((quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE || quadNearTo(quad, target) == false) && quadHits(quad) == quadHitsMax(quad)) {
                 moveQuad(quad, target.pos)

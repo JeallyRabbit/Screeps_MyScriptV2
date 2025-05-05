@@ -262,6 +262,10 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
         if (creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             creep.moveTo(spawn, { reusePath: 10, avoidCreeps: false })
         }
+        if(spawn.store.getFreeCapacity(RESOURCE_ENERGY)==0)
+        {
+            creep.memory.task=undefined
+        }
     }
 
 
