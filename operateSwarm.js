@@ -242,7 +242,7 @@ Spawn.prototype.operateSwarm = function operateSwarm(swarm) {
                             damaged.push(Game.getObjectById(cr))
                         }
                         var toHeal = creep.pos.findClosestByRange(damaged)
-                        if (toHeal != null) {
+                        if (toHeal != null && toHeal.memory.role!='sponge') {
                             if (creep.heal(toHeal) == ERR_NOT_IN_RANGE) {
                                 if (target_creep == null) {
                                     creep.moveTo(toHeal, { maxRooms: 1 })

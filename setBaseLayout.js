@@ -145,9 +145,8 @@ function plan_road_to_target(spawn, roomCM, target, rcl, my_range, start) {
 
         for (let i = 0; i < ret.path.length; i++) {
 
-            if(i==ret.path.length-1 && spawn.room.controller.pos.inRangeTo(ret.path[i].x,ret.path[i].y,3))
-            {
-                spawn.room.memory.distanceToController=ret.path.length
+            if (i == ret.path.length - 1 && spawn.room.controller.pos.inRangeTo(ret.path[i].x, ret.path[i].y, 3)) {
+                spawn.room.memory.distanceToController = ret.path.length
             }
 
             spawn.memory.road_building_list.push(new building_list_element(ret.path[i].x, ret.path[i].y, ret.path[i].roomName, STRUCTURE_ROAD, rcl));
@@ -177,7 +176,7 @@ function plan_road_to_target(spawn, roomCM, target, rcl, my_range, start) {
 
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (spawn.memory.room_plan[i][j] ==STRUCTURE_ROAD) {
+            if (spawn.memory.room_plan[i][j] == STRUCTURE_ROAD) {
                 roomCM.set(i, j, 0);
             }
 
@@ -347,6 +346,76 @@ function plan_extension_stamp(spawn, roomCM, rcl) {
 
 }
 
+function plan_quad_grouping_pos(spawn, roomCM) {
+    var is_succes = false;
+    for (let i = 0; i < 50; i++) {
+        for (let j = 0; j < 50; j++) {
+            if (spawn.memory.room_plan[i][j] != 0) {
+                roomCM.set(i, j, 255);
+            }
+
+        }
+    }
+    let distanceCM = spawn.room.diagonalDistanceTransform(roomCM, false);
+
+    //Seeds - starting positions for floodfill (it have to be an array - somethink iterable)
+    var seeds = [];
+    if (spawn.room.storage != undefined || true) {
+
+        //seeds.push(spawn.room.storage.pos);
+        seeds.push(spawn.pos);
+        //seeds.push(spawn.pos);
+        //seeds.push(spawn.room.controller.pos);
+        var floodCM = spawn.room.floodFill(seeds);
+
+        var pos_for_quad = new RoomPosition(0, 0, spawn.room.name);
+        var min_distance_from_spawn = Infinity;
+        for (i = 0; i < 50; i++) {
+            for (let j = 0; j < 50; j++) {
+                if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < min_distance_from_spawn
+                    && (i > 5 && i < 45) && (j > 5 && j < 45)) {
+                    min_distance_from_spawn = floodCM.get(i, j);
+                    pos_for_quad.x = i;
+                    pos_for_quad.y = j;
+                }
+            }
+        }
+
+        if (pos_for_quad.x != undefined && pos_for_quad.y != undefined) {
+            spawn.memory.pos_for_quad=new RoomPosition(0,0,spawn.room.name)
+            roomCM.set(pos_for_quad.x, pos_for_quad.y, 255);
+            roomCM.set(pos_for_quad.x + 1, pos_for_quad.y, 255);
+            roomCM.set(pos_for_quad.x, pos_for_quad.y + 1, 255);
+            roomCM.set(pos_for_quad.x + 1, pos_for_quad.y + 1, 255);
+
+            is_succes = true;
+
+            console.log("pos for quad: ", pos_for_quad)
+            spawn.memory.pos_for_quad.x = pos_for_quad.x
+            spawn.memory.pos_for_quad.y = pos_for_quad.y;
+            spawn.memory.pos_for_quad.roomName = spawn.room.name;
+
+            spawn.room.visual.circle(pos_for_quad.x, pos_for_quad.y, { fill: 'red', radius: 0.5, stroke: 'blue' });
+            spawn.room.visual.circle(pos_for_quad.x + 1, pos_for_quad.y, { fill: 'red', radius: 0.5, stroke: 'blue' });
+            spawn.room.visual.circle(pos_for_quad.x, pos_for_quad.y + 1, { fill: 'red', radius: 0.5, stroke: 'blue' });
+            spawn.room.visual.circle(pos_for_quad.x + 1, pos_for_quad.y + 1, { fill: 'red', radius: 0.5, stroke: 'blue' });
+        }
+
+        /*
+        for (let i = 0; i < 50; i++) {
+            for (let j = 0; j < 50; j++) {
+                if (spawn.memory.room_plan[i][j] != 0) {
+                    roomCM.set(i, j, 255);
+                    is_succes = true;
+                }
+            }
+        }
+            */
+
+        return is_succes;
+    }
+}
+
 function plan_manager_stamp(spawn, roomCM) {
     var is_succes = false;
     for (let i = 0; i < 50; i++) {
@@ -501,8 +570,7 @@ function plan_main_spawn_stamp(spawn, roomCM) {
 }
 
 
-function plan_labs_stamp(spawn,roomCM)
-{
+function plan_labs_stamp(spawn, roomCM) {
     var is_succes = false;
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
@@ -523,19 +591,18 @@ function plan_labs_stamp(spawn,roomCM)
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
             if (distanceCM.get(i, j) >= 5 && floodCM.get(i, j) < min_distance_from_storage
-        && i>6 && i<44 && j>6 && j<44) {
+                && i > 6 && i < 44 && j > 6 && j < 44) {
                 min_distance_from_storage = floodCM.get(i, j);
                 pos_for_labs.x = i;
                 pos_for_labs.y = j;
             }
         }
     }
-    console.log("x: ",pos_for_labs.x," y: ",pos_for_labs.y)
-    if(pos_for_labs.x!=0 && pos_for_labs.y!=0)
-    {
-        create_labs_stamp(spawn,pos_for_labs.x,pos_for_labs.y)
+    console.log("x: ", pos_for_labs.x, " y: ", pos_for_labs.y)
+    if (pos_for_labs.x != 0 && pos_for_labs.y != 0) {
+        create_labs_stamp(spawn, pos_for_labs.x, pos_for_labs.y)
     }
-    
+
 
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
@@ -546,69 +613,67 @@ function plan_labs_stamp(spawn,roomCM)
         }
     }
     spawn.room.memory.output_labs_id = undefined
-    spawn.room.memory.labs_stamp_pos=new RoomPosition(pos_for_labs.x,pos_for_labs.y,spawn.room.name)
+    spawn.room.memory.labs_stamp_pos = new RoomPosition(pos_for_labs.x, pos_for_labs.y, spawn.room.name)
     return is_succes;
 
 
 
 }
 
-function create_labs_stamp(spawn,x,y)
-{
-    console.log("pos for labs: ",x," ",y)
+function create_labs_stamp(spawn, x, y) {
+    console.log("pos for labs: ", x, " ", y)
     spawn.memory.room_plan[x - 1][y] = STRUCTURE_LAB;
-    spawn.memory.building_list.push(new building_list_element(x - 1, y , spawn.room.name, STRUCTURE_LAB, 6));
-    spawn.room.memory.input_lab_1_pos=new RoomPosition(x-1,y,spawn.room.name)
+    spawn.memory.building_list.push(new building_list_element(x - 1, y, spawn.room.name, STRUCTURE_LAB, 6));
+    spawn.room.memory.input_lab_1_pos = new RoomPosition(x - 1, y, spawn.room.name)
 
-    spawn.memory.room_plan[x ][y+1] = STRUCTURE_LAB;
-    spawn.memory.building_list.push(new building_list_element(x , y+1 , spawn.room.name, STRUCTURE_LAB, 6));
-    spawn.room.memory.input_lab_2_pos=new RoomPosition(x,y+1,spawn.room.name)
+    spawn.memory.room_plan[x][y + 1] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x, y + 1, spawn.room.name, STRUCTURE_LAB, 6));
+    spawn.room.memory.input_lab_2_pos = new RoomPosition(x, y + 1, spawn.room.name)
 
-    spawn.memory.room_plan[x+1][y+1] = STRUCTURE_LAB;
-    spawn.memory.building_list.push(new building_list_element(x+1 , y+1 , spawn.room.name, STRUCTURE_LAB, 6));
+    spawn.memory.room_plan[x + 1][y + 1] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x + 1, y + 1, spawn.room.name, STRUCTURE_LAB, 6));
 
-    spawn.memory.room_plan[x+1][y] = STRUCTURE_LAB;
-    spawn.memory.building_list.push(new building_list_element(x+1 , y , spawn.room.name, STRUCTURE_LAB, 7));
+    spawn.memory.room_plan[x + 1][y] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x + 1, y, spawn.room.name, STRUCTURE_LAB, 7));
 
-    spawn.memory.room_plan[x][y-1] = STRUCTURE_LAB;
-    spawn.memory.building_list.push(new building_list_element(x , y-1 , spawn.room.name, STRUCTURE_LAB, 7));
+    spawn.memory.room_plan[x][y - 1] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x, y - 1, spawn.room.name, STRUCTURE_LAB, 7));
 
-    spawn.memory.room_plan[x-1][y-1] = STRUCTURE_LAB;
-    spawn.memory.building_list.push(new building_list_element(x-1 , y-1 , spawn.room.name, STRUCTURE_LAB, 7));
+    spawn.memory.room_plan[x - 1][y - 1] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x - 1, y - 1, spawn.room.name, STRUCTURE_LAB, 7));
 
-    spawn.memory.room_plan[x-2][y] = STRUCTURE_LAB;
-    spawn.memory.building_list.push(new building_list_element(x-2 , y , spawn.room.name, STRUCTURE_LAB, 8));
+    spawn.memory.room_plan[x - 2][y] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x - 2, y, spawn.room.name, STRUCTURE_LAB, 8));
 
-    spawn.memory.room_plan[x-2][y+1] = STRUCTURE_LAB;
-    spawn.memory.building_list.push(new building_list_element(x-2 , y+1 , spawn.room.name, STRUCTURE_LAB, 8));
+    spawn.memory.room_plan[x - 2][y + 1] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x - 2, y + 1, spawn.room.name, STRUCTURE_LAB, 8));
 
-    spawn.memory.room_plan[x-1][y+2] = STRUCTURE_LAB;
-    spawn.memory.building_list.push(new building_list_element(x-1 , y+2 , spawn.room.name, STRUCTURE_LAB, 8));
+    spawn.memory.room_plan[x - 1][y + 2] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x - 1, y + 2, spawn.room.name, STRUCTURE_LAB, 8));
 
-    spawn.memory.room_plan[x][y+2] = STRUCTURE_LAB;
-    spawn.memory.building_list.push(new building_list_element(x , y+2 , spawn.room.name, STRUCTURE_LAB, 8));
+    spawn.memory.room_plan[x][y + 2] = STRUCTURE_LAB;
+    spawn.memory.building_list.push(new building_list_element(x, y + 2, spawn.room.name, STRUCTURE_LAB, 8));
 
-    for(let i=0;i<3;i++)
-    {
+    for (let i = 0; i < 3; i++) {
         // TOP LEFT
-        spawn.memory.room_plan[x-3+i][y-i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(x-3+i, y-i , spawn.room.name, STRUCTURE_ROAD, 6));
+        spawn.memory.room_plan[x - 3 + i][y - i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x - 3 + i, y - i, spawn.room.name, STRUCTURE_ROAD, 6));
 
         // TOP RIGHT
-        spawn.memory.room_plan[x+i][y-2+i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(x+i, y-2+i , spawn.room.name, STRUCTURE_ROAD, 6));
+        spawn.memory.room_plan[x + i][y - 2 + i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x + i, y - 2 + i, spawn.room.name, STRUCTURE_ROAD, 6));
 
         // BOTTOM LEFT
-        spawn.memory.room_plan[x-3+i][y+1+i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(x-3+i, y+1+i , spawn.room.name, STRUCTURE_ROAD, 6));
+        spawn.memory.room_plan[x - 3 + i][y + 1 + i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x - 3 + i, y + 1 + i, spawn.room.name, STRUCTURE_ROAD, 6));
 
         // BOTTOM RIGHT
-        spawn.memory.room_plan[x+i][y+3-i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(x+i, y+3-i , spawn.room.name, STRUCTURE_ROAD, 6));
+        spawn.memory.room_plan[x + i][y + 3 - i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x + i, y + 3 - i, spawn.room.name, STRUCTURE_ROAD, 6));
 
         // MIDDLE
-        spawn.memory.room_plan[x-2+i][y+2-i] = STRUCTURE_ROAD;
-        spawn.memory.building_list.push(new building_list_element(x-2+i, y+2-i , spawn.room.name, STRUCTURE_ROAD, 6));
+        spawn.memory.room_plan[x - 2 + i][y + 2 - i] = STRUCTURE_ROAD;
+        spawn.memory.building_list.push(new building_list_element(x - 2 + i, y + 2 - i, spawn.room.name, STRUCTURE_ROAD, 6));
     }
 }
 
@@ -633,7 +698,7 @@ function plan_towers_stamp(spawn, roomCM) {
     min_distance_from_spawn = 100;
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (distanceCM.get(i, j) >= 3 && floodCM.get(i, j) < min_distance_from_spawn && i>5 && i<45 && j>5 && j<45) {
+            if (distanceCM.get(i, j) >= 3 && floodCM.get(i, j) < min_distance_from_spawn && i > 5 && i < 45 && j > 5 && j < 45) {
                 min_distance_from_spawn = floodCM.get(i, j);
                 pos_for_tower.x = i;
                 pos_for_tower.y = j;
@@ -698,7 +763,7 @@ function build_from_plan(spawn) {
 }
 
 function build_from_lists(spawn) {
-    spawn.room.memory.ramparts_amount=0;
+    spawn.room.memory.ramparts_amount = 0;
     var rcl = spawn.room.controller.level;
     for (let i = 0; i < spawn.memory.building_list.length; i++) {
         if (Game.rooms[spawn.memory.building_list[i].roomName] != undefined && (spawn.memory.building_list[i].min_rcl <= rcl || spawn.memory.building_list[i] == undefined)) {
@@ -724,8 +789,8 @@ function build_from_lists(spawn) {
 
         }
     }
-    var r_cost=(RAMPART_DECAY_AMOUNT/REPAIR_POWER)/RAMPART_DECAY_TIME;
-    spawn.room.memory.req_energy_for_ramparts=spawn.room.memory.ramparts_amount*r_cost
+    var r_cost = (RAMPART_DECAY_AMOUNT / REPAIR_POWER) / RAMPART_DECAY_TIME;
+    spawn.room.memory.req_energy_for_ramparts = spawn.room.memory.ramparts_amount * r_cost
 
 
     for (let i = 0; i < spawn.memory.road_building_list.length; i++) {
@@ -776,7 +841,7 @@ function plan_borders(spawn, roomCM, rcl) {
             && building.structureType != STRUCTURE_CONTAINER
         )*/
         if (building.structureType == STRUCTURE_EXTENSION || building.structureType == STRUCTURE_TOWER || building.structureType == STRUCTURE_SPAWN
-            || building.structureType == STRUCTURE_STORAGE || building.structureType==STRUCTURE_LAB
+            || building.structureType == STRUCTURE_STORAGE || building.structureType == STRUCTURE_LAB
         ) {
             max_x = Math.max(max_x, building.x);
             min_x = Math.min(min_x, building.x);
@@ -933,20 +998,20 @@ function plan_controller_ramparts(spawn) {
     }
 }
 
-function plan_controller_container(spawn,roomCM) {
+function plan_controller_container(spawn, roomCM) {
     seeds = [];
     seeds.push(spawn.room.controller.pos);
     distanceCM = spawn.room.distanceTransform(roomCM, false);
 
     spawn.memory.controller_link_pos = undefined;
-    
+
     floodCM = spawn.room.floodFill(seeds);
     var pos_for_container = new RoomPosition(0, 0, spawn.room.name);
 
     min_distance_from_controller = 100;
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < min_distance_from_controller && i>5 && i<45 && j>5 && j<45) {
+            if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < min_distance_from_controller && i > 5 && i < 45 && j > 5 && j < 45) {
                 min_distance_from_controller = floodCM.get(i, j);
                 pos_for_container.x = i;
                 pos_for_container.y = j;
@@ -954,18 +1019,16 @@ function plan_controller_container(spawn,roomCM) {
         }
     }
 
-    if(pos_for_container.x != 0 && pos_for_container.y!=0)
-    {
+    if (pos_for_container.x != 0 && pos_for_container.y != 0) {
         spawn.memory.room_plan[pos_for_container.x][pos_for_container.y] = STRUCTURE_CONTAINER;
         spawn.memory.building_list.push(new building_list_element(pos_for_container.x, pos_for_container.y, spawn.room.name, STRUCTURE_CONTAINER, 2));
-        spawn.memory.controller_container_pos=pos_for_container
-        console.log("pos for container: ",pos_for_container.x," ", pos_for_container.y)
+        spawn.memory.controller_container_pos = pos_for_container
+        console.log("pos for container: ", pos_for_container.x, " ", pos_for_container.y)
 
-        if(spawn.memory.room_plan[pos_for_container.x+1][pos_for_container.y]==0)
-        {
-            spawn.memory.room_plan[pos_for_container.x+1][pos_for_container.y] = STRUCTURE_LINK;
-            spawn.memory.building_list.push(new building_list_element(pos_for_container.x+1, pos_for_container.y, spawn.room.name, STRUCTURE_LINK, 6));
-            spawn.memory.controller_link_pos = new RoomPosition(pos_for_container.x+1, pos_for_container.y, spawn.room.name);
+        if (spawn.memory.room_plan[pos_for_container.x + 1][pos_for_container.y] == 0) {
+            spawn.memory.room_plan[pos_for_container.x + 1][pos_for_container.y] = STRUCTURE_LINK;
+            spawn.memory.building_list.push(new building_list_element(pos_for_container.x + 1, pos_for_container.y, spawn.room.name, STRUCTURE_LINK, 6));
+            spawn.memory.controller_link_pos = new RoomPosition(pos_for_container.x + 1, pos_for_container.y, spawn.room.name);
         }
     }
 
@@ -1079,14 +1142,11 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     var stage = undefined
     console.log("PLANING BASE AT: ", spawn.room.name)
 
-    if(spawn.memory.controller_container_pos!=undefined)
-    {
-        var cont=spawn.room.lookForAt(LOOK_STRUCTURES,spawn.memory.controller_container_pos.x,spawn.memory.controller_container_pos.y)
-        for(c of cont)
-        {
-            if(c.structureType==STRUCTURE_CONTAINER)
-            {
-                spawn.memory.controller_container_id=c.id
+    if (spawn.memory.controller_container_pos != undefined) {
+        var cont = spawn.room.lookForAt(LOOK_STRUCTURES, spawn.memory.controller_container_pos.x, spawn.memory.controller_container_pos.y)
+        for (c of cont) {
+            if (c.structureType == STRUCTURE_CONTAINER) {
+                spawn.memory.controller_container_id = c.id
                 break
             }
         }
@@ -1101,9 +1161,8 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     }
         */
 
-    if(spawn.memory.rooms_to_scan!=undefined && spawn.memory.rooms_to_scan.length>0)
-    {
-        spawn.memory.if_success_planning_base=false;
+    if (spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length > 0) {
+        spawn.memory.if_success_planning_base = false;
         return
     }
 
@@ -1132,7 +1191,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
 
 
     if (spawn.memory.if_success_planning_base == true) {
-        
+
 
         console.log("base planed, building from lists")
         visualizeBase(spawn)
@@ -1169,9 +1228,9 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_main_spawn_stamp(spawn, roomCM);
 
         plan_manager_stamp(spawn, roomCM);
-        plan_controller_container(spawn,roomCM)
+        plan_controller_container(spawn, roomCM)
 
-        
+
         //plan_road_to_controller(spawn, roomCM);
         plan_extension_stamp(spawn, roomCM, 4);
         plan_extension_stamp(spawn, roomCM, 5);
@@ -1180,7 +1239,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_extension_stamp(spawn, roomCM, 7);
         plan_extension_stamp(spawn, roomCM, 7);
         plan_towers_stamp(spawn, roomCM);
-        plan_labs_stamp(spawn,roomCM);
+        plan_labs_stamp(spawn, roomCM);
         plan_sources_containers(spawn, roomCM, 2);
         plan_keeper_sources_containers(spawn, roomCM, 7)
 
@@ -1194,7 +1253,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     {
         var cpu_before = Game.cpu.getUsed()
         let roomCM_1 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
-        if (Game.shard.name != 'shard3' && Game.shard.name!='jaysee') {
+        if (Game.shard.name != 'shard3' && Game.shard.name != 'jaysee') {
             plan_borders(spawn, roomCM_1, 4);
         }
         spawn.memory.roomCM = roomCM_1.serialize();
@@ -1209,13 +1268,13 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_road_to_target(spawn, roomCM_2, spawn.room.controller.pos.getNearbyPositions(), 2);
         var mineral = spawn.room.find(FIND_MINERALS);
         plan_road_to_target(spawn, roomCM_2, mineral[0].pos.getNearbyPositions(), 6);
-        var labs_pos=new RoomPosition(spawn.room.memory.labs_stamp_pos.x,spawn.room.memory.labs_stamp_pos.y,spawn.room.name)
-        plan_road_to_target(spawn,roomCM_2,labs_pos.getNearbyPositions(),6)
-        if (Game.shard.name != 'shard3' && Game.shard.name!='jaysee') {
+        var labs_pos = new RoomPosition(spawn.room.memory.labs_stamp_pos.x, spawn.room.memory.labs_stamp_pos.y, spawn.room.name)
+        plan_road_to_target(spawn, roomCM_2, labs_pos.getNearbyPositions(), 6)
+        if (Game.shard.name != 'shard3' && Game.shard.name != 'jaysee') {
             plan_controller_ramparts(spawn);
         }
 
-        
+
 
         //planning roads to sources (in all farming rooms including main room)
         if ((spawn.memory.rooms_to_scan != undefined && spawn.memory.rooms_to_scan.length == 0) || spawn.room.controller.level >= 4) {
@@ -1275,6 +1334,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
             }
 
         }
+        plan_quad_grouping_pos(spawn, roomCM_2);
 
         spawn.memory.roomCM = roomCM_2.serialize();
         spawn.memory.building_stage++;
@@ -1296,6 +1356,8 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         spawn.memory.building_stage++;
         spawn.memory.if_success_planning_base = true
         console.log("success plannig base: ", spawn.memory.if_success_planning_base)
+
+
 
         delete spawn.memory.roomCM
     }

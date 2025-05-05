@@ -133,10 +133,21 @@ class Swarm {
     }
 }
 
+class Quad{
+    constructor(quadId,target_room, home_room,grouping_pos)
+    {
+        this.id=quadId;
+        this.target_room=target_room;
+        this.home_room=home_room
+        this.grouping_pos=grouping_pos
+        this.minEnergyOnCreep=-1;
+        this.members=[];
+    }
+}
+
 
 
 Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
-
 
     if (Memory.allies == undefined) {
         Memory.allies = [];
@@ -171,6 +182,24 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     r.memory.allies.push(a.id)
                 }
             }
+
+            r.memory.hostileStructures=[];
+            var str=r.find(FIND_HOSTILE_STRUCTURES,{
+                filter:
+                    function (s) {
+                        return !Memory.allies.includes(s.owner.username) //&& enemy.owner.username!='Alphonzo'
+                    }
+            })
+
+            if (str.length > 0) {
+                for (s of str) {
+                    r.memory.hostileStructures.push(s.id)
+                }
+            }
+
+
+
+
 
             r.memory.soldiers=[]
         }
@@ -756,6 +785,42 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.need_sponge = spawn.memory.manual_sponge
     }
 
+    // manual adding quads
+    if(spawn.memory.quads==undefined){spawn.memory.quads=[]}
+    if(spawn.memory.manual_quad!=undefined)
+    {
+        if (contains_target_room(spawn.memory.quads, spawn.memory.manual_quad) == false && spawn.memory.pos_for_quad!=undefined) {
+            spawn.memory.quads.push(new Quad(spawn.room.name + "_" + Game.time, spawn.memory.manual_quad, spawn.room,spawn.memory.pos_for_quad))
+            //Game.spawns["Spawn1"]
+            
+            //Game.spawns["Spawn1"].memory.quads.push(new Quad(Game.spawns["Spawn1"].room.name + "_" + Game.time, Game.spawns["Spawn1"].memory.manual_quad, Game.spawns["Spawn1"].room,Game.spawns["Spawn1"].memory.pos_for_quad))
+        }
+    }
+
+    //console.log("req_quads:")
+    if(spawn.memory.req_quads!=undefined)
+    {
+        for(var key in spawn.memory.req_quads)
+        {
+            quads_amount=0;
+            for(q of spawn.memory.quads)
+            {
+                //console.log("q.target_room: ",q.id," ",q.target_room," <-> key: ",key)
+                if(q.target_room===key)
+                {
+                    quads_amount++
+                }
+            }
+            //console.log(quads_amount," -- ",key," -- ",spawn.memory.req_quads[key])
+            if(quads_amount<spawn.memory.req_quads[key])
+            {
+                spawn.memory.quads.push(new Quad(spawn.room.name + "_" + Game.time, key, spawn.room,spawn.memory.pos_for_quad))
+                break
+            }
+            //console.log(spawn.memory.req_quads[key])
+        }
+    }
+
     //manuall adding swarm
     if (spawn.room.name == 'W3N7' || true) {
         if (spawn.memory.swarms == undefined) { spawn.memory.swarms = []; }
@@ -766,10 +831,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 if (contains_target_room(spawn.memory.swarms, spawn.memory.manual_swarm) == false) {
                     spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, 4, spawn.memory.manual_swarm, spawn.room))
                 }
-
-                if (spawn.memory.swarms.length == 1) {
-                    // spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, spawn.room,'W2S37'))
-                }
             }
         }
 
@@ -777,10 +838,19 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
 
     //manually adding duo
+    if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
+    if(spawn.memory.manual_duo!=undefined)
+    {
+        if (!contains_target_room(spawn.memory.duos, spawn.memory.manual_duo)) {
+            spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,spawn.memory.manual_duo))
+        }
+    }
+  
+    /*
     if (spawn.room.name == 'W3S38') {
         if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
         if (spawn.memory.duos != undefined) {
-            // if (spawn.memory.duos.contains_target_room('W3S37') == false) 
+            // if (spawn.memory.duos.contains_target_room('W3S37') == false) asdasds
             if (contains_target_room(spawn.memory.duos, 'W3S37')) {
                 //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,'W3S37'))
             }
@@ -790,6 +860,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
     }
+        */
 
 
     if (spawn.memory.rooms_to_blockade == undefined) {
@@ -889,17 +960,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     }
             })
 
+
             Game.rooms[myRoom].memory.damagedCreeps = [];
             for (cr of creeps_to_heal) {
                 Game.rooms[myRoom].memory.damagedCreeps.push(cr.id);
             }
-
-
-
-
-
-
-
 
 
 
@@ -920,7 +985,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 var enemy_creeps = Game.rooms[myRoom].find(FIND_HOSTILE_CREEPS, {
                     filter:
                         function (en) {
-                            return en.owner.username != 'Alphonzo' &&
+                            return  !Memory.allies.includes(en.owner.username) &&
                                 (en.getActiveBodyparts(WORK) > 0 || en.getActiveBodyparts(ATTACK) > 0 || en.getActiveBodyparts(RANGED_ATTACK) > 0 || en.getActiveBodyparts(CLAIM) > 0)
                         }
                 })
@@ -1184,5 +1249,5 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
 
 
-
+    module.exports = Quad;
 }
