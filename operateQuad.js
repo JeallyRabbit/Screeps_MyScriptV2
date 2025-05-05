@@ -139,11 +139,12 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
                 }
                 var currentCost = result.get(i, j)
                 result.set(i, j, Math.max(currentCost, Math.min(currentCost + towerCost + rampartCost + hostileCost, 255)))
+                /*
                 if (currentCost != 255) {
                     console.log("cost at: ", i, " ", j, Math.max(currentCost, Math.min(currentCost + towerCost + rampartCost + hostileCost, 255)))
                     console.log("current Cost: ", currentCost, " Math.max(): ", Math.max(currentCost, Math.min(currentCost + towerCost + rampartCost + hostileCost, 255)))
                 }
-
+                */
 
             }
         }
@@ -160,7 +161,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
             if (Game.rooms[quad.target_room] != undefined && roomName == quad.target_room) {
                 //if (i > 5 && i < 25 && j > 18 && j < 30 || true) {
                 //Game.rooms[quad.target_room].visual.rect(i - 0.5, j - 0.5, 1, 1, { fill: 'red', opacity: (tileCost / 255) * 0.7 })
-                Game.rooms[quad.target_room].visual.text(tileCost, i, j, { font: 0.5 })
+                //Game.rooms[quad.target_room].visual.text(tileCost, i, j, { font: 0.5 })
                 //}
                 //
             }
