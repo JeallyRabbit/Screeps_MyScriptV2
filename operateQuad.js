@@ -646,7 +646,7 @@ function findTargetStructure(quad, structures, room) {
         var s = Game.getObjectById(str)
         if (s == null) { continue }
         var type = s.structureType
-        if (type != STRUCTURE_RAMPART && type != STRUCTURE_CONTROLLER) {
+        if (type != STRUCTURE_RAMPART && type != STRUCTURE_CONTROLLER && type!=STRUCTURE_CONTAINER) {
             structuresAt = Game.rooms[room].lookForAt(LOOK_STRUCTURES, s.pos)
             var rampHits = 0
             for (at of structuresAt) {
