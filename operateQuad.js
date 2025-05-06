@@ -1,4 +1,4 @@
-const { groupBy, range } = require("lodash");
+const { groupBy, range, inRange } = require("lodash");
 const { distanceTransform } = require("./distanceTransform");
 const { floodFill } = require("./floodFill");
 
@@ -69,7 +69,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
 
     Game.rooms[roomName].find(FIND_STRUCTURES).forEach(function (struct) {
         if (struct.structureType !== STRUCTURE_CONTAINER &&
-            (struct.structureType !== STRUCTURE_RAMPART /* || !struct.my */)) {
+            (struct.structureType !== STRUCTURE_RAMPART && struct.structureType !== STRUCTURE_ROAD/* || !struct.my */)) {
             // Can't walk through non-walkable buildings
             result.set(struct.pos.x, struct.pos.y, 255);
             result.set(struct.pos.x - 1, struct.pos.y, 255);
@@ -158,10 +158,10 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
             if (tileCost > 1 && i == 19) {
                 //console.log(i, " ", j, " tileCost: ", tileCost)
             }
-            if (Game.rooms[quad.target_room] != undefined && roomName == quad.target_room) {
+            if (Game.rooms[roomName] != undefined) {
                 //if (i > 5 && i < 25 && j > 18 && j < 30 || true) {
                 //Game.rooms[quad.target_room].visual.rect(i - 0.5, j - 0.5, 1, 1, { fill: 'red', opacity: (tileCost / 255) * 0.7 })
-                //Game.rooms[quad.target_room].visual.text(tileCost, i, j, { font: 0.5 })
+                //Game.rooms[roomName].visual.text(tileCost, i, j, { font: 0.5 })
                 //}
                 //
             }
@@ -243,7 +243,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
         var direction = topLeft.pos.getDirectionTo(movePath[0])
         console.log("quad is moving from: ", topLeft.pos, " to ", movePath[0])
 
-        //if (movePath != undefined) {
+        if (movePath != undefined && movePath.length>0) {
             structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[0].x, movePath[0].y)
             isBlocked = false;
             for (s of structuresAtPath) {
@@ -253,7 +253,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
                     return -13;//path in reality is blocked by rampart/wall
                 }
             }
-        //}
+        }
 
         //topLeft.say(direction)
         //topLeft.say(movePath.length)
@@ -308,11 +308,21 @@ function quadRangedAttack(quad, target) {
     else if (notInRange == true) { return ERR_NOT_IN_RANGE }
 }
 
-function quadRangedMassAttack(quad) {
+function quadRangedMassAttack(quad, target = undefined) {
     var result = 0;
     for (q of quad.members) {
         cr = Game.getObjectById(q)
         if (cr == null) { continue }
+
+        /*
+        if(target!=undefined && cr.pos.isNearTo(target))
+        {
+            result=cr.rangedMassAttack();
+        }
+        else{
+            result = cr.rangedAttack(target);
+        }
+        */
 
         result = cr.rangedMassAttack();
     }
@@ -663,29 +673,41 @@ function findTargetStructure(quad, structures, room) {
 
 function findTargetCreepInRange(quad, hostiles) {// finds creep in range of RangedAttack which is not  protected by ramparts
     var target = null
+    var distance = 3
     for (m of quad.members) {
         var member = Game.getObjectById(m)
         var closeNotCovered = []
         if (member == null) { continue }
 
+
         for (h of hostiles) {
-            isCovered = false
-            if (member.pos.inRangeTo(h.pos.x, h.pos.y, 4)) {
+            var isCovered = false
+            var inRange = false;
+
+            if (member.pos.getRangeTo(h) < distance) { inRange = true; }
+
+            if (inRange) {
                 var str = member.room.lookForAt(LOOK_STRUCTURES, h.pos.x, h.pos.y)
                 for (s of str) {
                     if (s.structureType == STRUCTURE_RAMPART) {
                         isCovered = true
+                        break;
                     }
                 }
+                if (isCovered == false) {
+                    closeNotCovered.push(h)
+                    //console.log("adding enemy creep in range: ",h," at ",h.pos," range: ",member.pos.getRangeTo(h))
+                }
             }
-            if (isCovered == false) {
-                closeNotCovered.push(h)
-            }
+
         }
 
-        if (closeNotCovered.length > 0) { return member.pos.findClosestByRange(closeNotCovered) }
+        if (closeNotCovered.length > 0) {
+            //console.log("found: ",member.pos.findClosestByRange(closeNotCovered))
+            return member.pos.findClosestByRange(closeNotCovered)
+        }
     }
-    return null;
+    return target;
 }
 
 
@@ -955,6 +977,14 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
         var targetCreep = findTargetCreepInRange(quad, hostileCreeps)
+
+        /*
+         if(targetCreep!=null)
+         {
+             console.log("targeting creep")
+         }
+             */
+
         if (targetCreep != null) { target = targetCreep }
 
         if (target != null) {
@@ -964,11 +994,11 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
             topLeft.say(quadRangedMassAttack(quad, target))
             //console.log("quad is attacking: ", target, " result ", quadRangedAttack(quad, target))
-            if ((quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE || quadNearTo(quad, target) == false) && quadHits(quad) == quadHitsMax(quad)) {
+            if ((quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE || quadNearTo(quad, target) == false) && quadHits(quad) >= quadHitsMax(quad) - quadHealPower(quad)) {
                 moveQuad(quad, target.pos)
             }
             else if (quadNearTo(quad, target)) {
-                quadRangedMassAttack(quad)
+                quadRangedMassAttack(quad, target)
             }
         }
         var allies_present = false;
@@ -980,7 +1010,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             quadRetreat(quad, target.pos)
         }
     }
-    else if (quadHits(quad) == quadHitsMax(quad)) {
+    else if (quadHits(quad) >= quadHitsMax(quad) - quadHealPower(quad)) {
         moveQuad(quad, new RoomPosition(25, 25, quad.target_room))
     }
 
@@ -996,6 +1026,10 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     if (Game.flags["quadFlee"] != undefined) {
         topLeft.say("flee")
         //quadRetreat(quad, Game.flags["quadFlee"].pos)
+    }
+
+    if (topLeft.room.name != topLeft.memory.home_room.name) {
+        quadRangedMassAttack(quad)
     }
 
 
