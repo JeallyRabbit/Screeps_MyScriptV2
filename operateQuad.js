@@ -247,6 +247,12 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
 
         if (movePath != undefined && movePath.length > 0) {
             structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[0].x, movePath[0].y)
+            console.log("Path[0] blocked by structure")
+            if(movePath[0].x>topLeft.pos.x || movePath[0].y>topLeft.pos.y && movePath.length>=1)
+            {
+                structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[1].x, movePath[1].y))
+                console.log("Path[1] blocked by structure")
+            }
             isBlocked = false;
             for (s of structuresAtPath) {
                 if (s.my == false && (s.structureType == STRUCTURE_RAMPART || s.structureType == STRUCTURE_WALL)) {
@@ -325,7 +331,7 @@ function quadSpinLeft(quad) {
     topRight.move(LEFT);
     bottomRight.move(TOP);
     bottomLeft.move(RIGHT);
-
+    console.log("quad is spinning left")
     var aux = quad.topLeftId
     quad.topLeftId = quad.topRightId
     quad.topRightId = quad.bottomRightId
@@ -350,7 +356,7 @@ function quadSpinRight(quad) {
     topRight.move(BOTTOM);
     bottomRight.move(LEFT);
     bottomLeft.move(TOP);
-
+    console.log("quad is spinning right")
     //
     var aux = quad.topLeftId
     quad.topLeftId = quad.bottomLeftId

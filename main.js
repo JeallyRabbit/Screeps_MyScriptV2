@@ -1613,7 +1613,7 @@ module.exports.loop = function () {
 
             if (spawn.memory.need_soldier != undefined && spawn.memory.state != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK" && Game.rooms[spawn.memory.need_soldier] != undefined &&
                 Game.rooms[spawn.memory.need_soldier].memory.soldiers.length < 3)
-                && Game.rooms[spawn.memory.need_soldier] != undefined /* && Game.rooms[spawn.memory.need_soldier].memory.soldiers.length<5 */) {
+                && Game.rooms[spawn.memory.need_soldier] != undefined && false) {
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:
