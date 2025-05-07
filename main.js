@@ -84,6 +84,9 @@ const maxKeeperFarmer = require('./maxKeeperFarmer');
 const { pos_exchange } = require('./pos_exchange');
 const findRouteTest = require('./findRouteTest');
 const maxMerchant = require('./maxMerchant');
+const maxQuadRanger = require('./maxQuadRanger')
+const maxQUadHealer = require('./maxQuadHealer')
+
 //const move_avoid_hostile=require('./move_avoid_hostile')
 const profiler = require('screeps-profiler');
 
@@ -1450,7 +1453,15 @@ module.exports.loop = function () {
                     && (q.members != undefined && q.members.length < 4)
                 ) {
                     spawn.memory.isSpawningQuad = true;
-                    var spawn_result = spawn.spawnCreep(maxSoldier(Math.max(energyCap, q.minEnergyOnCreep)), 'quad' + spawn.room.name + '_' + Game.time, {
+                    body=[];
+                    //maxSoldier(Math.max(energyCap, q.minEnergyOnCreep))
+                    if(q.members.length%2){
+                        body=maxQuadRanger(Math.max(energyCap, q.minEnergyOnCreep))
+                    }
+                    else{
+                        body=maxQUadHealer(Math.max(energyCap, q.minEnergyOnCreep))
+                    }
+                    var spawn_result = spawn.spawnCreep(body, 'quad' + spawn.room.name + '_' + Game.time, {
                         memory: {
                             role: 'quadMember',
                             home_room: spawn.room,

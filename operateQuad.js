@@ -176,6 +176,8 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
 
 function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
 
+    //QUad is currently spinning
+    if (quad.isSpinning != undefined && quad.isSpinning == true) { return -1; }
     //if all can move - fatique==0
     for (q of quad.members) {
         cr = Game.getObjectById(q)
@@ -243,7 +245,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
         var direction = topLeft.pos.getDirectionTo(movePath[0])
         console.log("quad is moving from: ", topLeft.pos, " to ", movePath[0])
 
-        if (movePath != undefined && movePath.length>0) {
+        if (movePath != undefined && movePath.length > 0) {
             structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[0].x, movePath[0].y)
             isBlocked = false;
             for (s of structuresAtPath) {
@@ -306,6 +308,131 @@ function quadRangedAttack(quad, target) {
     if (resultSum == 0) { return OK }
     else if (resultSum > 0 && resultSum < 36 && resultSum % 9 == 0) { return ERR_NOT_IN_FULL_RANGE }
     else if (notInRange == true) { return ERR_NOT_IN_RANGE }
+}
+
+function quadSpinLeft(quad) {
+    var topLeft = Game.getObjectById(quad.topLeftId);
+    var topRight = Game.getObjectById(quad.topRightId);
+    var bottomLeft = Game.getObjectById(quad.bottomLeftId);
+    var bottomRight = Game.getObjectById(quad.bottomRightId);
+
+    if (topLeft == null || topRight == null || bottomLeft == null || bottomRight == null || (quad.isSpinning != undefined && quad.isSpinning == true)) {
+        return -1;
+    }
+
+    topRight.say("<-")
+    topLeft.move(BOTTOM);
+    topRight.move(LEFT);
+    bottomRight.move(TOP);
+    bottomLeft.move(RIGHT);
+
+    var aux = quad.topLeftId
+    quad.topLeftId = quad.topRightId
+    quad.topRightId = quad.bottomRightId
+    quad.bottomRightId = quad.bottomLeftId
+    quad.bottomLeftId = aux
+    quad.isSpinning = true
+}
+
+function quadSpinRight(quad) {
+    if (quad.isSpinning == true) { return -1; }
+    var topLeft = Game.getObjectById(quad.topLeftId);
+    var topRight = Game.getObjectById(quad.topRightId);
+    var bottomLeft = Game.getObjectById(quad.bottomLeftId);
+    var bottomRight = Game.getObjectById(quad.bottomRightId);
+
+    if (topLeft == null || topRight == null || bottomLeft == null || bottomRight == null || (quad.isSpinning != undefined && quad.isSpinning == true)) {
+        return -1;
+    }
+
+    topRight.say("->")
+    topLeft.move(RIGHT);
+    topRight.move(BOTTOM);
+    bottomRight.move(LEFT);
+    bottomLeft.move(TOP);
+
+    //
+    var aux = quad.topLeftId
+    quad.topLeftId = quad.bottomLeftId
+    quad.bottomLeftId = quad.bottomRightId
+    quad.bottomRightId = quad.topRightId
+    quad.topRightId = aux
+    quad.isSpinning = true
+
+    return 0;
+}
+
+function getTargetDirection(quad, target) {
+    var powerDirection = undefined;
+    var topLeft = Game.getObjectById(quad.topLeftId);
+
+    if (topLeft == null) {
+        return -1;
+    }
+
+    var damage = 0;
+    if (target.pos.x <= topLeft.pos.x) {//Left side
+        if (target.pos.y <= topLeft.pos.y) {
+            return TOP_LEFT
+        }
+        else {
+            return BOTTOM_LEFT
+        }
+    }
+    else {//Right side
+        if (target.pos.y <= topLeft.pos.y) {
+            return TOP_RIGHT
+        }
+        else {
+            return BOTTOM_RIGHT
+        }
+    }
+}
+
+function getQuadDirection(quad) {
+    var topLeft = Game.getObjectById(quad.topLeftId);
+    var topRight = Game.getObjectById(quad.topRightId);
+    var bottomLeft = Game.getObjectById(quad.bottomLeftId);
+    var bottomRight = Game.getObjectById(quad.bottomRightId);
+
+    if (topLeft == null || topRight == null || bottomLeft == null || bottomRight == null) {
+        return -1;
+    }
+
+    var topPower = 0;
+    var leftPower = 0;
+    var rightPower = 0;
+    var bottomPower = 0;
+
+    topPower=(_.filter(topLeft.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER)+ _.filter(topRight.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER;
+    leftPower=(_.filter(topLeft.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER)+ _.filter(bottomLeft.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER;
+    rightPower=(_.filter(topRight.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER)+ _.filter(bottomRight.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER;
+    bottomPower=(_.filter(bottomLeft.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER)+ _.filter(bottomRight.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER;
+
+    var max=Math.max(topPower,leftPower,rightPower,bottomPower)
+    if(max==topPower){return TOP}
+    if(max==leftPower){return LEFT}
+    if(max==rightPower){return RIGHT}
+    if(max==bottomPower){return BOTTOM}
+    return -1;
+}
+
+function rotateToTarget(quad, target) {
+    var aux=getTargetDirection(quad,target)-getQuadDirection(quad)
+    if(Math.abs(aux)>1)
+    {
+        if(aux==-3)
+        {
+            quadSpinLeft(quad)
+        }
+        else{
+            quadSpinRight(quad)
+        }
+        /*
+        rotate left when TOPRIGHT(2)-BOTTOM(5)=-3
+        BOTTOMRIGHT4-LEFT7
+        */
+    }
 }
 
 function quadRangedMassAttack(quad, target = undefined) {
@@ -646,7 +773,7 @@ function findTargetStructure(quad, structures, room) {
         var s = Game.getObjectById(str)
         if (s == null) { continue }
         var type = s.structureType
-        if (type != STRUCTURE_RAMPART && type != STRUCTURE_CONTROLLER && type!=STRUCTURE_CONTAINER) {
+        if (type != STRUCTURE_RAMPART && type != STRUCTURE_CONTROLLER && type != STRUCTURE_CONTAINER) {
             structuresAt = Game.rooms[room].lookForAt(LOOK_STRUCTURES, s.pos)
             var rampHits = 0
             for (at of structuresAt) {
@@ -717,6 +844,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     var topRight = Game.getObjectById(quad.topRightId);
     var bottomLeft = Game.getObjectById(quad.bottomLeftId);
     var bottomRight = Game.getObjectById(quad.bottomRightId);
+    quad.isSpinning = false;
 
     console.log("quad.id: ", quad.id)
 
@@ -990,6 +1118,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         if (target != null) {
 
 
+
             console.log("quad: ", quad.id, " is targeting: ", target, " at: ", target.pos)
 
             topLeft.say(quadRangedMassAttack(quad, target))
@@ -999,6 +1128,9 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             }
             else if (quadNearTo(quad, target)) {
                 quadRangedMassAttack(quad, target)
+            }
+            else{
+                rotateToTarget(quad,target)
             }
         }
         var allies_present = false;
