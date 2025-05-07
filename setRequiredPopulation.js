@@ -797,7 +797,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         }
     }
 
-    //console.log("req_quads:")
+    //Adding quads
     if(spawn.memory.req_quads!=undefined)
     {
         for(var key in spawn.memory.req_quads)
@@ -820,6 +820,40 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             //console.log(spawn.memory.req_quads[key])
         }
     }
+
+    //Removing redundant Quads
+    if (spawn.memory.req_quads !== undefined && spawn.memory.quads !== undefined) {
+        const quadsByRoom = {};
+    
+        // Group quads by target_room
+        for (const quad of spawn.memory.quads) {
+            const room = quad.target_room;
+            if (!quadsByRoom[room]) {
+                quadsByRoom[room] = [];
+            }
+            quadsByRoom[room].push(quad);
+        }
+    
+        // Rebuild the quad list based on req_quads
+        const cleanedQuads = [];
+    
+        for (const room in quadsByRoom) {
+            const quadsForRoom = quadsByRoom[room];
+    
+            // If the room is not in req_quads, skip it (removing all its quads)
+            if (!(room in spawn.memory.req_quads)) {
+                continue;
+            }
+    
+            const allowedAmount = spawn.memory.req_quads[room];
+    
+            // Keep only up to the allowed number of quads
+            cleanedQuads.push(...quadsForRoom.slice(0, allowedAmount));
+        }
+    
+        spawn.memory.quads = cleanedQuads;
+    }
+
 
     //manuall adding swarm
     if (spawn.room.name == 'W3N7' || true) {

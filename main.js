@@ -91,6 +91,10 @@ const maxQUadHealer = require('./maxQuadHealer')
 const profiler = require('screeps-profiler');
 
 
+const heap = {}
+global.heap = heap;
+
+
 class colonizeRoom {
     constructor(name, spawn_pos_x, spawn_pos_y) {
         this.name = name;
@@ -1469,12 +1473,12 @@ module.exports.loop = function () {
                         }
                     })
                     //console.log("quad spawning result: ", spawn_result)
-                    if (spawn_result == 0) {
+                    if (spawn_result == 0 || spawn_result==-10) {
                         if (energyCap > q.minEnergyOnCreep) {
                             q.minEnergyOnCreep = energyCap
                         }
                         spawn.memory.isSpawningQuad = true
-                        continue;
+                        break;
                     }
                 }
             }
