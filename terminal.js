@@ -238,7 +238,7 @@ function sell_resource(terminal, cost, spawn, res) {
             best_order_id = energy_orders[i].id
         }
     }
-    console.log("best order id: ",best_order_id)
+    //console.log("best order id: ",best_order_id)
     if (best_order_id != undefined) {
 
         //onsole.log("best offer: ",best_order_id);
@@ -250,7 +250,7 @@ function sell_resource(terminal, cost, spawn, res) {
         var profit_per_unit = profit / trade_amount
         //console.log("profit per unit: ",profit_per_unit)
         if (profit_per_unit > 10 || true) {
-            console.log(res, " selling result: ", Game.market.deal(best_order_id, trade_amount, spawn.room.name))
+            //console.log(res, " selling result: ", Game.market.deal(best_order_id, trade_amount, spawn.room.name))
             //console.log("trade_amount: ",trade_amount);
             //console.log("cost: ",cost);
         }

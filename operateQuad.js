@@ -169,7 +169,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
 
     //QUad is currently spinning
     //if (quad.isRotating != undefined && quad.isRotating == true) { return -1; }
-    if(localHeap.isRotating !=undefined && localHeap.isRotating ==true){return -1;}
+    if (localHeap.isRotating != undefined && localHeap.isRotating == true) { return -1; }
     //if all can move - fatique==0
     for (q of quad.members) {
         cr = Game.getObjectById(q)
@@ -286,10 +286,10 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
 
 function quadRetreat(quad, position, range = 30) {
 
-    localHeap.noSpin=true
+    localHeap.noSpin = true
     //quad.noSpin = true
     //quad.isRotating = false
-localHeap.isRotating = false;
+    localHeap.isRotating = false;
     retreatResult = moveQuad(quad, position, 1, range, true)
     //console.log("retreatResult: ", retreatResult)
 }
@@ -319,7 +319,7 @@ function quadSpinLeft(quad) {
     var bottomRight = Game.getObjectById(quad.bottomRightId);
 
     if (topLeft == null || topRight == null || bottomLeft == null || bottomRight == null || (localHeap.isRotating != undefined && localHeap.isRotating == true))
-        //(quad.isRotating != undefined && quad.isRotating == true)) {
+    //(quad.isRotating != undefined && quad.isRotating == true)) {
     {
         return -1;
     }
@@ -347,15 +347,15 @@ function quadSpinLeft(quad) {
 
 function quadSpinRight(quad) {
     //if (quad.isRotating == true) { return -1; }
-    if(localHeap.isRotating == true){return -1}
+    if (localHeap.isRotating == true) { return -1 }
     var topLeft = Game.getObjectById(quad.topLeftId);
     var topRight = Game.getObjectById(quad.topRightId);
     var bottomLeft = Game.getObjectById(quad.bottomLeftId);
     var bottomRight = Game.getObjectById(quad.bottomRightId);
 
     if (topLeft == null || topRight == null || bottomLeft == null || bottomRight == null || (localHeap.isRotating != undefined && localHeap.isRotating == true))
-        // (quad.isRotating != undefined && quad.isRotating == true)) {
-        {
+    // (quad.isRotating != undefined && quad.isRotating == true)) {
+    {
         return -1;
     }
 
@@ -443,7 +443,7 @@ function getQuadDirection(quad) {
 
 function rotateToTarget(quad, target) {
     //if (quad.noSpin == true) { return -1 }
-    if(localHeap.noSpin==true){return -1}
+    if (localHeap.noSpin == true) { return -1 }
     var aux = getTargetDirection(quad, target) - getQuadDirection(quad)
     console.log("quad: ", quad.id, " needs to rotate into  into ", getTargetDirection(quad, target),
         " - ", getQuadDirection(quad), " = ", aux, " direction")
@@ -454,7 +454,7 @@ function rotateToTarget(quad, target) {
         else {
             quadSpinRight(quad)
         }
-        
+
         /*
         rotate left when TOPRIGHT(2) - BOTTOM(5)=-3
         BOTTOMRIGHT4 - LEFT7
@@ -876,8 +876,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     var bottomLeft = Game.getObjectById(quad.bottomLeftId);
     var bottomRight = Game.getObjectById(quad.bottomRightId);
     //quad.isRotating = false
-localHeap.isRotating = false;
-    localHeap.noSpin=false
+    localHeap.isRotating = false;
+    localHeap.noSpin = false
     //quad.noSpin = false;
 
     console.log("quad.id: ", quad.id)
@@ -927,6 +927,11 @@ localHeap.isRotating = false;
         quad.towerDamageCM = undefined;
         quad.rampartsCM = undefined;
         quad.grouping_pos = undefined
+        quad.targetStructureId = undefined;
+        quad.minHealPower = undefined;
+        quad.totalHealPower = undefined;
+        quad.minHp = undefined;
+
         return
     }
 

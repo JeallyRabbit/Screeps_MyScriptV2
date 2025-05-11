@@ -1424,7 +1424,9 @@ module.exports.loop = function () {
 
             var farming_needs_satisfied = false;
             var farming_sources_length = Math.floor(spawn.memory.farming_sources.length / 2);
-            if (spawn.memory.farming_rooms != undefined && spawn.memory.farming_sources.length > 0 && Math.ceil(spawn.memory.farming_sources[farming_sources_length].carry_power) >= spawn.memory.farming_sources[farming_sources_length].harvesting_power * 0.5
+            
+            if (spawn.memory.farming_rooms != undefined && spawn.memory.farming_sources.length > 0 && 
+                Math.ceil(spawn.memory.farming_sources[farming_sources_length].carry_power) >= Math.min(spawn.memory.farming_sources[farming_sources_length].harvesting_power * 0.5, (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5)
                 && spawn.memory.farming_sources[farming_sources_length].harvesting_power > (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5
             ) {
                 farming_needs_satisfied = true
@@ -1453,9 +1455,20 @@ module.exports.loop = function () {
 
             spawn.memory.isSpawningQuad = false;
             for (q of spawn.memory.quads) {
+                console.log(q.id, " ",(((!q.completed) && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
+                    && (q.members != undefined && q.members.length < 4))))
+
+
                 if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
-                    && (q.members != undefined && q.members.length < 4)
-                ) {
+                    && (q.members != undefined && q.members.length < 4)) {
+
+                    //skipping starting spawning another quad if not enough energy
+                    if(q.members.length==0 && spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]<50000)
+                    {
+                        console.log("skipping spawning quad")
+                        continue;
+                    }
+
                     spawn.memory.isSpawningQuad = true;
                     body=[];
                     //maxSoldier(Math.max(energyCap, q.minEnergyOnCreep))
@@ -1472,7 +1485,7 @@ module.exports.loop = function () {
                             quadId: q.id
                         }
                     })
-                    //console.log("quad spawning result: ", spawn_result)
+                    console.log("quad spawning result: ", spawn_result)
                     if (spawn_result == 0 || spawn_result==-10) {
                         if (energyCap > q.minEnergyOnCreep) {
                             q.minEnergyOnCreep = energyCap
@@ -1480,6 +1493,19 @@ module.exports.loop = function () {
                         spawn.memory.isSpawningQuad = true
                         break;
                     }
+                }
+                else{
+                    /*
+                    console.log("not spawning quad because: ")
+                    console.log("!q.completed: ",!q.completed)
+                    console.log("pop_fillers == spawn.memory.req_fillers: ",pop_fillers == spawn.memory.req_fillers )
+                    console.log("farming_needs_satisfied: ", farming_needs_satisfied)
+                    console.log("pop_haulers >= spawn.memory.req_haulers: ",pop_haulers >= spawn.memory.req_haulers)
+                    console.log("(q.members != undefined && q.members.length < 4) ",(q.members != undefined && q.members.length < 4))
+                    */
+                   
+                    //(!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
+                     //   && (q.members != undefined && q.members.length < 4))
                 }
             }
 
