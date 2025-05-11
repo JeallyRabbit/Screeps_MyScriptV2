@@ -144,13 +144,24 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             filter: function (structure) {
                 //return structure.my==false && 
                 return structure.room.name != spawn.room.name
-                    && structure.structureType != STRUCTURE_CONTROLLER
-                    //&& structure.structureType!=STRUCTURE_WALL
-                    && structure.structureType != STRUCTURE_CONTAINER
-                    && structure.structureType != STRUCTURE_ROAD
+                    && structure.structureType != STRUCTURE_INVADER_CORE
                     && structure.my == false
             }
         });
+        if (target_structure == null) {
+            target_structure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
+                filter: function (structure) {
+                    //return structure.my==false && 
+                    return structure.room.name != spawn.room.name
+                        && structure.structureType != STRUCTURE_CONTROLLER
+                        //&& structure.structureType!=STRUCTURE_WALL
+                        && structure.structureType != STRUCTURE_CONTAINER
+                        && structure.structureType != STRUCTURE_ROAD
+                        && structure.my == false
+                }
+            });
+        }
+
         //console.log("structure: ",target_structure);
         //if(!target) {
         //  target_creep = creep.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES)

@@ -38,7 +38,7 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
                 creep.memory.energy_to_terminal = true;
                 creep.memory.energy_from_terminal = false;
             }
-            else if (terminal.store[RESOURCE_ENERGY] > 35000) {
+            else if (terminal.store[RESOURCE_ENERGY] > 35000 && storage.store.getFreeCapacity(RESOURCE_ENERGY)>0) {
                 creep.memory.task = FILL_STORAGE_ENERGY;
                 creep.memory.energy_from_terminal = true;
                 creep.memory.energy_to_terminal = false;
