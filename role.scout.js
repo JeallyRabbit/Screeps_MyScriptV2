@@ -249,8 +249,8 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
 
 
-                    for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
-                        if (spawn.memory.keepers_rooms[i].name == creep.room.name) {
+                    for (let j = 0; j < spawn.memory.keepers_rooms.length; j++) {
+                        if (spawn.memory.keepers_rooms[j].name == creep.room.name) {
                             already_scanned = true;
                         }
                     }
