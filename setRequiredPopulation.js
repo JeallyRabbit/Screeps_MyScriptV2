@@ -926,7 +926,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         //spawn.memory.need_DistanceCarrier = undefined;
         //  CARRIERS //
         for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
-            if (spawn.memory.farming_sources[i].carry_power < spawn.memory.farming_sources[i].sources_num * 10
+            if (spawn.memory.farming_sources[i].carry_power < spawn.memory.farming_sources[i].sources_num * (SOURCE_ENERGY_CAPACITY/ENERGY_REGEN_TIME)
                 && spawn.memory.farming_sources[i].carry_power < spawn.memory.farming_sources[i].harvesting_power) {
                 if (Game.rooms[spawn.memory.farming_sources[i].name] != undefined && Game.rooms[spawn.memory.farming_sources[i].name].controller.reservation != undefined
                     && Game.rooms[spawn.memory.farming_sources[i].name].controller.reservation.username == 'Invader') {

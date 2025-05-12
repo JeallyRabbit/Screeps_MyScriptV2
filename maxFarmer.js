@@ -5,57 +5,31 @@ function maxFarmer(cap,spawn,limit)// return array with max possible work parts 
     {
         limit=false;
     }
-    if(cap>2000 && limit==true)
+    var reqHarvPower=(SOURCE_ENERGY_CAPACITY/ENERGY_REGEN_TIME)-(2*HARVEST_POWER);
+
+    if(cap>(BODYPART_COST[MOVE]+(2*BODYPART_COST[WORK]))*reqHarvPower && limit==true)
     {
-        cap=2000;
+        cap=(BODYPART_COST[MOVE]+(2*BODYPART_COST[WORK]))*reqHarvPower;
     }
     parts.push(MOVE)
     parts.push(CARRY)
     parts.push(WORK)
     parts.push(WORK)
-    cap-=300;
+    cap-=(BODYPART_COST[MOVE]+(2*BODYPART_COST[WORK]));
+    /*
     if(cap>750)
     {
         cap=750
     }
-    for(let i=0;i<Math.floor(cap/250);i++)
+        */
+    for(let i=0;i<Math.floor(cap/(BODYPART_COST[MOVE]+(2*BODYPART_COST[WORK])));i++)
     {
         parts.push(MOVE)
         parts.push(WORK)
         parts.push(WORK)
-        cap-=250
-    }
-    /*
-    if(cap>1100)
-    {
-        parts.push(CARRY);
-        parts.push(CARRY);
-        cap-=100;
+        cap-=(BODYPART_COST[MOVE]+(2*BODYPART_COST[WORK]))
     }
     
-    parts.push(MOVE);
-    parts.push(CARRY);
-    //parts.push(CARRY);
-    parts.push(WORK);
-    //parts.push(MOVE);
-    parts.push(WORK);
-    cap-=300;
-    if(cap>100)
-    {
-        parts.push(MOVE);
-        cap-=100;
-    }
-    // limit to 5 iterations
-    if(spawn.memory.state.includes('STATE_DEVELOPING') && cap>1050)
-    {
-        cap=1050
-    }
-    for(let i=0;i<Math.floor(cap/150);i++)
-    {
-        parts.push(MOVE);
-        parts.push(WORK);
-    }
-        */
     return parts;
 }
 module.exports = maxFarmer;

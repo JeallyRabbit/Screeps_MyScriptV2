@@ -144,10 +144,10 @@ Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
             filter: function (structure) {
                 //return structure.my==false && 
                 return structure.room.name != spawn.room.name
-                    && structure.structureType != STRUCTURE_INVADER_CORE
-                    && structure.my == false
+                    && structure.structureType == STRUCTURE_INVADER_CORE
             }
         });
+
         if (target_structure == null) {
             target_structure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
                 filter: function (structure) {
