@@ -1270,7 +1270,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
         plan_road_to_target(spawn, roomCM_2, mineral[0].pos.getNearbyPositions(), 6);
         var labs_pos = new RoomPosition(spawn.room.memory.labs_stamp_pos.x, spawn.room.memory.labs_stamp_pos.y, spawn.room.name)
         plan_road_to_target(spawn, roomCM_2, labs_pos.getNearbyPositions(), 6)
-        if (Game.shard.name != 'shard3' && Game.shard.name != 'jaysee') {
+        if (Game.shard.name != 'shard3') {
             plan_controller_ramparts(spawn);
         }
 
