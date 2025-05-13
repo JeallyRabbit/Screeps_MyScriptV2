@@ -1423,11 +1423,11 @@ module.exports.loop = function () {
             }
 
             var farming_needs_satisfied = false;
-            var farming_sources_length = Math.floor(spawn.memory.farming_sources.length / 2);
+            var farming_sources_length = Math.max(1,Math.floor(spawn.memory.farming_sources.length / 2)-1);
             
             if (spawn.memory.farming_rooms != undefined && spawn.memory.farming_sources.length > 0 && 
                 Math.ceil(spawn.memory.farming_sources[farming_sources_length].carry_power) >= Math.min(spawn.memory.farming_sources[farming_sources_length].harvesting_power * 0.5, (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5)
-                && spawn.memory.farming_sources[farming_sources_length].harvesting_power > (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5
+                && (spawn.memory.farming_sources[farming_sources_length].harvesting_power > (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5 || spawn.memory.farming_sources[farming_sources_length].farmers>=spawn.memory.farming_sources[farming_sources_length].max_farmers )
             ) {
                 farming_needs_satisfied = true
             }
@@ -1700,7 +1700,8 @@ module.exports.loop = function () {
                 continue;
             }
             //if (spawn.memory.need_farmer != undefined) {
-            if (spawn.memory.need_source_farmer != undefined && (spawn.memory.need_source_farmer != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers > 0)) {
+            if (spawn.memory.need_source_farmer != undefined && (spawn.memory.need_source_farmer != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers > 0)
+            && spawn.memory.need_DistanceCarrier ==undefined) {
 
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
@@ -1724,6 +1725,7 @@ module.exports.loop = function () {
                 if (spawn.memory.need_distanceRepairer == spawn.room.name) {
                     if_limit = false;
                 }
+
                 if (spawn.spawnCreep(maxRepairer(energyCap, if_limit), 'distanceRepairer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'distanceRepairer', home_room: spawn.room,
@@ -1854,6 +1856,7 @@ module.exports.loop = function () {
             else {
                 spawn.memory.mean_cpu_sum += spawn_end_cpu - spawn_start_cpu
             }
+            spawn.room.visual.text("farmingNeedsSatisfied: "+farming_needs_satisfied,44,2, { color: '#fc03b6' })
             spawn.room.visual.text("used Cpu: " + Math.round(((spawn_end_cpu - spawn_start_cpu)) * 100) / 100, 44, 4, { color: '#fc03b6' })
 
             if (Game.time % step == 0) {
