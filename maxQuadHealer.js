@@ -15,12 +15,14 @@ function maxQUadHealer(cap)// return array with max possible work parts for haul
     for(let i=0;i<Math.floor(cap/300);i++)
     {
         parts.push(MOVE);
+        parts.push(HEAL);
     }
+    /*
     for(let i=0;i<Math.floor(cap/300);i++)
     {
         parts.push(HEAL);
     }
-    
+    */
     return parts;
 }
 module.exports = maxQUadHealer;

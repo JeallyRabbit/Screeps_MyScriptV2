@@ -182,16 +182,27 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
     if (topLeft == null) { return -1; }
 
     if (topLeft.pos.isNearTo(targetPos) && myFlee == false) { return }
-    if (quad.lastTargetPos != targetPos) {
-        quad.lastTargetPos = targetPos;
+    if(quad.lastTargetPos== undefined || (quad.lastTargetPos!=undefined && !(quad.lastTargetPos.x==targetPos.x && quad.lastTargetPos.y==targetPos.y && quad.lastTargetPos.roomName==targetPos.roomName)))
+    {
+        quad.lastTargetPos=targetPos
+        quad.path=undefined
+        console.log("RESETTING PATH - TARGET_POS HAS CHANGED")
+    }
+    var nextPos=new RoomPosition(quad.path.path[0].x,quad.path.path[0].y,quad.path.path[0].roomName)
+    if (quad.path!=undefined && quad.path.path!=undefined && quad.path.path[0]!=undefined && !topLeft.pos.isNearTo(nextPos)) {
+        console.log("RESSETING PATH - QUAD IS TO FAR AWAY FROM CURRENT PATH")
+        console.log("Quad currentPOS: ", topLeft.pos)
+        console.log("next POS: ",nextPos)
         quad.path = undefined
+        console.log("quad: ",quad.id," at: ",topLeft.pos," is clearing its path data")
     }
 
 
     var movePath;
     if (Game.time % reusePath == 0 || quad.path == undefined || (topLeft.pos.x == 49 || topLeft.pos.y == 49 || topLeft.pos.x == 0 || topLeft.pos.y == 0)) {
 
-        //console.log("Calculating path for quad")
+        console.log("Calculating path for quad: ",quad.id)
+        topLeft.say("FndPath")
         //console.log("topLeft.pos: ", topLeft.pos)
         //console.log("target.pos: ", targetPos)
         const path = PathFinder.search(
@@ -234,26 +245,53 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
             //}
         }
 
-        var direction = topLeft.pos.getDirectionTo(movePath[0])
-        console.log("quad is moving from: ", topLeft.pos, " to ", movePath[0])
+        var direction = topLeft.pos.getDirectionTo(nextPos)
+        
 
-        if (movePath != undefined && movePath.length > 0) {
-            structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[0].x, movePath[0].y)
-            console.log("Path[0] blocked by structure")
-            if ((movePath[0].x > topLeft.pos.x || movePath[0].y > topLeft.pos.y) && movePath.length >= 1 && movePath[1] != undefined) {
+
+        //check PATH is blocked by STRUCTURE_RAMPART or STRUCTURE_WALL
+        var structuresAtPath=[]
+        if(direction==TOP || direction==TOP_LEFT || direction==LEFT && nextPos!=undefined)
+        {
+            structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, nextPos.x, nextPos.y)
+        }
+        else if(direction==BOTTOM || direction==BOTTOM_RIGHT || direction==BOTTOM_LEFT && nextPos!=undefined && movePath[1]!=undefined)
+        {
+            structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, nextPos.x, nextPos.y)
+            structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[1].x, movePath[1].y))
+        }
+        //Excluding roads and containers from path
+        structuresAtPath=_.filter(structuresAtPath,function (str) {
+                return str.structureType!=STRUCTURE_ROAD && str.structureType!=STRUCTURE_CONTAINER;
+            });
+        //debugging
+        console.log("STRUCTURES AT PATH")
+        for(s of structuresAtPath)
+        {
+            console.log(s)
+        }
+        /// end of debuging
+        if (movePath != undefined && movePath.length > 0 && structuresAtPath.length>0 && structuresAtPath[0]!=undefined) {
+            //structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, nextPos.x, nextPos.y)
+            //console.log("Path[0] blocked by structure: ",structuresAtPath[0])
+            if ((nextPos.x > topLeft.pos.x || nextPos.y > topLeft.pos.y) && movePath.length >= 1 && structuresAtPath[1] != undefined) {
                 //console.log("movePath: ",movePath)
                 structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[1].x, movePath[1].y))
-                console.log("Path[1] blocked by structure")
+                //console.log("Path[1] blocked by structure: ",structuresAtPath[1])
             }
             isBlocked = false;
             for (s of structuresAtPath) {
-                if (s.my == false && (s.structureType == STRUCTURE_RAMPART || s.structureType == STRUCTURE_WALL)) {
+                if (s.my == false && (s.structureType == STRUCTURE_RAMPART || s.structureType == STRUCTURE_WALL) && s.structureType!=STRUCTURE_ROAD) {
                     isBlocked = true;
                     quad.path = undefined
+                    console.log("RESETTING PATH - OBSTACLE")
+                    console.log("Path blocked by WALL or RAMPART at: ",s.pos)
                     return -13;//path in reality is blocked by rampart/wall
                 }
             }
         }
+
+
 
         //topLeft.say(direction)
         //topLeft.say(movePath.length)
@@ -263,15 +301,16 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
             if (cr == null) { continue }
 
             //cr.say(cr.move(direction))
-
+            //console.log("quad is trying to move from: ", topLeft.pos, " to ", nextPos)
             move_result += cr.move(direction)
             //cr.say(cr.move(direction))
         }
         if (move_result > 0 && move_result % 11 != 0) {
+            console.log("RESETING PATH - UNABLE TO MOVE")
             quad.path = undefined
         }
         else if (move_result == 0) {
-
+            console.log("quad is moving from: ", topLeft.pos, " to ", nextPos)
             movePath.shift()
             return move_result
         }
@@ -284,7 +323,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
 
 }
 
-function quadRetreat(quad, position, range = 30) {
+function quadRetreat(quad, position, range = 60) {
 
     localHeap.noSpin = true
     //quad.noSpin = true
@@ -971,7 +1010,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
                 var structures = topLeft.room.find(FIND_STRUCTURES, {
                     filter: function (str) {
-                        return str.structureType != STRUCTURE_ROAD && str.structureType != STRUCTURE_RAMPART
+                        return str.structureType != STRUCTURE_ROAD || (str.structureType==STRUCTURE_RAMPART && str.my==false)
                     }
                 })
 
@@ -987,8 +1026,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                 let distanceCM = topLeft.room.diagonalDistanceTransform(roomCM, false);
                 var min_distance = Infinity
                 grouping_pos = new RoomPosition(25, 25, topLeft.room.name)
-                for (let i = 3; i < 47; i++) {
-                    for (let j = 3; j < 47; j++) {
+                for (let i = 1; i < 48; i++) {
+                    for (let j = 1; j < 48; j++) {
                         if (distanceCM.get(i, j) >= 3 && floodCM.get(i, j) < min_distance) {
                             min_distance = floodCM.get(i, j);
                             grouping_pos.x = i;
@@ -1004,7 +1043,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         }
 
 
-        quad.path = false
+        //quad.path = false
 
         if (topLeft != null && quad.grouping_pos != undefined) {
             topLeft.say(quad.grouping_pos.x + " " + quad.grouping_pos.y)
@@ -1040,8 +1079,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             var hos = Game.getObjectById(h)
             if (hos != null) {
                 hostileCreeps.push(hos)
-                if (hos.pos.inRangeTo(topLeft.pos.x, topLeft.pos.y, 3) || hos.pos.inRangeTo(topLeft.pos.x + 1, topLeft.pos.y, 3)
-                    || hos.pos.inRangeTo(topLeft.pos.x, topLeft.pos.y + 1, 3) || hos.pos.inRangeTo(topLeft.pos.x + 1, topLeft.pos.y + 1, 3)) {
+                if (hos.pos.inRangeTo(topLeft.pos.x, topLeft.pos.y, 5) || hos.pos.inRangeTo(topLeft.pos.x + 1, topLeft.pos.y, 5)
+                    || hos.pos.inRangeTo(topLeft.pos.x, topLeft.pos.y + 1, 5) || hos.pos.inRangeTo(topLeft.pos.x + 1, topLeft.pos.y + 1, 5)) {
                     hostileNotProtectedCreeps.push(hos)
                 }
             }
@@ -1116,7 +1155,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
             //console.log("quad is attacking: ", target, " result ", quadRangedAttack(quad, target))
             if ((quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE || quadNearTo(quad, target) == false) && quadHits(quad) >= quadHitsMax(quad) - quadHealPower(quad)) {
-                moveQuad(quad, target.pos)
+                moveQuad(quad, target.pos,3)
             }
             else if (quadNearTo(quad, target)) {
                 quadRangedMassAttack(quad, target)
@@ -1128,7 +1167,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
             }
         }
-        var allies_present = false;
 
 
         console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
@@ -1138,7 +1176,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         }
     }
     else if (quadHits(quad) >= quadHitsMax(quad) - quadHealPower(quad)) {
-        moveQuad(quad, new RoomPosition(25, 25, quad.target_room))
+        moveQuad(quad, new RoomPosition(25, 25, quad.target_room),10)
     }
 
     if (Game.rooms[currentRoom].memory.allies_present == undefined || Game.rooms[currentRoom].memory.allies_present.length < 0) {
@@ -1149,11 +1187,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //moving to flag
     //moveQuad(quad, Game.flags["quad"])
 
-    //running from flag
-    if (Game.flags["quadFlee"] != undefined) {
-        topLeft.say("flee")
-        //quadRetreat(quad, Game.flags["quadFlee"].pos)
-    }
 
     if (topLeft.room.name != topLeft.memory.home_room.name) {
         quadRangedMassAttack(quad)

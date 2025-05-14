@@ -1469,15 +1469,22 @@ module.exports.loop = function () {
                         continue;
                     }
 
-                    spawn.memory.isSpawningQuad = true;
+                    //spawn.memory.isSpawningQuad = true;
                     body=[];
-                    //maxSoldier(Math.max(energyCap, q.minEnergyOnCreep))
+                    // (ENERGY_CAPACITY)*()
+                    var minBodyCost=EXTENSION_ENERGY_CAPACITY[spawn.room.controller.level]*CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][spawn.room.controller.level];
+                    
+                    minBodyCost*=0.8
+                    console.log("min bodyCost: ",minBodyCost)
                     if(q.members.length%2){
-                        body=maxQuadRanger(Math.max(energyCap, q.minEnergyOnCreep))
+                        body=maxQuadRanger(Math.max(energyCap, q.minEnergyOnCreep,minBodyCost))
                     }
                     else{
-                        body=maxQUadHealer(Math.max(energyCap, q.minEnergyOnCreep))
+                        body=maxQUadHealer(Math.max(energyCap, q.minEnergyOnCreep,minBodyCost))
                     }
+                    //for movement caching work
+                    body=[MOVE]
+                    //
                     var spawn_result = spawn.spawnCreep(body, 'quad' + spawn.room.name + '_' + Game.time, {
                         memory: {
                             role: 'quadMember',
