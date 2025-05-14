@@ -194,20 +194,44 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
     }
     
     var nextPos = undefined
-
+    //debugging
+    console.log("path before skipping (first 5):")
+    var c=0;
+    for(p of movePath)
+    {
+        console.log(p.x," ",p.y," ",p.roomName)
+        c++;
+        if(c>5){break}
+    }
     //
     if (quad.path != undefined && quad.path.path != undefined && quad.path.path[0] != undefined) {
         nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
 
         //skipping double tile on edges
-        if(Math.abs(nextPos.x-topLeft.pos.x)==49 || Math.abs(nextPos.y-topLeft.pos.y)==49){
-            console.log("SKIPPING DOUBLED ROOM EDGE")
-            movePath=quad.path.path
+        while((nextPos.x==49 && topLeft.pos.x==0) || (nextPos.x==0 && topLeft.pos.x==49)
+        || (nextPos.y==49 && topLeft.pos.y==0) || (nextPos.y==0 && topLeft.pos.y==49)
+    || (nextPos.x==topLeft.pos.x && nextPos.y==topLeft.pos.y && nextPos.y.roomName==topLeft.pos.roomName)){
+            console.log("SKIPPING DOUBLED ROOM EDGE OR SUCCESFULL MOVE")
             movePath.shift()
             nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
         }
     }
+
+    console.log("path after skipping (first 5):")
+    var c=0;
+    for(p of movePath)
+    {
+        if(p!=undefined)
+        {
+            console.log(p.x," ",p.y," ",p.roomName)
+        }
+        c++;
+        if(c>5){break}
+    }
+
+
     if (movePath!=undefined && movePath.length == 0) {
+        console.log("RESETTING PATH - PATH IS EMPTY")
         quad.path = undefined
         movePath = undefined
     }
@@ -256,19 +280,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
 
     if (movePath != undefined) {
         //topLeft.say(movePath.length)
-        myStroke = 'red'
-        if (myFlee) {
-            myStroke = 'yellow'
-        }
-        for (p of movePath) {
-            // if (p.roomName == topLeft.room.name) {
-            if (Game.rooms[p.roomName] != undefined) {
-                Game.rooms[p.roomName].visual.circle(p.x, p.y, { fill: 'transparent', radius: 0.55, stroke: myStroke })
-            }
-
-            //}
-        }
-
+        
         var direction = topLeft.pos.getDirectionTo(nextPos)
 
 
@@ -316,6 +328,20 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
 
         //topLeft.say(direction)
         //topLeft.say(movePath.length)
+        //debugging - drawing path
+        myStroke = 'red'
+        if (myFlee) {
+            myStroke = 'yellow'
+        }
+        for (p of movePath) {
+            // if (p.roomName == topLeft.room.name) {
+            if (Game.rooms[p.roomName] != undefined) {
+                Game.rooms[p.roomName].visual.circle(p.x, p.y, { fill: 'transparent', radius: 0.55, stroke: myStroke })
+            }
+        }
+
+
+        console.log("quad is trying to move from: ", topLeft.pos, " to ", nextPos)
         var move_result = 0;
         for (q of quad.members) {
             cr = Game.getObjectById(q)
@@ -326,12 +352,13 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
             move_result += cr.move(direction)
             //cr.say(cr.move(direction))
         }
-        if (move_result > 0 && move_result % 11 != 0) {
+        if (move_result > 0 && Math.abs(move_result) % 11 != 0) {// 0 - OK,11 - err_tired
             console.log("RESETING PATH - UNABLE TO MOVE")
             quad.path = undefined
         }
-        else if (move_result == 0) {
+        else if (move_result == 0 || Math.abs(move_result) % 11==0) {
             console.log("quad is moving from: ", topLeft.pos, " to ", nextPos)
+            if(Math.abs(move_result) % 11==0){console.log("Quad ERR_TIRED")}
             return move_result
         }
     }
@@ -998,7 +1025,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
     if (!isQuadPacked(quad.members)) {
 
-        if (topLeft.pos.x > 0 && topLeft.pos.x < 47 && topLeft.pos.y > 0 && topLeft.pos.y < 47) {
+        if (topLeft.pos.x > 0 && topLeft.pos.x < 48 && topLeft.pos.y > 0 && topLeft.pos.y < 48) {
             console.log("grouping 2")
             if (quad.grouping_pos == undefined) {
                 var seeds = [];
@@ -1059,7 +1086,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             }
         }
         else {
-            topLeft.moveTo(new RoomPosition(25, 25, quad.target_room), { maxStuck: 1 })
+            //topLeft.moveTo(new RoomPosition(25, 25, quad.target_room), { maxStuck: 1 })
         }
 
 

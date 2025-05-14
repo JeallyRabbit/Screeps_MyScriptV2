@@ -87,9 +87,9 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
 
                 }
-                console.log("closestToSendEnergy: ",closest_to_send_energy)
+                //console.log("closestToSendEnergy: ",closest_to_send_energy)
                 if (closest_to_send_energy != undefined) {
-                    console.log("sending energy to: ", closest_to_send_energy)
+                    //console.log("sending energy to: ", closest_to_send_energy)
                     send_result=terminal.send(RESOURCE_ENERGY, amount, closest_to_send_energy);
                     if(spawn.room.memory.energy_sent==undefined)
                     {
@@ -108,7 +108,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
                         cost=undefined;
                         cost=sell_resource(terminal,cost,spawn,RESOURCE_ENERGY);
-                        console.log(terminal.room.name," selling energy cost: ",cost);
+                        //console.log(terminal.room.name," selling energy cost: ",cost);
                     }
                 }
             }
@@ -117,7 +117,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
         //selling every resource (except energy) that i have more than 50k
         var cost = sell_everything_except_energy(terminal, cost, spawn)
-        console.log("cost: ",cost)
+        //console.log("cost: ",cost)
         if(cost==OK)
         {
             return
@@ -196,7 +196,7 @@ function sell_everything_except_energy(terminal, cost, spawn) {
             if (profit_per_unit > 10 || true) {
                 //console.log("profit_per_unit: ",profit_per_unit)
                 selling_result=Game.market.deal(best_order_id, trade_amount, spawn.room.name)
-                console.log(res, " selling result: ", selling_result)
+                //console.log(res, " selling result: ", selling_result)
                 //console.log(Game.market.outgoingTransactions);
 
                 //console.log("trade_amount: ",trade_amount);
