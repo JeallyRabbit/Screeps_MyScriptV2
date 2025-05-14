@@ -204,7 +204,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 for (let i = 0; i < sources.length; i++) {
                     var ret = findRouteTest(spawn.pos, sources[i].pos.getNearbyPositions())
 
-                    if (ret.incomplete == false) {
+                    if (ret.incomplete == false || true) {
                         avg_distance += ret.path.length;
 
                         var new_keeper_source = new keeperSource(sources[i].id, creep.room.name, 0, 0, ret.path.length, sources[i].pos.getOpenPositions().length)
@@ -267,7 +267,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                                     //cconsole.log("source: ", sources[i].id, " in use by: ", other_spawn.name);
                                     //console.log("SKIIIIIIIIIIIPING")
                                     in_other_use = true;
-                                    break
+                                    continue
                                 }
                             }
                         }
