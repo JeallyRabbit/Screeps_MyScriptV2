@@ -1483,7 +1483,7 @@ module.exports.loop = function () {
                         body=maxQUadHealer(Math.max(energyCap, q.minEnergyOnCreep,minBodyCost))
                     }
                     //for movement caching work
-                    body=[MOVE]
+                    //body=[MOVE]
                     //
                     var spawn_result = spawn.spawnCreep(body, 'quad' + spawn.room.name + '_' + Game.time, {
                         memory: {
