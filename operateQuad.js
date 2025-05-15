@@ -18,7 +18,7 @@ function isQuadPacked(creeps) {
         for (let j = i + 1; j < creeps.length; j++) {
             var creepA = Game.getObjectById(creeps[i])
             var creepB = Game.getObjectById(creeps[j])
-            if (creepA != null && creepB != null && !creepA.pos.isNearTo(creepB.pos) && creepA.pos.roomName==creepB.pos.roomName) {
+            if (creepA != null && creepB != null && !creepA.pos.isNearTo(creepB.pos) && creepA.pos.roomName == creepB.pos.roomName) {
                 //console.log("QUAD IS NOT PACKED")
                 localHeap.isQuadPacked = false;
                 return false
@@ -78,6 +78,11 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
 
             result.set(x, y, cost)
         }
+
+        result.set(0, i, Math.min(255, result.get(0, i)))
+        result.set(49, i, Math.min(255, result.get(49, i)))
+        result.set(i, 0), Math.min(255, result.get(i, 0))
+        result.set(i, 49, Math.min(255, result.get(i, 49)))
     }
 
     Game.rooms[roomName].find(FIND_STRUCTURES).forEach(function (struct) {
@@ -172,7 +177,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
     return result
 }
 
-function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false,maxRooms = 16 ) {
+function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, maxRooms = 16) {
 
     //delete quad.path
     //QUad is currently spinning
@@ -223,8 +228,8 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false,ma
 
         console.log("next pos: ", nextPos)
         console.log("topLeft.pos: ", topLeft.pos)
-        console.log(nextPos.x == topLeft.pos.x, " ", nextPos.y == topLeft.pos.y /*, " ", nextPos.roomName == topLeft.pos.roomName*/ )
-        if ((nextPos.x == topLeft.pos.x && nextPos.y == topLeft.pos.y /* && nextPos.roomName == topLeft.pos.roomName */ )) {
+        console.log(nextPos.x == topLeft.pos.x, " ", nextPos.y == topLeft.pos.y /*, " ", nextPos.roomName == topLeft.pos.roomName*/)
+        if ((nextPos.x == topLeft.pos.x && nextPos.y == topLeft.pos.y /* && nextPos.roomName == topLeft.pos.roomName */)) {
             console.log("REMOVING SUCCESFULL MOVE")
             movePath.shift()
             nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
@@ -298,7 +303,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false,ma
         //skipping doubled room edge tiles
         var auxPath = []
         auxPath.push(path.path[0])
-        for (var i = 1; i < path.path.length-1; i++) {
+        for (var i = 1; i < path.path.length - 1; i++) {
             if ((path.path[i].x == 0 && path.path[i + 1].x == 49) || (path.path[i].x == 49 && path.path[i + 1].x == 0) ||
                 (path.path[i].y == 0 && path.path[i + 1].y == 49) || (path.path[i].y == 49 && path.path[i + 1].y == 0)) {
                 continue
@@ -314,7 +319,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false,ma
         quad.path = auxPath;
     }
 
-    console.log("move path is: ",movePath)
+    console.log("move path is: ", movePath)
     if (movePath != undefined) {
         //topLeft.say(movePath.length)
 
@@ -328,7 +333,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false,ma
             structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, nextPos.x, nextPos.y)
         }
         else if ((direction == BOTTOM || direction == BOTTOM_RIGHT || direction == BOTTOM_LEFT) && nextPos != undefined && movePath[1] != undefined
-            &&  movePath[1].x != undefined &&  movePath[1].y != undefined
+            && movePath[1].x != undefined && movePath[1].y != undefined
         ) {
             structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, nextPos.x, nextPos.y)
             structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[1].x, movePath[1].y))
@@ -775,8 +780,12 @@ function caluclateRampartsCosts(quad, structures) {
             if (str == null) { continue }
             if (str.structureType == STRUCTURE_RAMPART || str.structureType == STRUCTURE_WALL) {
                 var tileCost = (str.hits / str.hitsMax) * DAMAGE_MATRIX_FACTOR
-
+                if (Memory.allies.includes(str.owner.username) || str.pos.roomName!=quad.target_room) {
+                    tileCost = 255
+                }
                 rampartsMatrix.set(str.pos.x, str.pos.y, tileCost)
+
+
                 //Game.rooms[quad.target_room].visual.rect(str.pos.x - 0.5, str.pos.y - 0.5, 1, 1, { fill: 'blue', opacity: tileCost })
                 //Game.rooms[quad.target_room].visual.text(tileCost,i,j)
             }
@@ -1010,8 +1019,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
     //debugging
     if (false) {
-        quad.path=undefined
-        var manualMove=BOTTOM
+        quad.path = undefined
+        var manualMove = BOTTOM
         topLeft.move(manualMove)
         topRight.move(manualMove)
         bottomLeft.move(manualMove)
@@ -1023,7 +1032,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
     //quad.noSpin = false;
 
-    console.log("quad.id: ", quad.id, " is grouped: ", localHeap.isQuadPacked)
+    console.log("quad.id: ", quad.id, " is packed: ", localHeap.isQuadPacked)
 
     if (quad.members != undefined && quad.members.length >= 4) {
         quad.completed = true
@@ -1083,7 +1092,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
     if (localHeap.isQuadPacked == false) {
 
-        if (topLeft.pos.x > 0 && topLeft.pos.x < 48 && topLeft.pos.y > 0 && topLeft.pos.y < 48) {
+        if (topLeft.pos.x > 0 && topLeft.pos.x < 48 && topLeft.pos.y > 0 && topLeft.pos.y < 48 || true) {
             console.log("grouping 2")
             if (quad.grouping_pos == undefined) {
                 var seeds = [];
@@ -1111,6 +1120,20 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                     roomCM.set(other.pos.x - 1, other.pos.y - 1, 255)
                     roomCM.set(other.pos.x, other.pos.y - 1, 255)
                 }
+
+                var notMineCreeps = topLeft.room.find(FIND_CREEPS, {
+                    filter: function (cr) {
+                        return !quad.members.includes(cr.id)
+                    }
+                })
+
+                for (other of notMineCreeps) {
+                    roomCM.set(other.pos.x, other.pos.y, 255)
+                    roomCM.set(other.pos.x - 1, other.pos.y, 255)
+                    roomCM.set(other.pos.x - 1, other.pos.y - 1, 255)
+                    roomCM.set(other.pos.x, other.pos.y - 1, 255)
+                }
+
 
 
                 var structures = topLeft.room.find(FIND_STRUCTURES, {
@@ -1176,7 +1199,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     var currentRoom = topLeft.room.name
     if (currentRoom == quad.target_room) {
 
-
+        console.log("QUAD IS IN TARGET ROOM")
 
         var hostileCreeps = [] // just not mine/allied creeps
         var hostileNotProtectedCreeps = [] // hostile creeps, not under rampart and in quad range
@@ -1239,6 +1262,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         }
 
         var target = undefined
+
+
         if (quad.targetStructureId != undefined) {
             target = Game.getObjectById(quad.targetStructureId)
         }
@@ -1253,15 +1278,15 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         if (target != null) {
 
 
-
+            quad.targetId = target.id
             console.log("quad: ", quad.id, " is targeting: ", target, " at: ", target.pos)
 
             topLeft.say(quadRangedMassAttack(quad, target))
 
             //console.log("quad is attacking: ", target, " result ", quadRangedAttack(quad, target))
             if ((quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE || quadNearTo(quad, target) == false) && quadHits(quad) >= quadHitsMax(quad) - quadHealPower(quad)) {
-                moveQuad(quad, target.pos, 3,1,false,1)
-                console.log("quad: ",quad.id," is moving to target: ",target.pos)
+                moveQuad(quad, target.pos, 3, 1, false, 1)
+                console.log("quad: ", quad.id, " is moving to target: ", target.pos)
             }
             else if (quadNearTo(quad, target)) {
                 quadRangedMassAttack(quad, target)
@@ -1273,8 +1298,10 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
             }
         }
-        else{
+        else {
             moveQuad(quad, new RoomPosition(25, 25, quad.target_room), 10)
+
+
         }
 
 
@@ -1285,7 +1312,14 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         }
     }
     else if (quadHits(quad) >= quadHitsMax(quad) - quadHealPower(quad)) {
-        moveQuad(quad, new RoomPosition(25, 25, quad.target_room), 10)
+        //moveQuad(quad, new RoomPosition(25, 25, quad.target_room), 10)
+        if (quad.targetId != undefined && Game.getObjectById(quad.targetId) != null && Game.getObjectById(quad.targetId).pos.roomName == quad.target_room) {
+            moveQuad(quad, Game.getObjectById(quad.targetId).pos, 3, 1, false, 1)
+        }
+        else {
+            quad.targetId = undefined
+            moveQuad(quad, new RoomPosition(25, 25, quad.target_room), 10)
+        }
     }
 
     if (Game.rooms[currentRoom].memory.allies_present == undefined || Game.rooms[currentRoom].memory.allies_present.length < 0) {
