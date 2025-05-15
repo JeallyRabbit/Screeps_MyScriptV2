@@ -232,7 +232,10 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         if ((nextPos.x == topLeft.pos.x && nextPos.y == topLeft.pos.y /* && nextPos.roomName == topLeft.pos.roomName */)) {
             console.log("REMOVING SUCCESFULL MOVE")
             movePath.shift()
-            nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
+            try{
+                nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
+            }
+            catch{}
         }
     }
 
