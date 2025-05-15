@@ -172,7 +172,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
     return result
 }
 
-function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
+function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false,maxRooms = 16 ) {
 
     //delete quad.path
     //QUad is currently spinning
@@ -281,7 +281,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
                 flee: myFlee,
                 plainCost: 1,
                 swampCost: 5,
-                maxRooms: 64,
+                maxRooms: maxRooms,
                 maxOps: 4000,
                 //roomCallback: () => costMatrix,
                 roomCallback: function (roomName) {
@@ -314,7 +314,7 @@ function moveQuad(quad, targetPos, reusePath = 5, myRange = 1, myFlee = false) {
         quad.path = auxPath;
     }
 
-
+    console.log("move path is: ",movePath)
     if (movePath != undefined) {
         //topLeft.say(movePath.length)
 
@@ -1260,7 +1260,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
             //console.log("quad is attacking: ", target, " result ", quadRangedAttack(quad, target))
             if ((quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE || quadNearTo(quad, target) == false) && quadHits(quad) >= quadHitsMax(quad) - quadHealPower(quad)) {
-                moveQuad(quad, target.pos, 3)
+                moveQuad(quad, target.pos, 3,1,false,1)
+                console.log("quad: ",quad.id," is moving to target: ",target.pos)
             }
             else if (quadNearTo(quad, target)) {
                 quadRangedMassAttack(quad, target)
