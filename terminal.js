@@ -22,7 +22,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
     //console.log("orders num: ",Game.market.getAllOrders().length)
     //console.log("creditas: ",Game.market.credits)
 
-    if (terminal != undefined && storage != undefined && Game.time%1==0) {
+    if (terminal != undefined && storage != undefined && Game.time%5==0) {
 
 
 
@@ -127,11 +127,11 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
 
 
-        if (spawn.memory.state.includes(STATE_NEED_ENERGY) && terminal.cooldown == 0) {
-            //console.log("---------------------------")
-            //var cost2 = buy_resource(terminal, cost2, spawn, RESOURCE_ENERGY, 5000)
-            //console.log("++++++++++++++++++++==")
-            //spawn.room.visual.text(("energy: " + cost2, 25, 25, { color: '#fc03b6' }))
+        if (spawn.memory.state.includes(STATE_NEED_ENERGY) && terminal.cooldown == 0  && storage.store[RESOURCE_ENERGY]<60000) {
+            console.log("terminal at: ",spawn.room.name," is trying to buy energy")
+            var cost2 = buy_resource(terminal, RESOURCE_ENERGY,5000)
+            console.log("result: ",cost2)
+            spawn.room.visual.text(("energy: " + cost2, 25, 25, { color: '#fc03b6' }))
         }
 
 
@@ -260,8 +260,8 @@ function sell_resource(terminal, cost, spawn, res) {
 }
 
 function buy_resource(spawn, res, amount) {
-    if (res == undefined || res == RESOURCE_ENERGY) {
-        return;
+    if (res == undefined /* || res == RESOURCE_ENERGY */) {
+        return -1;
     }
 
     var buying_result = null
@@ -292,10 +292,10 @@ function buy_resource(spawn, res, amount) {
         var trade_amount = Math.min(amount, Game.market.getOrderById(best_order_id).amount)
         var cost = Game.market.calcTransactionCost(trade_amount, Game.market.getOrderById(best_order_id).roomName,
             spawn.room.name)
-        //console.log("cost of energy to buy resource: ", cost)
+        console.log("cost of energy to buy resource: ", cost)
         var price = (Game.market.getOrderById(best_order_id).price * trade_amount) - cost
         var price_per_unit = price / trade_amount
-        //console.log("price per unit: ", price_per_unit)
+        console.log("price per unit: ", price_per_unit)
         if (price_per_unit < 2000) {
             buying_result = Game.market.deal(best_order_id, trade_amount, spawn.room.name)
 

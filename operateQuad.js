@@ -196,6 +196,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
     if (topLeft == null) { return -1; }
 
     if (topLeft.pos.isNearTo(targetPos) && myFlee == false) { return }
+
     if (quad.lastTargetPos == undefined || (quad.lastTargetPos != undefined && !(quad.lastTargetPos.x == targetPos.x && quad.lastTargetPos.y == targetPos.y && quad.lastTargetPos.roomName == targetPos.roomName))) {
         quad.lastTargetPos = targetPos
         quad.path = undefined
@@ -232,10 +233,10 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         if ((nextPos.x == topLeft.pos.x && nextPos.y == topLeft.pos.y /* && nextPos.roomName == topLeft.pos.roomName */)) {
             console.log("REMOVING SUCCESFULL MOVE")
             movePath.shift()
-            try{
+            try {
                 nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
             }
-            catch{}
+            catch { }
         }
     }
 
@@ -322,7 +323,6 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         quad.path = auxPath;
     }
 
-    console.log("move path is: ", movePath)
     if (movePath != undefined) {
         //topLeft.say(movePath.length)
 
@@ -397,7 +397,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
             //cr.say(cr.move(direction))
             //console.log("quad is trying to move from: ", topLeft.pos, " to ", nextPos)
             topLeft.say("@")
-            console.log(cr.pos, " move result: ", cr.move(direction), " direction: ", direction)
+            //console.log(cr.pos, " move result: ", cr.move(direction), " direction: ", direction)
             move_result += cr.move(direction)
             //cr.say(cr.move(direction))
         }
@@ -419,13 +419,13 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
 }
 
-function quadRetreat(quad, position, range = 60) {
+function quadRetreat(quad, position, range = 55) {
 
     localHeap.noSpin = true
     //quad.noSpin = true
     //quad.isRotating = false
     localHeap.isRotating = false;
-    retreatResult = moveQuad(quad, position, 1, range, true)
+    retreatResult = moveQuad(quad, position, 3, range, true)
     //console.log("retreatResult: ", retreatResult)
 }
 
@@ -603,6 +603,18 @@ function quadRangedMassAttack(quad, target = undefined) {
         cr = Game.getObjectById(q)
         if (cr == null) { continue }
 
+        if (target != undefined) {
+
+            var range = cr.pos.getRangeTo(target.pos.x, target.pos.y)
+            if (range >= 1 && range <= 3 || true) {
+                result = cr.rangedAttack(target)
+            }
+            else {
+                result = cr.rangedMassAttack()
+            }
+        }
+        else { result = cr.rangedMassAttack() }
+
         /*
         if(target!=undefined && cr.pos.isNearTo(target))
         {
@@ -613,7 +625,7 @@ function quadRangedMassAttack(quad, target = undefined) {
         }
         */
 
-        result = cr.rangedMassAttack();
+        //result = cr.rangedMassAttack();
     }
     if (result == 0) { return OK; }
 }
@@ -783,7 +795,7 @@ function caluclateRampartsCosts(quad, structures) {
             if (str == null) { continue }
             if (str.structureType == STRUCTURE_RAMPART || str.structureType == STRUCTURE_WALL) {
                 var tileCost = (str.hits / str.hitsMax) * DAMAGE_MATRIX_FACTOR
-                if (Memory.allies.includes(str.owner.username) || str.pos.roomName!=quad.target_room) {
+                if (Memory.allies.includes(str.owner.username) || str.pos.roomName != quad.target_room) {
                     tileCost = 255
                 }
                 rampartsMatrix.set(str.pos.x, str.pos.y, tileCost)
@@ -972,7 +984,7 @@ function findTargetStructure(quad, structures, room) {
 
 function findTargetCreepInRange(quad, hostiles) {// finds creep in range of RangedAttack which is not  protected by ramparts
     var target = null
-    var distance = 3
+    var distance = 4
     for (m of quad.members) {
         var member = Game.getObjectById(m)
         var closeNotCovered = []
@@ -1292,6 +1304,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                 console.log("quad: ", quad.id, " is moving to target: ", target.pos)
             }
             else if (quadNearTo(quad, target)) {
+                console.log("quad is near ", target)
                 quadRangedMassAttack(quad, target)
 
                 //if Quad will for sure not retreat
@@ -1299,6 +1312,9 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
                     rotateToTarget(quad, target)
                 }
 
+            }
+            else {
+                quadRangedAttack(quad, target)
             }
         }
         else {
@@ -1311,7 +1327,13 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
         if (quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad)) > quadHealPower(quad)) {
             topLeft.say("retreat")
-            quadRetreat(quad, target.pos)
+            if (target.pos == undefined) {
+                var homePos = new RoomPosition(25, 25, topLeft.memory.home_room.name)
+                moveQuad(quad, homePos, 5, 10)
+            }
+            else {
+                quadRetreat(quad, target.pos)
+            }
         }
     }
     else if (quadHits(quad) >= quadHitsMax(quad) - quadHealPower(quad)) {
@@ -1323,6 +1345,11 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             quad.targetId = undefined
             moveQuad(quad, new RoomPosition(25, 25, quad.target_room), 10)
         }
+    }
+    else {
+        console.log("quad: ",quad.id," is retreating to spawn")
+        var homePos = new RoomPosition(25, 25, topLeft.memory.home_room.name)
+        moveQuad(quad, homePos, 5, 10)
     }
 
     if (Game.rooms[currentRoom].memory.allies_present == undefined || Game.rooms[currentRoom].memory.allies_present.length < 0) {

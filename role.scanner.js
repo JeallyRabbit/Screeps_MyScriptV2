@@ -286,7 +286,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             return;
         }
         if (Game.map.findRoute(creep.room.name, creep.memory.target_room) == ERR_NO_PATH || Game.map.getRoomStatus(creep.memory.target_room != 'normal')
-        || Math.abs(Game.map.getRoomLinearDistance(creep.memory.home_room.name,creep.memory.target_room))<3) {
+            || Math.abs(Game.map.getRoomLinearDistance(creep.memory.home_room.name, creep.memory.target_room)) < 3) {
             console.log("removing: ", creep.memory.target_room);
             creep.say("A")
             if (spawn.memory.scanner_rooms != undefined && spawn.memory.scanner_rooms.length > 0) {
@@ -355,14 +355,18 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
         var is_owned = false;
         var is_guarded = false;
         var is_already_scanned = false;
-        if (creep.room.controller != undefined && creep.room.controller.reservation != undefined && creep.room.controller.reservation.username != 'Invader') {
+        if (creep.room.controller != undefined && creep.room.controller.reservation != undefined && creep.room.controller.reservation.username != 'Invader'
+            && (Memory.enemies != undefined && !Memory.enemies.includes(creep.room.controller.reservation.username))
+        ) {
             is_reserved = true;
             //creep.say("reserved");
         }
         if (creep.room.controller != undefined && creep.room.controller.owner != undefined &&
             creep.room.controller.owner.username != 'JeallyRabbit' && creep.room.controller.owner.username != 'Jeally_Rabbit') {
-            //creep.say("owned");
+            creep.say("owned");
             is_owned = true;
+
+
         }
 
         for (let colonizeRoom in Memory.rooms_to_colonize) {

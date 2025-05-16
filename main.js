@@ -164,6 +164,7 @@ module.exports.loop = function () {
         console.log("GCL: ", Game.gcl.level, Math.round((Game.gcl.progress / Game.gcl.progressTotal) * 100), "% to next")
 
         Memory.allies = ["Alphonzo", "insain", "noe"];
+        Memory.enemies=["IronVengeance"];
 
         /*
         //REMOVE ALL CONSTRUCTION SITES
@@ -333,6 +334,7 @@ module.exports.loop = function () {
 
             var spawn_start_cpu = Game.cpu.getUsed()
             var spawn = Game.getObjectById(Memory.main_spawns[spawn_num]);
+            console.log("---------------- ",spawn.room.name," ---------------- ")
 
             if (spawn.memory.lvl_1_time == undefined /* && spawn.room.controller.level <= 2*/) {
                 spawn.memory.lvl_1_time = Game.time;
@@ -1458,12 +1460,13 @@ module.exports.loop = function () {
                 console.log(q.id, " ",(((!q.completed) && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
                     && (q.members != undefined && q.members.length < 4))))
 
-
+                console.log(q.id," asdasd ", farming_needs_satisfied)
                 if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
                     && (q.members != undefined && q.members.length < 4)) {
 
+                    console.log("entering spawning quad")
                     //skipping starting spawning another quad if not enough energy
-                    if(q.members.length==0 && spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]<50000)
+                    if(q.members.length==0 && spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]<35000)
                     {
                         console.log("skipping spawning quad")
                         continue;
@@ -1475,7 +1478,8 @@ module.exports.loop = function () {
                     var minBodyCost=EXTENSION_ENERGY_CAPACITY[spawn.room.controller.level]*CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][spawn.room.controller.level];
                     
                     minBodyCost*=0.8
-                    console.log("min bodyCost: ",minBodyCost)
+                    
+                    console.log("min bodyCost: ",minBodyCost,", energyCap:",energyCap)
                     if(q.members.length%2){
                         body=maxQuadRanger(Math.max(energyCap, q.minEnergyOnCreep,minBodyCost))
                     }
@@ -1694,7 +1698,7 @@ module.exports.loop = function () {
                 }
             }
             if (pop_colonizers < spawn.memory.req_colonizers && pop_claimers > 0 && spawn.room.controller.level >= 4
-                && spawn.memory.to_colonize != undefined
+                && spawn.memory.to_colonize != undefined && farming_needs_satisfied
             ) {
                 if (spawn.spawnCreep(maxColonizer(energyCap), 'Colonizer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
