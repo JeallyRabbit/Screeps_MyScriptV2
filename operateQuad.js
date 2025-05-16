@@ -606,7 +606,8 @@ function quadRangedMassAttack(quad, target = undefined) {
         if (target != undefined) {
 
             var range = cr.pos.getRangeTo(target.pos.x, target.pos.y)
-            if (range >= 1 && range <= 3 || true) {
+            console.log("range to target: ",range)
+            if (range >= 1 && range <= 3) {
                 result = cr.rangedAttack(target)
             }
             else {
@@ -615,17 +616,6 @@ function quadRangedMassAttack(quad, target = undefined) {
         }
         else { result = cr.rangedMassAttack() }
 
-        /*
-        if(target!=undefined && cr.pos.isNearTo(target))
-        {
-            result=cr.rangedMassAttack();
-        }
-        else{
-            result = cr.rangedAttack(target);
-        }
-        */
-
-        //result = cr.rangedMassAttack();
     }
     if (result == 0) { return OK; }
 }
@@ -1212,9 +1202,16 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
     var currentRoom = topLeft.room.name
-    if (currentRoom == quad.target_room) {
+    if (currentRoom == quad.target_room || (Memory.rooms[currentRoom].hostiles != undefined && Memory.rooms[currentRoom].hostiles.length>0)) {
 
-        console.log("QUAD IS IN TARGET ROOM")
+        if(currentRoom == quad.target_room)
+        {
+            console.log("QUAD IS IN TARGET ROOM")
+        }
+        else{
+            console.log("Quad is fighting with hostile creeps on the road to targetRoom")
+        }
+        
 
         var hostileCreeps = [] // just not mine/allied creeps
         var hostileNotProtectedCreeps = [] // hostile creeps, not under rampart and in quad range
