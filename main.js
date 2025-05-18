@@ -1712,7 +1712,7 @@ module.exports.loop = function () {
             }
             //if (spawn.memory.need_farmer != undefined) {
             if (spawn.memory.need_source_farmer != undefined && (spawn.memory.need_source_farmer != spawn.memory.need_soldier || Game.rooms[spawn.memory.need_soldier].memory.soldiers > 0)
-            && spawn.memory.need_DistanceCarrier ==undefined) {
+            /*&& spawn.memory.need_DistanceCarrier ==undefined */) {
 
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {

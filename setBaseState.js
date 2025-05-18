@@ -18,7 +18,7 @@ Spawn.prototype.setBaseState = function setBaseState()
         this.memory.state.push(STATE_DEVELOPING);
         this.memory.state.push(STATE_NEED_ENERGY)
     }
-    if((this.room.storage!=undefined && this.room.storage.store[RESOURCE_ENERGY]<200000) && this.room.controller.level>7 || (this.memory.building && this.room.storage.store[RESOURCE_ENERGY]<300000))
+    if((this.room.storage!=undefined && this.room.storage.store[RESOURCE_ENERGY]<200000) && this.room.controller.level>7 || (this.memory.building && this.room.storage!=undefined &&  this.room.storage.store[RESOURCE_ENERGY]<300000))
     {
         this.memory.state.push(STATE_NEED_ENERGY)
     }

@@ -199,7 +199,11 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
     if (quad.lastTargetPos == undefined || (quad.lastTargetPos != undefined && !(quad.lastTargetPos.x == targetPos.x && quad.lastTargetPos.y == targetPos.y && quad.lastTargetPos.roomName == targetPos.roomName))) {
         quad.lastTargetPos = targetPos
-        quad.path = undefined
+        if(Game.time%3==0)
+        {
+            quad.path = undefined
+        }
+        
         console.log("RESETTING PATH - TARGET_POS HAS CHANGED")
     }
     var movePath;
@@ -224,6 +228,8 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
     }
     */
     //
+
+    // I'm not sure if that should be before or after calculating Path
     if (quad.path != undefined && quad.path != undefined && quad.path[0] != undefined) {
         nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
 
@@ -321,6 +327,25 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
         }
         quad.path = auxPath;
+    }
+
+
+
+    // I'm not sure if that should be before or after calculating Path
+    if (quad.path != undefined && quad.path != undefined && quad.path[0] != undefined) {
+        nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
+
+        console.log("next pos: ", nextPos)
+        console.log("topLeft.pos: ", topLeft.pos)
+        console.log(nextPos.x == topLeft.pos.x, " ", nextPos.y == topLeft.pos.y /*, " ", nextPos.roomName == topLeft.pos.roomName*/)
+        if ((nextPos.x == topLeft.pos.x && nextPos.y == topLeft.pos.y /* && nextPos.roomName == topLeft.pos.roomName */)) {
+            console.log("REMOVING SUCCESFULL MOVE")
+            movePath.shift()
+            try {
+                nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
+            }
+            catch { }
+        }
     }
 
     if (movePath != undefined) {
