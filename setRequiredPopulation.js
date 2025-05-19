@@ -226,7 +226,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     ) {
         spawn.memory.have_energy_to_colonize = false
     }
-    if (spawn.memory.have_energy_to_colonize == true && spawn.memory.to_colonize != undefined
+    if (spawn.memory.have_energy_to_colonize == true && spawn.memory.to_colonize != undefined && spawn.room.storage!= undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 25000
     ) {
         spawn.memory.req_claimers = 1;
         spawn.memory.req_colonizers = 8;
