@@ -281,7 +281,7 @@ module.exports.loop = function () {
                 Memory.colonizing = false;
             }
 
-            //Memory.colonizing = false;
+            Memory.colonizing = false;
 
         }
 
@@ -1496,7 +1496,7 @@ module.exports.loop = function () {
                             quadId: q.id
                         }
                     })
-                    console.log("quad spawning result: ", spawn_result)
+                    //console.log("quad spawning result: ", spawn_result)
                     if (spawn_result == 0 || spawn_result==-10) {
                         if (energyCap > q.minEnergyOnCreep) {
                             q.minEnergyOnCreep = energyCap

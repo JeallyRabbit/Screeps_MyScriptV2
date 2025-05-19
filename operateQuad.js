@@ -30,7 +30,7 @@ function isQuadPacked(creeps) {
     return true
 }
 
-function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
+function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1, myFlee = false) {
 
     const terrain = Game.map.getRoomTerrain(roomName)
     const result = new PathFinder.CostMatrix()
@@ -140,7 +140,13 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1) {
                 }
 
                 if (rampartsCM != undefined) {
-                    rampartCost = rampartsCM.get(i, j)
+                    //if (myFlee == true) {
+                    //    rampartCost = 255
+                    //}
+                    //else {
+                        rampartCost = rampartsCM.get(i, j)
+                    //}
+
                 }
 
                 if (hostilesCM != undefined) {
@@ -199,11 +205,10 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
     if (quad.lastTargetPos == undefined || (quad.lastTargetPos != undefined && !(quad.lastTargetPos.x == targetPos.x && quad.lastTargetPos.y == targetPos.y && quad.lastTargetPos.roomName == targetPos.roomName))) {
         quad.lastTargetPos = targetPos
-        if(Game.time%3==0)
-        {
+        if (Game.time % 3 == 0) {
             quad.path = undefined
         }
-        
+
         console.log("RESETTING PATH - TARGET_POS HAS CHANGED")
     }
     var movePath;
@@ -288,6 +293,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         topLeft.say("FndPath")
         //console.log("topLeft.pos: ", topLeft.pos)
         //console.log("target.pos: ", targetPos)
+        if(myFlee==true){console.log("searching for path away from target")}
         const path = PathFinder.search(
             topLeft.pos,
             { pos: targetPos, range: myRange },
@@ -304,7 +310,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
                     if (!room) { return; }
                     const existingCostMatrix = new PathFinder.CostMatrix;
                     const terrain = room.getTerrain()
-                    const costMatrix = transformCosts(quad, existingCostMatrix, roomName)
+                    const costMatrix = transformCosts(quad, existingCostMatrix, roomName,5, 1, myFlee)
                     return costMatrix
                 }
             },
@@ -327,12 +333,13 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
         }
         quad.path = auxPath;
+        movePath=auxPath
     }
 
 
 
     // I'm not sure if that should be before or after calculating Path
-    if (movePath!= undefined && movePath != undefined && movePath[0] != undefined) {
+    if (movePath != undefined && movePath != undefined && movePath[0] != undefined) {
         nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
 
         console.log("next pos: ", nextPos)
@@ -398,8 +405,6 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
 
 
-        //topLeft.say(direction)
-        //topLeft.say(movePath.length)
         //debugging - drawing path
         myStroke = 'red'
         if (myFlee) {
@@ -421,7 +426,6 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
             //cr.say(cr.move(direction))
             //console.log("quad is trying to move from: ", topLeft.pos, " to ", nextPos)
-            topLeft.say("@")
             //console.log(cr.pos, " move result: ", cr.move(direction), " direction: ", direction)
             move_result += cr.move(direction)
             //cr.say(cr.move(direction))
@@ -450,7 +454,7 @@ function quadRetreat(quad, position, range = 55) {
     //quad.noSpin = true
     //quad.isRotating = false
     localHeap.isRotating = false;
-    retreatResult = moveQuad(quad, position, 3, range, true)
+    retreatResult = moveQuad(quad, position, 3, range, true,2)
     //console.log("retreatResult: ", retreatResult)
 }
 
@@ -485,11 +489,13 @@ function quadSpinLeft(quad) {
     }
 
     topLeft.say("<-")
+    /*
     console.log("before spin")
     console.log("topLeft.pos: ", topLeft.pos)
     console.log("topRight.pos: ", topRight.pos)
     console.log("bottomRight.pos: ", bottomRight.pos)
     console.log("bottomLeft.pos: ", bottomLeft.pos)
+    */
     topLeft.move(BOTTOM);
     topRight.move(LEFT);
     bottomRight.move(TOP);
@@ -1208,17 +1214,34 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         //quad.path = false
 
         if (topLeft != null && quad.grouping_pos != undefined) {
-            topLeft.say(quad.grouping_pos.x + " " + quad.grouping_pos.y)
+            //topLeft.say(quad.grouping_pos.x + " " + quad.grouping_pos.y)
             topLeft.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y, quad.grouping_pos.roomName), { maxStuck: 1 })
         }
         if (topRight != null && quad.grouping_pos != undefined) {
-            topRight.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y, quad.grouping_pos.roomName), { maxStuck: 1 })
+            if (topLeft != null) {
+                topRight.moveTo(new RoomPosition(topLeft.pos.x + 1, topLeft.pos.y, topLeft.pos.roomName))
+            }
+            else {
+                topRight.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y, quad.grouping_pos.roomName), { maxStuck: 1 })
+
+            }
+
         }
         if (bottomLeft != null && quad.grouping_pos != undefined) {
-            bottomLeft.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y + 1, quad.grouping_pos.roomName), { maxStuck: 1 })
+            if (topLeft != null) {
+                bottomLeft.moveTo(new RoomPosition(topLeft.pos.x, topLeft.pos.y + 1, topLeft.pos.roomName))
+            }
+            else {
+                bottomLeft.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y + 1, quad.grouping_pos.roomName), { maxStuck: 1 })
+            }
         }
         if (bottomRight != null && quad.grouping_pos != undefined) {
-            bottomRight.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y + 1, quad.grouping_pos.roomName), { maxStuck: 1 })
+            if (topLeft != null) {
+                bottomRight.moveTo(new RoomPosition(topLeft.pos.x + 1, topLeft.pos.y + 1, topLeft.pos.roomName))
+            }
+            else {
+                bottomRight.moveTo(new RoomPosition(quad.grouping_pos.x + 1, quad.grouping_pos.y + 1, quad.grouping_pos.roomName), { maxStuck: 1 })
+            }
         }
 
         return
@@ -1231,16 +1254,15 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
     var currentRoom = topLeft.room.name
-    if (currentRoom == quad.target_room || (Memory.rooms[currentRoom].hostiles != undefined && Memory.rooms[currentRoom].hostiles.length>0)) {
+    if (currentRoom == quad.target_room || (Memory.rooms[currentRoom].hostiles != undefined && Memory.rooms[currentRoom].hostiles.length > 0)) {
 
-        if(currentRoom == quad.target_room)
-        {
-            console.log("QUAD IS IN TARGET ROOM")
+        if (currentRoom == quad.target_room) {
+            //console.log("QUAD IS IN TARGET ROOM")
         }
-        else{
+        else {
             console.log("Quad is fighting with hostile creeps on the road to targetRoom")
         }
-        
+
 
         var hostileCreeps = [] // just not mine/allied creeps
         var hostileNotProtectedCreeps = [] // hostile creeps, not under rampart and in quad range
@@ -1322,7 +1344,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             quad.targetId = target.id
             console.log("quad: ", quad.id, " is targeting: ", target, " at: ", target.pos)
 
-            topLeft.say(quadRangedMassAttack(quad, target))
+            quadRangedMassAttack(quad, target)
 
             //console.log("quad is attacking: ", target, " result ", quadRangedAttack(quad, target))
             if ((quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE || quadNearTo(quad, target) == false) && quadHits(quad) >= quadHitsMax(quad) - quadHealPower(quad)) {
@@ -1352,16 +1374,16 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
         //console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
         if (quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad)) > quadHealPower(quad)) {
-            topLeft.say("retreat")
+            
             if (target.pos == undefined) {
-                console.log("quad: ",quad.id, " is retreating - no target")
+                console.log("quad: ", quad.id, " is retreating - no target")
                 topLeft.say("retr1")
                 var homePos = new RoomPosition(25, 25, topLeft.memory.home_room.name)
                 moveQuad(quad, homePos, 5, 10)
             }
             else {
                 topLeft.say("retTar")
-                console.log("quad: ",quad.id, " is retreating away from target")
+                console.log("quad: ", quad.id, " is retreating away from target")
                 quadRetreat(quad, target.pos)
             }
         }
@@ -1377,7 +1399,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         }
     }
     else {
-        console.log("quad: ",quad.id," is retreating to spawn")
+        console.log("quad: ", quad.id, " is retreating to spawn")
         var homePos = new RoomPosition(25, 25, topLeft.memory.home_room.name)
         moveQuad(quad, homePos, 5, 10)
     }
@@ -1391,7 +1413,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //moveQuad(quad, Game.flags["quad"])
 
 
-    if (topLeft.room.name != topLeft.memory.home_room.name && target.id==undefined) {
+    if (topLeft.room.name != topLeft.memory.home_room.name && target.id == undefined) {
         quadRangedMassAttack(quad)
     }
 
