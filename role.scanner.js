@@ -298,37 +298,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
         if (creep.memory.target_room != undefined && creep.room.name != creep.memory.target_room) {
 
-            /*
-            var reusePath=100;
-
-            if(creep.memory.destination==undefined)
-            {
-
-                creep.say("destination unknown")
-                var destination=[];
-                for(var i=1;i<50;i++)
-                {
-                    for(var j=1;j<50;j++)
-                    {
-                        destination.push(new RoomPosition(i,j,creep.memory.target_room))
-                    }
-                }
-                creep.memory.destination=destination;
-            }
-
-            if(creep.memory.destination!=undefined)
-            {
-                //creep.move_avoid_hostile(creep,creep.memory.destination,reusePath,false)
-                hostiles=creep.room.find(FIND_HOSTILE_CREEPS)
-                {
-                    if(hostiles.length>0)
-                    {
-                        creep.fleeFrom(hostiles,7,{maxRooms: 1})
-                    }
-                }
-                creep.moveTo(new RoomPosition(25,25,creep.memory.target_room))
-            }
-                */
+            
 
             creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room))
 

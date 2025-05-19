@@ -332,7 +332,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
 
     // I'm not sure if that should be before or after calculating Path
-    if (quad.path != undefined && quad.path != undefined && quad.path[0] != undefined) {
+    if (movePath!= undefined && movePath != undefined && movePath[0] != undefined) {
         nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
 
         console.log("next pos: ", nextPos)
@@ -631,8 +631,8 @@ function quadRangedMassAttack(quad, target = undefined) {
         if (target != undefined) {
 
             var range = cr.pos.getRangeTo(target.pos.x, target.pos.y)
-            console.log("range to target: ",range)
-            if (range >= 1 && range <= 3) {
+            //console.log("range to target: ",range)
+            if (range > 1 && range <= 3) {
                 result = cr.rangedAttack(target)
             }
             else {
@@ -932,9 +932,11 @@ function calculateHostileCreepsCost(quad, hostiles) {
             const RANGED_ATTACK_RANGE = 3
             if (rangedAttack >= quad.minHp + quad.minHealPower)//quad member will het one shoted by enemy creep (RANGED_ATTACK)
             {
+                /*
                 console.log("Ranged will oneShot me: ", 255)
                 console.log("rangedAttack: ", rangedAttack)
                 console.log("quad.minHp + quad.minHealPower = ", quad.minHp, " + ", quad.minHealPower, quad.minHp + quad.minHealPower)
+                */
                 for (var i = h.pos.x - RANGED_ATTACK_RANGE; i <= h.pos.x + RANGED_ATTACK_RANGE; i++) {
                     for (var j = h.pos.y - RANGED_ATTACK_RANGE; j <= h.pos.y + RANGED_ATTACK_RANGE; j++) {
                         hostilesMatrix.set(i, j, 255)
@@ -944,8 +946,10 @@ function calculateHostileCreepsCost(quad, hostiles) {
             }
             else if (rangedAttack > 0) {
                 var tileCost = (rangedAttack / maxRangedAttack) * DAMAGE_MATRIX_FACTOR
+                /*
                 console.log("Ranged will not oneShot me: ", tileCost)
                 console.log("RangedAttackPower: ", rangedAttack, " quad can take: ", quad.minHp + quad.minHealPower)
+                */
                 for (var i = h.pos.x - RANGED_ATTACK_RANGE; i <= h.pos.x + RANGED_ATTACK_RANGE; i++) {
                     for (var j = h.pos.y - RANGED_ATTACK_RANGE; j <= h.pos.y + RANGED_ATTACK_RANGE; j++) {
                         var currentCost = hostilesMatrix.get(i, j)
@@ -1346,14 +1350,18 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         }
 
 
-        console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
+        //console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
         if (quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad)) > quadHealPower(quad)) {
             topLeft.say("retreat")
             if (target.pos == undefined) {
+                console.log("quad: ",quad.id, " is retreating - no target")
+                topLeft.say("retr1")
                 var homePos = new RoomPosition(25, 25, topLeft.memory.home_room.name)
                 moveQuad(quad, homePos, 5, 10)
             }
             else {
+                topLeft.say("retTar")
+                console.log("quad: ",quad.id, " is retreating away from target")
                 quadRetreat(quad, target.pos)
             }
         }
@@ -1383,7 +1391,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //moveQuad(quad, Game.flags["quad"])
 
 
-    if (topLeft.room.name != topLeft.memory.home_room.name) {
+    if (topLeft.room.name != topLeft.memory.home_room.name && target.id==undefined) {
         quadRangedMassAttack(quad)
     }
 

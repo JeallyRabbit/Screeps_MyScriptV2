@@ -1457,10 +1457,10 @@ module.exports.loop = function () {
 
             spawn.memory.isSpawningQuad = false;
             for (q of spawn.memory.quads) {
-                console.log(q.id, " ",(((!q.completed) && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
-                    && (q.members != undefined && q.members.length < 4))))
+                //console.log(q.id, " ",(((!q.completed) && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
+                //    && (q.members != undefined && q.members.length < 4))))
 
-                console.log(q.id," asdasd ", farming_needs_satisfied)
+                //console.log(q.id," asdasd ", farming_needs_satisfied)
                 if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
                     && (q.members != undefined && q.members.length < 4)) {
 
