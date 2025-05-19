@@ -1375,7 +1375,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         //console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
         if (quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad)) > quadHealPower(quad)) {
             
-            if (target.pos == undefined) {
+            if (target==undefined || target.pos == undefined) {
                 console.log("quad: ", quad.id, " is retreating - no target")
                 topLeft.say("retr1")
                 var homePos = new RoomPosition(25, 25, topLeft.memory.home_room.name)
@@ -1413,7 +1413,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //moveQuad(quad, Game.flags["quad"])
 
 
-    if (topLeft.room.name != topLeft.memory.home_room.name && target.id == undefined) {
+    if (topLeft.room.name != topLeft.memory.home_room.name && target!=undefined && target.id == undefined) {
         quadRangedMassAttack(quad)
     }
 
