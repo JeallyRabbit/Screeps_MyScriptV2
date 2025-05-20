@@ -926,6 +926,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     continue;
                 }
                 spawn.memory.need_DistanceCarrier = spawn.memory.farming_sources[i].name;
+                console.log("need distance Carrier: ",spawn.memory.farming_sources[i].name)
                 spawn.memory.need_ddistance_carrier_source_id = spawn.memory.farming_sources[i].id;
                 spawn.memory.need_distance_carrier_source_distance=spawn.memory.farming_sources[i].distance
                 break;
@@ -1037,7 +1038,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 }
                 if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers.length < 2) {
                     spawn.memory.need_soldier = myRoom;
-                    console.log("need_soldier: ",myRoom," soldiers.length: ",Game.rooms[myRoom].memory.soldiers.length)
+                    //console.log("need_soldier: ",myRoom," soldiers.length: ",Game.rooms[myRoom].memory.soldiers.length)
                 }
                 else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers!=undefined && Game.rooms[myRoom].memory.soldiers.length < 2) {
                     spawn.memory.need_melee_soldier = myRoom;

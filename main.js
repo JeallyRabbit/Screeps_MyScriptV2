@@ -160,7 +160,7 @@ module.exports.loop = function () {
         //return;
         console.log()
         console.log(Game.shard.name, " Bucket: ", Game.cpu.bucket);
-        console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
+        //console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
         console.log("GCL: ", Game.gcl.level, Math.round((Game.gcl.progress / Game.gcl.progressTotal) * 100), "% to next")
 
         Memory.allies = ["Alphonzo", "insain", "noe"];
@@ -1464,11 +1464,11 @@ module.exports.loop = function () {
                 if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
                     && (q.members != undefined && q.members.length < 4)) {
 
-                    console.log("entering spawning quad")
+                    //console.log("entering spawning quad")
                     //skipping starting spawning another quad if not enough energy
                     if(q.members.length==0 && spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]<35000)
                     {
-                        console.log("skipping spawning quad")
+                        //console.log("skipping spawning quad")
                         continue;
                     }
 
@@ -1479,7 +1479,7 @@ module.exports.loop = function () {
                     
                     minBodyCost*=0.8
                     
-                    console.log("min bodyCost: ",minBodyCost,", energyCap:",energyCap)
+                    //console.log("min bodyCost: ",minBodyCost,", energyCap:",energyCap)
                     if(q.members.length%2){
                         body=maxQuadRanger(Math.max(energyCap, q.minEnergyOnCreep,minBodyCost))
                     }
@@ -1654,7 +1654,7 @@ module.exports.loop = function () {
 
             if (spawn.memory.need_soldier != undefined && spawn.memory.state != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK" && Game.rooms[spawn.memory.need_soldier] != undefined &&
                 Game.rooms[spawn.memory.need_soldier].memory.soldiers.length < 3)
-                && Game.rooms[spawn.memory.need_soldier] != undefined && false) {
+                && Game.rooms[spawn.memory.need_soldier] != undefined) {
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:

@@ -104,10 +104,10 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1, myF
     Game.rooms[roomName].find(FIND_CREEPS).forEach(function (creep) {
         if (!quad.members.includes(creep.id)) {
 
-            result.set(creep.pos.x, creep.pos.y, 255);
-            result.set(creep.pos.x - 1, creep.pos.y, 255);
-            result.set(creep.pos.x - 1, creep.pos.y - 1, 255);
-            result.set(creep.pos.x, creep.pos.y - 1, 255);
+            result.set(creep.pos.x, creep.pos.y, 254);
+            result.set(creep.pos.x - 1, creep.pos.y, 254);
+            result.set(creep.pos.x - 1, creep.pos.y - 1, 254);
+            result.set(creep.pos.x, creep.pos.y - 1, 254);
         }
     });
 
@@ -144,7 +144,7 @@ function transformCosts(quad, costs, roomName, swampCost = 5, plainCost = 1, myF
                     //    rampartCost = 255
                     //}
                     //else {
-                        rampartCost = rampartsCM.get(i, j)
+                    rampartCost = rampartsCM.get(i, j)
                     //}
 
                 }
@@ -293,7 +293,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         topLeft.say("FndPath")
         //console.log("topLeft.pos: ", topLeft.pos)
         //console.log("target.pos: ", targetPos)
-        if(myFlee==true){console.log("searching for path away from target")}
+        if (myFlee == true) { console.log("searching for path away from target") }
         const path = PathFinder.search(
             topLeft.pos,
             { pos: targetPos, range: myRange },
@@ -310,7 +310,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
                     if (!room) { return; }
                     const existingCostMatrix = new PathFinder.CostMatrix;
                     const terrain = room.getTerrain()
-                    const costMatrix = transformCosts(quad, existingCostMatrix, roomName,5, 1, myFlee)
+                    const costMatrix = transformCosts(quad, existingCostMatrix, roomName, 5, 1, myFlee)
                     return costMatrix
                 }
             },
@@ -333,7 +333,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
         }
         quad.path = auxPath;
-        movePath=auxPath
+        movePath = auxPath
     }
 
 
@@ -361,21 +361,32 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         var direction = topLeft.pos.getDirectionTo(nextPos)
 
 
-
+        var bottomRight = Game.getObjectById(quad.bottomRightId);
+        var bottomLeft = Game.getObjectById(quad.bottomLeftId)
+        var topRight = Game.getObjectById(quad.topRightId)
         //check PATH is blocked by STRUCTURE_RAMPART or STRUCTURE_WALL
         var structuresAtPath = []
-        if (direction == TOP || direction == TOP_LEFT || direction == LEFT && nextPos != undefined) {
-            structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, nextPos.x, nextPos.y)
+        if (direction == TOP_LEFT && topLeft!=null) {
+            console.log("0. looking for structures at: ",nextPos.x," ", nextPos.y)
+            structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x-1, topLeft.pos.y-1)
         }
-        else if ((direction == BOTTOM || direction == BOTTOM_RIGHT || direction == BOTTOM_LEFT) && nextPos != undefined && movePath[1] != undefined
-            && movePath[1].x != undefined && movePath[1].y != undefined
-        ) {
-            structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, nextPos.x, nextPos.y)
-            structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[1].x, movePath[1].y))
+        else if(direction == BOTTOM_LEFT && bottomLeft!=null)
+        {
+            structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x-1, topLeft.pos.y+1)
         }
+        else if (direction == BOTTOM_RIGHT && bottomRight!=null) 
+        {
+            structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x+1, bottomRight.pos.y+1)
+            console.log("1. looking for structures at: ", bottomRight.pos.x+1," ",bottomRight.pos.y+1," ",structuresAtPath.length)
+        }
+        else if(direction == TOP_RIGHT && topRight!=null)
+        {
+             structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x+1, bottomRight.pos.y-1)
+        }
+
         //Excluding roads and containers from path
         structuresAtPath = _.filter(structuresAtPath, function (str) {
-            return str.structureType != STRUCTURE_ROAD && str.structureType != STRUCTURE_CONTAINER;
+            return str.my==false && (str.structureType!=STRUCTURE_CONTAINER && str.structureType !=STRUCTURE_ROAD);
         });
         //debugging
         console.log("STRUCTURES AT PATH")
@@ -383,24 +394,18 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
             console.log(s)
         }
         /// end of debuging
-        if (movePath != undefined && movePath.length > 0 && structuresAtPath.length > 0 && structuresAtPath[0] != undefined) {
-            //structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, nextPos.x, nextPos.y)
-            //console.log("Path[0] blocked by structure: ",structuresAtPath[0])
-            if ((nextPos.x > topLeft.pos.x || nextPos.y > topLeft.pos.y) && movePath.length >= 1 && structuresAtPath[1] != undefined) {
-                //console.log("movePath: ",movePath)
-                structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, movePath[1].x, movePath[1].y))
-                //console.log("Path[1] blocked by structure: ",structuresAtPath[1])
-            }
+        if (movePath != undefined && movePath.length > 0 && structuresAtPath.length > 0 && structuresAtPath[0].structureType!=undefined) {
+
             isBlocked = false;
-            for (s of structuresAtPath) {
-                if (s.my == false && (s.structureType == STRUCTURE_RAMPART || s.structureType == STRUCTURE_WALL) && s.structureType != STRUCTURE_ROAD) {
-                    isBlocked = true;
-                    quad.path = undefined
-                    console.log("RESETTING PATH - OBSTACLE")
-                    console.log("Path blocked by WALL or RAMPART at: ", s.pos)
-                    return -13;//path in reality is blocked by rampart/wall
-                }
+
+            if (structuresAtPath.length > 0) {
+                isBlocked = true;
+                quad.path = undefined
+                console.log("RESETTING PATH - OBSTACLE")
+                console.log("Path blocked by WALL or RAMPART at: ", s.pos)
+                return -13;//path in reality is blocked by rampart/wall
             }
+
         }
 
 
@@ -454,7 +459,7 @@ function quadRetreat(quad, position, range = 55) {
     //quad.noSpin = true
     //quad.isRotating = false
     localHeap.isRotating = false;
-    retreatResult = moveQuad(quad, position, 3, range, true,2)
+    retreatResult = moveQuad(quad, position, 3, range, true, 2)
     //console.log("retreatResult: ", retreatResult)
 }
 
@@ -1072,7 +1077,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
     //quad.noSpin = false;
 
-    console.log("quad.id: ", quad.id, " is packed: ", localHeap.isQuadPacked)
+    //console.log("quad.id: ", quad.id, " is packed: ", localHeap.isQuadPacked)
 
     if (quad.members != undefined && quad.members.length >= 4) {
         quad.completed = true
@@ -1133,7 +1138,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     if (localHeap.isQuadPacked == false) {
 
         if (topLeft.pos.x > 0 && topLeft.pos.x < 48 && topLeft.pos.y > 0 && topLeft.pos.y < 48 || true) {
-            console.log("grouping 2")
+            //console.log("grouping 2")
             if (quad.grouping_pos == undefined) {
                 var seeds = [];
                 seeds.push(topLeft.pos);
@@ -1374,8 +1379,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
         //console.log(quad.id, " hits: ", quadHits(quad), " / ", quadHitsMax(quad))
         if (quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad)) > quadHealPower(quad)) {
-            
-            if (target==undefined || target.pos == undefined) {
+
+            if (target == undefined || target.pos == undefined) {
                 console.log("quad: ", quad.id, " is retreating - no target")
                 topLeft.say("retr1")
                 var homePos = new RoomPosition(25, 25, topLeft.memory.home_room.name)
@@ -1413,7 +1418,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //moveQuad(quad, Game.flags["quad"])
 
 
-    if (topLeft.room.name != topLeft.memory.home_room.name && target!=undefined && target.id == undefined) {
+    if (topLeft.room.name != topLeft.memory.home_room.name && target != undefined && target.id == undefined) {
         quadRangedMassAttack(quad)
     }
 
