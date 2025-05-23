@@ -218,7 +218,7 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
         }
         var extensions = [];
         for (id of creep.memory.extensions_id) {
-            if (Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+            if (Game.getObjectById(id)!=null && Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                 extensions.push(Game.getObjectById(id));
             }
 

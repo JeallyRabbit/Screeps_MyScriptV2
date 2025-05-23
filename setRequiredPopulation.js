@@ -152,9 +152,14 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     if (Memory.allies == undefined) {
         Memory.allies = [];
     }
-    //Finding hostiles in every room
+    
+    //console.log("soldiersss")
 
+    //Finding hostiles in every room
     for (room in Game.rooms) {
+
+        //console.log(room , " ",global.heap.soldiers[room])
+
         var r = Game.rooms[room]
         if (r != undefined) {
             r.memory.hostiles = [];
@@ -951,20 +956,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
 
-        /*
-        for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
-            if(Game.rooms[spawn.memory.farming_sources[i].name].find(FIND_HOSTILE_STRUCTURES,{filter: function(str)
-                {
-                    return str.structureType==STRUCTURE_INVADER_CORE
-                }}).length>0 && Memory.rooms[spawn.memory.farming_sources[i].name].soldiers!=undefined && Memory.rooms[spawn.memory.farming_sources[i].name].soldiers.length<3)
-            {
-                spawn.memory.need_melee_soldier=spawn.memory.farming_sources[i].name;
-                console.log("need mele for inv core for: ",spawn.memory.need_melee_soldier)
-                break;
-            }
-        }
-            */
-
 
         // if room is under attack do not spawn farmers
         if (spawn.memory.state.includes("STATE_UNDER_ATTACK")) {
@@ -1036,11 +1027,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 {
                     Game.rooms[myRoom].memory.soldiers=[]
                 }
-                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers.length < 2) {
+                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers.length < 2
+            && global.heap.soldiers[myRoom]!=undefined && global.heap.soldiers[myRoom]<3) {
                     spawn.memory.need_soldier = myRoom;
-                    //console.log("need_soldier: ",myRoom," soldiers.length: ",Game.rooms[myRoom].memory.soldiers.length)
                 }
-                else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers!=undefined && Game.rooms[myRoom].memory.soldiers.length < 2) {
+                else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && global.heap.soldiers[myRoom] < 2) {
                     spawn.memory.need_melee_soldier = myRoom;
                     console.log("need melee soldier: ",spawn.memory.need_melee_soldier)
                     if(spawn.memory.need_DistanceCarrier==myRoom)
@@ -1055,7 +1046,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                         spawn.memory.need_source_farmer_distance=undefined
                         spawn.memory.need_source_farmer_room=undefined
                     }
-                    //console.log("need melee soldierr: ",spawn.memory.need_melee_soldier)
                 }
 
 
@@ -1087,7 +1077,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                             console.log("creep is dead")
                             r.soldier_id = undefined
                         }
-                        if (r.soldier_id == undefined) {
+                        if (r.soldier_id == undefined && global.heap.soldiers[myRoom]<3) {
                             spawn.memory.need_soldier = r.roomName
                         }
                     }
