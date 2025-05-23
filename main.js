@@ -1350,14 +1350,20 @@ module.exports.loop = function () {
                 //    && (q.members != undefined && q.members.length < 4))))
 
                 //console.log(q.id," asdasd ", farming_needs_satisfied)
-                if (!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
-                    && (q.members != undefined && q.members.length < 4)) {
+                var ifSpawn=!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
+                    && (q.members != undefined && q.members.length < 4)
+
+                if(ifSpawn==false && q.members!=undefined && q.members.length>0)
+                {//spawn already started spawning
+                    ifSpawn=true
+                }
+                if (ifSpawn) {
 
                     //console.log("entering spawning quad")
                     //skipping starting spawning another quad if not enough energy
                     if(q.members.length==0 && spawn.room.storage!=undefined && spawn.room.storage.store[RESOURCE_ENERGY]<35000)
                     {
-                        //console.log("skipping spawning quad")
+                        console.log("skipping spawning quad")
                         continue;
                     }
 
@@ -1368,7 +1374,7 @@ module.exports.loop = function () {
                     
                     minBodyCost*=0.8
                     
-                    //console.log("min bodyCost: ",minBodyCost,", energyCap:",energyCap)
+                    console.log("min bodyCost: ",minBodyCost,", energyCap:",energyCap)
                     if(q.members.length%2){
                         body=maxQuadRanger(Math.max(energyCap, q.minEnergyOnCreep,minBodyCost))
                     }
