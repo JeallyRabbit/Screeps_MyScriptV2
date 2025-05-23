@@ -23,6 +23,10 @@ function isQuadPacked(creeps) {
                 localHeap.isQuadPacked = false;
                 return false
             }
+            else if(creepA != null && creepB != null && creepA.pos.roomName != creepB.pos.roomName && creepB.pos.x>2 && creepB.pos.x<47 && creepB.pos.y>2 && creepB.pos.y<47 )
+            {//creeps will chase each other
+                creepA.moveTo(creepB)
+            }
         }
     }
     //console.log("QUAD IS PACKED")
