@@ -1253,7 +1253,7 @@ Spawn.prototype.setBaseLayout = function setBaseLayout(spawn) {
     {
         var cpu_before = Game.cpu.getUsed()
         let roomCM_1 = PathFinder.CostMatrix.deserialize(spawn.memory.roomCM);
-        if (Game.shard.name != 'shard3' && Game.shard.name != 'jaysee') {
+        if (Game.shard.name != 'shard3') {
             plan_borders(spawn, roomCM_1, 4);
         }
         spawn.memory.roomCM = roomCM_1.serialize();
