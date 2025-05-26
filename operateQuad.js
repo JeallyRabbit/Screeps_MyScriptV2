@@ -372,18 +372,48 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         var structuresAtPath = []
         if (topLeft.pos.x > 0 && topLeft.pos.x < 49 && topLeft.pos.y > 0 && topLeft.pos.y < 49) {
             if (direction == TOP_LEFT && topLeft != null && topLeft.pos.x - 1 > 0) {
-                console.log("0. looking for structures at: ", nextPos.x, " ", nextPos.y)
                 structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x - 1, topLeft.pos.y - 1)
+                if(topRight!=null)
+                {
+                    structuresAtPath.push(topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x - 1, topRight.pos.y - 1))
+                }
+                if(bottomLeft!=null)
+                {
+                    structuresAtPath.push(bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x - 1, bottomLeft.pos.y - 1))
+                }
             }
             else if (direction == BOTTOM_LEFT && bottomLeft != null) {
-                structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x - 1, bottomLeft.pos.y + 1)
+                structuresAtPath = bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x - 1, bottomLeft.pos.y + 1)
+                if(topLeft!=null)
+                {
+                    structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x - 1, topLeft.pos.y + 1))
+                }
+                if(bottomRight!=null)
+                {
+                    structuresAtPath.push(bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x - 1, bottomRight.pos.y + 1))
+                }
             }
             else if (direction == BOTTOM_RIGHT && bottomRight != null) {
-                structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x + 1, bottomRight.pos.y + 1)
-                console.log("1. looking for structures at: ", bottomRight.pos.x + 1, " ", bottomRight.pos.y + 1, " ", structuresAtPath.length)
+                structuresAtPath = bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x + 1, bottomRight.pos.y + 1)
+                if(bottomLeft!=null)
+                {
+                    structuresAtPath.push(bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x + 1, bottomLeft.pos.y + 1))
+                }
+                if(topRight!=null)
+                {
+                    structuresAtPath.push(topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x + 1, topRight.pos.y + 1))
+                }
             }
             else if (direction == TOP_RIGHT && topRight != null) {
-                structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x + 1, topRight.pos.y - 1)
+                structuresAtPath = topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x + 1, topRight.pos.y - 1)
+                if(topLeft!=null)
+                {
+                    structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x + 1, topLeft.pos.y - 1))
+                }
+                if(bottomRight!=null)
+                {
+                    structuresAtPath.push(bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x + 1, bottomRight.pos.y - 1))
+                }
             }
         }
 
