@@ -1609,9 +1609,10 @@ module.exports.loop = function () {
                 continue;
             }
             //if (spawn.memory.need_farmer != undefined) {
-            if (spawn.memory.need_source_farmer != undefined && (spawn.memory.need_DistanceCarrier != spawn.memory.need_soldier  || global.heap.soldiers[spawn.memory.need_source_farmer] > 0)) {
-
-                if (spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
+            if (spawn.memory.need_source_farmer != undefined && (spawn.memory.need_source_farmer != spawn.memory.need_soldier)) {
+                
+                console.log("Spawning farmer")
+                var aux=spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'farmer', home_room: spawn.room,
                         source_id: spawn.memory.need_source_farmer,
@@ -1619,7 +1620,8 @@ module.exports.loop = function () {
                         target_room: spawn.memory.need_source_farmer_room
 
                     }
-                }) == 0) {
+                })
+                if (aux== 0) {
                     //spawn.memory.farmers_counter++;
                     continue;
                 }
