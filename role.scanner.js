@@ -5,13 +5,15 @@ const { floodFill } = require("./floodFill");
 
 function findRouteTestScanner(starting_pos, destination) {
 
-    var ret = PathFinder.search(starting_pos, destination, {
+    var ret = PathFinder.search(
+        starting_pos, 
+        {pos: destination, range:20}, 
+        {
         //maxRooms: 64,
 
         plainCost: 2,
-        range: 5,
         swampCost: 2,
-        maxOps: 8000,
+        maxOps: 3000,
 
         roomCallback: function (roomName) {
 
@@ -23,6 +25,14 @@ function findRouteTestScanner(starting_pos, destination) {
 
             let room = Game.rooms[roomName];
             if (!room) { return; }
+
+            if(Memory.avoidRooms!=undefined && Memory.avoidRooms.length>0 
+                && Memory.avoidRooms.includes(roomName)
+            )
+            {//do not path into avoided room
+                return false;
+            }
+
 
             // if (roomName == spawn.room.name) {
             //     costs = roomCM;
@@ -71,6 +81,7 @@ function findRouteTestScanner(starting_pos, destination) {
                 costs.set(struct.pos.x, struct.pos.y, 255);
             });
 
+            /*
             //favour roads under construction
             //spawn.
             room.find(FIND_CONSTRUCTION_SITES, {
@@ -80,6 +91,7 @@ function findRouteTestScanner(starting_pos, destination) {
             }).forEach(function (struct) {
                 costs.set(struct.pos.x, struct.pos.y, 1);
             });
+            */
 
 
             room.find(FIND_HOSTILE_CREEPS).forEach(function (a) {
@@ -270,7 +282,22 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             && Game.map.getRoomStatus(spawn.memory.scanner_rooms[0]).status == 'normal') {
             creep.say("assign");
 
-            creep.memory.target_room = spawn.memory.scanner_rooms[0];
+            var minDistance = 9999999;
+
+            for (r of spawn.memory.scanner_rooms) {
+                for (s of Memory.main_spawns) {
+                    if (Game.getObjectById(s) != null) {
+                        if (Game.map.getRoomLinearDistance(Game.getObjectById(s).room.name, r) < 3) {//shifting rooms to close to main
+                            spawn.memory.scanner_rooms.shift();
+                        }
+                        else if (Game.map.getRoomLinearDistance(Game.getObjectById(s).room.name, r) < minDistance) {//shofting rooms to close to main
+                            minDistance=Game.map.getRoomLinearDistance(Game.getObjectById(s).room.name, r)
+                            creep.memory.target_room=r
+                        }
+                    }
+                }
+
+            }
         }
         else if (spawn.memory.scanner_rooms != undefined && Game.map.getRoomStatus(spawn.memory.scanner_rooms[0]).status != "normal") {
             spawn.memory.scanner_rooms.shift();
@@ -285,8 +312,16 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             creep.say("removing home_room");
             return;
         }
+
+        var isInAvoided = false;
+        if (Memory.avoidRooms != undefined && Memory.avoidRooms.length > 0) {
+            if (Memory.avoidRooms.includes(creep.memory.target_room)) {
+                isInAvoided = true;
+            }
+        }
         if (Game.map.findRoute(creep.room.name, creep.memory.target_room) == ERR_NO_PATH || Game.map.getRoomStatus(creep.memory.target_room != 'normal')
-            || Math.abs(Game.map.getRoomLinearDistance(creep.memory.home_room.name, creep.memory.target_room)) < 3) {
+            || Math.abs(Game.map.getRoomLinearDistance(creep.memory.home_room.name, creep.memory.target_room)) < 3
+            || isInAvoided) {
             console.log("removing: ", creep.memory.target_room);
             creep.say("A")
             if (spawn.memory.scanner_rooms != undefined && spawn.memory.scanner_rooms.length > 0) {
@@ -298,7 +333,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
         if (creep.memory.target_room != undefined && creep.room.name != creep.memory.target_room) {
 
-            
+
 
             creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room))
 

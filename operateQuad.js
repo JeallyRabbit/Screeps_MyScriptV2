@@ -13,14 +13,14 @@ const localHeap = {}
 function isQuadPacked(creeps) {
     //console.log("checking if quad is packed")
     if (creeps == undefined) { return false }
-    if (creeps.length != 4) return false
+    if (creeps.length < 4) {return false }
     for (let i = 0; i < creeps.length; i++) {
         for (let j = i + 1; j < creeps.length; j++) {
             var creepA = Game.getObjectById(creeps[i])
             var creepB = Game.getObjectById(creeps[j])
             if (creepA != null && creepB != null && !creepA.pos.isNearTo(creepB.pos) && creepA.pos.roomName == creepB.pos.roomName) {
                 //console.log("QUAD IS NOT PACKED")
-                localHeap.isQuadPacked = false;
+                console.log(creepA," ",creepB)
                 return false
             }
             else if(creepA != null && creepB != null && creepA.pos.roomName != creepB.pos.roomName && creepB.pos.x>2 && creepB.pos.x<47 && creepB.pos.y>2 && creepB.pos.y<47 )
@@ -30,7 +30,6 @@ function isQuadPacked(creeps) {
         }
     }
     //console.log("QUAD IS PACKED")
-    localHeap.isQuadPacked = true;
     return true
 }
 
@@ -1109,9 +1108,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
 
-    //quad.noSpin = false;
-
-    //console.log("quad.id: ", quad.id, " is packed: ", localHeap.isQuadPacked)
 
     if (quad.members != undefined && quad.members.length >= 4) {
         quad.completed = true
@@ -1148,7 +1144,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
     if (dead_counter == 4 || topLeft == null) {
         quad.members = [];
-        quad.packed = false;
         quad.completed = false;
         quad.topLeftId = undefined;
         quad.topRightId = undefined;
@@ -1167,7 +1162,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     }
 
     quadSelfHeal(quad)
-
+    console.log("is quad packed: ",localHeap.isQuadPacked)
 
     if (localHeap.isQuadPacked == false) {
 
