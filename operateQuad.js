@@ -863,6 +863,11 @@ function calculateTowersDamage(quad, towers) {
 }
 
 function caluclateRampartsCosts(quad, structures) {
+
+    // TODO or TO THINK OVER
+    // instead of dividing by str.hitsMax, divide by biggest str.hits (biggest out of ramparts)
+    // maxHits = str.hits of most fortified rampart
+    // var tileCost = (str.hits / maxHits) * DAMAGE_MATRIX_FACTOR
     if (structures.length < 1) { return -1; }
     if (quad.rampartsCM == undefined || true) {
         const rampartsMatrix = new PathFinder.CostMatrix
