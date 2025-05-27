@@ -13,18 +13,29 @@ const localHeap = {}
 function isQuadPacked(creeps) {
     //console.log("checking if quad is packed")
     if (creeps == undefined) { return false }
-    if (creeps.length < 4) {return false }
+    if (creeps.length < 4) { return false }
+    //console.log("quad members (",creeps.length,")")
     for (let i = 0; i < creeps.length; i++) {
+
+        /*
+        if(Game.getObjectById(creeps[i])!=null)
+        {
+            console.log(Game.getObjectById(creeps[i]).pos)
+        }
+            */
+
+
         for (let j = i + 1; j < creeps.length; j++) {
             var creepA = Game.getObjectById(creeps[i])
+
+
             var creepB = Game.getObjectById(creeps[j])
             if (creepA != null && creepB != null && !creepA.pos.isNearTo(creepB.pos) && creepA.pos.roomName == creepB.pos.roomName) {
                 //console.log("QUAD IS NOT PACKED")
-                console.log(creepA," ",creepB)
+                //console.log("creep at :",creepA.pos," is not next to: ",creepB.pos)
                 return false
             }
-            else if(creepA != null && creepB != null && creepA.pos.roomName != creepB.pos.roomName && creepB.pos.x>2 && creepB.pos.x<47 && creepB.pos.y>2 && creepB.pos.y<47 )
-            {//creeps will chase each other
+            else if (creepA != null && creepB != null && creepA.pos.roomName != creepB.pos.roomName && creepB.pos.x > 2 && creepB.pos.x < 47 && creepB.pos.y > 2 && creepB.pos.y < 47) {//creeps will chase each other
                 creepA.moveTo(creepB)
             }
         }
@@ -208,7 +219,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
     if (quad.lastTargetPos == undefined || (quad.lastTargetPos != undefined && !(quad.lastTargetPos.x == targetPos.x && quad.lastTargetPos.y == targetPos.y && quad.lastTargetPos.roomName == targetPos.roomName))) {
         quad.lastTargetPos = targetPos
-        if (Game.time % 3 == 0) {
+        if (Game.time % 8 == 0) {
             quad.path = undefined
         }
 
@@ -372,45 +383,37 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         if (topLeft.pos.x > 0 && topLeft.pos.x < 49 && topLeft.pos.y > 0 && topLeft.pos.y < 49) {
             if (direction == TOP_LEFT && topLeft != null && topLeft.pos.x - 1 > 0) {
                 structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x - 1, topLeft.pos.y - 1)
-                if(topRight!=null)
-                {
+                if (topRight != null && topRight.pos.x - 1 > 0 && topRight.pos.y - 1 > 0) {
                     structuresAtPath.push(topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x - 1, topRight.pos.y - 1))
                 }
-                if(bottomLeft!=null)
-                {
+                if (bottomLeft != null && bottomLeft.pos.x - 1 > 0 && bottomLeft.pos.y > 0) {
                     structuresAtPath.push(bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x - 1, bottomLeft.pos.y - 1))
                 }
             }
-            else if (direction == BOTTOM_LEFT && bottomLeft != null) {
+            else if (direction == BOTTOM_LEFT && bottomLeft != null && bottomLeft.pos.x - 1>0 && bottomLeft.pos.y+1<49) {
                 structuresAtPath = bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x - 1, bottomLeft.pos.y + 1)
-                if(topLeft!=null)
-                {
+                if (topLeft != null && topLeft.pos.x - 1 > 0 && topLeft.pos.y + 1 < 49) {
                     structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x - 1, topLeft.pos.y + 1))
                 }
-                if(bottomRight!=null)
-                {
+                if (bottomRight != null && bottomRight.pos.x - 1 > 0 && bottomRight.pos.y + 1 < 49) {
                     structuresAtPath.push(bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x - 1, bottomRight.pos.y + 1))
                 }
             }
-            else if (direction == BOTTOM_RIGHT && bottomRight != null) {
+            else if (direction == BOTTOM_RIGHT && bottomRight != null &&  bottomRight.pos.x + 1<49 &&  bottomRight.pos.y + 1<49) {
                 structuresAtPath = bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x + 1, bottomRight.pos.y + 1)
-                if(bottomLeft!=null)
-                {
+                if (bottomLeft != null && bottomLeft.pos.x + 1 < 49 && bottomLeft.pos.y + 1 < 49) {
                     structuresAtPath.push(bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x + 1, bottomLeft.pos.y + 1))
                 }
-                if(topRight!=null)
-                {
+                if (topRight != null) {
                     structuresAtPath.push(topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x + 1, topRight.pos.y + 1))
                 }
             }
-            else if (direction == TOP_RIGHT && topRight != null) {
+            else if (direction == TOP_RIGHT && topRight != null && topRight.pos.x + 1<49 && topRight.pos.y - 1>0) {
                 structuresAtPath = topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x + 1, topRight.pos.y - 1)
-                if(topLeft!=null)
-                {
+                if (topLeft != null && topLeft.pos.x + 1 < 49 && topLeft.pos.y - 1 > 0) {
                     structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x + 1, topLeft.pos.y - 1))
                 }
-                if(bottomRight!=null)
-                {
+                if (bottomRight != null && bottomRight.pos.x + 1 < 49 && bottomRight.pos.y - 1 > 0) {
                     structuresAtPath.push(bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x + 1, bottomRight.pos.y - 1))
                 }
             }
@@ -429,11 +432,22 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         /// end of debuging
         if (movePath != undefined && movePath.length > 0 && structuresAtPath.length > 0 && structuresAtPath[0].structureType != undefined) {
 
-            isBlocked = false;
+            localHeap.isBlocked = false;
 
             if (structuresAtPath.length > 0) {
-                isBlocked = true;
-                quad.path = undefined
+                localHeap.isBlocked = true;
+                if(topLeft!=null && topLeft.room.name==quad.target_room)
+                {
+                    if(Game.time%11==0)
+                    {
+                        quad.path=undefined
+                    }
+                }
+                else if(topLeft!=null && topLeft.room.name!=quad.target_room)
+                {
+                    quad.path = undefined
+                }
+                
                 console.log("RESETTING PATH - OBSTACLE")
                 console.log("Path blocked by WALL or RAMPART at: ", s.pos)
                 return -13;//path in reality is blocked by rampart/wall
@@ -459,6 +473,9 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         console.log("quad is trying to move from: ", topLeft.pos, " to ", nextPos)
         var move_result = 0;
         for (q of quad.members) {
+            if (localHeap.isBlocked) { 
+                return -1; 
+            }
             cr = Game.getObjectById(q)
             if (cr == null) { continue }
 
@@ -1092,6 +1109,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     //quad.isRotating = false
     localHeap.isRotating = false;
     localHeap.noSpin = false;
+    localHeap.isBlocked = false;
     localHeap.isQuadPacked = false;
     localHeap.isQuadPacked = isQuadPacked(quad.members)
 
@@ -1162,7 +1180,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     }
 
     quadSelfHeal(quad)
-    console.log("is quad packed: ",localHeap.isQuadPacked)
+    console.log("is quad packed: ", localHeap.isQuadPacked)
 
     if (localHeap.isQuadPacked == false) {
 
@@ -1400,7 +1418,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             }
         }
         else {
-            moveQuad(quad, new RoomPosition(25, 25, quad.target_room), 10)
+            //moveQuad(quad, new RoomPosition(25, 25, quad.target_room), 10)
 
 
         }

@@ -1019,7 +1019,7 @@ module.exports.loop = function () {
                                 //    q.members = [];
                                 //}
                                 if (q.members != undefined && q.id === creep.memory.quadId && !q.members.includes(creep.id)) {
-                                    q.members.push(creep.id)
+                                    q.members.push(creep.id) && q.members.length<4
 
                                     if (q.topLeftId == undefined || q.topLeftId == creep.id) {
                                         q.topLeftId = creep.id
@@ -1353,7 +1353,7 @@ module.exports.loop = function () {
                 var ifSpawn=!q.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers
                     && (q.members != undefined && q.members.length < 4)
 
-                if(ifSpawn==false && q.members!=undefined && q.members.length>0)
+                if(ifSpawn==false && q.members!=undefined && q.members.length>0 && q.members.length<4)
                 {//spawn already started spawning
                     ifSpawn=true
                 }
@@ -1396,6 +1396,8 @@ module.exports.loop = function () {
                         if (energyCap > q.minEnergyOnCreep) {
                             q.minEnergyOnCreep = energyCap
                         }
+
+                        console.log("spawning creep for quad: ",q.id, ", it have ",q.members.length," members")
                         spawn.memory.isSpawningQuad = true
                         break;
                     }
