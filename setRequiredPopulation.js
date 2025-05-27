@@ -394,7 +394,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.req_berserk = 1;//role num 8
     spawn.memory.req_transporters = 0;//role numm 9
     spawn.memory.req_towerKeepers = 0;//role num 10
-    if (Game.shard.name != 'shard3' && Game.shard.name!='jaysee' && spawn.room.controller.level > 3 /* && (spawn.room.storage!=undefined  && spawn.room.storage[RESOURCE_ENERGY]>20000)*/) {
+    if (Game.shard.name != 'shard3' && spawn.room.controller.level > 3 /* && (spawn.room.storage!=undefined  && spawn.room.storage[RESOURCE_ENERGY]>20000)*/) {
         spawn.memory.req_rampart_repairers = 2;
         if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 35000) {
             spawn.memory.req_rampart_repairers = Math.floor(spawn.room.storage.store[RESOURCE_ENERGY] / 35000);
