@@ -261,7 +261,11 @@ module.exports.loop = function () {
                 Memory.colonizing = false;
             }
 
-            Memory.colonizing = false;
+            if(Game.shard.name.startsWith('shard'))
+            {
+                Memory.colonizing = false;
+            }
+            
 
         }
 
