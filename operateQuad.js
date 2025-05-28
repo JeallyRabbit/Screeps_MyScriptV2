@@ -4,26 +4,18 @@ const { floodFill } = require("./floodFill");
 
 
 const ERR_NOT_IN_FULL_RANGE = -20
-const DAMAGE_MATRIX_FACTOR = 10
+const DAMAGE_MATRIX_FACTOR = 20
 
 const localHeap = {}
 
 //localHeap = heap;
 
 function isQuadPacked(creeps) {
-    //console.log("checking if quad is packed")
     if (creeps == undefined) { return false }
     if (creeps.length < 4) { return false }
-    //console.log("quad members (",creeps.length,")")
     for (let i = 0; i < creeps.length; i++) {
 
-        /*
-        if(Game.getObjectById(creeps[i])!=null)
-        {
-            console.log(Game.getObjectById(creeps[i]).pos)
-        }
-            */
-
+        
 
         for (let j = i + 1; j < creeps.length; j++) {
             var creepA = Game.getObjectById(creeps[i])
@@ -31,8 +23,6 @@ function isQuadPacked(creeps) {
 
             var creepB = Game.getObjectById(creeps[j])
             if (creepA != null && creepB != null && !creepA.pos.isNearTo(creepB.pos) && creepA.pos.roomName == creepB.pos.roomName) {
-                //console.log("QUAD IS NOT PACKED")
-                //console.log("creep at :",creepA.pos," is not next to: ",creepB.pos)
                 return false
             }
             else if (creepA != null && creepB != null && creepA.pos.roomName != creepB.pos.roomName && creepB.pos.x > 2 && creepB.pos.x < 47 && creepB.pos.y > 2 && creepB.pos.y < 47) {//creeps will chase each other
@@ -40,7 +30,6 @@ function isQuadPacked(creeps) {
             }
         }
     }
-    //console.log("QUAD IS PACKED")
     return true
 }
 
@@ -231,32 +220,12 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
     }
 
     var nextPos = undefined
-    //debugging
-    /*
-    console.log("path before skipping (first 5):")
-    var c = 0;
-    if (movePath != undefined && movePath.length > 0) {
-        for (p of movePath) {
-            if (p != null) {
-                console.log(p.x, " ", p.y, " ", p.roomName)
-            }
-
-            c++;
-            if (c > 5) { break }
-        }
-    }
-    */
-    //
 
     // I'm not sure if that should be before or after calculating Path
     if (quad.path != undefined && quad.path != undefined && quad.path[0] != undefined) {
         nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
 
-        console.log("next pos: ", nextPos)
-        console.log("topLeft.pos: ", topLeft.pos)
-        console.log(nextPos.x == topLeft.pos.x, " ", nextPos.y == topLeft.pos.y /*, " ", nextPos.roomName == topLeft.pos.roomName*/)
-        if ((nextPos.x == topLeft.pos.x && nextPos.y == topLeft.pos.y /* && nextPos.roomName == topLeft.pos.roomName */)) {
-            console.log("REMOVING SUCCESFULL MOVE")
+        if ((nextPos.x == topLeft.pos.x && nextPos.y == topLeft.pos.y )) {
             movePath.shift()
             try {
                 nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
@@ -265,37 +234,17 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         }
     }
 
-    //debugging
-    /*
-    console.log("path after skipping (first 5):")
-    var c = 0;
-    if (movePath != undefined && movePath.length > 0) {
-        for (p of movePath) {
-            if (p != undefined) {
-                console.log(p.x, " ", p.y, " ", p.roomName)
-            }
-            c++;
-            if (c > 5) { break }
-        }
-
-    }
-        */
 
 
 
     if (movePath != undefined && movePath.length == 0) {
-        console.log("RESETTING PATH - PATH IS EMPTY")
         quad.path = undefined
         movePath = undefined
     }
 
 
     if (quad.path != undefined && quad.path != undefined && quad.path[0] != undefined && !topLeft.pos.isNearTo(nextPos) && topLeft.pos.roomName == nextPos.roomName) {
-        console.log("RESSETING PATH - QUAD IS TO FAR AWAY FROM CURRENT PATH")
-        console.log("Quad currentPOS: ", topLeft.pos)
-        console.log("next POS: ", nextPos)
         quad.path = undefined
-        console.log("quad: ", quad.id, " at: ", topLeft.pos, " is clearing its path data")
     }
 
 
@@ -303,11 +252,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
     if (Game.time % reusePath == 0 || quad.path == undefined /* || (topLeft.pos.x == 49 || topLeft.pos.y == 49 || topLeft.pos.x == 0 || topLeft.pos.y == 0 ) */) {
 
-        console.log("Calculating path for quad: ", quad.id)
         topLeft.say("FndPath")
-        //console.log("topLeft.pos: ", topLeft.pos)
-        //console.log("target.pos: ", targetPos)
-        if (myFlee == true) { console.log("searching for path away from target") }
         const path = PathFinder.search(
             topLeft.pos,
             { pos: targetPos, range: myRange },
@@ -356,11 +301,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
     if (movePath != undefined && movePath != undefined && movePath[0] != undefined) {
         nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
 
-        console.log("next pos: ", nextPos)
-        console.log("topLeft.pos: ", topLeft.pos)
-        console.log(nextPos.x == topLeft.pos.x, " ", nextPos.y == topLeft.pos.y /*, " ", nextPos.roomName == topLeft.pos.roomName*/)
         if ((nextPos.x == topLeft.pos.x && nextPos.y == topLeft.pos.y /* && nextPos.roomName == topLeft.pos.roomName */)) {
-            console.log("REMOVING SUCCESFULL MOVE")
             movePath.shift()
             try {
                 nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
@@ -424,12 +365,6 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         structuresAtPath = _.filter(structuresAtPath, function (str) {
             return str.my == false && (str.structureType != STRUCTURE_CONTAINER && str.structureType != STRUCTURE_ROAD);
         });
-        //debugging
-        console.log("STRUCTURES AT PATH")
-        for (s of structuresAtPath) {
-            console.log(s)
-        }
-        /// end of debuging
         if (movePath != undefined && movePath.length > 0 && structuresAtPath.length > 0 && structuresAtPath[0].structureType != undefined) {
 
             localHeap.isBlocked = false;
@@ -448,6 +383,17 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
                     quad.path = undefined
                 }
                 
+                //need testing
+                if(structuresAtPath[0]!=undefined && structuresAtPath[0].pos!=undefined)
+                {
+                    //topLeft.say("rtObs")
+                    //quad.targetStructureId=structuresAtPath[0].id
+                    //quad.targetId=structuresAtPath[0].id
+                    console.log("changing target to: ",structuresAtPath[0])
+                    rotateToTarget(quad,structuresAtPath[0])
+                }
+                
+                //
                 console.log("RESETTING PATH - OBSTACLE")
                 console.log("Path blocked by WALL or RAMPART at: ", s.pos)
                 return -13;//path in reality is blocked by rampart/wall
@@ -470,7 +416,6 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         }
 
 
-        console.log("quad is trying to move from: ", topLeft.pos, " to ", nextPos)
         var move_result = 0;
         for (q of quad.members) {
             if (localHeap.isBlocked) { 
@@ -479,9 +424,6 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
             cr = Game.getObjectById(q)
             if (cr == null) { continue }
 
-            //cr.say(cr.move(direction))
-            //console.log("quad is trying to move from: ", topLeft.pos, " to ", nextPos)
-            //console.log(cr.pos, " move result: ", cr.move(direction), " direction: ", direction)
             move_result += cr.move(direction)
             //cr.say(cr.move(direction))
         }
@@ -871,14 +813,33 @@ function caluclateRampartsCosts(quad, structures) {
     if (structures.length < 1) { return -1; }
     if (quad.rampartsCM == undefined || true) {
         const rampartsMatrix = new PathFinder.CostMatrix
+
+        var maxHits=0
         for (s of structures) {
             str = Game.getObjectById(s)
             if (str == null) { continue }
             if (str.structureType == STRUCTURE_RAMPART || str.structureType == STRUCTURE_WALL) {
-                var tileCost = (str.hits / str.hitsMax) * DAMAGE_MATRIX_FACTOR
+                
+                if(str.hits>maxHits)
+                {
+                    maxHits=str.hits
+                }
+
+                //Game.rooms[quad.target_room].visual.rect(str.pos.x - 0.5, str.pos.y - 0.5, 1, 1, { fill: 'blue', opacity: tileCost })
+                //Game.rooms[quad.target_room].visual.text(tileCost,i,j)
+            }
+        }
+
+        for (s of structures) {
+            str = Game.getObjectById(s)
+            if (str == null) { continue }
+            if (str.structureType == STRUCTURE_RAMPART || str.structureType == STRUCTURE_WALL) {
+                var tileCost=0.0
+                tileCost = (str.hits / maxHits) * DAMAGE_MATRIX_FACTOR
                 if (Memory.allies.includes(str.owner.username) || str.pos.roomName != quad.target_room) {
                     tileCost = 255
                 }
+                //console.log("tile cost at: ",str.pos.x," ",str.pos.y," ",tileCost)
                 rampartsMatrix.set(str.pos.x, str.pos.y, tileCost)
 
 
@@ -1185,7 +1146,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     }
 
     quadSelfHeal(quad)
-    console.log("is quad packed: ", localHeap.isQuadPacked)
 
     if (localHeap.isQuadPacked == false) {
 
@@ -1406,14 +1366,15 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             //console.log("quad is attacking: ", target, " result ", quadRangedAttack(quad, target))
             if ((quadRangedAttack(quad, target) == ERR_NOT_IN_RANGE || quadNearTo(quad, target) == false) && quadHits(quad) >= quadHitsMax(quad) - quadHealPower(quad)) {
                 moveQuad(quad, target.pos, 3, 1, false, 1)
-                console.log("quad: ", quad.id, " is moving to target: ", target.pos)
+                //console.log("quad: ", quad.id, " is moving to target: ", target.pos)
             }
             else if (quadNearTo(quad, target)) {
                 console.log("quad is near ", target)
                 quadRangedMassAttack(quad, target)
 
                 //if Quad will for sure not retreat
-                if (!(quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad)) > quadHealPower(quad))) {
+                if (!(quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad)) > quadHealPower(quad))
+                && localHeap.isBlocked==false) {
                     rotateToTarget(quad, target)
                 }
 
