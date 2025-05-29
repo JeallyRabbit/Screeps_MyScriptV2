@@ -111,7 +111,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
             }
         }
         else if (terminal.room.controller.level >= 6 && terminal.room.controller.level < 8 && terminal.cooldown == 0
-            && terminal.store[RESOURCE_ENERGY] > 30000 && storage.store[RESOURCE_ENERGY] > 30000
+            && terminal.store[RESOURCE_ENERGY] > 30000 && storage.store[RESOURCE_ENERGY] > 50000
         ) {
 
             //Sharing energy on rcl6 and 7
@@ -163,7 +163,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
 
 
-        if (spawn.memory.state.includes(STATE_NEED_ENERGY) && terminal.cooldown == 0 && storage.store[RESOURCE_ENERGY] < 60000) {
+        if (spawn.memory.state.includes(STATE_NEED_ENERGY) && terminal.cooldown == 0 && storage.store[RESOURCE_ENERGY] < 40000) {
             console.log("terminal at: ", spawn.room.name, " is trying to buy energy")
             var cost2 = buy_resource(terminal, RESOURCE_ENERGY, 5000)
             console.log("result: ", cost2)

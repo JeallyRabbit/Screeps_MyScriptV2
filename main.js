@@ -263,7 +263,7 @@ module.exports.loop = function () {
 
             if(Game.shard.name.startsWith('shard'))
             {
-                Memory.colonizing = false;
+                //Memory.colonizing = false;
             }
             
 
@@ -1556,11 +1556,13 @@ module.exports.loop = function () {
             if (spawn.memory.need_soldier != undefined && spawn.memory.state != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK" )) {
 
                 console.log("spawning soldier: ")
-                console.log("soldiers ",Game.rooms[spawn.memory.need_soldier].memory.soldiers.length  , " at: ",spawn.memory.need_soldier)
+                /*
+               // console.log("soldiers ",Game.rooms[spawn.memory.need_soldier].memory.soldiers.length  , " at: ",spawn.memory.need_soldier)
                 for(a in Game.rooms[spawn.memory.need_soldier].memory.soldiers)
                 {
                     console.log(a)
                 }
+                    */
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:

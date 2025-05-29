@@ -1,4 +1,4 @@
-const { groupBy, range, inRange } = require("lodash");
+const { groupBy, range, inRange, startCase } = require("lodash");
 const { distanceTransform } = require("./distanceTransform");
 const { floodFill } = require("./floodFill");
 
@@ -208,9 +208,9 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
     if (quad.lastTargetPos == undefined || (quad.lastTargetPos != undefined && !(quad.lastTargetPos.x == targetPos.x && quad.lastTargetPos.y == targetPos.y && quad.lastTargetPos.roomName == targetPos.roomName))) {
         quad.lastTargetPos = targetPos
-        if (Game.time % 8 == 0) {
+       // if (Game.time % 88 == 0) {
             quad.path = undefined
-        }
+        //}
 
         console.log("RESETTING PATH - TARGET_POS HAS CHANGED")
     }
@@ -238,13 +238,14 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
 
     if (movePath != undefined && movePath.length == 0) {
-        quad.path = undefined
-        movePath = undefined
+        //quad.path = undefined
+        //movePath = undefined
     }
 
 
-    if (quad.path != undefined && quad.path != undefined && quad.path[0] != undefined && !topLeft.pos.isNearTo(nextPos) && topLeft.pos.roomName == nextPos.roomName) {
+    if (quad.path != undefined && quad.path[0] != undefined && !topLeft.pos.isNearTo(nextPos) && topLeft.pos.roomName == nextPos.roomName) {
         quad.path = undefined
+        console.log("resseting path - topLeft is to far away from calculated path")
     }
 
 
@@ -253,6 +254,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
     if (Game.time % reusePath == 0 || quad.path == undefined /* || (topLeft.pos.x == 49 || topLeft.pos.y == 49 || topLeft.pos.x == 0 || topLeft.pos.y == 0 ) */) {
 
         topLeft.say("FndPath")
+        startCPU=Game.cpu.getUsed()
         const path = PathFinder.search(
             topLeft.pos,
             { pos: targetPos, range: myRange },
@@ -274,6 +276,9 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
                 }
             },
         )
+
+        endCPU = Game.cpu.getUsed();
+        topLeft.say("Fn: "+(endCPU-startCPU))
 
         //skipping doubled room edge tiles
         var auxPath = []
@@ -373,13 +378,15 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
                 localHeap.isBlocked = true;
                 if(topLeft!=null && topLeft.room.name==quad.target_room)
                 {
-                    if(Game.time%11==0)
+                    if(Game.time%131==0)
                     {
+                        console.log("RESETTING PATH - OBSTACLE - in target_room")
                         quad.path=undefined
                     }
                 }
                 else if(topLeft!=null && topLeft.room.name!=quad.target_room)
                 {
+                    console.log("RESETTING PATH - OBSTACLE - not in target room")
                     quad.path = undefined
                 }
                 
@@ -394,7 +401,6 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
                 }
                 
                 //
-                console.log("RESETTING PATH - OBSTACLE")
                 console.log("Path blocked by WALL or RAMPART at: ", s.pos)
                 return -13;//path in reality is blocked by rampart/wall
             }
@@ -429,7 +435,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         }
         if (move_result > 0 && Math.abs(move_result) % 11 != 0) {// 0 - OK,11 - err_tired
             console.log("RESETING PATH - UNABLE TO MOVE")
-            quad.path = undefined
+            //quad.path = undefined
         }
         else if (move_result == 0 || Math.abs(move_result) % 11 == 0) {
             console.log("quad is moving from: ", topLeft.pos, " to ", nextPos)
@@ -773,7 +779,7 @@ function calculateTowersDamage(quad, towers) {
     //console.log("calculating towers damage")
     if (towers.length < 1) { return -1; }
 
-    if (quad.towerDamageCM == undefined || true) {
+    if (quad.towerDamageCM == undefined) {
         const damageMatrix = new PathFinder.CostMatrix
         for (var i = 0; i < 50; i++) {
             for (var j = 0; j < 50; j++) {
@@ -811,7 +817,7 @@ function caluclateRampartsCosts(quad, structures) {
     // maxHits = str.hits of most fortified rampart
     // var tileCost = (str.hits / maxHits) * DAMAGE_MATRIX_FACTOR
     if (structures.length < 1) { return -1; }
-    if (quad.rampartsCM == undefined || true) {
+    if (quad.rampartsCM == undefined) {
         const rampartsMatrix = new PathFinder.CostMatrix
 
         var maxHits=0
@@ -1068,6 +1074,7 @@ function findTargetCreepInRange(quad, hostiles) {// finds creep in range of Rang
 
 Spawn.prototype.operateQuad = function operateQuad(quad) {
 
+    startCpu=Game.cpu.getUsed()
     var topLeft = Game.getObjectById(quad.topLeftId);
     var topRight = Game.getObjectById(quad.topRightId);
     var bottomLeft = Game.getObjectById(quad.bottomLeftId);
@@ -1435,5 +1442,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         quadRangedMassAttack(quad)
     }
 
-
+    endCPU=Game.cpu.getUsed()
+    console.log("Quad: ",quad.id," used: ",endCPU-startCpu," CPU")
 }
