@@ -363,6 +363,38 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
                     structuresAtPath.push(bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x + 1, bottomRight.pos.y - 1))
                 }
             }
+            else if(direction == BOTTOM && bottomLeft!=null  && bottomLeft.pos.y + 1 <49)
+            {
+                structuresAtPath = bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x, bottomLeft.pos.y + 1)
+                if(bottomRight!=null && bottomRight.pos.y + 1>0)
+                {
+                    structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x, bottomRight.pos.y + 1))
+                }
+            }
+            else if(direction == TOP && topLeft!=null && topLeft.pos.y-1>0)
+            {
+                structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x, topLeft.pos.y - 1)
+                if(topRight!=null && topRight.pos.y - 1>0)
+                {
+                    structuresAtPath.push(topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x, topRight.pos.y - 1))
+                }
+            }
+            else if(direction == LEFT && topLeft!=null && topLeft.pos.x-1>0)
+            {
+                structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x-1, topLeft.pos.y )
+                if(bottomLeft!=null && bottomLeft.pos.x - 1>0)
+                {
+                    structuresAtPath.push(bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x-1, bottomLeft.pos.y ))
+                }
+            }
+            else if(direction == RIGHT && topRight!=null && topRight.pos.x+1<49)
+            {
+                structuresAtPath = topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x+1, topRight.pos.y )
+                if(bottomRight!=null && bottomRight.pos.x+1<49)
+                {
+                    structuresAtPath.push(bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x+1, bottomRight.pos.y ))
+                }
+            }
         }
 
 
@@ -1011,7 +1043,9 @@ function findTargetStructure(quad, structures, room) {
         var s = Game.getObjectById(str)
         if (s == null) { continue }
         var type = s.structureType
-        if (type != STRUCTURE_RAMPART && type != STRUCTURE_CONTROLLER && type != STRUCTURE_CONTAINER) {
+        if (type != STRUCTURE_RAMPART && type != STRUCTURE_CONTROLLER && type != STRUCTURE_CONTAINER && type != STRUCTURE_EXTRACTOR
+            && type!=STRUCTURE_LINK
+        ) {
             structuresAt = Game.rooms[room].lookForAt(LOOK_STRUCTURES, s.pos)
             var rampHits = 0
             for (at of structuresAt) {
@@ -1361,7 +1395,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
         if (targetCreep != null) { target = targetCreep }
-
+        console.log(topLeft.pos," ",target)
         if (target != null) {
 
 
@@ -1391,7 +1425,8 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             }
         }
         else {
-            //moveQuad(quad, new RoomPosition(25, 25, quad.target_room), 10)
+            
+            moveQuad(quad, new RoomPosition(25, 25, quad.target_room), 10)
 
 
         }
