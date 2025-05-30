@@ -880,6 +880,11 @@ function caluclateRampartsCosts(quad, structures) {
                 //console.log("tile cost at: ",str.pos.x," ",str.pos.y," ",tileCost)
                 rampartsMatrix.set(str.pos.x, str.pos.y, tileCost)
 
+                //might need debuggin:
+                rampartsMatrix.set(str.pos.x+1, str.pos.y, tileCost)
+                rampartsMatrix.set(str.pos.x, str.pos.y+1, tileCost)
+                rampartsMatrix.set(str.pos.x+1, str.pos.y+1, tileCost)
+                //////
 
                 //Game.rooms[quad.target_room].visual.rect(str.pos.x - 0.5, str.pos.y - 0.5, 1, 1, { fill: 'blue', opacity: tileCost })
                 //Game.rooms[quad.target_room].visual.text(tileCost,i,j)
