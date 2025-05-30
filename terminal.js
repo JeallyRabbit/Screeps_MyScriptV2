@@ -8,6 +8,11 @@ const STATE_STATE_NEED_MILITARY_ENERGY = 'STATE_NEED_MILITARY_ENERGY'
 const MIN_AMOUNT_TERMINAL = 5000
 const MIN_AMOUNT_BUY = 2500
 
+const MIN_TERMINAL_ENERGY=30000
+const MIN_STORAGE_ENERGY=300000
+
+const SHARING_ENERGY_RCL6_7=50000
+const NEED_TO_BUY_ENERGY=30000 // when below that energy in storage - room will start buying energy
 
 Spawn.prototype.terminal = function terminal(spawn) {
 
@@ -100,8 +105,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
                 }
                 else {// there is no room to send energy via terminal
-                    // /console.log(terminal.store[RESOURCE_ENERGY]>30000 && storage.store[RESOURCE_ENERGY]>300000,"asdaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                    if (terminal.store[RESOURCE_ENERGY] > 30000 && storage.store[RESOURCE_ENERGY] > 300000) {
+                    if (terminal.store[RESOURCE_ENERGY] > MIN_TERMINAL_ENERGY && storage.store[RESOURCE_ENERGY] > MIN_STORAGE_ENERGY) {
 
                         cost = undefined;
                         cost = sell_resource(terminal, cost, spawn, RESOURCE_ENERGY);
@@ -111,14 +115,14 @@ Spawn.prototype.terminal = function terminal(spawn) {
             }
         }
         else if (terminal.room.controller.level >= 6 && terminal.room.controller.level < 8 && terminal.cooldown == 0
-            && terminal.store[RESOURCE_ENERGY] > 30000 && storage.store[RESOURCE_ENERGY] > 50000
+            && terminal.store[RESOURCE_ENERGY] > MIN_TERMINAL_ENERGY && storage.store[RESOURCE_ENERGY] > SHARING_ENERGY_RCL6_7
         ) {
 
             //Sharing energy on rcl6 and 7
 
             //calculate average distance to other rooms for itself
             if (spawn.memory.averageDistanceToOthers == undefined || Game.time & 12345 == 0
-                && Memory.main_spawns!=undefined && Memory.main_spawns.length>2
+                && Memory.main_spawns != undefined && Memory.main_spawns.length > 2
             ) {
                 var distance = 0.0;
                 var counter = 0;
@@ -133,21 +137,20 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
             //find terminal with minimum average distance to other rooms (which is below rcl 8)
             var minDistance = 10000.0;
-            var toShare=null
+            var toShare = null
             for (s of Memory.main_spawns) {
-                if (Game.getObjectById(s) != null && Game.getObjectById(s).memory.averageDistanceToOthers<minDistance
-            && Game.getObjectById(s).memory.state.includes(STATE_NEED_ENERGY)) {
-                    minDistance=Game.getObjectById(s).memory.averageDistanceToOthers
-                    toShare=Game.getObjectById(s).room.name
+                if (Game.getObjectById(s) != null && Game.getObjectById(s).memory.averageDistanceToOthers < minDistance
+                    && Game.getObjectById(s).memory.state.includes(STATE_NEED_ENERGY)) {
+                    minDistance = Game.getObjectById(s).memory.averageDistanceToOthers
+                    toShare = Game.getObjectById(s).room.name
                 }
             }
-            
+
             //share energy with it
-            if(toShare!=null && toShare!=spawn.room.name)
-            {
-                amount=5000
-                console.log("terminal from: ",spawn.room.name, " is sending energy to: ",toShare)
-                send_result = terminal.send(RESOURCE_ENERGY, amount,toShare);
+            if (toShare != null && toShare != spawn.room.name) {
+                amount = 5000
+                console.log("terminal from: ", spawn.room.name, " is sending energy to: ", toShare)
+                send_result = terminal.send(RESOURCE_ENERGY, amount, toShare);
             }
         }
 
@@ -163,7 +166,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
 
 
 
-        if (spawn.memory.state.includes(STATE_NEED_ENERGY) && terminal.cooldown == 0 && storage.store[RESOURCE_ENERGY] < 40000) {
+        if (spawn.memory.state.includes(STATE_NEED_ENERGY) && terminal.cooldown == 0 && storage.store[RESOURCE_ENERGY] < NEED_TO_BUY_ENERGY) {
             console.log("terminal at: ", spawn.room.name, " is trying to buy energy")
             var cost2 = buy_resource(terminal, RESOURCE_ENERGY, 5000)
             console.log("result: ", cost2)

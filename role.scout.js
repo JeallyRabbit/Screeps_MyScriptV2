@@ -299,7 +299,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
                     avg_distance += ret.path.length;
 
-                    var new_farming_source = new farmingSource(sources[i].id, creep.room.name, 0, 0, ret.path.length, sources[i].pos.getOpenPositions().length)
+                    var new_farming_source = new farmingSource(sources[i].id, creep.room.name, 0, 0, ret.path.length, Math.max(1,sources[i].pos.getOpenPositions().length))
 
                     var already_scanned = false;
                     for (let j = 0; j < spawn.memory.farming_sources.length; j++) {

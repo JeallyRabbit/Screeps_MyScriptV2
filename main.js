@@ -261,9 +261,9 @@ module.exports.loop = function () {
                 Memory.colonizing = false;
             }
 
-            if(Game.shard.name.startsWith('shard'))
+            if(Memory.colonizingStop==true)
             {
-                //Memory.colonizing = false;
+                Memory.colonizing=false;
             }
             
 
