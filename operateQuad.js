@@ -419,6 +419,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
                 else if(topLeft!=null && topLeft.room.name!=quad.target_room)
                 {
                     console.log("RESETTING PATH - OBSTACLE - not in target room")
+                    quadRangedMassAttack(quad)
                     quad.path = undefined
                 }
                 
