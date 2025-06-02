@@ -931,7 +931,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     continue;
                 }
                 spawn.memory.need_DistanceCarrier = spawn.memory.farming_sources[i].name;
-                console.log("need distance Carrier: ",spawn.memory.farming_sources[i].name)
+                //console.log("need distance Carrier: ",spawn.memory.farming_sources[i].name)
                 spawn.memory.need_ddistance_carrier_source_id = spawn.memory.farming_sources[i].id;
                 spawn.memory.need_distance_carrier_source_distance=spawn.memory.farming_sources[i].distance
                 break;

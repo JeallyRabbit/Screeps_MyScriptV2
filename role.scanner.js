@@ -1,6 +1,7 @@
 
 const { distanceTransform } = require("./distanceTransform");
 const { floodFill } = require("./floodFill");
+const Movement = require('screeps-movement');
 
 
 function findRouteTestScanner(starting_pos, destination) {
@@ -209,7 +210,7 @@ function generateRoomsInRangeAndSort(tileName, range = 8) {
             if (mainSpawnAux == null) {
                 continue
             }
-            for (farming of mainSpawnAux.memory.farming_rooms) {
+            for (farming in mainSpawnAux.memory.farming_rooms) {
                 //console.log(farming.name, " ",roomsInRange[i].name);
                 if (farming != undefined && roomsInRange[i] != undefined && roomsInRange[i].name == farming.name) {
                     //console.log("removing my room; ", roomsInRange[i].name);
@@ -331,11 +332,18 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
         }
 
+        if(Game.rooms[creep.memory.target_room]!=undefined && Game.rooms[creep.memory.target_room].memory._hostile!=undefined)
+        {
+            spawn.memory.scanner_rooms.shift()
+            creep.memory.target_room = undefined;
+            console.log("removing hostile (other player owned) room")
+        }
+
         if (creep.memory.target_room != undefined && creep.room.name != creep.memory.target_room) {
 
 
-
-            creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room))
+            roomsToAvoid= (Memory.manualAvoid!= undefined ? Memory.manualAvoid: []);
+            creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room),{avoidSk: true, avoidHostileRooms: true,visualize: true, avoidRooms: roomsToAvoid})
 
 
 

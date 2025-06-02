@@ -332,7 +332,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
                 if (topRight != null && topRight.pos.x - 1 > 0 && topRight.pos.y - 1 > 0) {
                     structuresAtPath.push(topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x - 1, topRight.pos.y - 1))
                 }
-                if (bottomLeft != null && bottomLeft.pos.x - 1 > 0 && bottomLeft.pos.y > 0) {
+                if (bottomLeft != null && bottomLeft.pos.x - 1 > 0 && bottomLeft.pos.y-1 > 0) {
                     structuresAtPath.push(bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x - 1, bottomLeft.pos.y - 1))
                 }
             }
@@ -418,9 +418,14 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
                 }
                 else if(topLeft!=null && topLeft.room.name!=quad.target_room)
                 {
-                    console.log("RESETTING PATH - OBSTACLE - not in target room")
+                    
                     quadRangedMassAttack(quad)
-                    quad.path = undefined
+                    if(Game.time%9==0)
+                    {
+                        console.log("RESETTING PATH - OBSTACLE - not in target room")
+                        quad.path = undefined
+                    }
+                    
                 }
                 
                 //need testing
@@ -688,12 +693,39 @@ function quadRangedMassAttack(quad, target = undefined) {
 }
 
 function quadEqualHeal(quad) {
-    for (q of quad.members) {
+
+    var topLeft = Game.getObjectById(quad.topLeftId);
+    var topRight = Game.getObjectById(quad.topRightId);
+    var bottomLeft = Game.getObjectById(quad.bottomLeftId);
+    var bottomRight = Game.getObjectById(quad.bottomRightId);
+
+    if(topLeft!= null && topRight!=null && bottomLeft!=null && bottomRight!=null){
+        var direction = getQuadDirection(quad)
+
+        if(direction==TOP || direction==BOTTOM)
+        {
+            bottomLeft.heal(topLeft)
+            topLeft.heal(bottomLeft)
+            bottomRight.heal(topRight)
+            topRight.heal(bottomRight)
+        }
+        else // direction ==LEFT || direction == RIGHT
+        {
+            topLeft.heal(topRight)
+            topRight.heal(topLeft)
+            bottomLeft.heal(bottomRight)
+            bottomRight.heal(bottomLeft)
+        }
+    }
+    else{
+        for (q of quad.members) {
         cr = Game.getObjectById(q)
         if (cr == null) { continue }
 
         cr.heal();
     }
+    }
+    
 }
 
 function quadHeal(quad, target) {

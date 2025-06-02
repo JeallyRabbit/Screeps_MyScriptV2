@@ -816,9 +816,9 @@ function plan_borders(spawn, roomCM, rcl) {
         for (let x = 0; x < 50; x++) {
             const tile = terrain.get(x, y);
             const weight =
-                tile === TERRAIN_MASK_WALL ? 255 : // wall  => unwalkable
-                    tile === TERRAIN_MASK_SWAMP ? 1 : // swamp => weight:  5
-                        1; // plain => weight:  1
+                tile === TERRAIN_MASK_WALL ? 255 : 1// wall  => unwalkable
+                    //tile === TERRAIN_MASK_SWAMP ? 1 : // swamp => weight:  5
+                   //     1; // plain => weight:  1
             costMap.set(x, y, weight);
         }
     }

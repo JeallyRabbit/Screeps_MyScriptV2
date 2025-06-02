@@ -49,13 +49,14 @@ var _ = require('lodash');
 
 const Movement = require('screeps-movement');
 
-/*
+
 const movementConfig = {
+    allies: ["Alphonzo", "insain", "noe"],
     visualize: true,
     trackHostileRooms: true
 }
 Movement.setConfig(movementConfig)
-*/
+
 
 
 const setRequiredPopulation = require('setRequiredPopulation');
@@ -165,6 +166,11 @@ module.exports.loop = function () {
 
         Memory.allies = ["Alphonzo", "insain", "noe"];
         Memory.enemies=["IronVengeance"];
+
+        if(Memory.roomsToAvoid==undefined)
+        {
+            Memory.roomsToAvoid=[]
+        }
 
         global.heap.soldiers={}
 
