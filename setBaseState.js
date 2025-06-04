@@ -51,6 +51,7 @@ Spawn.prototype.setBaseState = function setBaseState()
 
             }
         }
+        
 
     }
 }

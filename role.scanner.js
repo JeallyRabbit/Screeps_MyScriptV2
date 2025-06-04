@@ -300,7 +300,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
 
             }
         }
-        else if (spawn.memory.scanner_rooms != undefined && Game.map.getRoomStatus(spawn.memory.scanner_rooms[0]).status != "normal") {
+        else if (spawn.memory.scanner_rooms != undefined && Game.map.getRoomStatus(spawn.memory.scanner_rooms[0])!=undefined && Game.map.getRoomStatus(spawn.memory.scanner_rooms[0]).status != "normal") {
             spawn.memory.scanner_rooms.shift();
             return;
         }

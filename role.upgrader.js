@@ -39,7 +39,7 @@ Creep.prototype.roleUpgrader = function roleUpgrader(creep, spawn) {
     }
 
     if (creep.memory.boosting_list == undefined) {
-        creep.memory.boosting_list = ["XGH2O", "GH2O","GH"];//boost types that creep accepts
+        creep.memory.boosting_list = ["XGH2O"];//boost types that creep accepts
     }
     // else 
     if (boosting_driver(creep, spawn, creep.memory.boosting_list, WORK) == -1) {

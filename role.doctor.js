@@ -8,6 +8,7 @@ const CLEAR_OUTPUTS = 'clear_outputs'
 const CLEAR_INPUT = 'clear_input'
 const FILL_INPUT = 'fill_input'
 const CLEAR_CREEP = 'clear_creep'
+const BOOST_CREEP='boost_creep'
 
 Creep.prototype.roleDoctor = function roleDoctor(creep) {
 
@@ -51,6 +52,10 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
 
             if (creep.store.getUsedCapacity() > 0 || creep.ticksToLive < 50) {
                 creep.memory.task = CLEAR_CREEP
+            }
+            else if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length>0)
+            {   
+                creep.memory.task=BOOST_CREEP
             }
             else if (ifLabsNeedEnergy(creep) != false) // case 0 on issue #207
             {
@@ -187,27 +192,6 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                         }
                     }
                 }
-                /*
-                if (creep.store.getUsedCapacity(RESOURCE_ENERGY) ==0 ) {
-                    //creep.say("12")
-                    for (res in lab.store) {
-                        if (res == RESOURCE_ENERGY) { continue }
-                        if (creep.withdraw(lab, res) == ERR_NOT_IN_RANGE) {
-                            //creep.say("13")
-                            creep.moveTo(lab, { reusePath: 10 })
-                        }
-                    }
-                }
-                else {
-                    creep.say("cl")
-                    for (res in creep.store) {
-                        if (res == RESOURCE_ENERGY) { continue }
-                        if (creep.transfer(creep.room.storage, res) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(creep.room.storage, { reusePath: 10 })
-                        }
-                    }
-                }
-                    */
             }
         }
 
@@ -261,13 +245,26 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                     creep.moveTo(input2, { reusePath: 10 })
                 }
             }
-
-
-
-
         }
 
-
+        if(creep.memory.task==BOOST_CREEP)
+        {
+            var boostingRequest=global.heap.boostingRequests[0]
+            if(creep.store[boostingRequest.boost]==0)
+            {
+                if(creep.withdraw(storage,boostingRequest.boost)==ERR_NOT_IN_RANGE)
+                {
+                    creep.moveTo(storage)
+                }
+            }
+            else{
+                var boosting_lab=Game.getObjectById(creep.room.memory.boosting_lab_id)
+                if(creep.transfer(boosting_lab,boostingRequest.boost)==ERR_NOT_IN_RANGE)
+                {
+                    creep.moveTo(boosting_lab)
+                }
+            }
+        }
 
 
     }
@@ -497,6 +494,7 @@ function defineLabs(creep) {
     if (creep.room.memory.output_labs_id != undefined && creep.room.memory.output_labs_id.length > 0
         && creep.room.memory.input1_lab_id != undefined && creep.room.memory.input2_lab_id != undefined
     ) {
+        creep.room.memory.boosting_lab_id=creep.room.memory.output_labs_id[0]
         return OK
     }
     else {

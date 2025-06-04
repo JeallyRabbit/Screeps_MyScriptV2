@@ -173,6 +173,8 @@ module.exports.loop = function () {
         }
 
         global.heap.soldiers={}
+        global.heap.rooms={}
+        
 
         Memory.step = 10000
 
@@ -180,6 +182,11 @@ module.exports.loop = function () {
 
             for (var roomName in Game.rooms) {
 
+                global.heap.rooms[roomName]={};
+                if(global.heap.rooms[roomName].boostingRequests==undefined)
+                {
+                    global.heap.rooms[roomName].boostingRequests=[]
+                }
                 global.heap.soldiers[roomName]=0;
                 var room = Game.rooms[roomName]
                 if (room.memory.raw_energy_income != undefined) {
@@ -1740,7 +1747,7 @@ module.exports.loop = function () {
 
             if (pop_miners < spawn.memory.req_miners && spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power >= spawn.memory.farming_rooms[0].harvesting_power) {
 
-                console.log("Spaning miner ", spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Miner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }))
+                console.log("Spaning miner ", spawn.spawnCreep(maxFarmer(energyCap, spawn, false), 'Miner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }))
 
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn), 'Miner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }) == 0) {
                     continue;

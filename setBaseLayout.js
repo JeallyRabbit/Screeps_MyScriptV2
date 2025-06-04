@@ -632,6 +632,7 @@ function create_labs_stamp(spawn, x, y) {
 
     spawn.memory.room_plan[x + 1][y + 1] = STRUCTURE_LAB;
     spawn.memory.building_list.push(new building_list_element(x + 1, y + 1, spawn.room.name, STRUCTURE_LAB, 6));
+    spawn.memory.boosting_lab_pos=new RoomPosition(x + 1, y + 1, spawn.room.name)
 
     spawn.memory.room_plan[x + 1][y] = STRUCTURE_LAB;
     spawn.memory.building_list.push(new building_list_element(x + 1, y, spawn.room.name, STRUCTURE_LAB, 7));

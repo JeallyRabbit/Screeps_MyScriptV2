@@ -15,7 +15,7 @@ function isQuadPacked(creeps) {
     if (creeps.length < 4) { return false }
     for (let i = 0; i < creeps.length; i++) {
 
-        
+
 
         for (let j = i + 1; j < creeps.length; j++) {
             var creepA = Game.getObjectById(creeps[i])
@@ -208,8 +208,8 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
     if (quad.lastTargetPos == undefined || (quad.lastTargetPos != undefined && !(quad.lastTargetPos.x == targetPos.x && quad.lastTargetPos.y == targetPos.y && quad.lastTargetPos.roomName == targetPos.roomName))) {
         quad.lastTargetPos = targetPos
-       // if (Game.time % 88 == 0) {
-            quad.path = undefined
+        // if (Game.time % 88 == 0) {
+        quad.path = undefined
         //}
 
         console.log("RESETTING PATH - TARGET_POS HAS CHANGED")
@@ -225,7 +225,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
     if (quad.path != undefined && quad.path != undefined && quad.path[0] != undefined) {
         nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
 
-        if ((nextPos.x == topLeft.pos.x && nextPos.y == topLeft.pos.y )) {
+        if ((nextPos.x == topLeft.pos.x && nextPos.y == topLeft.pos.y)) {
             movePath.shift()
             try {
                 nextPos = new RoomPosition(movePath[0].x, movePath[0].y, movePath[0].roomName)
@@ -254,7 +254,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
     if (Game.time % reusePath == 0 || quad.path == undefined /* || (topLeft.pos.x == 49 || topLeft.pos.y == 49 || topLeft.pos.x == 0 || topLeft.pos.y == 0 ) */) {
 
         topLeft.say("FndPath")
-        startCPU=Game.cpu.getUsed()
+        startCPU = Game.cpu.getUsed()
         const path = PathFinder.search(
             topLeft.pos,
             { pos: targetPos, range: myRange },
@@ -278,7 +278,7 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         )
 
         endCPU = Game.cpu.getUsed();
-        topLeft.say("Fn: "+(endCPU-startCPU))
+        topLeft.say("Fn: " + (endCPU - startCPU))
 
         //skipping doubled room edge tiles
         var auxPath = []
@@ -327,72 +327,93 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
         //check PATH is blocked by STRUCTURE_RAMPART or STRUCTURE_WALL
         var structuresAtPath = []
         if (topLeft.pos.x > 0 && topLeft.pos.x < 49 && topLeft.pos.y > 0 && topLeft.pos.y < 49) {
+
             if (direction == TOP_LEFT && topLeft != null && topLeft.pos.x - 1 > 0) {
+                topLeft.say("↖️", true)
+                if (structuresAtPath == undefined) { structuresAtPath = [] }
                 structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x - 1, topLeft.pos.y - 1)
-                if (topRight != null && topRight.pos.x - 1 > 0 && topRight.pos.y - 1 > 0) {
+                if (topRight != null && topRight.pos.x > 0 && topRight.pos.y > 0) {
                     structuresAtPath.push(topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x - 1, topRight.pos.y - 1))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
-                if (bottomLeft != null && bottomLeft.pos.x - 1 > 0 && bottomLeft.pos.y-1 > 0) {
+                if (bottomLeft != null && bottomLeft.pos.x > 0 && bottomLeft.pos.y > 0) {
                     structuresAtPath.push(bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x - 1, bottomLeft.pos.y - 1))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
             }
-            else if (direction == BOTTOM_LEFT && bottomLeft != null && bottomLeft.pos.x - 1>0 && bottomLeft.pos.y+1<49) {
+            else if (direction == BOTTOM_LEFT && bottomLeft != null && bottomLeft.pos.x - 1 > 0 && bottomLeft.pos.y + 1 < 49) {
+                topLeft.say("↙️", true)
                 structuresAtPath = bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x - 1, bottomLeft.pos.y + 1)
+                if (structuresAtPath == undefined) { structuresAtPath = [] }
                 if (topLeft != null && topLeft.pos.x - 1 > 0 && topLeft.pos.y + 1 < 49) {
                     structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x - 1, topLeft.pos.y + 1))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
                 if (bottomRight != null && bottomRight.pos.x - 1 > 0 && bottomRight.pos.y + 1 < 49) {
                     structuresAtPath.push(bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x - 1, bottomRight.pos.y + 1))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
             }
-            else if (direction == BOTTOM_RIGHT && bottomRight != null &&  bottomRight.pos.x + 1<49 &&  bottomRight.pos.y + 1<49) {
+            else if (direction == BOTTOM_RIGHT && bottomRight != null && bottomRight.pos.x + 1 < 49 && bottomRight.pos.y + 1 < 49) {
+                topLeft.say("↘️", true)
                 structuresAtPath = bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x + 1, bottomRight.pos.y + 1)
+                if(structuresAtPath==undefined){structuresAtPath=[]}
                 if (bottomLeft != null && bottomLeft.pos.x + 1 < 49 && bottomLeft.pos.y + 1 < 49) {
                     structuresAtPath.push(bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x + 1, bottomLeft.pos.y + 1))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
                 if (topRight != null) {
                     structuresAtPath.push(topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x + 1, topRight.pos.y + 1))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
             }
-            else if (direction == TOP_RIGHT && topRight != null && topRight.pos.x + 1<49 && topRight.pos.y - 1>0) {
+            else if (direction == TOP_RIGHT && topRight != null && topRight.pos.x + 1 < 49 && topRight.pos.y - 1 > 0) {
+                topLeft.say("↗️", true)
                 structuresAtPath = topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x + 1, topRight.pos.y - 1)
+                if (structuresAtPath == undefined) { structuresAtPath = [] }
                 if (topLeft != null && topLeft.pos.x + 1 < 49 && topLeft.pos.y - 1 > 0) {
                     structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x + 1, topLeft.pos.y - 1))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
                 if (bottomRight != null && bottomRight.pos.x + 1 < 49 && bottomRight.pos.y - 1 > 0) {
                     structuresAtPath.push(bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x + 1, bottomRight.pos.y - 1))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
             }
-            else if(direction == BOTTOM && bottomLeft!=null  && bottomLeft.pos.y + 1 <49)
-            {
+            else if (direction == BOTTOM && bottomLeft != null && bottomLeft.pos.y + 1 < 49) {
+                topLeft.say("⬇️", true)
                 structuresAtPath = bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x, bottomLeft.pos.y + 1)
-                if(bottomRight!=null && bottomRight.pos.y + 1>0)
-                {
+                if (structuresAtPath == undefined) { structuresAtPath = [] }
+                if (bottomRight != null && bottomRight.pos.y + 1 > 0) {
                     structuresAtPath.push(topLeft.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x, bottomRight.pos.y + 1))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
             }
-            else if(direction == TOP && topLeft!=null && topLeft.pos.y-1>0)
-            {
+            else if (direction == TOP && topLeft != null && topLeft.pos.y - 1 > 0) {
+                topLeft.say("⬆️", true)
                 structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x, topLeft.pos.y - 1)
-                if(topRight!=null && topRight.pos.y - 1>0)
-                {
+                if (structuresAtPath == undefined) { structuresAtPath = [] }
+                if (topRight != null && topRight.pos.y - 1 > 0) {
                     structuresAtPath.push(topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x, topRight.pos.y - 1))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
             }
-            else if(direction == LEFT && topLeft!=null && topLeft.pos.x-1>0)
-            {
-                structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x-1, topLeft.pos.y )
-                if(bottomLeft!=null && bottomLeft.pos.x - 1>0)
-                {
-                    structuresAtPath.push(bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x-1, bottomLeft.pos.y ))
+            else if (direction == LEFT && topLeft != null && topLeft.pos.x - 1 > 0) {
+                topLeft.say("⬅️", true)
+                structuresAtPath = topLeft.room.lookForAt(LOOK_STRUCTURES, topLeft.pos.x - 1, topLeft.pos.y)
+                if (structuresAtPath == undefined) { structuresAtPath = [] }
+                if (bottomLeft != null && bottomLeft.pos.x - 1 > 0) {
+                    structuresAtPath.push(bottomLeft.room.lookForAt(LOOK_STRUCTURES, bottomLeft.pos.x - 1, bottomLeft.pos.y))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
             }
-            else if(direction == RIGHT && topRight!=null && topRight.pos.x+1<49)
-            {
-                structuresAtPath = topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x+1, topRight.pos.y )
-                if(bottomRight!=null && bottomRight.pos.x+1<49)
-                {
-                    structuresAtPath.push(bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x+1, bottomRight.pos.y ))
+            else if (direction == RIGHT && topRight != null && topRight.pos.x + 1 < 49) {
+                topLeft.say("➡️", true)
+                structuresAtPath = topRight.room.lookForAt(LOOK_STRUCTURES, topRight.pos.x + 1, topRight.pos.y)
+                if (structuresAtPath == undefined) { structuresAtPath = [] }
+                if (bottomRight != null && bottomRight.pos.x + 1 < 49) {
+                    structuresAtPath.push(bottomRight.room.lookForAt(LOOK_STRUCTURES, bottomRight.pos.x + 1, bottomRight.pos.y))
+                    if (structuresAtPath == undefined) { structuresAtPath = [] }
                 }
             }
         }
@@ -408,36 +429,31 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
             if (structuresAtPath.length > 0) {
                 localHeap.isBlocked = true;
-                if(topLeft!=null && topLeft.room.name==quad.target_room)
-                {
-                    if(Game.time%131==0)
-                    {
+                if (topLeft != null && topLeft.room.name == quad.target_room) {
+                    if (Game.time % 131 == 0) {
                         console.log("RESETTING PATH - OBSTACLE - in target_room")
-                        quad.path=undefined
+                        quad.path = undefined
                     }
                 }
-                else if(topLeft!=null && topLeft.room.name!=quad.target_room)
-                {
-                    
+                else if (topLeft != null && topLeft.room.name != quad.target_room) {
+
                     quadRangedMassAttack(quad)
-                    if(Game.time%9==0)
-                    {
+                    if (Game.time % 9 == 0) {
                         console.log("RESETTING PATH - OBSTACLE - not in target room")
                         quad.path = undefined
                     }
-                    
+
                 }
-                
+
                 //need testing
-                if(structuresAtPath[0]!=undefined && structuresAtPath[0].pos!=undefined)
-                {
+                if (structuresAtPath[0] != undefined && structuresAtPath[0].pos != undefined) {
                     //topLeft.say("rtObs")
                     //quad.targetStructureId=structuresAtPath[0].id
                     //quad.targetId=structuresAtPath[0].id
-                    console.log("changing target to: ",structuresAtPath[0])
-                    rotateToTarget(quad,structuresAtPath[0])
+                    console.log("changing target to: ", structuresAtPath[0])
+                    rotateToTarget(quad, structuresAtPath[0])
                 }
-                
+
                 //
                 console.log("Path blocked by WALL or RAMPART at: ", s.pos)
                 return -13;//path in reality is blocked by rampart/wall
@@ -462,8 +478,8 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
 
         var move_result = 0;
         for (q of quad.members) {
-            if (localHeap.isBlocked) { 
-                return -1; 
+            if (localHeap.isBlocked) {
+                return -1;
             }
             cr = Game.getObjectById(q)
             if (cr == null) { continue }
@@ -699,11 +715,10 @@ function quadEqualHeal(quad) {
     var bottomLeft = Game.getObjectById(quad.bottomLeftId);
     var bottomRight = Game.getObjectById(quad.bottomRightId);
 
-    if(topLeft!= null && topRight!=null && bottomLeft!=null && bottomRight!=null){
+    if (topLeft != null && topRight != null && bottomLeft != null && bottomRight != null) {
         var direction = getQuadDirection(quad)
 
-        if(direction==TOP || direction==BOTTOM)
-        {
+        if (direction == TOP || direction == BOTTOM) {
             bottomLeft.heal(topLeft)
             topLeft.heal(bottomLeft)
             bottomRight.heal(topRight)
@@ -717,15 +732,15 @@ function quadEqualHeal(quad) {
             bottomRight.heal(bottomLeft)
         }
     }
-    else{
+    else {
         for (q of quad.members) {
-        cr = Game.getObjectById(q)
-        if (cr == null) { continue }
+            cr = Game.getObjectById(q)
+            if (cr == null) { continue }
 
-        cr.heal();
+            cr.heal();
+        }
     }
-    }
-    
+
 }
 
 function quadHeal(quad, target) {
@@ -885,15 +900,14 @@ function caluclateRampartsCosts(quad, structures) {
     if (quad.rampartsCM == undefined) {
         const rampartsMatrix = new PathFinder.CostMatrix
 
-        var maxHits=0
+        var maxHits = 0
         for (s of structures) {
             str = Game.getObjectById(s)
             if (str == null) { continue }
             if (str.structureType == STRUCTURE_RAMPART || str.structureType == STRUCTURE_WALL) {
-                
-                if(str.hits>maxHits)
-                {
-                    maxHits=str.hits
+
+                if (str.hits > maxHits) {
+                    maxHits = str.hits
                 }
 
                 //Game.rooms[quad.target_room].visual.rect(str.pos.x - 0.5, str.pos.y - 0.5, 1, 1, { fill: 'blue', opacity: tileCost })
@@ -905,7 +919,7 @@ function caluclateRampartsCosts(quad, structures) {
             str = Game.getObjectById(s)
             if (str == null) { continue }
             if (str.structureType == STRUCTURE_RAMPART || str.structureType == STRUCTURE_WALL) {
-                var tileCost=0.0
+                var tileCost = 0.0
                 tileCost = (str.hits / maxHits) * DAMAGE_MATRIX_FACTOR
                 if (Memory.allies.includes(str.owner.username) || str.pos.roomName != quad.target_room) {
                     tileCost = 255
@@ -914,9 +928,9 @@ function caluclateRampartsCosts(quad, structures) {
                 rampartsMatrix.set(str.pos.x, str.pos.y, tileCost)
 
                 //might need debuggin:
-                rampartsMatrix.set(str.pos.x+1, str.pos.y, tileCost)
-                rampartsMatrix.set(str.pos.x, str.pos.y+1, tileCost)
-                rampartsMatrix.set(str.pos.x+1, str.pos.y+1, tileCost)
+                rampartsMatrix.set(str.pos.x + 1, str.pos.y, tileCost)
+                rampartsMatrix.set(str.pos.x, str.pos.y + 1, tileCost)
+                rampartsMatrix.set(str.pos.x + 1, str.pos.y + 1, tileCost)
                 //////
 
                 //Game.rooms[quad.target_room].visual.rect(str.pos.x - 0.5, str.pos.y - 0.5, 1, 1, { fill: 'blue', opacity: tileCost })
@@ -1082,7 +1096,7 @@ function findTargetStructure(quad, structures, room) {
         if (s == null) { continue }
         var type = s.structureType
         if (type != STRUCTURE_RAMPART && type != STRUCTURE_CONTROLLER && type != STRUCTURE_CONTAINER && type != STRUCTURE_EXTRACTOR
-            && type!=STRUCTURE_LINK
+            && type != STRUCTURE_LINK
         ) {
             structuresAt = Game.rooms[room].lookForAt(LOOK_STRUCTURES, s.pos)
             var rampHits = 0
@@ -1146,7 +1160,7 @@ function findTargetCreepInRange(quad, hostiles) {// finds creep in range of Rang
 
 Spawn.prototype.operateQuad = function operateQuad(quad) {
 
-    startCpu=Game.cpu.getUsed()
+    startCpu = Game.cpu.getUsed()
     var topLeft = Game.getObjectById(quad.topLeftId);
     var topRight = Game.getObjectById(quad.topRightId);
     var bottomLeft = Game.getObjectById(quad.bottomLeftId);
@@ -1433,7 +1447,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
 
         if (targetCreep != null) { target = targetCreep }
-        console.log(topLeft.pos," ",target)
+        console.log(topLeft.pos, " ", target)
         if (target != null) {
 
 
@@ -1453,7 +1467,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
 
                 //if Quad will for sure not retreat
                 if (!(quadHits(quad) < quadHitsMax(quad) && (quadHitsMax(quad) - quadHits(quad)) > quadHealPower(quad))
-                && localHeap.isBlocked==false) {
+                    && localHeap.isBlocked == false) {
                     rotateToTarget(quad, target)
                 }
 
@@ -1463,7 +1477,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
             }
         }
         else {
-            
+
             moveQuad(quad, new RoomPosition(25, 25, quad.target_room), 10)
 
 
@@ -1515,6 +1529,6 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         quadRangedMassAttack(quad)
     }
 
-    endCPU=Game.cpu.getUsed()
-    console.log("Quad: ",quad.id," used: ",endCPU-startCpu," CPU")
+    endCPU = Game.cpu.getUsed()
+    console.log("Quad: ", quad.id, " used: ", endCPU - startCpu, " CPU")
 }

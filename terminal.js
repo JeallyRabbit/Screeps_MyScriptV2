@@ -121,7 +121,7 @@ Spawn.prototype.terminal = function terminal(spawn) {
             //Sharing energy on rcl6 and 7
 
             //calculate average distance to other rooms for itself
-            if (spawn.memory.averageDistanceToOthers == undefined || Game.time & 12345 == 0
+            if (spawn.memory.averageDistanceToOthers == undefined || Game.time & 123 == 0
                 && Memory.main_spawns != undefined && Memory.main_spawns.length > 2
             ) {
                 var distance = 0.0;

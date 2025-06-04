@@ -14,7 +14,8 @@ Creep.prototype.roleDistanceCarrier = function roleDistanceCarrier(creep, spawn)
 
     //creep.move(TOP);
     if (creep.memory.boosting_list == undefined) {
-        creep.memory.boosting_list = ["KH", "KH2O", "XKH2O"];//boost types that creep accepts
+        //creep.memory.boosting_list = ["KH", "KH2O", "XKH2O"];//boost types that creep accepts
+        creep.memory.boosting_list=[]
     }
     if (boosting_driver(creep, spawn, creep.memory.boosting_list, CARRY) == -1) {
 
