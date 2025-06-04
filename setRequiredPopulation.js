@@ -455,7 +455,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.req_keeperCarriers = 0;//role num 17
     spawn.memory.req_keeperFarmers = 0;//role num 17
     */
-    spawn.memory.req_claimers = 0;//role num 11
+    //spawn.memory.req_claimers = 0;//role num 11
 
     if (spawn.memory.farming_rooms == undefined) {
         spawn.memory.farming_rooms = [];

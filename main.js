@@ -1626,6 +1626,9 @@ module.exports.loop = function () {
                     continue;
                 }
             }
+            console.log("colonizer: ",(pop_colonizers < spawn.memory.req_colonizers && pop_claimers > 0 && spawn.room.controller.level >= 4
+                && spawn.memory.to_colonize != undefined && farming_needs_satisfied
+            ))
             if (pop_colonizers < spawn.memory.req_colonizers && pop_claimers > 0 && spawn.room.controller.level >= 4
                 && spawn.memory.to_colonize != undefined && farming_needs_satisfied
             ) {
