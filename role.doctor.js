@@ -264,7 +264,8 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             var boostingRequest=global.heap.rooms[creep.memory.home_room.name].boostingRequests[0];
             console.log("boosting request: ")
             console.log(boostingRequest)
-            if(creep.store[boostingRequest.boost]==0)
+            var boosting_lab=Game.getObjectById(creep.room.memory.boosting_lab_id)
+            if(creep.store[boostingRequest.boost]==0 && boosting_lab.store[boostingRequest.boost]<boostingRequest.bodypartsAmount*LAB_BOOST_MINERAL)
             {
                 if(creep.withdraw(creep.room.storage,boostingRequest.boost,boostingRequest.bodypartsAmount*LAB_BOOST_MINERAL)==ERR_NOT_IN_RANGE)
                 {
@@ -272,7 +273,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                 }
             }
             else{
-                var boosting_lab=Game.getObjectById(creep.room.memory.boosting_lab_id)
+                
                 if(creep.transfer(boosting_lab,boostingRequest.boost)==ERR_NOT_IN_RANGE)
                 {
                     creep.moveTo(boosting_lab)

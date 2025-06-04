@@ -29,7 +29,7 @@ Spawn.prototype.lab = function lab(spawn) {
                         console.log("boosting request: ")
                         console.log("creep.id: ",boostingRequest.id)
                         console.log("boost: ",boostingRequest.boost)
-                        console.log('bodypartsAmount: ',boostingRequest.bodypartsAmount)
+                        //console.log('bodypartsAmount: ',boostingRequest.bodypartsAmount)
                         res=lab.boostCreep(Game.getObjectById(boostingRequest.id),boostingRequest.bodypartsAmount)
                         console.log("boosting result: ",res)
                         continue
