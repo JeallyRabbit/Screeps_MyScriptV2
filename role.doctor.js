@@ -15,6 +15,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
     //room.memory.input_lab_1_pos
     //define input lab1
     //defineInputLabs();
+     console.log("there are ",global.heap.rooms[creep.memory.home_room.name].boostingRequests.length," in doctor drver")
 
     //defineOutputLabs();
     if (creep.ticksToLive < 50) {
@@ -49,6 +50,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             creep.memory.reaction = undefined
             creep.room.memory.reaction = undefined
 
+           
 
             if (creep.store.getUsedCapacity() > 0 || creep.ticksToLive < 50) {
                 creep.memory.task = CLEAR_CREEP
@@ -82,6 +84,11 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                 }
 
             }
+        }
+        else if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length>0 && creep.memory.task!=BOOST_CREEP)
+        {
+            creep.memory.task=undefined
+            return;
         }
 
         creep.say(creep.memory.task)
@@ -249,12 +256,19 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
 
         if(creep.memory.task==BOOST_CREEP)
         {
-            var boostingRequest=global.heap.boostingRequests[0]
+            if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length==0)
+            {
+                creep.memory.task=undefined
+                return;
+            }
+            var boostingRequest=global.heap.rooms[creep.memory.home_room.name].boostingRequests[0];
+            console.log("boosting request: ")
+            console.log(boostingRequest)
             if(creep.store[boostingRequest.boost]==0)
             {
-                if(creep.withdraw(storage,boostingRequest.boost)==ERR_NOT_IN_RANGE)
+                if(creep.withdraw(creep.room.storage,boostingRequest.boost,boostingRequest.bodypartsAmount*LAB_BOOST_MINERAL)==ERR_NOT_IN_RANGE)
                 {
-                    creep.moveTo(storage)
+                    creep.moveTo(creep.room.storage)
                 }
             }
             else{

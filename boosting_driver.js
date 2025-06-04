@@ -1,6 +1,6 @@
 const localHeap = {}
 
-class boostingRequest {
+class BoostingRequest {
     constructor(id, boost, bodypartsAmount) {
         this.id = id
         this.boost = boost
@@ -79,7 +79,7 @@ function boosting_driver(creep, spawn, boosting_list, body_type_to_boost) {
                 if(req.boost==boosting_list[i]){reqBoostAmountInRequests+=req.boost*req.bodypartsAmount*LAB_BOOST_MINERAL}
             }
         }
-        if ((storage.store[boosting_list[i]]-reqBoostAmountInRequests > (LAB_BOOST_MINERAL*bodyAmount) || doctor[0].store[boosting_list[i]]-reqBoostAmountInRequests > LAB_BOOST_MINERAL*bodyAmount) && boosting_list[i] != RESOURCE_ENERGY) {
+        if ((storage.store[boosting_list[i]] > (LAB_BOOST_MINERAL*bodyAmount) || doctor[0].store[boosting_list[i]] > LAB_BOOST_MINERAL*bodyAmount) && boosting_list[i] != RESOURCE_ENERGY) {
             contains_booster = true;
             booster = boosting_list[i];
         }
@@ -101,8 +101,10 @@ function boosting_driver(creep, spawn, boosting_list, body_type_to_boost) {
                 else {
 
                     if (!global.heap.rooms[creep.memory.home_room.name].boostingRequests.some(e => e.id == creep.id)) {// if not found itself in boosting requests
-                        var boostingRequest = new boostingRequest(creep.id, booster, parts_to_boost)
+                        var boostingRequest = new BoostingRequest(creep.id, booster, localHeap.parts_to_boost)
                         global.heap.rooms[creep.memory.home_room.name].boostingRequests.push(boostingRequest)
+                        console.log("Adding request to boosting requests, there are: ",
+                            global.heap.rooms[creep.memory.home_room.name].boostingRequests.length)
                     }
                     else {
                         //if is first one on boosting requests list - go to lab
@@ -129,6 +131,7 @@ function removeRequest(creep) {
         var position = global.heap.rooms[creep.memory.home_room.name].boostingRequests.findIndex(e => e.id == creep.id);
         if (position != -1) {
             global.heap.rooms[creep.memory.home_room.name].boostingRequests.splice(position, 1);
+            console.log("removing request from boostin requests")
         }
         return position;
     }

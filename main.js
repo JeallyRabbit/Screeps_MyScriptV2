@@ -173,7 +173,12 @@ module.exports.loop = function () {
         }
 
         global.heap.soldiers={}
-        global.heap.rooms={}
+
+        if(global.heap.rooms==undefined)
+        {
+            global.heap.rooms={}
+        }
+        
         
 
         Memory.step = 10000
@@ -182,9 +187,14 @@ module.exports.loop = function () {
 
             for (var roomName in Game.rooms) {
 
-                global.heap.rooms[roomName]={};
+                if(global.heap.rooms[roomName]==undefined)
+                {
+                    global.heap.rooms[roomName]={};
+                }
+                
                 if(global.heap.rooms[roomName].boostingRequests==undefined)
                 {
+                    console.log("Setting requests to 0")
                     global.heap.rooms[roomName].boostingRequests=[]
                 }
                 global.heap.soldiers[roomName]=0;
@@ -554,29 +564,7 @@ module.exports.loop = function () {
 
 
 
-            if (spawn.room.controller.level >= 3) {
-                //towers.tick(spawn);
-                spawn.towers(spawn);
-
-                if (spawn.room.controller.level >= 5) {
-                    //links.tick(spawn);
-                    spawn.links(spawn);
-                    if (spawn.room.controller.level >= 6) {
-                        //terminal.tick(spawn);
-
-                        spawn.terminal(spawn);
-                        /*
-                        if(spawn.room.terminal!=undefined)
-                        {
-                            console.log("reaction to run: ",spawn.room.terminal.reactions())
-                        }
-                            */
-
-                        spawn.lab(spawn);
-                        //lab.tick(spawn);
-                    }
-                }
-            }
+            
 
             if (spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0) {
                 for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
@@ -1133,6 +1121,28 @@ module.exports.loop = function () {
 
                 }
             }
+
+            if (spawn.room.controller.level >= 3) {
+                //towers.tick(spawn);
+                spawn.towers(spawn);
+
+                if (spawn.room.controller.level >= 5) {
+                    //links.tick(spawn);
+                    spawn.links(spawn);
+                    if (spawn.room.controller.level >= 6) {
+                        //terminal.tick(spawn);
+
+                        spawn.terminal(spawn);
+
+                        spawn.lab(spawn);
+                        //lab.tick(spawn);
+                    }
+                }
+            }
+
+
+
+
             //console.log("farming_rooms[0].harvesting power ------------------------------ ",spawn.memory.farming_rooms[0].harvesting_power)
 
 

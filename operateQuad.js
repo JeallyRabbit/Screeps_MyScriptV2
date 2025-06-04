@@ -488,12 +488,12 @@ function moveQuad(quad, targetPos, reusePath = 3, myRange = 1, myFlee = false, m
             //cr.say(cr.move(direction))
         }
         if (move_result > 0 && Math.abs(move_result) % 11 != 0) {// 0 - OK,11 - err_tired
-            console.log("RESETING PATH - UNABLE TO MOVE")
+            //console.log("RESETING PATH - UNABLE TO MOVE")
             //quad.path = undefined
         }
         else if (move_result == 0 || Math.abs(move_result) % 11 == 0) {
-            console.log("quad is moving from: ", topLeft.pos, " to ", nextPos)
-            if (Math.abs(move_result) % 11 == 0 && move_result != 0) { console.log("Quad ERR_TIRED") }
+           // console.log("quad is moving from: ", topLeft.pos, " to ", nextPos)
+            //if (Math.abs(move_result) % 11 == 0 && move_result != 0) { console.log("Quad ERR_TIRED") }
             return move_result
         }
     }
@@ -1530,5 +1530,5 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
     }
 
     endCPU = Game.cpu.getUsed()
-    console.log("Quad: ", quad.id, " used: ", endCPU - startCpu, " CPU")
+    //console.log("Quad: ", quad.id, " used: ", endCPU - startCpu, " CPU")
 }
