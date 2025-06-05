@@ -51,9 +51,13 @@ Spawn.prototype.setBaseState = function setBaseState()
 
             }
         }
-        
 
+        if(this.room.controller.level<8 && Memory.fastRCLUpgrade==this.room.name)
+        {
+            this.room.memory.need_resources.push("XGH2O")
+        }
     }
+
 }
 
 //module.exports = setBaseState;

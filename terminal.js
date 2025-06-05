@@ -8,11 +8,11 @@ const STATE_STATE_NEED_MILITARY_ENERGY = 'STATE_NEED_MILITARY_ENERGY'
 const MIN_AMOUNT_TERMINAL = 5000
 const MIN_AMOUNT_BUY = 2500
 
-const MIN_TERMINAL_ENERGY=30000
-const MIN_STORAGE_ENERGY=300000
+const MIN_TERMINAL_ENERGY = 30000
+const MIN_STORAGE_ENERGY = 300000
 
-const SHARING_ENERGY_RCL6_7=50000
-const NEED_TO_BUY_ENERGY=30000 // when below that energy in storage - room will start buying energy
+const SHARING_ENERGY_RCL6_7 = 50000
+const NEED_TO_BUY_ENERGY = 30000 // when below that energy in storage - room will start buying energy
 
 Spawn.prototype.terminal = function terminal(spawn) {
 
@@ -54,7 +54,28 @@ Spawn.prototype.terminal = function terminal(spawn) {
             }
         }
 
-
+        //sharing T3 resources
+        if (terminal.room.controller.level >= 6 && terminal.cooldown == 0) {
+            for (main of Memory.main_spawns) {
+                //console.log("main: ", main)
+                main_spawn = Game.getObjectById(main)
+                if (main_spawn == null || main_spawn.room.name == spawn.room.name) {
+                    continue
+                }
+                //console.log("main2: ", main_spawn.room.name)
+                var sending_result = false
+                var T3Resources = ["XUH2O","XUHO2","XLH2O","XLHO2","XKH2O","XKHO2","XZH2O","XZHO2","XGH2O","XGHO2"]
+                for (res of T3Resources) {
+                    if (main_spawn.room.memory.need_resources != undefined && terminal.store[res] > MIN_AMOUNT_TERMINAL && main_spawn.room.memory.need_resources.includes(res)) {
+                        sending_result = terminal.send(res, MIN_AMOUNT_TERMINAL, main_spawn.room.name);
+                        console.log("terminal: ",terminal.room.name, " is sending energy to: ", main_spawn.room.name," with result: ",sending_result)
+                        if (sending_result == OK) {
+                            return;
+                        }
+                    }
+                }
+            }
+        }
 
 
         // sharing energy on rcl8
@@ -146,12 +167,15 @@ Spawn.prototype.terminal = function terminal(spawn) {
                 }
             }
 
-            //share energy with it
-            if (toShare != null && toShare != spawn.room.name) {
-                amount = 5000
-                console.log("terminal from: ", spawn.room.name, " is sending energy to: ", toShare)
-                send_result = terminal.send(RESOURCE_ENERGY, amount, toShare);
+            if (toShare != null) {
+                if (toShare != spawn.room.name) {//share energy with it
+                    amount = 5000
+                    console.log("terminal from: ", spawn.room.name, " is sending energy to: ", toShare)
+                    send_result = terminal.send(RESOURCE_ENERGY, amount, toShare);
+                }
+                Memory.fastRCLUpgrade = toShare
             }
+
         }
 
 

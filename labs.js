@@ -19,16 +19,15 @@ Spawn.prototype.lab = function lab(spawn) {
             var lab=Game.getObjectById(id)
             if(this.room.memory.boosting_lab_id!=undefined && id==this.room.memory.boosting_lab_id)
             {
-                console.log("boostingRequest: ",boostingRequest)
                 if(global.heap.rooms[this.room.name].boostingRequests!=undefined && global.heap.rooms[this.room.name].boostingRequests.length>0)
                 {
                     var boostingRequest=global.heap.rooms[this.room.name].boostingRequests[0]
-                    console.log("boostingRequest: ",boostingRequest)
+                    //console.log("boostingRequest: ",boostingRequest)
                     if(lab.store[boostingRequest.boost]>0 || true)
                     {
-                        console.log("boosting request: ")
-                        console.log("creep.id: ",boostingRequest.id)
-                        console.log("boost: ",boostingRequest.boost)
+                        //console.log("boosting request: ")
+                        //console.log("creep.id: ",boostingRequest.id)
+                        //console.log("boost: ",boostingRequest.boost)
                         //console.log('bodypartsAmount: ',boostingRequest.bodypartsAmount)
                         res=lab.boostCreep(Game.getObjectById(boostingRequest.id),boostingRequest.bodypartsAmount)
                         console.log("boosting result: ",res)

@@ -10,6 +10,9 @@ const FILL_INPUT = 'fill_input'
 const CLEAR_CREEP = 'clear_creep'
 const BOOST_CREEP='boost_creep'
 
+const localHeap = {}
+
+
 Creep.prototype.roleDoctor = function roleDoctor(creep) {
 
     //room.memory.input_lab_1_pos
@@ -43,7 +46,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
     // if labs energy<
     if (defineLabs(creep) == OK) {
 
-        if (creep.memory.task == undefined) {
+        if (localHeap.taskk == undefined) {
             creep.say("finding task")
             creep.memory.to_fill_energy = undefined
             creep.memory.to_clear_output = undefined
@@ -53,31 +56,31 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
            
 
             if (creep.store.getUsedCapacity() > 0 || creep.ticksToLive < 50) {
-                creep.memory.task = CLEAR_CREEP
+                localHeap.taskk = CLEAR_CREEP
             }
             else if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length>0)
             {   
-                creep.memory.task=BOOST_CREEP
+                localHeap.taskk=BOOST_CREEP
             }
             else if (ifLabsNeedEnergy(creep) != false) // case 0 on issue #207
             {
-                creep.memory.task = FILL_LABS_ENERGY
+                localHeap.taskk = FILL_LABS_ENERGY
                 creep.memory.to_fill_energy = findMinEnergyLab(creep)
             }
             else if (isSomethingInOutputs(creep) != false)  // case 1 on issue #207
             {
-                creep.memory.task = CLEAR_OUTPUTS
+                localHeap.taskk = CLEAR_OUTPUTS
                 creep.memory.to_clear_output = isSomethingInOutputs(creep)
             }
             else if (areInputsEmpty(creep) != true /* && areInputsEqual(creep)==false */) {
                 // (isOnlyOneInputNotEmpty(creep) == 1 || (inputMatchReaction(creep)!=true)) {
                 creep.say("clr in")
-                creep.memory.task = CLEAR_INPUT
+                localHeap.taskk = CLEAR_INPUT
                 creep.memory.to_clear_input = areInputsEmpty(creep)
             }
             else if (isOnlyOneInputNotEmpty(creep) == 0) {
                 if (creep.room.terminal != undefined) {
-                    creep.memory.task = FILL_INPUT
+                    localHeap.taskk = FILL_INPUT
                     creep.memory.reaction = creep.room.terminal.reactions()
                     creep.room.memory.reaction = creep.room.terminal.reactions()
                     //console.log("reactions to run in: ",creep.room.name," :",creep.room.terminal.reactions())
@@ -85,18 +88,18 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
 
             }
         }
-        else if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length>0 && creep.memory.task!=BOOST_CREEP)
+        else if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length>0 && localHeap.taskk!=BOOST_CREEP)
         {
-            creep.memory.task=undefined
+            localHeap.taskk=undefined
             return;
         }
 
-        creep.say(creep.memory.task)
+        creep.say(localHeap.taskk)
         //creep.say(inputMatchReaction(creep)!=true)
 
-        if (creep.memory.task == CLEAR_CREEP) {
+        if (localHeap.taskk == CLEAR_CREEP) {
             if (creep.store.getUsedCapacity() == 0) {
-                creep.memory.task = undefined
+                localHeap.taskk = undefined
                 return
             }
             else {
@@ -109,9 +112,9 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
         }
 
-        if (creep.memory.task == FILL_LABS_ENERGY) {
+        if (localHeap.taskk == FILL_LABS_ENERGY) {
             var to_fill = Game.getObjectById(creep.memory.to_fill_energy)
-            if (to_fill == null || (to_fill != null && to_fill.store[RESOURCE_ENERGY] >= LAB_ENERGY_CAPACITY)) { creep.memory.task = undefined; return }
+            if (to_fill == null || (to_fill != null && to_fill.store[RESOURCE_ENERGY] >= LAB_ENERGY_CAPACITY)) { localHeap.taskk = undefined; return }
             else {
                 if (creep.store[RESOURCE_ENERGY] == 0) {
                     if (creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -126,7 +129,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
         }
 
-        if (creep.memory.task == CLEAR_OUTPUTS) {
+        if (localHeap.taskk == CLEAR_OUTPUTS) {
             var lab = Game.getObjectById(creep.memory.to_clear_output)
             if (lab != null) {
                 var is_empty = true;
@@ -136,7 +139,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                 }
                 if ((isSomethingInOutputs(creep) == false) || (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0)) {
                     (isSomethingInOutputs(creep) == false) || (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0)
-                    creep.memory.task = undefined
+                    localHeap.taskk = undefined
                     return
                 }
                 else {
@@ -163,17 +166,17 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                 }
             }
             else {
-                creep.memory.task = undefined
+                localHeap.taskk = undefined
                 return
             }
 
         }
 
-        if (creep.memory.task == CLEAR_INPUT) {
+        if (localHeap.taskk == CLEAR_INPUT) {
             creep.memory.to_clear_input = areInputsEmpty(creep)
             var lab = Game.getObjectById(creep.memory.to_clear_input)
             if (areInputsEmpty(creep) == true) {
-                creep.memory.task = undefined
+                localHeap.taskk = undefined
 
                 return
                 creep.say("no task")
@@ -202,25 +205,25 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
         }
 
-        if (creep.memory.task == FILL_INPUT) {
+        if (localHeap.taskk == FILL_INPUT) {
 
             var input1 = Game.getObjectById(creep.room.memory.input1_lab_id)
             var input2 = Game.getObjectById(creep.room.memory.input2_lab_id)
 
             if (creep.room.memory.reaction == undefined || (input1.store[creep.room.memory.reaction[0]] > 0 && input2.store[creep.room.memory.reaction[1]] > 0)) {
-                creep.memory.task = undefined
+                localHeap.taskk = undefined
                 //creep.say(creep.memory.reaction)
                 return
             }
             if (creep.memory.reaction == undefined && creep.room.memory.reaction == undefined) {
-                creep.memory.task = undefined
+                localHeap.taskk = undefined
                 //creep.say("clfill2")
                 return
             }
             /*
             if(input1.store[creep.room.memory.reaction[0]]>0 && input2.store[creep.room.memory.reaction[1]]>0)
             {
-                creep.memory.task=undefined
+                localHeap.taskk=undefined
             }
                 */
             if (creep.store[creep.room.memory.reaction[0]] == 0) {
@@ -254,21 +257,24 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
         }
 
-        if(creep.memory.task==BOOST_CREEP)
+        if(localHeap.taskk==BOOST_CREEP)
         {
-            if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length==0)
+            if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length==0 && Game.time%2==0)
             {
-                creep.memory.task=undefined
+                localHeap.taskk=undefined
                 return;
             }
             var boostingRequest=global.heap.rooms[creep.memory.home_room.name].boostingRequests[0];
             console.log("boosting request: ")
-            console.log(boostingRequest)
+            console.log("boosting request.bost: ",boostingRequest.boost)
+            console.log("boostingRequest.bodypartsAmount: ",boostingRequest.bodypartsAmount)
             var boosting_lab=Game.getObjectById(creep.room.memory.boosting_lab_id)
-            if(creep.store[boostingRequest.boost]==0 && boosting_lab.store[boostingRequest.boost]<boostingRequest.bodypartsAmount*LAB_BOOST_MINERAL)
+            console.log( boosting_lab.store[boostingRequest.boost]," < ",boostingRequest.bodypartsAmount.length*LAB_BOOST_MINERAL)
+            if(creep.store[boostingRequest.boost]==0 && boosting_lab.store[boostingRequest.boost]<boostingRequest.bodypartsAmount.length*LAB_BOOST_MINERAL)
             {
-                if(creep.withdraw(creep.room.storage,boostingRequest.boost,boostingRequest.bodypartsAmount*LAB_BOOST_MINERAL)==ERR_NOT_IN_RANGE)
+                if(creep.withdraw(creep.room.storage,boostingRequest.boost,boostingRequest.bodypartsAmount.length*LAB_BOOST_MINERAL)==ERR_NOT_IN_RANGE)
                 {
+                    //creep.say("with")
                     creep.moveTo(creep.room.storage)
                 }
             }

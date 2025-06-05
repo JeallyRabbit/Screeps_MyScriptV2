@@ -1339,7 +1339,7 @@ Spawn.prototype.operateQuad = function operateQuad(quad) {
         }
         if (bottomLeft != null && quad.grouping_pos != undefined) {
             if (topLeft != null) {
-                bottomLeft.moveTo(new RoomPosition(topLeft.pos.x, topLeft.pos.y + 1, topLeft.pos.roomName))
+                bottomLeft.moveTo(new RoomPosition(topLeft.pos.x, Math.min(topLeft.pos.y + 1,49), topLeft.pos.roomName))
             }
             else {
                 bottomLeft.moveTo(new RoomPosition(quad.grouping_pos.x, quad.grouping_pos.y + 1, quad.grouping_pos.roomName), { maxStuck: 1 })
