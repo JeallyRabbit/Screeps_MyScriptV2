@@ -11,7 +11,7 @@ class BoostingRequest {
 function boosting_driver(creep, spawn, boosting_list, body_type_to_boost) {
     //creep.say("BOS1");
     //return -1;
-    if (creep.ticksToLive < 1200 || boosting_list.length==0) {
+    if (creep.ticksToLive < CREEP_LIFE_TIME*0.8 || boosting_list.length==0) {
         //removing boosting request
         removeRequest(creep);
         return -1;

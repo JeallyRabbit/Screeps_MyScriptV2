@@ -46,60 +46,9 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
     // if labs energy<
     if (defineLabs(creep) == OK) {
 
-        if (localHeap.taskk == undefined) {
-            creep.say("finding task")
-            creep.memory.to_fill_energy = undefined
-            creep.memory.to_clear_output = undefined
-            creep.memory.reaction = undefined
-            creep.room.memory.reaction = undefined
-
-           
-
-            if (creep.store.getUsedCapacity() > 0 || creep.ticksToLive < 50) {
-                localHeap.taskk = CLEAR_CREEP
-            }
-            else if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length>0)
-            {   
-                localHeap.taskk=BOOST_CREEP
-            }
-            else if (ifLabsNeedEnergy(creep) != false) // case 0 on issue #207
-            {
-                localHeap.taskk = FILL_LABS_ENERGY
-                creep.memory.to_fill_energy = findMinEnergyLab(creep)
-            }
-            else if (isSomethingInOutputs(creep) != false)  // case 1 on issue #207
-            {
-                localHeap.taskk = CLEAR_OUTPUTS
-                creep.memory.to_clear_output = isSomethingInOutputs(creep)
-            }
-            else if (areInputsEmpty(creep) != true /* && areInputsEqual(creep)==false */) {
-                // (isOnlyOneInputNotEmpty(creep) == 1 || (inputMatchReaction(creep)!=true)) {
-                creep.say("clr in")
-                localHeap.taskk = CLEAR_INPUT
-                creep.memory.to_clear_input = areInputsEmpty(creep)
-            }
-            else if (isOnlyOneInputNotEmpty(creep) == 0) {
-                if (creep.room.terminal != undefined) {
-                    localHeap.taskk = FILL_INPUT
-                    creep.memory.reaction = creep.room.terminal.reactions()
-                    creep.room.memory.reaction = creep.room.terminal.reactions()
-                    //console.log("reactions to run in: ",creep.room.name," :",creep.room.terminal.reactions())
-                }
-
-            }
-        }
-        else if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length>0 && localHeap.taskk!=BOOST_CREEP)
-        {
-            localHeap.taskk=undefined
-            return;
-        }
-
-        creep.say(localHeap.taskk)
-        //creep.say(inputMatchReaction(creep)!=true)
-
-        if (localHeap.taskk == CLEAR_CREEP) {
+        if (localHeap.task == CLEAR_CREEP) {
             if (creep.store.getUsedCapacity() == 0) {
-                localHeap.taskk = undefined
+                localHeap.task = undefined
                 return
             }
             else {
@@ -112,9 +61,77 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
         }
 
-        if (localHeap.taskk == FILL_LABS_ENERGY) {
+        if (localHeap.task == undefined) {
+            creep.say("finding task")
+            console.log("no task")
+            creep.memory.to_fill_energy = undefined
+            creep.memory.to_clear_output = undefined
+            localHeap.reaction = undefined
+            localHeap.reaction = undefined
+
+           
+
+            if (creep.store.getUsedCapacity() > 0 || creep.ticksToLive < 50) {
+                localHeap.task = CLEAR_CREEP
+            }
+            else if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length>0)
+            {   
+                localHeap.task=BOOST_CREEP
+            }
+            else if (ifLabsNeedEnergy(creep) != false) // case 0 on issue #207
+            {
+                localHeap.task = FILL_LABS_ENERGY
+                creep.memory.to_fill_energy = findMinEnergyLab(creep)
+            }
+            else if (isSomethingInOutputs(creep) != false)  // case 1 on issue #207
+            {
+                localHeap.task = CLEAR_OUTPUTS
+                creep.memory.to_clear_output = isSomethingInOutputs(creep)
+            }
+            else if (areInputsEmpty(creep) != true /* && areInputsEqual(creep)==false */) {
+                // (isOnlyOneInputNotEmpty(creep) == 1 || (inputMatchReaction(creep)!=true)) {
+                creep.say("clr in")
+                localHeap.task = CLEAR_INPUT
+                creep.memory.to_clear_input = areInputsEmpty(creep)
+            }
+            else if (isOnlyOneInputNotEmpty(creep) == 0) {
+                if (creep.room.terminal != undefined) {
+                    localHeap.task = FILL_INPUT
+                    localHeap.reaction = creep.room.terminal.reactions()
+                    localHeap.reaction = creep.room.terminal.reactions()
+                    //console.log("reactions to run in: ",creep.room.name," :",creep.room.terminal.reactions())
+                }
+
+            }
+        }
+        else if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length>0 && localHeap.task!=BOOST_CREEP)
+        {
+            console.log("no boosting request")
+            localHeap.task=undefined
+            return;
+        }
+
+        creep.say(localHeap.task)
+        //creep.say(inputMatchReaction(creep)!=true)
+
+        if (localHeap.task == CLEAR_CREEP) {
+            if (creep.store.getUsedCapacity() == 0) {
+                localHeap.task = undefined
+                return
+            }
+            else {
+                for (res in creep.store) {
+                    if (creep.transfer(creep.room.storage, res) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(creep.room.storage, { reusePath: 10 })
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (localHeap.task == FILL_LABS_ENERGY) {
             var to_fill = Game.getObjectById(creep.memory.to_fill_energy)
-            if (to_fill == null || (to_fill != null && to_fill.store[RESOURCE_ENERGY] >= LAB_ENERGY_CAPACITY)) { localHeap.taskk = undefined; return }
+            if (to_fill == null || (to_fill != null && to_fill.store[RESOURCE_ENERGY] >= LAB_ENERGY_CAPACITY)) { localHeap.task = undefined; return }
             else {
                 if (creep.store[RESOURCE_ENERGY] == 0) {
                     if (creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -129,7 +146,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
         }
 
-        if (localHeap.taskk == CLEAR_OUTPUTS) {
+        if (localHeap.task == CLEAR_OUTPUTS) {
             var lab = Game.getObjectById(creep.memory.to_clear_output)
             if (lab != null) {
                 var is_empty = true;
@@ -139,7 +156,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                 }
                 if ((isSomethingInOutputs(creep) == false) || (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0)) {
                     (isSomethingInOutputs(creep) == false) || (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0)
-                    localHeap.taskk = undefined
+                    localHeap.task = undefined
                     return
                 }
                 else {
@@ -166,17 +183,17 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                 }
             }
             else {
-                localHeap.taskk = undefined
+                localHeap.task = undefined
                 return
             }
 
         }
 
-        if (localHeap.taskk == CLEAR_INPUT) {
+        if (localHeap.task == CLEAR_INPUT) {
             creep.memory.to_clear_input = areInputsEmpty(creep)
             var lab = Game.getObjectById(creep.memory.to_clear_input)
             if (areInputsEmpty(creep) == true) {
-                localHeap.taskk = undefined
+                localHeap.task = undefined
 
                 return
                 creep.say("no task")
@@ -205,63 +222,68 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
         }
 
-        if (localHeap.taskk == FILL_INPUT) {
+        if (localHeap.task == FILL_INPUT) {
 
             var input1 = Game.getObjectById(creep.room.memory.input1_lab_id)
             var input2 = Game.getObjectById(creep.room.memory.input2_lab_id)
 
-            if (creep.room.memory.reaction == undefined || (input1.store[creep.room.memory.reaction[0]] > 0 && input2.store[creep.room.memory.reaction[1]] > 0)) {
-                localHeap.taskk = undefined
-                //creep.say(creep.memory.reaction)
+            //console.log("reaction: ",localHeap.reaction[0], " ",localHeap.reaction[1])
+            if (localHeap.reaction == undefined || (input1.store[localHeap.reaction[0]] > 0 && input2.store[localHeap.reaction[1]] > 0)) {
+                localHeap.task = undefined
+                //creep.say(localHeap.reaction)
                 return
             }
-            if (creep.memory.reaction == undefined && creep.room.memory.reaction == undefined) {
-                localHeap.taskk = undefined
-                //creep.say("clfill2")
+            if (localHeap.reaction == undefined && localHeap.reaction == undefined
+
+            ) {
+                localHeap.task = undefined
+                creep.say("clfill2")
                 return
             }
             /*
-            if(input1.store[creep.room.memory.reaction[0]]>0 && input2.store[creep.room.memory.reaction[1]]>0)
+            if(input1.store[localHeap.reaction[0]]>0 && input2.store[localHeap.reaction[1]]>0)
             {
-                localHeap.taskk=undefined
+                localHeap.task=undefined
             }
                 */
-            if (creep.store[creep.room.memory.reaction[0]] == 0) {
+            if (creep.store[localHeap.reaction[0]] == 0) {
                 creep.say("with1")
-                var terminal_amount = creep.room.terminal.store[creep.room.memory.reaction[0]] - (creep.room.terminal.store[creep.room.memory.reaction[0]] % 5)
+                var terminal_amount = creep.room.terminal.store[localHeap.reaction[0]] - (creep.room.terminal.store[localHeap.reaction[0]] % 5)
                 var creep_amount = ((creep.store.getCapacity() / 2) - ((creep.store.getCapacity() / 2) % 5))
                 var final_aount = (Math.min(terminal_amount, creep_amount))
-                if (creep.withdraw(creep.room.terminal, creep.room.memory.reaction[0], final_aount) == ERR_NOT_IN_RANGE) {
+                if (creep.withdraw(creep.room.terminal, localHeap.reaction[0], final_aount) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(creep.room.terminal, { reusePath: 10 })
                 }
             }
-            else if (creep.store[creep.room.memory.reaction[1]] == 0) {
+            else if (creep.store[localHeap.reaction[1]] == 0) {
                 creep.say("with2")
-                var terminal_amount = creep.room.terminal.store[creep.room.memory.reaction[1]] - (creep.room.terminal.store[creep.room.memory.reaction[1]] % 5)
+                var terminal_amount = creep.room.terminal.store[localHeap.reaction[1]] - (creep.room.terminal.store[localHeap.reaction[1]] % 5)
                 var creep_amount = ((creep.store.getCapacity() / 2) - ((creep.store.getCapacity() / 2) % 5))
                 var final_aount = (Math.min(terminal_amount, creep_amount))
-                if (creep.withdraw(creep.room.terminal, creep.room.memory.reaction[1], final_aount) == ERR_NOT_IN_RANGE) {
+                if (creep.withdraw(creep.room.terminal, localHeap.reaction[1], final_aount) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(creep.room.terminal, { reusePath: 10 })
                 }
             }
 
-            if (creep.store[creep.room.memory.reaction[0]] > 0) {
-                if (creep.transfer(input1, creep.room.memory.reaction[0]) == ERR_NOT_IN_RANGE) {
+            if (creep.store[localHeap.reaction[0]] > 0) {
+                if (creep.transfer(input1, localHeap.reaction[0]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(input1, { reusePath: 10 })
                 }
             }
-            else if (creep.store[creep.room.memory.reaction[1]] > 0) {
-                if (creep.transfer(input2, creep.room.memory.reaction[1]) == ERR_NOT_IN_RANGE) {
+            else if (creep.store[localHeap.reaction[1]] > 0) {
+                if (creep.transfer(input2, localHeap.reaction[1]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(input2, { reusePath: 10 })
                 }
             }
         }
 
-        if(localHeap.taskk==BOOST_CREEP)
+        if(localHeap.task==BOOST_CREEP)
         {
-            if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length==0 && Game.time%2==0)
+            console.log("taking task boost creep")
+            if(global.heap.rooms[creep.memory.home_room.name].boostingRequests.length==0)
             {
-                localHeap.taskk=undefined
+                console.log("No boosting requests")
+                localHeap.task=undefined
                 return;
             }
             var boostingRequest=global.heap.rooms[creep.memory.home_room.name].boostingRequests[0];
@@ -298,12 +320,12 @@ function inputMatchReaction(creep) {// returns id of not matching input lab or t
     //lab1= Game.getObjectById(creep.room.memory.input1_lab_id)
     for (res in Game.getObjectById(creep.room.memory.input1_lab_id).store) {
         if (res == RESOURCE_ENERGY) { continue }
-        if (Game.getObjectById(creep.room.memory.input1_lab_id).store[res] > 0 && res != creep.room.memory.reaction[0]) {
+        if (Game.getObjectById(creep.room.memory.input1_lab_id).store[res] > 0 && res != localHeap.reaction[0]) {
             return creep.room.memory.input1_lab_id
         }
     }
     /*
-    if(Game.getObjectById(creep.room.memory.input1_lab_id).store[creep.room.memory.reaction[0]]>0)
+    if(Game.getObjectById(creep.room.memory.input1_lab_id).store[localHeap.reaction[0]]>0)
     {
         return creep.room.memory.input1_lab_id
     }
@@ -311,12 +333,12 @@ function inputMatchReaction(creep) {// returns id of not matching input lab or t
 
     for (res in Game.getObjectById(creep.room.memory.input2_lab_id).store) {
         if (res == RESOURCE_ENERGY) { continue }
-        if (Game.getObjectById(creep.room.memory.input2_lab_id).store[res] > 0 && res != creep.room.memory.reaction[1]) {
+        if (Game.getObjectById(creep.room.memory.input2_lab_id).store[res] > 0 && res != localHeap.reaction[1]) {
             return creep.room.memory.input2_lab_id
         }
     }
     /*
-if(Game.getObjectById(creep.room.memory.input2_lab_id).store[creep.room.memory.reaction[1]]>0)
+if(Game.getObjectById(creep.room.memory.input2_lab_id).store[localHeap.reaction[1]]>0)
 {
     return creep.room.memory.input2_lab_id
 }*/

@@ -3,7 +3,7 @@ const FILL_TERMINAL_ENERGY = "FILL_TERMINAL_ENERGY"
 const FILL_STORAGE_ENERGY = "FILL_STORAGE_ENERGY"
 const FILL_LINK = "FILL_LINK"
 const TAKE_FROM_LINK = "TAKE_FROM_LINK"
-
+const XGH2O_TRANSFER = "XGH2O_TRANSFER"
 Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer energy grom containers to storage
 
 
@@ -72,6 +72,11 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
                 // /creep.say(energy_at_source_link)
             }
         }
+        if (Memory.fastRCLUpgrade != undefined && Memory.fastRCLUpgrade == creep.room.name && terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 1000
+            && storage.store.getFreeCapacity(RESOURCE_ENERGY) > 5000
+        ) {
+            creep.memory.task = XGH2O_TRANSFER
+        }
 
         //}
 
@@ -114,20 +119,35 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
             creep.withdraw(manager_link, RESOURCE_ENERGY)
             creep.transfer(storage, RESOURCE_ENERGY)
         }
+        else if (creep.memory.task == XGH2O_TRANSFER) {
+            if (Memory.fastRCLUpgrade == creep.room.name) {
+                clear_creep_store(creep, storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                if (creep.store.getUsedCapacity(RESOURCE_CATALYZED_GHODIUM_ACID) > 0) {
+                    creep.transfer(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                }
+                else {
+                    creep.withdraw(terminal, RESOURCE_CATALYZED_GHODIUM_ACID);
+                }
+            }
+            else {
+                clear_creep_store(creep, storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                if (creep.store.getUsedCapacity(RESOURCE_CATALYZED_GHODIUM_ACID) > 0) {
+
+                    creep.withdraw(terminal, RESOURCE_CATALYZED_GHODIUM_ACID);
+                }
+                else {
+                    creep.transfer(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                }
+            }
+
+        }
         else if (storage != undefined) {
             //return;
             //withdrawing all resources (except T3) from storage
+            console.log("no task")
             for (let res in storage.store) {
                 if (res == RESOURCE_ENERGY || (res.startsWith("X") && !(res.endsWith("X"))) && Memory.fastRCLUpgrade == undefined) {
                     continue
-                }
-                if (Memory.fastRCLUpgrade != undefined && Memory.fastRCLUpgrade != creep.room.name
-                    && res==RESOURCE_CATALYZED_GHODIUM_ACID
-                ) { // if there is some room to fast upgrade - share XGH2O (upgrade) with it
-                    if (creep.store.getFreeCapacity(res) == creep.store.getCapacity() && creep.withdraw(storage, res) == OK) {
-                        creep.say("withd; "+res)
-                        return;
-                    }
                 }
                 //if (res != RESOURCE_ENERGY) {
                 if (creep.store.getFreeCapacity(res) == creep.store.getCapacity() && creep.withdraw(storage, res) == OK) {
