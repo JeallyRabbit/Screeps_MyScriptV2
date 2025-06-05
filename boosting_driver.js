@@ -16,7 +16,6 @@ function boosting_driver(creep, spawn, boosting_list, body_type_to_boost) {
         removeRequest(creep);
         return -1;
     }
-
     // change this to find first output lab (first output lab position should be stored in spawn.memory)
     // also cache its id in spawn.memory so there will be no need to call Room.find() thath often
     var lab = undefined;
@@ -42,7 +41,7 @@ function boosting_driver(creep, spawn, boosting_list, body_type_to_boost) {
     }
     else {
         localHeap.needBoosting = false;
-
+        //creep.say("don't need")
         //removing boosting request
         removeRequest(creep);
         return -1;
@@ -63,6 +62,7 @@ function boosting_driver(creep, spawn, boosting_list, body_type_to_boost) {
     if (doctor == undefined || doctor.length < 1 || storage == undefined || storage.length < 1) {
         //removing boosting request
         removeRequest(creep);
+        //")
         return -1;
     }
     /////////////////
@@ -127,6 +127,7 @@ function boosting_driver(creep, spawn, boosting_list, body_type_to_boost) {
 exports.boosting_driver = boosting_driver;
 
 function removeRequest(creep) {
+
     if (global.heap.rooms[creep.memory.home_room.name].boostingRequests != undefined) {
         var position = global.heap.rooms[creep.memory.home_room.name].boostingRequests.findIndex(e => e.id == creep.id);
         if (position != -1) {
