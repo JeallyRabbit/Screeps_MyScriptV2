@@ -1128,16 +1128,15 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
 
-
+        
         // soldiers for colonization
-        if (spawn.memory.need_soldier == undefined && spawn.memory.to_colonize != undefined
-            && spawn.room.storage != undefined && spawn.memory.have_energy_to_colonize == true
+        if (spawn.memory.to_colonize != undefined && spawn.memory.need_soldier !=spawn.memory.to_colonize.name
+            && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY]>20000
         ) {
 
             //console.log("2")
             if (spawn.memory.to_colonize.soldier != undefined && Game.getObjectById(spawn.memory.to_colonize.soldier) == null) {
                 spawn.memory.to_colonize.soldier = undefined
-                console.log("reseting colonization soldier")
             }
 
             if (spawn.memory.to_colonize.soldier == undefined) {
@@ -1149,7 +1148,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             if (spawn.memory.to_colonize.claimer != undefined && Game.getObjectById(spawn.memory.to_colonize.claimer) == null) {
                 spawn.memory.to_colonize.claimer = undefined
             }
-
             if (spawn.memory.to_colonize.claimer == undefined) {
                 spawn.memory.need_claimer = spawn.memory.to_colonize.name
             }

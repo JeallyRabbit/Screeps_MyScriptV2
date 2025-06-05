@@ -386,7 +386,6 @@ module.exports.loop = function () {
                     }
                 }
             }
-            //console.log(spawn);
             if (spawn == null) {
                 console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
                 console.log("spawn: ", Memory.main_spawns[spawn_num], " is null");
@@ -439,15 +438,12 @@ module.exports.loop = function () {
                 var creep = Game.creeps[name];
                 //creep.suicide()
                 if (creep.memory.role == 'soldier') {
-                    //creep.roleSoldier(creep, spawn);
 
 
                     if (spawn.memory.rooms_to_blockade != undefined && spawn.memory.rooms_to_blockade.length > 0) {
-                        //console.log(creep.pos)
                         // creep.say()
                         for (a of spawn.memory.rooms_to_blockade) {
                             if (a.roomName == creep.memory.target_room) {
-                                //console.log(creep.id)
                                 a.soldier_id = creep.id;
                                 break;
                             }
@@ -684,11 +680,9 @@ module.exports.loop = function () {
 
 
                         if (spawn.memory.rooms_to_blockade != undefined && spawn.memory.rooms_to_blockade.length > 0) {
-                            //console.log(creep.pos)
                             // creep.say()
                             for (a of spawn.memory.rooms_to_blockade) {
                                 if (a.roomName == creep.memory.target_room) {
-                                    //console.log(creep.id)
                                     a.soldier_id = creep.id;
                                     break;
                                 }
@@ -1099,7 +1093,6 @@ module.exports.loop = function () {
                     var duo = spawn.memory.duos[i]
                     var leader = Game.getObjectById(duo.leaderId)
                     var follower = Game.getObjectById(duo.followerId)
-                    //console.log("DDDDDDUUUUUOOOOO")
                     if (leader != null && follower != null) {
 
 
@@ -1143,8 +1136,6 @@ module.exports.loop = function () {
 
 
 
-            //console.log("farming_rooms[0].harvesting power ------------------------------ ",spawn.memory.farming_rooms[0].harvesting_power)
-
 
             if (spawn.memory.sources_links_id != undefined && spawn.memory.sources_links_id.length > 0) {
                 for (let i = 0; i < spawn.memory.farming_rooms.length; i++) {
@@ -1164,7 +1155,6 @@ module.exports.loop = function () {
 
 
 
-            //console.log("energyCap: ", energyCap);
             spawn.room.visual.text("energyCap: " + energyCap, 4, 1, { color: '#fc03b6' })
             spawn.room.visual.text("Upgraders: " + upgraders_parts + "/" + spawn.memory.req_upgraders_parts, 4, 2, { color: '#fc03b6' })
             spawn.room.visual.text("Builders: " + pop_builders + "/" + spawn.memory.req_builders, 4, 3, { color: '#fc03b6' })
@@ -1249,7 +1239,7 @@ module.exports.loop = function () {
             }
             spawn.room.memory.total_repairers_energy = 0;
             for (farming_room of spawn.memory.farming_rooms) {
-                //console.log(farming_room.name)
+                
                 if (Game.rooms[farming_room.name] != undefined) {
                     if (Game.rooms[farming_room.name].memory.energy_on_repair != undefined) {
                         if (spawn.room.memory.total_repairers_energy != undefined) {
@@ -1278,7 +1268,7 @@ module.exports.loop = function () {
             spawn.room.visual.text((Game.time % step) + 1 + "/" + step, 48, 4, { fill: 'transparent', font: '0.5' })
             spawn.room.visual.rect(48, 4.5, 1, 11, { fill: 'transparent', stroke: '#fff' })
             spawn.room.visual.rect(48, 4.5, 1, (((Game.time % step) + 1) / step) * 11, { stroke: '#fff' })
-            //console.log(Game.time % step)
+            
 
 
 
@@ -1318,7 +1308,6 @@ module.exports.loop = function () {
                         var aux_memory = spawn.memory;
                         spawn = Game.spawns[spawn.room.name + '_2'];
                         spawn.memory = aux_memory;
-                        //console.log("passing spawning to another spawn");
 
                     }
                 }
@@ -1331,7 +1320,6 @@ module.exports.loop = function () {
                             var aux_memory = spawn.memory;
                             spawn = Game.spawns[spawn.room.name + '_3'];
                             spawn.memory = aux_memory;
-                            //console.log("passing spawning to another spawn");
 
                         }
                     }
@@ -1350,11 +1338,10 @@ module.exports.loop = function () {
                 farming_needs_satisfied = true
             }
             //spawning swarm
-            //console.log(spawn.room.name, " farming_needs_satisfied: ",farming_needs_satisfied," ",farming_sources_length)
             spawn.memory.isSpawningSwarm = false;
             for (s of spawn.memory.swarms) {
                 if (!s.completed && pop_fillers == spawn.memory.req_fillers && farming_needs_satisfied && pop_haulers >= spawn.memory.req_haulers) {
-                    // console.log("trying to spawn swarms")
+                    
                     spawn.memory.isSpawningSwarm = true
                     var spawn_result = spawn.spawnCreep(maxSoldier(energyCap), 'swarm' + spawn.room.name + '_' + Game.time, {
                         memory: {
@@ -1363,7 +1350,6 @@ module.exports.loop = function () {
                             swarmId: s.id
                         }
                     })
-                    //console.log("swarm spawning result: ", spawn_result)
                     if (spawn_result == 0) {
                         spawn.memory.isSpawningSwarm = true
                         continue;
@@ -1459,8 +1445,6 @@ module.exports.loop = function () {
                     {
                         if (d.leaderId == undefined) {
                             spawn.memory.isSpawningDuo = true
-                            //console.log("trying to spawn leader")
-                            //var leaderBody = [MOVE, RANGED_ATTACK]
                             var leaderBody = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, HEAL, HEAL, HEAL, HEAL];
                             leaderBody = maxSoldier(energyCap)
                             spawn.memory.leaderSpawningResult = spawn.spawnCreep(leaderBody, "DL" + d.id, { memory: { home_room: spawn.room, role: 'duoLeader', duoId: d.id } })
@@ -1471,7 +1455,6 @@ module.exports.loop = function () {
                         }
                         else if (d.followerId == undefined) {
                             spawn.memory.isSpawningDuo = true
-                            // console.log("trying to spawn follower")
                             var followerBody = [MOVE, HEAL]
 
                             //followerBody=[MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL,HEAL]
@@ -1488,12 +1471,6 @@ module.exports.loop = function () {
                     }
                 }
             }
-            /*
-            if(spawn.room.name=='W7N4')
-            {
-                console.log("spawning duo: ",spawn.memory.isSpawningDuo)
-            }
-                */
             if (pop_haulers < spawn.memory.req_haulers)//spawning new hauler
             {
                 var limit = false;
@@ -1516,7 +1493,7 @@ module.exports.loop = function () {
                         healer_body = [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL];
                     }
                     if (spawn.spawnCreep(healer_body, 'KeeperHealer_' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperHealer', target: spawn.memory.need_keeperHealer, home_room: spawn.room } }) == 0) {
-                        //console.log("Spawning KeeperHealer");
+                        
                         continue;
                     }
                 }
@@ -1526,13 +1503,13 @@ module.exports.loop = function () {
                     //var killer_body = [MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,HEAL,HEAL,HEAL,HEAL,HEAL]
 
                     if (spawn.spawnCreep(killer_body, 'KeeperKiller_' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperKiller', target_room: spawn.memory.need_keeperKiller, home_room: spawn.room } }) == 0) {
-                        //console.log("Spawning KeeperKiller");
+                        
                         continue;
                     }
                 }
                 if (spawn.memory.need_keeperCarrier != undefined) {
                     if (spawn.spawnCreep(maxDistanceCarrier(energyCap, spawn, false), 'KeeperCarrier_' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperCarrier', target_source: spawn.memory.need_keeperCarrier, target_room: spawn.memory.need_keeperCarrier_room, home_room: spawn.room } }) == 0) {
-                        //console.log("Spawning KeeperCarrier");
+                        
                         continue;
                     }
                 }
@@ -1540,20 +1517,20 @@ module.exports.loop = function () {
                     // update target_source
 
                     if (spawn.spawnCreep(maxKeeperFarmer(energyCap, spawn), 'KeeperFarmer_' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperFarmer', target_room: spawn.memory.need_keeperFarmer_room, home_room: spawn.room, target_source: spawn.memory.need_keeperFarmer } }) == 0) {
-                        //console.log("Spawning KeeperFarmer");
+                        ;
                         continue;
                     }
                 }
                 if (spawn.memory.need_keeperRepairer != undefined) {
                     if (spawn.spawnCreep(maxColonizer(energyCap, 3200, 1200), 'keeperRepairer' + spawn.room.name + '_' + Game.time, { memory: { role: 'keeperRepairer', target_room: spawn.memory.need_keeperRepairer, home_room: spawn.room } }) == 0) {
-                        //console.log("Spawning KeeperKiller");
+                        
                         continue;
                     }
                 }
             }
 
             if (pop_melee_defenders < spawn.memory.need_melee_defenders) {
-                //console.log("trying to spawn melee Defender")
+               
                 if (spawn.spawnCreep(maxMeleeSoldier(energyCap), 'MS_' + Game.time, { memory: { role: 'meleeDefender', home_room: spawn.room } }) == OK) {
                     continue;
                 }
@@ -1571,21 +1548,14 @@ module.exports.loop = function () {
                     body.push(CARRY);
                 }
                 if (spawn.spawnCreep(body, 'Filler_' + spawn.room.name + '_' + Game.time, { memory: { role: 'filler', home_room: spawn.room } }) == OK) {
-                    //console.log("Spawning filler");
+                    
                 }
                 continue;
             }
 
             if (spawn.memory.need_soldier != undefined && spawn.memory.state != undefined && !spawn.memory.state.includes("STATE_UNDER_ATTACK" )) {
 
-                console.log("spawning soldier: ")
-                /*
-               // console.log("soldiers ",Game.rooms[spawn.memory.need_soldier].memory.soldiers.length  , " at: ",spawn.memory.need_soldier)
-                for(a in Game.rooms[spawn.memory.need_soldier].memory.soldiers)
-                {
-                    console.log(a)
-                }
-                    */
+                
                 if (spawn.spawnCreep(maxSoldier(energyCap), 'Soldier_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'soldier', target_room:
@@ -1610,7 +1580,6 @@ module.exports.loop = function () {
 
 
             if (pop_scouts < spawn.memory.req_scouts) {
-                //console.log(spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }))
                 if (spawn.spawnCreep([MOVE], 'Scout_' + spawn.room.name + '_' + Game.time, { memory: { role: 'scout', home_room: spawn.room } }) == 0) {
                 }
                 continue;
@@ -1626,9 +1595,8 @@ module.exports.loop = function () {
                     continue;
                 }
             }
-            console.log("colonizer: ",(pop_colonizers < spawn.memory.req_colonizers && pop_claimers > 0 && spawn.room.controller.level >= 4
-                && spawn.memory.to_colonize != undefined && farming_needs_satisfied
-            ))
+            
+            
             if (pop_colonizers < spawn.memory.req_colonizers && pop_claimers > 0 && spawn.room.controller.level >= 4
                 && spawn.memory.to_colonize != undefined && farming_needs_satisfied
             ) {
@@ -1645,7 +1613,7 @@ module.exports.loop = function () {
             //if (spawn.memory.need_farmer != undefined) {
             if (spawn.memory.need_source_farmer != undefined && (spawn.memory.need_source_farmer != spawn.memory.need_soldier)) {
                 
-                console.log("Spawning farmer")
+                
                 var aux=spawn.spawnCreep(maxFarmer(energyCap, spawn, true), 'Farmer_' + spawn.room.name + '_' + Game.time, {
                     memory: {
                         role: 'farmer', home_room: spawn.room,
@@ -1700,7 +1668,6 @@ module.exports.loop = function () {
                 (spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power > spawn.memory.farming_rooms[0].sources_num * (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * 0.5)
             ) // spawning new upgrader
             {
-                //console.log("trying to spawn upgrader: ",spawn.spawnCreep(maxUpgrader(energyCap, spawn, Math.ceil(spawn.memory.req_upgraders_parts) * 200), 'Upgrader_' + spawn.room.name + '_' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }))
                 if (spawn.spawnCreep(maxUpgrader(energyCap, spawn, Math.ceil(spawn.memory.req_upgraders_parts) * 200), 'Upgrader_' + spawn.room.name + '_' + Game.time, { memory: { role: 'upgrader', home_room: spawn.room } }) == 0) {
                     continue;
                 }
@@ -1760,8 +1727,7 @@ module.exports.loop = function () {
 
             if (pop_miners < spawn.memory.req_miners && spawn.memory.farming_rooms != undefined && spawn.memory.farming_rooms.length > 0 && spawn.memory.farming_rooms[0].carry_power >= spawn.memory.farming_rooms[0].harvesting_power) {
 
-                console.log("Spaning miner ", spawn.spawnCreep(maxFarmer(energyCap, spawn, false), 'Miner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }))
-
+            
                 if (spawn.spawnCreep(maxFarmer(energyCap, spawn), 'Miner_' + spawn.room.name + '_' + Game.time, { memory: { role: 'miner', home_room: spawn.room } }) == 0) {
                     continue;
                 }
@@ -1774,8 +1740,6 @@ module.exports.loop = function () {
             }
             if (pop_rampart_repairers < spawn.memory.req_rampart_repairers) {
 
-                //var spawn_result=spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) 
-                //console.log("rampart_repairer spawning_result: ",spawn_result)
                 if (spawn.spawnCreep(maxRampartRepairer(energyCap, spawn.memory.req_rampart_repairers), 'RR_' + spawn.room.name + '_' + Game.time, { memory: { role: 'rampartRepairer', home_room: spawn.room } }) == 0) {
                     continue;
                 }
