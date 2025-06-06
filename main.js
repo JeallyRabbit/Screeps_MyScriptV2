@@ -1155,28 +1155,20 @@ module.exports.loop = function () {
 
             }
             var energyCap = spawn.room.energyAvailable;
-
-
-
-            spawn.room.visual.text("energyCap: " + energyCap, 4, 1, { color: '#fc03b6' })
-            spawn.room.visual.text("Upgraders: " + upgraders_parts + "/" + spawn.memory.req_upgraders_parts, 4, 2, { color: '#fc03b6' })
+            //spawn.room.visual.text("Upgraders: " + upgraders_parts + "/" + spawn.memory.req_upgraders_parts, 4, 2, { color: '#fc03b6' })
             //spawn.room.visual.text("Builders: " + pop_builders + "/" + spawn.memory.req_builders, 4, 3, { color: '#fc03b6' })
             //spawn.room.visual.text("Fillers:" + pop_fillers + "/" + spawn.memory.req_fillers, 4, 4, { color: '#fc03b6' })
-            spawn.room.visual.text("Haulers: " + pop_haulers + "/" + spawn.memory.req_haulers, 4, 5, { color: '#fc03b6' })
             //spawn.room.visual.text("TowerKeepers: " + pop_towerKeepers + "/" + spawn.memory.req_towerKeepers, 4, 6, { color: '#fc03b6' })
-            spawn.room.visual.text("Claimers: " + pop_claimers + "/" + spawn.memory.req_claimers, 4, 7, { color: '#fc03b6' })
             //spawn.room.visual.text("DistanceCarriers: " + pop_distanceCarriers, 4, 8, { color: '#fc03b6' })
             spawn.room.visual.text("Doctors: " + pop_doctors + "/" + spawn.memory.req_doctors, 4, 9, { color: '#fc03b6' })
             //spawn.room.visual.text("Merchants: " + pop_merchants + "/" + spawn.memory.req_merchants, 4, 10, { color: '#fc03b6' })
             //spawn.room.visual.text("Scouts: " + pop_scouts + "/" + spawn.memory.req_scouts, 4, 11, { color: '#fc03b6' })
-            spawn.room.visual.text("scanners: " + pop_scanners + "/" + spawn.memory.req_scanners, 4, 12, { color: '#fc03b6' })
-            spawn.room.visual.text("Colonizers; " + pop_colonizers + "/" + spawn.memory.req_colonizers, 4, 13, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperKillers; " + pop_keeperKillers, 4, 14, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperFarmers; " + pop_keeperFarmers, 4, 15, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperCarriers; " + pop_keeperCarriers, 4, 16, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperrRepairers; " + pop_keeperRepairers, 4, 17, { color: '#fc03b6' })
             //spawn.room.visual.text("Miners: " + pop_miners + "/" + spawn.memory.req_miners, 4, 18, { color: '#fc03b6' })
-            spawn.room.visual.text("Spawned Body parts: " + spawned_body_parts, 4, 19, { color: '#fc03b6' })
+            
 
             //spawn.room.visual.text("RampartRepairers: " + pop_rampart_repairers + "/" + spawn.memory.req_rampart_repairers, 20, 2, { color: '#fc03b6' })
             spawn.room.visual.text("MeleeDefenders: " + pop_melee_defenders + "/" + spawn.memory.need_melee_defenders, 20, 3, { color: '#fc03b6' })
@@ -1188,14 +1180,9 @@ module.exports.loop = function () {
 
             spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
 
-            spawn.room.visual.text( (Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100)+"/t",
-                spawn.room.controller.pos.x, spawn.room.controller.pos.y, { color: '#fc03b6' })
             
-            if (spawn.memory.progress_sum != undefined && spawn.memory.progress_counter != undefined) {
-                var ttu = (spawn.room.controller.progressTotal - spawn.room.controller.progress) / (Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100)
-                spawn.room.visual.text("Estimated time to upgrade: " + Math.round((ttu)),
-                    35, 6, { color: '#fc03b6' })
-            }
+            
+            
 
 
             if (spawn.room.memory.energy_on_ramparts != undefined) {
@@ -1773,7 +1760,7 @@ module.exports.loop = function () {
             else {
                 spawn.memory.mean_cpu_sum += spawn_end_cpu - spawn_start_cpu
             }
-            spawn.room.visual.text("farmingNeedsSatisfied: "+farming_needs_satisfied,44,2, { color: '#fc03b6' })
+            //spawn.room.visual.text("farmingNeedsSatisfied: "+farming_needs_satisfied,44,2, { color: '#fc03b6' })
             spawn.room.visual.text("used Cpu: " + Math.round(((spawn_end_cpu - spawn_start_cpu)) * 100) / 100, 44, 4, { color: '#fc03b6' })
 
             if (Game.time % step == 0) {
@@ -1781,7 +1768,10 @@ module.exports.loop = function () {
                 spawn.memory.mean_cpu_sum = 0
             }
 
-            visualize(spawn)
+            console.log("before visualize")
+            spawn.visualize(spawn,farming_needs_satisfied,spawned_body_parts,pop_haulers,pop_claimers,pop_scanners,pop_colonizers)
+            //return
+            console.log("after visualize")
 
         }
     });
