@@ -50,7 +50,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
         
 
         if (global.heap.rooms[creep.memory.home_room.name].doctorTask == undefined) {
-            creep.say("finding task")
+            //creep.say("finding task")
             console.log("no task")
             creep.memory.to_fill_energy = undefined
             creep.memory.to_clear_output = undefined
@@ -78,7 +78,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             }
             else if (areInputsEmpty(creep) != true /* && areInputsEqual(creep)==false */) {
                 // (isOnlyOneInputNotEmpty(creep) == 1 || (inputMatchReaction(creep)!=true)) {
-                creep.say("clr in")
+                //creep.say("clr in")
                 global.heap.rooms[creep.memory.home_room.name].doctorTask = CLEAR_INPUT
                 creep.memory.to_clear_input = areInputsEmpty(creep)
             }
@@ -99,7 +99,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             return;
         }
 
-        creep.say(global.heap.rooms[creep.memory.home_room.name].doctorTask)
+        //creep.say(global.heap.rooms[creep.memory.home_room.name].doctorTask)
         //creep.say(inputMatchReaction(creep)!=true)
 
         if (global.heap.rooms[creep.memory.home_room.name].doctorTask == CLEAR_CREEP) {

@@ -13,6 +13,8 @@ var links = require('links');
 var terminal = require('terminal');
 var lab = require('labs');
 var reactions = require('reactions')
+var visualizeRooms = require('visualizeRoom');
+
 var roleTowerKeeper = require('role.TowerKeeper');
 var roleClaimer = require('role.Claimer');
 var roleReserver = require('role.reserver');
@@ -507,12 +509,13 @@ module.exports.loop = function () {
                 }
             }
 
-
+            /*
             if (spawn.memory.keepers_rooms != undefined && spawn.memory.keepers_rooms.length > 0) {
                 spawn.room.visual.text("raw_keepers_income: " + spawn.room.memory.raw_keepers_energy_income, 25, 13, { color: '#fc03b6' })
                 spawn.room.visual.text("raw_last_mean_keepers_income/t: " + Math.round(spawn.room.memory.raw_last_mean_keepers_energy_income * 100) / 100, 25, 14, { color: 'lightblue' })
 
             }
+                */
 
 
 
@@ -1157,25 +1160,25 @@ module.exports.loop = function () {
 
             spawn.room.visual.text("energyCap: " + energyCap, 4, 1, { color: '#fc03b6' })
             spawn.room.visual.text("Upgraders: " + upgraders_parts + "/" + spawn.memory.req_upgraders_parts, 4, 2, { color: '#fc03b6' })
-            spawn.room.visual.text("Builders: " + pop_builders + "/" + spawn.memory.req_builders, 4, 3, { color: '#fc03b6' })
-            spawn.room.visual.text("Fillers:" + pop_fillers + "/" + spawn.memory.req_fillers, 4, 4, { color: '#fc03b6' })
+            //spawn.room.visual.text("Builders: " + pop_builders + "/" + spawn.memory.req_builders, 4, 3, { color: '#fc03b6' })
+            //spawn.room.visual.text("Fillers:" + pop_fillers + "/" + spawn.memory.req_fillers, 4, 4, { color: '#fc03b6' })
             spawn.room.visual.text("Haulers: " + pop_haulers + "/" + spawn.memory.req_haulers, 4, 5, { color: '#fc03b6' })
-            spawn.room.visual.text("TowerKeepers: " + pop_towerKeepers + "/" + spawn.memory.req_towerKeepers, 4, 6, { color: '#fc03b6' })
+            //spawn.room.visual.text("TowerKeepers: " + pop_towerKeepers + "/" + spawn.memory.req_towerKeepers, 4, 6, { color: '#fc03b6' })
             spawn.room.visual.text("Claimers: " + pop_claimers + "/" + spawn.memory.req_claimers, 4, 7, { color: '#fc03b6' })
-            spawn.room.visual.text("DistanceCarriers: " + pop_distanceCarriers, 4, 8, { color: '#fc03b6' })
+            //spawn.room.visual.text("DistanceCarriers: " + pop_distanceCarriers, 4, 8, { color: '#fc03b6' })
             spawn.room.visual.text("Doctors: " + pop_doctors + "/" + spawn.memory.req_doctors, 4, 9, { color: '#fc03b6' })
-            spawn.room.visual.text("Merchants: " + pop_merchants + "/" + spawn.memory.req_merchants, 4, 10, { color: '#fc03b6' })
-            spawn.room.visual.text("Scouts: " + pop_scouts + "/" + spawn.memory.req_scouts, 4, 11, { color: '#fc03b6' })
+            //spawn.room.visual.text("Merchants: " + pop_merchants + "/" + spawn.memory.req_merchants, 4, 10, { color: '#fc03b6' })
+            //spawn.room.visual.text("Scouts: " + pop_scouts + "/" + spawn.memory.req_scouts, 4, 11, { color: '#fc03b6' })
             spawn.room.visual.text("scanners: " + pop_scanners + "/" + spawn.memory.req_scanners, 4, 12, { color: '#fc03b6' })
             spawn.room.visual.text("Colonizers; " + pop_colonizers + "/" + spawn.memory.req_colonizers, 4, 13, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperKillers; " + pop_keeperKillers, 4, 14, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperFarmers; " + pop_keeperFarmers, 4, 15, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperCarriers; " + pop_keeperCarriers, 4, 16, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperrRepairers; " + pop_keeperRepairers, 4, 17, { color: '#fc03b6' })
-            spawn.room.visual.text("Miners: " + pop_miners + "/" + spawn.memory.req_miners, 4, 18, { color: '#fc03b6' })
+            //spawn.room.visual.text("Miners: " + pop_miners + "/" + spawn.memory.req_miners, 4, 18, { color: '#fc03b6' })
             spawn.room.visual.text("Spawned Body parts: " + spawned_body_parts, 4, 19, { color: '#fc03b6' })
 
-            spawn.room.visual.text("RampartRepairers: " + pop_rampart_repairers + "/" + spawn.memory.req_rampart_repairers, 20, 2, { color: '#fc03b6' })
+            //spawn.room.visual.text("RampartRepairers: " + pop_rampart_repairers + "/" + spawn.memory.req_rampart_repairers, 20, 2, { color: '#fc03b6' })
             spawn.room.visual.text("MeleeDefenders: " + pop_melee_defenders + "/" + spawn.memory.need_melee_defenders, 20, 3, { color: '#fc03b6' })
             spawn.room.visual.text("Building stage: " + spawn.memory.building_stage, 20, 4, { color: '#fc03b6' })
 
@@ -1184,12 +1187,14 @@ module.exports.loop = function () {
             spawn.room.visual.text("Calculated final income/t: " + spawn.memory.total_calculated_income_per_tick, 44, 3, { color: 'lightblue' })
 
             spawn.room.visual.text("mean used Cpu: " + Math.round(spawn.memory.mean_cpu * 100) / 100, 44, 5, { color: '#fc03b6' })
-            spawn.room.visual.text("Progress/tick: " + Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100,
-                44, 6, { color: 'lightblue' })
+
+            spawn.room.visual.text( (Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100)+"/t",
+                spawn.room.controller.pos.x, spawn.room.controller.pos.y, { color: '#fc03b6' })
+            
             if (spawn.memory.progress_sum != undefined && spawn.memory.progress_counter != undefined) {
                 var ttu = (spawn.room.controller.progressTotal - spawn.room.controller.progress) / (Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100)
                 spawn.room.visual.text("Estimated time to upgrade: " + Math.round((ttu)),
-                    35, 6, { color: 'lightblue' })
+                    35, 6, { color: '#fc03b6' })
             }
 
 
@@ -1210,19 +1215,23 @@ module.exports.loop = function () {
             // delivered energy works only with storage and distanceCarriers2 - not including links at rcl8
             // it should be close to "Calculated final Income"
             if (spawn.room.memory.delivered_energy != undefined) {
-                spawn.room.visual.text("Delivered energy: " + (spawn.room.memory.delivered_energy), 41, 9, { color: '#fc03b6' })
+                //spawn.room.visual.text("Delivered energy: " + (spawn.room.memory.delivered_energy), 41, 9, { color: '#fc03b6' })
                 var temp_energy = spawn.room.memory.delivered_energy / ((Game.time % step) + 1)
                 temp_energy = Math.round((temp_energy) * 100) / 100
                 spawn.room.memory.mean_delivered_energy = temp_energy
             }
             if (spawn.room.memory.mean_delivered_energy != undefined) {
-                spawn.room.visual.text("Delivered energy/t: " + (spawn.room.memory.mean_delivered_energy) + "/" + (spawn.memory.farming_sources.length * (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME)),
-                    41, 10, { color: 'lightblue' })
+                if(spawn.room.storage!=undefined)
+                {
+                    spawn.room.visual.text((spawn.room.memory.mean_delivered_energy) + "/" + (spawn.memory.farming_sources.length * (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME)+"/t"),
+                    spawn.room.storage.pos.x, spawn.room.storage.pos.y, { color: '#fc03b6', font: 0.6 })
+                }
+                
             }
 
 
             if (spawn.room.memory.energy_on_creeps != undefined) {
-                spawn.room.visual.text("energy spent on creeps: " + (spawn.room.memory.energy_on_creeps), 41, 11, { color: '#fc03b6' })
+                //spawn.room.visual.text("energy spent on creeps: " + (spawn.room.memory.energy_on_creeps), 41, 11, { color: '#fc03b6' })
                 var temp_energy = spawn.room.memory.energy_on_creeps / ((Game.time % step) + 1)
                 temp_energy = Math.round((temp_energy) * 100) / 100
                 spawn.room.memory.mean_energy_on_creeps = temp_energy
@@ -1230,7 +1239,7 @@ module.exports.loop = function () {
 
             }
             if (spawn.room.memory.mean_energy_on_creeps != undefined) {
-                spawn.room.visual.text("energy on creeps/t: " + (spawn.room.memory.mean_energy_on_creeps), 41, 12, { color: 'lightblue' })
+                //spawn.room.visual.text("energy on creeps/t: " + (spawn.room.memory.mean_energy_on_creeps), 41, 12, { color: 'lightblue' })
             }
 
             if (spawn.room.memory.energy_sent != undefined && Game.time % step == 0) {
@@ -1772,6 +1781,7 @@ module.exports.loop = function () {
                 spawn.memory.mean_cpu_sum = 0
             }
 
+            visualizeRoom(spawn)
 
         }
     });
