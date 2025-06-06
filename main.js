@@ -13,7 +13,7 @@ var links = require('links');
 var terminal = require('terminal');
 var lab = require('labs');
 var reactions = require('reactions')
-var visualizeRooms = require('visualizeRoom');
+var visualize = require('visualize');
 
 var roleTowerKeeper = require('role.TowerKeeper');
 var roleClaimer = require('role.Claimer');
@@ -1781,7 +1781,7 @@ module.exports.loop = function () {
                 spawn.memory.mean_cpu_sum = 0
             }
 
-            visualizeRoom(spawn)
+            visualize(spawn)
 
         }
     });

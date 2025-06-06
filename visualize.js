@@ -1,4 +1,4 @@
-Spawn.prototype.visualizeRoom = function visualizeRoom(spawn) {
+Spawn.prototype.visualize = function visualize(spawn) {
 
     spawn.room.visual.line(1, 0, 7, 0, { color: 'grey' })
     spawn.room.visual.line(1, 1.4, 7, 1.4, { color: 'grey' })
@@ -8,4 +8,3 @@ Spawn.prototype.visualizeRoom = function visualizeRoom(spawn) {
 
 
 }
-module.exports = visualizeRoom;
