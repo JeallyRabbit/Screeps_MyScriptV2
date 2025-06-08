@@ -73,7 +73,7 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
             }
         }
         if (Memory.fastRCLUpgrade != undefined && Memory.fastRCLUpgrade == creep.room.name && terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 1000
-            && storage.store.getFreeCapacity(RESOURCE_ENERGY) > 5000
+            && storage.store.getFreeCapacity(RESOURCE_ENERGY) > 5000 && terminal.store[RESOURCE_CATALYZED_GHODIUM_ACID]>0
         ) {
             creep.memory.task = XGH2O_TRANSFER
         }
@@ -120,7 +120,9 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
             creep.transfer(storage, RESOURCE_ENERGY)
         }
         else if (creep.memory.task == XGH2O_TRANSFER) {
+            
             if (Memory.fastRCLUpgrade == creep.room.name) {
+                if(terminal.store[RESOURCE_CATALYZED_GHODIUM_ACID]==0){creep.memory.task=undefined;}
                 clear_creep_store(creep, storage, RESOURCE_CATALYZED_GHODIUM_ACID);
                 if (creep.store.getUsedCapacity(RESOURCE_CATALYZED_GHODIUM_ACID) > 0) {
                     creep.transfer(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
@@ -130,13 +132,14 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
                 }
             }
             else {
+                if(storage.store[RESOURCE_CATALYZED_GHODIUM_ACID]==0){creep.memory.task=undefined;}
                 clear_creep_store(creep, storage, RESOURCE_CATALYZED_GHODIUM_ACID);
                 if (creep.store.getUsedCapacity(RESOURCE_CATALYZED_GHODIUM_ACID) > 0) {
 
-                    creep.withdraw(terminal, RESOURCE_CATALYZED_GHODIUM_ACID);
+                    creep.withdraw(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
                 }
                 else {
-                    creep.transfer(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                    creep.transfer(terminal, RESOURCE_CATALYZED_GHODIUM_ACID);
                 }
             }
 

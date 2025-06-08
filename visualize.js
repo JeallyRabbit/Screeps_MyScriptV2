@@ -1,7 +1,7 @@
 const OUTLINE_COLOR = 'black'
 const TEXT_COLOR = '#fc03b6'
 
-Spawn.prototype.visualize = function visualize(spawn, farming_needs_satisfied, spawned_body_parts, pop_haulers, pop_claimers, pop_scanners, pop_colonizers) {
+Spawn.prototype.visualize = function visualize(spawn, farming_needs_satisfied=false, spawned_body_parts=0, pop_haulers=0, pop_claimers=0, pop_scanners=0, pop_colonizers=0,pop_doctors=0) {
 
     var energyCap = spawn.room.energyAvailable;
 
@@ -25,12 +25,14 @@ Spawn.prototype.visualize = function visualize(spawn, farming_needs_satisfied, s
 
         this.room.visual.line(1, 0, 7, 0, { color: 'grey' }) // top vertical line
         this.room.visual.line(1, 1.3, 7, 1.3, { color: 'grey' }) // Header down line
-        this.room.visual.line(1, 20, 7, 20, { color: 'grey' })
-        this.room.visual.line(1, 0, 1, 20, { color: 'grey' })
-        this.room.visual.line(7, 0, 7, 20, { color: 'grey' })
-
+        this.room.visual.line(1, 6, 7, 6, { color: 'grey' })
+        this.room.visual.line(1, 0, 1, 6, { color: 'grey' })
+        this.room.visual.line(7, 0, 7, 6, { color: 'grey' })
+    
 
         spawn.room.visual.text("Haulers: " + pop_haulers + "/" + spawn.memory.req_haulers, 4, 4, { color: '#fc03b6' })
+        spawn.room.visual.text("Doctors: " + pop_doctors + "/" + spawn.memory.req_doctors, 4, 5, { color: '#fc03b6' })
+
     }
 
 

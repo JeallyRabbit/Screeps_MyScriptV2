@@ -1160,7 +1160,6 @@ module.exports.loop = function () {
             //spawn.room.visual.text("Fillers:" + pop_fillers + "/" + spawn.memory.req_fillers, 4, 4, { color: '#fc03b6' })
             //spawn.room.visual.text("TowerKeepers: " + pop_towerKeepers + "/" + spawn.memory.req_towerKeepers, 4, 6, { color: '#fc03b6' })
             //spawn.room.visual.text("DistanceCarriers: " + pop_distanceCarriers, 4, 8, { color: '#fc03b6' })
-            spawn.room.visual.text("Doctors: " + pop_doctors + "/" + spawn.memory.req_doctors, 4, 9, { color: '#fc03b6' })
             //spawn.room.visual.text("Merchants: " + pop_merchants + "/" + spawn.memory.req_merchants, 4, 10, { color: '#fc03b6' })
             //spawn.room.visual.text("Scouts: " + pop_scouts + "/" + spawn.memory.req_scouts, 4, 11, { color: '#fc03b6' })
             spawn.room.visual.text("KeeperKillers; " + pop_keeperKillers, 4, 14, { color: '#fc03b6' })
@@ -1266,7 +1265,8 @@ module.exports.loop = function () {
             spawn.room.visual.rect(48, 4.5, 1, (((Game.time % step) + 1) / step) * 11, { stroke: '#fff' })
             
 
-
+            
+            
 
 
             for (let spawnName2 in Game.spawns) {
@@ -1333,6 +1333,13 @@ module.exports.loop = function () {
             ) {
                 farming_needs_satisfied = true
             }
+
+            console.log("before visualize")
+            spawn.visualize(spawn,farming_needs_satisfied,spawned_body_parts,pop_haulers,pop_claimers,pop_scanners,pop_colonizers,pop_doctors)
+            
+            console.log("after visualize")
+
+
             //spawning swarm
             spawn.memory.isSpawningSwarm = false;
             for (s of spawn.memory.swarms) {
@@ -1768,10 +1775,6 @@ module.exports.loop = function () {
                 spawn.memory.mean_cpu_sum = 0
             }
 
-            console.log("before visualize")
-            spawn.visualize(spawn,farming_needs_satisfied,spawned_body_parts,pop_haulers,pop_claimers,pop_scanners,pop_colonizers)
-            //return
-            console.log("after visualize")
 
         }
     });
