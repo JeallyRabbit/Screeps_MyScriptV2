@@ -19,7 +19,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
     //define input lab1
     //defineInputLabs();
     console.log("task at the beggining of a tick", global.heap.rooms[creep.memory.home_room.name].doctorTask)
-     console.log("there are ",global.heap.rooms[creep.memory.home_room.name].boostingRequests.length," in doctor drver")
+    //console.log("there are ",global.heap.rooms[creep.memory.home_room.name].boostingRequests.length," in doctor drver")
 
     //defineOutputLabs();
     if (creep.ticksToLive < 50) {
@@ -55,7 +55,6 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
             creep.memory.to_fill_energy = undefined
             creep.memory.to_clear_output = undefined
             localHeap.reaction = undefined
-            localHeap.reaction = undefined
 
            
 
@@ -77,8 +76,6 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                 creep.memory.to_clear_output = isSomethingInOutputs(creep)
             }
             else if (areInputsEmpty(creep) != true /* && areInputsEqual(creep)==false */) {
-                // (isOnlyOneInputNotEmpty(creep) == 1 || (inputMatchReaction(creep)!=true)) {
-                //creep.say("clr in")
                 global.heap.rooms[creep.memory.home_room.name].doctorTask = CLEAR_INPUT
                 creep.memory.to_clear_input = areInputsEmpty(creep)
             }
@@ -86,8 +83,7 @@ Creep.prototype.roleDoctor = function roleDoctor(creep) {
                 if (creep.room.terminal != undefined) {
                     global.heap.rooms[creep.memory.home_room.name].doctorTask = FILL_INPUT
                     localHeap.reaction = creep.room.terminal.reactions()
-                    localHeap.reaction = creep.room.terminal.reactions()
-                    //console.log("reactions to run in: ",creep.room.name," :",creep.room.terminal.reactions())
+                    console.log("reactions to run in: ",creep.room.name," :",creep.room.terminal.reactions())
                 }
 
             }

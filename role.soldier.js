@@ -1,5 +1,6 @@
 const { move_avoid_hostile } = require("./move_avoid_hostile");
 const { goOutOfRange } = require("./goOutOfRange");
+const Movement = require('screeps-movement');
 
 Creep.prototype.roleSoldier = function roleSoldier(creep, spawn) {
 

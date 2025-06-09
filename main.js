@@ -90,6 +90,8 @@ const maxMerchant = require('./maxMerchant');
 const maxQuadRanger = require('./maxQuadRanger')
 const maxQUadHealer = require('./maxQuadHealer')
 
+const C =require('./constants')
+
 //const move_avoid_hostile=require('./move_avoid_hostile')
 const profiler = require('screeps-profiler');
 
@@ -162,6 +164,7 @@ module.exports.loop = function () {
     profiler.wrap(function () {
         //return;
         console.log()
+        console.log("test constant: ",C.TEST_CONST)
         console.log(Game.shard.name, " Bucket: ", Game.cpu.bucket);
         //console.log("Construction sites; ", Object.keys(Game.constructionSites).length);
         console.log("GCL: ", Game.gcl.level, Math.round((Game.gcl.progress / Game.gcl.progressTotal) * 100), "% to next")
@@ -1334,10 +1337,8 @@ module.exports.loop = function () {
                 farming_needs_satisfied = true
             }
 
-            console.log("before visualize")
             spawn.visualize(spawn,farming_needs_satisfied,spawned_body_parts,pop_haulers,pop_claimers,pop_scanners,pop_colonizers,pop_doctors)
             
-            console.log("after visualize")
 
 
             //spawning swarm

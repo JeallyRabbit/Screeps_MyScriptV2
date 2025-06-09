@@ -1,13 +1,13 @@
-const OUTLINE_COLOR = 'black'
-const TEXT_COLOR = '#fc03b6'
+const C =require('./constants')
+
 
 Spawn.prototype.visualize = function visualize(spawn, farming_needs_satisfied=false, spawned_body_parts=0, pop_haulers=0, pop_claimers=0, pop_scanners=0, pop_colonizers=0,pop_doctors=0) {
 
     var energyCap = spawn.room.energyAvailable;
+    //console.log("constants in room visualization: ",C.OUTLINE_COLOR, " ", C.TEST_CONST)
 
-
-    this.room.visual.text("energyCap: " + energyCap, 4, 2, { color: TEXT_COLOR })
-    this.room.visual.text("Body parts: " + spawned_body_parts, 4, 3, { color: TEXT_COLOR })
+    this.room.visual.text("energyCap: " + energyCap, 4, 2, { color: C.TEXT_COLOR })
+    this.room.visual.text("Body parts: " + spawned_body_parts, 4, 3, { color: C.TEXT_COLOR })
     var farmingColor = 'red'
     var roomNameColor = 'white'
     if (farming_needs_satisfied) {
@@ -16,7 +16,7 @@ Spawn.prototype.visualize = function visualize(spawn, farming_needs_satisfied=fa
     }
 
 
-    console.log("VISUALIZING ", this.room.name)
+    //console.log("VISUALIZING ", this.room.name)
 
     //topLeft box (first from left) - general room informations
     {
@@ -62,19 +62,19 @@ Spawn.prototype.visualize = function visualize(spawn, farming_needs_satisfied=fa
 
     //visuals around controller
     {
-        //this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y, this.room.controller.pos.x + 3, this.room.controller.pos.y, { color: OUTLINE_COLOR })
-        //this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y - 1.5, this.room.controller.pos.x + 3, this.room.controller.pos.y + 1.5, { color: OUTLINE_COLOR })
+        //this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y, this.room.controller.pos.x + 3, this.room.controller.pos.y, { color: C.OUTLINE_COLOR })
+        //this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y - 1.5, this.room.controller.pos.x + 3, this.room.controller.pos.y + 1.5, { color: C.OUTLINE_COLOR })
 
-        //this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y, this.room.controller.pos.x, this.room.controller.pos.y + 1.5, { color: OUTLINE_COLOR })
-        //this.room.visual.line(this.room.controller.pos.x + 3, this.room.controller.pos.y, this.room.controller.pos.x + 3, this.room.controller.pos.y + 1.5, { color: OUTLINE_COLOR })
+        //this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y, this.room.controller.pos.x, this.room.controller.pos.y + 1.5, { color: C.OUTLINE_COLOR })
+        //this.room.visual.line(this.room.controller.pos.x + 3, this.room.controller.pos.y, this.room.controller.pos.x + 3, this.room.controller.pos.y + 1.5, { color: C.OUTLINE_COLOR })
         this.room.visual.rect(this.room.controller.pos.x, this.room.controller.pos.y - 1.5, 3, 1.5, { fill: 'grey' })
-        this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y - 1.5, this.room.controller.pos.x, this.room.controller.pos.y, { color: 'OUTLINE_COLOR' }) // left vertical
-        this.room.visual.line(this.room.controller.pos.x + 3, this.room.controller.pos.y - 1.5, this.room.controller.pos.x + 3, this.room.controller.pos.y, { color: 'OUTLINE_COLOR' }) // right vertical
-        this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y - 1.5, this.room.controller.pos.x + 3, this.room.controller.pos.y - 1.5, { color: 'OUTLINE_COLOR' }) // horozontal above controler
-        this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y, this.room.controller.pos.x + 3, this.room.controller.pos.y, { color: 'OUTLINE_COLOR' }) // horizontal separating
+        this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y - 1.5, this.room.controller.pos.x, this.room.controller.pos.y, { color: 'C.OUTLINE_COLOR' }) // left vertical
+        this.room.visual.line(this.room.controller.pos.x + 3, this.room.controller.pos.y - 1.5, this.room.controller.pos.x + 3, this.room.controller.pos.y, { color: 'C.OUTLINE_COLOR' }) // right vertical
+        this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y - 1.5, this.room.controller.pos.x + 3, this.room.controller.pos.y - 1.5, { color: 'C.OUTLINE_COLOR' }) // horozontal above controler
+        this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y, this.room.controller.pos.x + 3, this.room.controller.pos.y, { color: 'C.OUTLINE_COLOR' }) // horizontal separating
 
         spawn.room.visual.text('⬆️' + (Math.round((spawn.memory.progress_sum / spawn.memory.progress_counter) * 100) / 100) + "/t",
-            spawn.room.controller.pos.x + 1.5, spawn.room.controller.pos.y + 1, { color: TEXT_COLOR })
+            spawn.room.controller.pos.x + 1.5, spawn.room.controller.pos.y + 1, { color: C.TEXT_COLOR })
 
 
         if (spawn.memory.progress_sum != undefined && spawn.memory.progress_counter != undefined) {
@@ -82,15 +82,14 @@ Spawn.prototype.visualize = function visualize(spawn, farming_needs_satisfied=fa
 
 
             this.room.visual.rect(this.room.controller.pos.x, this.room.controller.pos.y, 3, 1.5, { fill: 'grey' })
-            spawn.room.visual.text('🕓' + Math.round((ttu)),
-                spawn.room.controller.pos.x + 1.5, spawn.room.controller.pos.y - 0.5, { color: TEXT_COLOR })
-            this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y, this.room.controller.pos.x, this.room.controller.pos.y + 1.5, { color: 'OUTLINE_COLOR' }) // left vertical
-            this.room.visual.line(this.room.controller.pos.x + 3, this.room.controller.pos.y, this.room.controller.pos.x + 3, this.room.controller.pos.y + 1.5, { color: 'OUTLINE_COLOR' }) // right vertical
-            this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y + 1.5, this.room.controller.pos.x + 3, this.room.controller.pos.y + 1.5, { color: 'OUTLINE_COLOR' }) // horozontal below controler
-
-            //this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y, this.room.controller.pos.x, this.room.controller.pos.y, { color: OUTLINE_COLOR })
-            //this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y + 1.5, this.room.controller.pos.x, this.room.controller.pos.y + 1.5, { color: OUTLINE_COLOR })
-            //this.room.visual.line(this.room.controller.pos.x + 3, this.room.controller.pos.y, this.room.controller.pos.x - 3, this.room.controller.pos.y + 1.5, { color: OUTLINE_COLOR })
+            
+            this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y, this.room.controller.pos.x, this.room.controller.pos.y + 1.5, { color: 'C.OUTLINE_COLOR' }) // left vertical
+            this.room.visual.line(this.room.controller.pos.x + 3, this.room.controller.pos.y, this.room.controller.pos.x + 3, this.room.controller.pos.y + 1.5, { color: 'C.OUTLINE_COLOR' }) // right vertical
+            this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y + 1.5, this.room.controller.pos.x + 3, this.room.controller.pos.y + 1.5, { color: 'C.OUTLINE_COLOR' }) // horozontal below controler
+            spawn.room.visual.text('🕓' + Math.round((ttu)),spawn.room.controller.pos.x + 1.5, spawn.room.controller.pos.y - 0.5, { color: C.TEXT_COLOR })
+            //this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y, this.room.controller.pos.x, this.room.controller.pos.y, { color: C.OUTLINE_COLOR })
+            //this.room.visual.line(this.room.controller.pos.x, this.room.controller.pos.y + 1.5, this.room.controller.pos.x, this.room.controller.pos.y + 1.5, { color: C.OUTLINE_COLOR })
+            //this.room.visual.line(this.room.controller.pos.x + 3, this.room.controller.pos.y, this.room.controller.pos.x - 3, this.room.controller.pos.y + 1.5, { color: C.OUTLINE_COLOR })
         }
     }
 
