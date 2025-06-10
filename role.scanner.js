@@ -340,7 +340,7 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
         if (creep.memory.target_room != undefined && creep.room.name != creep.memory.target_room) {
 
 
-            roomsToAvoid = (Memory.manualAvoid != undefined ? Memory.manualAvoid : []);
+            roomsToAvoid = (Memory.manualAvoid != undefined ? Memory.manualAvoid : []); 
             roomsToAvoid.push((Memory.roomsToAvoid != undefined ? Memory.roomsToAvoid : []))
             creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room), { avoidSk: true, avoidHostileRooms: true, visualize: true, avoidRooms: roomsToAvoid })
             console.log("scanner pos: ", creep.pos, " going to: ", creep.memory.target_room)
