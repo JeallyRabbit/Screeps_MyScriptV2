@@ -3,7 +3,7 @@ const FILL_TERMINAL_ENERGY = "FILL_TERMINAL_ENERGY"
 const FILL_STORAGE_ENERGY = "FILL_STORAGE_ENERGY"
 const FILL_LINK = "FILL_LINK"
 const TAKE_FROM_LINK = "TAKE_FROM_LINK"
-
+const XGH2O_TRANSFER = "XGH2O_TRANSFER"
 Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer energy grom containers to storage
 
 
@@ -14,9 +14,8 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
     creep.memory.task = undefined;
     if (spawn.memory.manager_link_id != undefined) {
         var manager_link = Game.getObjectById(spawn.memory.manager_link_id);
-        if(manager_link==null)
-        {
-            spawn.memory.manager_link_id=undefined
+        if (manager_link == null) {
+            spawn.memory.manager_link_id = undefined
         }
     }
     //creep.say(creep.moveTo(terminal.pos.x + 1, terminal.pos.y - 1));
@@ -33,12 +32,12 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
 
 
             if ((terminal.store[RESOURCE_ENERGY] < 30000 && storage.store[RESOURCE_ENERGY] > 40000)
-            || (spawn.room.controller.level==8 && storage.store[RESOURCE_ENERGY]>STORAGE_CAPACITY*0.8 && terminal.store.getFreeCapacity(RESOURCE_ENERGY)>0)) {
+                || (spawn.room.controller.level == 8 && storage.store[RESOURCE_ENERGY] > STORAGE_CAPACITY * 0.8 && terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 10000)) {
                 creep.memory.task = FILL_TERMINAL_ENERGY;
                 creep.memory.energy_to_terminal = true;
                 creep.memory.energy_from_terminal = false;
             }
-            else if (terminal.store[RESOURCE_ENERGY] > 35000) {
+            else if (terminal.store[RESOURCE_ENERGY] > 35000 && storage.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                 creep.memory.task = FILL_STORAGE_ENERGY;
                 creep.memory.energy_from_terminal = true;
                 creep.memory.energy_to_terminal = false;
@@ -48,31 +47,36 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
                 creep.memory.energy_from_terminal = -1;
                 creep.memory.energy_to_terminal = -1;
             }
-            
+
         }
-            if (manager_link != undefined) {
-                if (manager_link.store[RESOURCE_ENERGY] < 700 && storage != undefined) {
-                    //creep.say(FILL_LINK)
-                    creep.memory.task = FILL_LINK;
-                    
-                }
-                if (spawn.memory.sources_links_id != undefined && spawn.memory.sources_links_id.length > 0) {
-                    var energy_at_source_link = 0;
-                    var can_they_transfer = false
-                    for (let id of spawn.memory.sources_links_id) {
-                        var src_link = Game.getObjectById(id)
-                        if (src_link != null) {
-                            energy_at_source_link += src_link.store[RESOURCE_ENERGY]
-                            if (src_link.cooldown == 0) { can_they_transfer = true }
-                        }
-                    }
-                    if (energy_at_source_link > 600 && can_they_transfer == true) {
-                        creep.memory.task = TAKE_FROM_LINK
-                        //creep.say("Take from link")
-                    }
-                    // /creep.say(energy_at_source_link)
-                }
+        if (manager_link != undefined) {
+            if (manager_link.store[RESOURCE_ENERGY] < 700 && storage != undefined) {
+                //creep.say(FILL_LINK)
+                creep.memory.task = FILL_LINK;
+
             }
+            if (spawn.memory.sources_links_id != undefined && spawn.memory.sources_links_id.length > 0) {
+                var energy_at_source_link = 0;
+                var can_they_transfer = false
+                for (let id of spawn.memory.sources_links_id) {
+                    var src_link = Game.getObjectById(id)
+                    if (src_link != null) {
+                        energy_at_source_link += src_link.store[RESOURCE_ENERGY]
+                        if (src_link.cooldown == 0) { can_they_transfer = true }
+                    }
+                }
+                if (energy_at_source_link > 600 && can_they_transfer == true) {
+                    creep.memory.task = TAKE_FROM_LINK
+                    //creep.say("Take from link")
+                }
+                // /creep.say(energy_at_source_link)
+            }
+        }
+        if (Memory.fastRCLUpgrade != undefined && Memory.fastRCLUpgrade == creep.room.name && terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 1000
+            && storage.store.getFreeCapacity(RESOURCE_ENERGY) > 5000 && terminal.store[RESOURCE_CATALYZED_GHODIUM_ACID]>0
+        ) {
+            creep.memory.task = XGH2O_TRANSFER
+        }
 
         //}
 
@@ -87,7 +91,7 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
             if (storage.store[RESOURCE_ENERGY] > 0) {
                 creep.withdraw(storage, RESOURCE_ENERGY)
             }
-            else if (terminal!=undefined && terminal.store[RESOURCE_ENERGY] > 0) {
+            else if (terminal != undefined && terminal.store[RESOURCE_ENERGY] > 0) {
                 creep.withdraw(terminal, RESOURCE_ENERGY)
             }
 
@@ -101,24 +105,58 @@ Creep.prototype.roleMerchant = function roleMerchant(creep, spawn) {//transfer e
         }
         else if (creep.memory.task == FILL_STORAGE_ENERGY) {
             clear_creep_store(creep, storage, RESOURCE_ENERGY);
-            creep.withdraw(terminal, RESOURCE_ENERGY);
-            creep.transfer(storage, RESOURCE_ENERGY);
+            if (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                creep.transfer(storage, RESOURCE_ENERGY);
+            }
+            else {
+                creep.withdraw(terminal, RESOURCE_ENERGY);
+            }
+
+
         }
         else if (creep.memory.task == TAKE_FROM_LINK) {
             clear_creep_store(creep, storage, RESOURCE_ENERGY);
             creep.withdraw(manager_link, RESOURCE_ENERGY)
             creep.transfer(storage, RESOURCE_ENERGY)
         }
-        else if(storage!=undefined){
+        else if (creep.memory.task == XGH2O_TRANSFER) {
+            
+            if (Memory.fastRCLUpgrade == creep.room.name) {
+                if(terminal.store[RESOURCE_CATALYZED_GHODIUM_ACID]==0){creep.memory.task=undefined;}
+                clear_creep_store(creep, storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                if (creep.store.getUsedCapacity(RESOURCE_CATALYZED_GHODIUM_ACID) > 0) {
+                    creep.transfer(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                }
+                else {
+                    creep.withdraw(terminal, RESOURCE_CATALYZED_GHODIUM_ACID);
+                }
+            }
+            else {
+                if(storage.store[RESOURCE_CATALYZED_GHODIUM_ACID]==0){creep.memory.task=undefined;}
+                clear_creep_store(creep, storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                if (creep.store.getUsedCapacity(RESOURCE_CATALYZED_GHODIUM_ACID) > 0) {
+
+                    creep.withdraw(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                }
+                else {
+                    creep.transfer(terminal, RESOURCE_CATALYZED_GHODIUM_ACID);
+                }
+            }
+
+        }
+        else if (storage != undefined) {
             //return;
-            //withdrawing from storage
+            //withdrawing all resources (except T3) from storage
+            console.log("no task")
             for (let res in storage.store) {
-                if(res==RESOURCE_ENERGY || (res.startsWith("X") && !(res.endsWith("X")))){continue}
+                if (res == RESOURCE_ENERGY || (res.startsWith("X") && !(res.endsWith("X"))) && Memory.fastRCLUpgrade == undefined) {
+                    continue
+                }
                 //if (res != RESOURCE_ENERGY) {
-                    if (creep.store.getFreeCapacity(res) == creep.store.getCapacity() && creep.withdraw(storage, res) == OK) {
-                        //creep.say("withdrawa; ", res)
-                        return;
-                    }
+                if (creep.store.getFreeCapacity(res) == creep.store.getCapacity() && creep.withdraw(storage, res) == OK) {
+                    //creep.say("withdrawa; ", res)
+                    return;
+                }
                 //}
             }
 

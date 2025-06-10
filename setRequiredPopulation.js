@@ -133,17 +133,33 @@ class Swarm {
     }
 }
 
+class Quad{
+    constructor(quadId,target_room, home_room,grouping_pos)
+    {
+        this.id=quadId;
+        this.target_room=target_room;
+        this.home_room=home_room
+        this.grouping_pos=grouping_pos
+        this.minEnergyOnCreep=-1;
+        this.members=[];
+    }
+}
+
 
 
 Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
 
-
     if (Memory.allies == undefined) {
         Memory.allies = [];
     }
-    //Finding hostiles in every room
+    
+    //console.log("soldiersss")
 
+    //Finding hostiles in every room
     for (room in Game.rooms) {
+
+        //console.log(room , " ",global.heap.soldiers[room])
+
         var r = Game.rooms[room]
         if (r != undefined) {
             r.memory.hostiles = [];
@@ -172,6 +188,24 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 }
             }
 
+            r.memory.hostileStructures=[];
+            var str=r.find(FIND_HOSTILE_STRUCTURES,{
+                filter:
+                    function (s) {
+                        return !Memory.allies.includes(s.owner.username) //&& enemy.owner.username!='Alphonzo'
+                    }
+            })
+
+            if (str.length > 0) {
+                for (s of str) {
+                    r.memory.hostileStructures.push(s.id)
+                }
+            }
+
+
+
+
+
             r.memory.soldiers=[]
         }
     }
@@ -186,18 +220,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.to_colonize = Memory.rooms_to_colonize[0];
     }
 
-    if (spawn.memory.to_colonize != undefined && spawn.room.controller.level >= 4
-        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 25000
-    ) {
-        spawn.memory.have_energy_to_colonize = true
-    }
-
-    if (spawn.memory.to_colonize != undefined && spawn.room.controller.level >= 4
-        && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] < 15000
-    ) {
-        spawn.memory.have_energy_to_colonize = false
-    }
-    if (spawn.memory.have_energy_to_colonize == true && spawn.memory.to_colonize != undefined
+    if (spawn.memory.to_colonize != undefined && spawn.room.storage!= undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 25000
     ) {
         spawn.memory.req_claimers = 1;
         spawn.memory.req_colonizers = 8;
@@ -304,7 +327,12 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
     if (spawn.room.storage != undefined && spawn.room.controller.level < 8 && spawn.room.controller.level > 3) {
         if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 5000) {
+
             spawn.memory.req_upgraders_parts = Math.max(1, Math.floor(spawn.room.storage.store[RESOURCE_ENERGY] / 20000));
+            if(spawn.room.storage.store[RESOURCE_ENERGY] > 50000)
+            {
+                spawn.memory.req_upgraders_parts = Math.max(1, Math.floor(spawn.room.storage.store[RESOURCE_ENERGY] / 10000));
+            }
 
         }
         else {
@@ -366,7 +394,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.req_berserk = 1;//role num 8
     spawn.memory.req_transporters = 0;//role numm 9
     spawn.memory.req_towerKeepers = 0;//role num 10
-    if (Game.shard.name != 'shard3' && Game.shard.name!='jaysee' && spawn.room.controller.level > 3 /* && (spawn.room.storage!=undefined  && spawn.room.storage[RESOURCE_ENERGY]>20000)*/) {
+    if (Game.shard.name != 'shard3' && spawn.room.controller.level > 3 /* && (spawn.room.storage!=undefined  && spawn.room.storage[RESOURCE_ENERGY]>20000)*/) {
         spawn.memory.req_rampart_repairers = 2;
         if (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] > 35000) {
             spawn.memory.req_rampart_repairers = Math.floor(spawn.room.storage.store[RESOURCE_ENERGY] / 35000);
@@ -427,7 +455,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     spawn.memory.req_keeperCarriers = 0;//role num 17
     spawn.memory.req_keeperFarmers = 0;//role num 17
     */
-    spawn.memory.req_claimers = 0;//role num 11
+    //spawn.memory.req_claimers = 0;//role num 11
 
     if (spawn.memory.farming_rooms == undefined) {
         spawn.memory.farming_rooms = [];
@@ -756,6 +784,76 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         spawn.memory.need_sponge = spawn.memory.manual_sponge
     }
 
+    // manual adding quads
+    if(spawn.memory.quads==undefined){spawn.memory.quads=[]}
+    if(spawn.memory.manual_quad!=undefined)
+    {
+        if (contains_target_room(spawn.memory.quads, spawn.memory.manual_quad) == false && spawn.memory.pos_for_quad!=undefined) {
+            spawn.memory.quads.push(new Quad(spawn.room.name + "_" + Game.time, spawn.memory.manual_quad, spawn.room,spawn.memory.pos_for_quad))
+            //Game.spawns["Spawn1"]
+            
+            //Game.spawns["Spawn1"].memory.quads.push(new Quad(Game.spawns["Spawn1"].room.name + "_" + Game.time, Game.spawns["Spawn1"].memory.manual_quad, Game.spawns["Spawn1"].room,Game.spawns["Spawn1"].memory.pos_for_quad))
+        }
+    }
+
+    //Adding quads
+    if(spawn.memory.req_quads!=undefined)
+    {
+        for(var key in spawn.memory.req_quads)
+        {
+            quads_amount=0;
+            for(q of spawn.memory.quads)
+            {
+                //console.log("q.target_room: ",q.id," ",q.target_room," <-> key: ",key)
+                if(q.target_room===key)
+                {
+                    quads_amount++
+                }
+            }
+            //console.log(quads_amount," -- ",key," -- ",spawn.memory.req_quads[key])
+            if(quads_amount<spawn.memory.req_quads[key])
+            {
+                spawn.memory.quads.push(new Quad(spawn.room.name + "_" + Game.time, key, spawn.room,spawn.memory.pos_for_quad))
+                break
+            }
+            //console.log(spawn.memory.req_quads[key])
+        }
+    }
+
+    //Removing redundant Quads
+    if (spawn.memory.req_quads !== undefined && spawn.memory.quads !== undefined) {
+        const quadsByRoom = {};
+    
+        // Group quads by target_room
+        for (const quad of spawn.memory.quads) {
+            const room = quad.target_room;
+            if (!quadsByRoom[room]) {
+                quadsByRoom[room] = [];
+            }
+            quadsByRoom[room].push(quad);
+        }
+    
+        // Rebuild the quad list based on req_quads
+        const cleanedQuads = [];
+    
+        for (const room in quadsByRoom) {
+            const quadsForRoom = quadsByRoom[room];
+    
+            // If the room is not in req_quads, skip it (removing all its quads)
+            if (!(room in spawn.memory.req_quads)) {
+                continue;
+            }
+    
+            const allowedAmount = spawn.memory.req_quads[room];
+    
+            // Keep only up to the allowed number of quads
+            cleanedQuads.push(...quadsForRoom.slice(0, allowedAmount));
+        }
+    
+        spawn.memory.quads = cleanedQuads;
+    }
+
+
     //manuall adding swarm
     if (spawn.room.name == 'W3N7' || true) {
         if (spawn.memory.swarms == undefined) { spawn.memory.swarms = []; }
@@ -766,10 +864,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 if (contains_target_room(spawn.memory.swarms, spawn.memory.manual_swarm) == false) {
                     spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, 4, spawn.memory.manual_swarm, spawn.room))
                 }
-
-                if (spawn.memory.swarms.length == 1) {
-                    // spawn.memory.swarms.push(new Swarm(spawn.room.name + "_" + Game.time, spawn.room,'W2S37'))
-                }
             }
         }
 
@@ -777,10 +871,19 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
 
     //manually adding duo
+    if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
+    if(spawn.memory.manual_duo!=undefined)
+    {
+        if (!contains_target_room(spawn.memory.duos, spawn.memory.manual_duo)) {
+            spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,spawn.memory.manual_duo))
+        }
+    }
+  
+    /*
     if (spawn.room.name == 'W3S38') {
         if (spawn.memory.duos == undefined) { spawn.memory.duos = []; }
         if (spawn.memory.duos != undefined) {
-            // if (spawn.memory.duos.contains_target_room('W3S37') == false) 
+            // if (spawn.memory.duos.contains_target_room('W3S37') == false) asdasds
             if (contains_target_room(spawn.memory.duos, 'W3S37')) {
                 //spawn.memory.duos.push(new Duo(spawn.room.name + "_" + Game.time, spawn.room,'W3S37'))
             }
@@ -790,6 +893,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
     }
+        */
 
 
     if (spawn.memory.rooms_to_blockade == undefined) {
@@ -816,7 +920,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
         //spawn.memory.need_DistanceCarrier = undefined;
         //  CARRIERS //
         for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
-            if (spawn.memory.farming_sources[i].carry_power < spawn.memory.farming_sources[i].sources_num * 10
+            if (spawn.memory.farming_sources[i].carry_power < spawn.memory.farming_sources[i].sources_num * (SOURCE_ENERGY_CAPACITY/ENERGY_REGEN_TIME)
                 && spawn.memory.farming_sources[i].carry_power < spawn.memory.farming_sources[i].harvesting_power) {
                 if (Game.rooms[spawn.memory.farming_sources[i].name] != undefined && Game.rooms[spawn.memory.farming_sources[i].name].controller.reservation != undefined
                     && Game.rooms[spawn.memory.farming_sources[i].name].controller.reservation.username == 'Invader') {
@@ -827,6 +931,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     continue;
                 }
                 spawn.memory.need_DistanceCarrier = spawn.memory.farming_sources[i].name;
+                //console.log("need distance Carrier: ",spawn.memory.farming_sources[i].name)
                 spawn.memory.need_ddistance_carrier_source_id = spawn.memory.farming_sources[i].id;
                 spawn.memory.need_distance_carrier_source_distance=spawn.memory.farming_sources[i].distance
                 break;
@@ -850,20 +955,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 break;
             }
         }
-
-        /*
-        for (let i = 0; i < spawn.memory.farming_sources.length; i++) {
-            if(Game.rooms[spawn.memory.farming_sources[i].name].find(FIND_HOSTILE_STRUCTURES,{filter: function(str)
-                {
-                    return str.structureType==STRUCTURE_INVADER_CORE
-                }}).length>0 && Memory.rooms[spawn.memory.farming_sources[i].name].soldiers!=undefined && Memory.rooms[spawn.memory.farming_sources[i].name].soldiers.length<3)
-            {
-                spawn.memory.need_melee_soldier=spawn.memory.farming_sources[i].name;
-                console.log("need mele for inv core for: ",spawn.memory.need_melee_soldier)
-                break;
-            }
-        }
-            */
 
 
         // if room is under attack do not spawn farmers
@@ -889,17 +980,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                     }
             })
 
+
             Game.rooms[myRoom].memory.damagedCreeps = [];
             for (cr of creeps_to_heal) {
                 Game.rooms[myRoom].memory.damagedCreeps.push(cr.id);
             }
-
-
-
-
-
-
-
 
 
 
@@ -920,7 +1005,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 var enemy_creeps = Game.rooms[myRoom].find(FIND_HOSTILE_CREEPS, {
                     filter:
                         function (en) {
-                            return en.owner.username != 'Alphonzo' &&
+                            return  !Memory.allies.includes(en.owner.username) &&
                                 (en.getActiveBodyparts(WORK) > 0 || en.getActiveBodyparts(ATTACK) > 0 || en.getActiveBodyparts(RANGED_ATTACK) > 0 || en.getActiveBodyparts(CLAIM) > 0)
                         }
                 })
@@ -942,11 +1027,11 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                 {
                     Game.rooms[myRoom].memory.soldiers=[]
                 }
-                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers.length < 2) {
+                if (inFarmingRooms && !inKeepersRooms && (invaders.length > 0 || enemy_creeps.length > 0) && Game.rooms[myRoom].memory.soldiers.length < 2
+            && global.heap.soldiers[myRoom]!=undefined && global.heap.soldiers[myRoom]<3) {
                     spawn.memory.need_soldier = myRoom;
-                    console.log("need_soldier: ",myRoom," soldiers.length: ",Game.rooms[myRoom].memory.soldiers.length)
                 }
-                else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && Game.rooms[myRoom].memory.soldiers!=undefined && Game.rooms[myRoom].memory.soldiers.length < 2) {
+                else if (inFarmingRooms && !inKeepersRooms && (cores.length > 0) && global.heap.soldiers[myRoom] < 2) {
                     spawn.memory.need_melee_soldier = myRoom;
                     console.log("need melee soldier: ",spawn.memory.need_melee_soldier)
                     if(spawn.memory.need_DistanceCarrier==myRoom)
@@ -961,7 +1046,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                         spawn.memory.need_source_farmer_distance=undefined
                         spawn.memory.need_source_farmer_room=undefined
                     }
-                    //console.log("need melee soldierr: ",spawn.memory.need_melee_soldier)
                 }
 
 
@@ -993,7 +1077,7 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
                             console.log("creep is dead")
                             r.soldier_id = undefined
                         }
-                        if (r.soldier_id == undefined) {
+                        if (r.soldier_id == undefined && global.heap.soldiers[myRoom]<3) {
                             spawn.memory.need_soldier = r.roomName
                         }
                     }
@@ -1044,16 +1128,15 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             }
         }
 
-
+        
         // soldiers for colonization
-        if (spawn.memory.need_soldier == undefined && spawn.memory.to_colonize != undefined
-            && spawn.room.storage != undefined && spawn.memory.have_energy_to_colonize == true
+        if (spawn.memory.to_colonize != undefined && spawn.memory.need_soldier !=spawn.memory.to_colonize.name
+            && spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY]>20000
         ) {
 
             //console.log("2")
             if (spawn.memory.to_colonize.soldier != undefined && Game.getObjectById(spawn.memory.to_colonize.soldier) == null) {
                 spawn.memory.to_colonize.soldier = undefined
-                console.log("reseting colonization soldier")
             }
 
             if (spawn.memory.to_colonize.soldier == undefined) {
@@ -1065,7 +1148,6 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
             if (spawn.memory.to_colonize.claimer != undefined && Game.getObjectById(spawn.memory.to_colonize.claimer) == null) {
                 spawn.memory.to_colonize.claimer = undefined
             }
-
             if (spawn.memory.to_colonize.claimer == undefined) {
                 spawn.memory.need_claimer = spawn.memory.to_colonize.name
             }
@@ -1184,5 +1266,5 @@ Spawn.prototype.setRequiredPopulation = function setRequiredPopulation(spawn) {
     }
 
 
-
+    module.exports = Quad;
 }

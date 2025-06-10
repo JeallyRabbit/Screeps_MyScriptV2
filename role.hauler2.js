@@ -37,7 +37,10 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
         creep.memory.container_to_fill = undefined;
 
         
-        if (creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 0) {
+        if (creep.memory.filler_containers != undefined && creep.memory.filler_containers.length > 0
+            //for testing - do not fill filler  containers on rcl 8
+            && creep.room.controller.level<8
+        ) {
             var min_energy = CONTAINER_CAPACITY
             for (cont of creep.memory.filler_containers) {
                 if (Game.getObjectById(cont) != null && Game.getObjectById(cont).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
@@ -215,7 +218,7 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
         }
         var extensions = [];
         for (id of creep.memory.extensions_id) {
-            if (Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+            if (Game.getObjectById(id)!=null && Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                 extensions.push(Game.getObjectById(id));
             }
 
@@ -258,6 +261,10 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
     if (creep.memory.task == 'FILL_SPAWN') {
         if (creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             creep.moveTo(spawn, { reusePath: 10, avoidCreeps: false })
+        }
+        if(spawn.store.getFreeCapacity(RESOURCE_ENERGY)==0)
+        {
+            creep.memory.task=undefined
         }
     }
 

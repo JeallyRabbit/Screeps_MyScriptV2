@@ -1,4 +1,4 @@
-
+const Movement = require('screeps-movement');
 
 Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
 
@@ -47,9 +47,8 @@ Creep.prototype.roleClaimer = function roleClaimer(creep, spawn) {
             //creep.move(LEFT)
         }
         else { // not in target room - go claim
-
-
-            creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
+            roomsToAvoid= (Memory.manualAvoid!= undefined ? Memory.manualAvoid: []);
+            creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true, avoidHostileRooms: true, avoidRooms: roomsToAvoid})
         }
     }
     else {

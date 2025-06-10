@@ -1,4 +1,4 @@
-
+const Movement = require('screeps-movement');
 
 Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
 
@@ -88,20 +88,6 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
                     }
 
                 }
-
-                //roleFarmer.run(creep, spawn);
-                //creep.roleFarmer(creep,spawn)
-                // /return;
-
-                /*
-                var sources=creep.pos.findClosestByRange(FIND_SOURCES);
-                if(creep.harvest(sources)==ERR_NOT_IN_RANGE)
-                {
-                    console.log("OPQPQPQPQP");
-                    console.log(creep.moveTo(sources));
-                }
-                return;
-                */
 
             }
             else { // harvesting ==false
@@ -265,8 +251,8 @@ Creep.prototype.roleColonizer = function roleColonizer(creep, spawn) {
                     //creep.move_avoid_hostile(creep, creep.memory.destination, reusePath, true)
                 }
                     */
-
-                creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true })
+                roomsToAvoid= (Memory.manualAvoid!= undefined ? Memory.manualAvoid: []);
+                creep.moveToRoom(creep.memory.target_room, { reusePath: 21, avoidHostile: true, avoidCreeps: true, avoidSk: true,avoidHostileRooms: true, avoidRooms: roomsToAvoid })
             
             //creep.moveTo(Game.rooms[creep.memory.target_room].controller.pos);
             //creep.moveTo(new RoomPosition(25, 25, creep.memory.target_room, { reusePath: 15, avoidSk: true }),/* {visualizePathStyle: { stroke: '#ff00ff' } }*/);

@@ -204,7 +204,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 for (let i = 0; i < sources.length; i++) {
                     var ret = findRouteTest(spawn.pos, sources[i].pos.getNearbyPositions())
 
-                    if (ret.incomplete == false) {
+                    if (ret.incomplete == false || true) {
                         avg_distance += ret.path.length;
 
                         var new_keeper_source = new keeperSource(sources[i].id, creep.room.name, 0, 0, ret.path.length, sources[i].pos.getOpenPositions().length)
@@ -249,8 +249,8 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                 for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
 
 
-                    for (let i = 0; i < spawn.memory.keepers_rooms.length; i++) {
-                        if (spawn.memory.keepers_rooms[i].name == creep.room.name) {
+                    for (let j = 0; j < spawn.memory.keepers_rooms.length; j++) {
+                        if (spawn.memory.keepers_rooms[j].name == creep.room.name) {
                             already_scanned = true;
                         }
                     }
@@ -267,7 +267,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
                                     //cconsole.log("source: ", sources[i].id, " in use by: ", other_spawn.name);
                                     //console.log("SKIIIIIIIIIIIPING")
                                     in_other_use = true;
-                                    break
+                                    continue
                                 }
                             }
                         }
@@ -299,7 +299,7 @@ Creep.prototype.roleScout = function roleScout(creep, spawn) {
 
                     avg_distance += ret.path.length;
 
-                    var new_farming_source = new farmingSource(sources[i].id, creep.room.name, 0, 0, ret.path.length, sources[i].pos.getOpenPositions().length)
+                    var new_farming_source = new farmingSource(sources[i].id, creep.room.name, 0, 0, ret.path.length, Math.max(1,sources[i].pos.getOpenPositions().length))
 
                     var already_scanned = false;
                     for (let j = 0; j < spawn.memory.farming_sources.length; j++) {

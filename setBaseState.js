@@ -18,7 +18,7 @@ Spawn.prototype.setBaseState = function setBaseState()
         this.memory.state.push(STATE_DEVELOPING);
         this.memory.state.push(STATE_NEED_ENERGY)
     }
-    if(this.room.storage!=undefined && this.room.storage.store[RESOURCE_ENERGY]<200000 && this.room.controller.level>7)
+    if((this.room.storage!=undefined && this.room.storage.store[RESOURCE_ENERGY]<200000) && this.room.controller.level>7 || (this.memory.building && this.room.storage!=undefined &&  this.room.storage.store[RESOURCE_ENERGY]<300000))
     {
         this.memory.state.push(STATE_NEED_ENERGY)
     }
@@ -52,7 +52,12 @@ Spawn.prototype.setBaseState = function setBaseState()
             }
         }
 
+        if(this.room.controller.level<8 && Memory.fastRCLUpgrade==this.room.name)
+        {
+            this.room.memory.need_resources.push("XGH2O")
+        }
     }
+
 }
 
 //module.exports = setBaseState;
