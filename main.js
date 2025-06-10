@@ -1,7 +1,6 @@
 
 //test git 3
 //duo git test
-var roleHauler = require('role.hauler');
 var roleHauler2 = require('role.hauler2')
 var roleBuilder = require('role.builder');
 var roleUpgrader = require('role.upgrader');
@@ -43,10 +42,6 @@ var operateSwarm = require('operateSwarm')
 var operateQuad = require('operateQuad')
 var roleSponge = require('roleSponge')
 
-var roleIntershardClaimer = require('role.intershardClaimer')
-var roleIntershardColonizer = require('role.intershardColonizer')
-var roleIntershardCarrier = require('role.intershardCarrier')
-var roleIntershardUpgrader = require('role.intershardUpgrader')
 var _ = require('lodash');
 
 const Movement = require('screeps-movement');
@@ -79,12 +74,10 @@ const maxSponge = require('maxSponge')
 
 var RoomPositionFunctions = require('roomPositionFunctions');
 const maxSoldier = require('./maxSoldier');
-const maxSoldier2 = require('./maxSoldier2');
 const maxMeleeSoldier = require('./maxMeleeSoldier');
 const maxReserver = require('./maxReserver');
 const setBaseLayout = require('./setBaseLayout');
 const maxKeeperFarmer = require('./maxKeeperFarmer');
-const { pos_exchange } = require('./pos_exchange');
 const findRouteTest = require('./findRouteTest');
 const maxMerchant = require('./maxMerchant');
 const maxQuadRanger = require('./maxQuadRanger')

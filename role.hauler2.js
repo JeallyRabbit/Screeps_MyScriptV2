@@ -3,7 +3,6 @@
 
 //const { move_avoid_hostile } = require("./move_avoid_hostile");
 var sleep = require('creep.sleep');
-var roleDistanceCarrier = require('role.DistanceCarrier');
 
 
 
@@ -15,7 +14,7 @@ Creep.prototype.roleHauler2 = function roleHauler2(creep, spawn) {//transfer ene
     //creep.say("poq");
     if (spawn.room.controller.level <= 2 || (spawn.room.storage != undefined && spawn.room.storage.store[RESOURCE_ENERGY] == 0)) {
         creep.memory.target_room = creep.room.name;
-        creep.roleDistanceCarrier(creep, spawn);
+        creep.roleDistanceCarrier2(creep, spawn);
         return;
     }
 
