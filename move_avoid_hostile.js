@@ -1,4 +1,4 @@
-const { goOutOfRange } = require("./goOutOfRange");
+
 
 Creep.prototype.move_avoid_hostile= function move_avoid_hostile(creep,destination,reusePath,visualize) {
 

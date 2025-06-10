@@ -1,4 +1,3 @@
-const { goOutOfRange } = require("./goOutOfRange");
 const { move_avoid_hostile } = require("./move_avoid_hostile");
 const { boosting_driver } = require('boosting_driver');
 
