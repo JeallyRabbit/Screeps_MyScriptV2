@@ -53,7 +53,7 @@ const Movement = require('screeps-movement');
 
 
 const movementConfig = {
-    allies: ["Alphonzo", "insain", "noe"],
+    allies: ["Alphonzo", "insain", "noe","Trepidimous"],
     visualize: true,
     trackHostileRooms: true
 }
