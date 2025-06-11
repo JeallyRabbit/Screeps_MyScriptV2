@@ -346,7 +346,11 @@ Creep.prototype.roleScanner = function roleScanner(creep, spawn) {
             console.log("scanner pos: ", creep.pos, " going to: ", creep.memory.target_room)
 
             if (creep.pos.x == 48 || creep.pos.x == 1 || creep.pos.y == 48 || creep.pos.y == 1) {
-                if (creep.room.controller!=undefined && creep.room.controller.owner != undefined && !Memory.allies.includes(creep.room.controller.owner.username) && !creep.room.controller.my) {
+
+               
+                if (creep.room.controller!=undefined && creep.room.controller.owner != undefined && !Memory.allies.includes(creep.room.controller.owner.username)
+                   && !creep.room.controller.my) {
+
                     if (!Memory.roomsToAvoid.includes(creep.room.name)) {
                         Memory.roomsToAvoid.push(creep.room.name)
                     }
